@@ -331,7 +331,7 @@
       function convertLyrics(text) {
         let cleaned = text.trim();
         if (cleaned.startsWith("return")) {
-          cleaned = cleaned.repalce(/^\s*return\s*/, "").trim();
+          cleaned = cleaned.replace(/^\s*return\s*/, "").trim();
         }
         if (cleaned.startsWith("(") && cleaned.startsWith(")")) {
           cleaned = cleaned.slice(1, -1);
