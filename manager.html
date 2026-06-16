@@ -98,6 +98,7 @@
             >API KEY: <input type="password" id="apiKey" style="width: 300px"
           /></label>
           <button id="refreshBtn">Refresh</button>
+          <button id="syncGitBtn">Sync to GitHub</button>
         </div>
         <div class="status" id="statusMsg"></div>
       </div>
@@ -287,7 +288,7 @@
           document.getElementById("statusMsg").innerHTML =
             `Deleted ${song.name}`;
           await loadSongs();
-          if (doucment.getElementById("editId").value == id) clearForm();
+          if (document.getElementById("editId").value == id) clearForm();
         } catch (err) {
           alert("Deletion failed: " + err.message);
         }
@@ -380,6 +381,27 @@
           console.error(err);
         }
       }
+
+      document
+        .getElementById("syncGitBtn")
+        .addEventListener("click", async () => {
+          const btn = document.getElementById("syncGitBtn");
+          const originalText = btn.textContent;
+          btn.textContent = "";
+          btn.disabled = true;
+          try {
+            await apiRequest("/sync-github", "POST");
+            document.getElementById("statusMsg").innerHTML =
+              "Synced to GitHub successfully";
+          } catch (err) {
+            alert("Sync failed: " + err.message);
+            document.getElementById("statusMsg").innerHTML =
+              "Synced to GitHub failed";
+          } finally {
+            btn.textContent = originalText;
+            btn.disabled = false;
+          }
+        });
 
       document
         .getElementById("refreshBtn")
