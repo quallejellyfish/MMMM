@@ -123,7 +123,7 @@
           placeholder="[{chat: 'boob' ,delay:0}]"
         ></textarea>
         <div class="flex">
-          <button id="convertBtn" class="convert-btn">Convert to JSON</button>
+          <button id="convertBtn">Convert to JSON</button>
           <button id="saveBtn">Save</button>
           <button id="clearBtn">Clear</button>
         </div>
@@ -371,6 +371,9 @@
         .addEventListener("click", loadSongs);
       document.getElementById("saveBtn").addEventListener("click", saveSong);
       document.getElementById("clearBtn").addEventListener("click", clearForm);
+      document
+        .getElementById("convertBtn")
+        .addEventListener("click", onConvert);
       document.getElementById("apiUrl").value = window.location.origin;
 
       loadSongs();
