@@ -38,6 +38,9 @@ function writeLyrics(lyrics) {
   fs.writeFileSync(LYRICS_FILE, JSON.stringify(lyrics, null, 2));
 }
 
+
+// PUBLIC
+
 app.get("/songs", (req, res) => {
   const songs = readSongs();
   res.json(songs);
@@ -48,6 +51,8 @@ app.get("/songs/:id/lyrics", (req, res) => {
   const lyrics = readLyrics();
   res.json(lyrics[id] || []);
 });
+
+// PROTECTED 
 
 app.post('/songs', requireApiKey, (req, res) => {
   const { name, url, lyrics: lyricArray } = req.body;
@@ -100,6 +105,8 @@ app.get('/songs/:id/lyrics', requireApiKey, (req, res) => {
   console.log(`Found ${result.length} lines`);
   res.json(result);
 });
+
+// ROOT
 
 app.get('/', (req, res) => {
   res.sendFile(__dirname + '/manager.html');
