@@ -374,7 +374,7 @@
           const jsonStr = JSON.stringify(converted, null, 2);
           document.getElementById("lyrics").value = jsonStr;
           document.getElementById("statusMsg").innerHTML =
-            `Converted ${convrted.length} lines to JSON`;
+            `Converted ${converted.length} lines to JSON`;
         } catch (err) {
           alert("Conversation failed: " + err.message);
           console.error(err);
