@@ -21,45 +21,54 @@ const CATEGORIES = [
   { id: 999, name: "❓-----Not My Songs-----" },
 ];
 
-async function sendDiscord(song, categoryName, lyricsCount) {
-  if (!DISCORD_WEBHOOK) return;
+async function sendDiscord(song, categoryName, lyricCount) {
+  if (!DISCORD_WEBHOOK_URL) {
+    console.log("Discord webhook not configured, skipping notification.");
+    return;
+  }
 
   const embed = {
     title: "🎵 New Song Added",
-    color: 0x5865f2,
+    color: 0x00ff88,
     fields: [
       { name: "Name", value: song.name, inline: true },
       { name: "ID", value: String(song.id), inline: true },
-      { name: "Category", value: categoryName, inline: true },
-      { name: "Lyrics Lines", value: String(lyricsCount), inline: true },
+      {
+        name: "Category",
+        value: categoryName || "Uncategorized",
+        inline: true,
+      },
+      { name: "Lyrics Lines", value: String(lyricCount), inline: true },
       { name: "Audio URL", value: `[Link](${song.url})`, inline: false },
     ],
     timestamp: new Date().toISOString(),
-    footer: { text: "MMMM - Music Menu Mod Manager - Wolfi" },
+    footer: { text: "Song Manager API" },
   };
 
   try {
-    const response = await fetch(DISCORD_WEBHOOK, {
+    const response = await fetch(DISCORD_WEBHOOK_URL, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ embeds: [embed] }),
     });
     if (!response.ok) {
       console.error(
-        "Webhook failed:",
+        "Discord webhook failed:",
         response.status,
         await response.text(),
       );
     } else {
-      console.log("Sent.");
+      console.log("Discord notification sent.");
     }
   } catch (err) {
-    console.log(err)
+    console.error("Error sending Discord webhook:", err);
   }
 }
 
 function requireApiKey(req, res, next) {
   const key = req.headers["x-api-key"];
+  console.log("Received API key:", key);
+  console.log("Expected API key:", API_KEY);
   if (key !== API_KEY) {
     return res.status(401).json({ error: "no" });
   }
@@ -107,45 +116,52 @@ app.get("/songs/:id/lyrics", (req, res) => {
 
 // PROTECTED
 app.post("/songs", requireApiKey, (req, res) => {
-  const { name, url, lyrics: lyricArray, categoryIndex } = req.body;
-  if (!name || !url) {
-    return res.status(400).json({ error: "name and url are required" });
-  }
-  const songs = readSongs();
-  const maxId = songs.reduce(
-    (max, s) => (s.id !== 999 && s.id > max ? s.id : max),
-    -1,
-  );
-  const newId = maxId + 1;
-
-  let insertIndex = songs.length;
-  if (
-    categoryIndex !== undefined &&
-    categoryIndex >= 0 &&
-    categoryIndex < CATEGORIES.length
-  ) {
-    const targetName = CATEGORIES[categoryIndex].name;
-    const foundIndex = songs.findIndex(
-      (s) => s.id === 999 && s.name === targetName,
-    );
-    if (foundIndex !== -1) {
-      insertIndex = foundIndex + 1;
+  try {
+    const { name, url, lyrics: lyricArray, categoryIndex } = req.body;
+    if (!name || !url) {
+      return res.status(400).json({ error: "name and url are required" });
     }
+    const songs = readSongs();
+    const maxId = songs.reduce(
+      (max, s) => (s.id !== 999 && s.id > max ? s.id : max),
+      -1,
+    );
+    const newId = maxId + 1;
+
+    let insertIndex = songs.length;
+    if (
+      categoryIndex !== undefined &&
+      categoryIndex >= 0 &&
+      categoryIndex < CATEGORIES.length
+    ) {
+      const targetName = CATEGORIES[categoryIndex].name;
+      const foundIndex = songs.findIndex(
+        (s) => s.id === 999 && s.name === targetName,
+      );
+      if (foundIndex !== -1) {
+        insertIndex = foundIndex + 1;
+      }
+    }
+
+    const newSong = { id: newId, name, url };
+    songs.splice(insertIndex, 0, newSong);
+    writeSongs(songs);
+
+    if (lyricArray && Array.isArray(lyricArray)) {
+      const lyrics = readLyrics();
+      lyrics[newId] = lyricArray;
+      writeLyrics(lyrics);
+    }
+
+    sendDiscord(newSong, categoryName, lyricCount).catch((err) => {
+      console.error("Discord notification error:", err);
+    });
+
+    res.status(201).json(newSong);
+  } catch (err) {
+    console.error("Error in POST /songs:", err.stack);
+    res.status(500).json({ error: err.message });
   }
-
-  const newSong = { id: newId, name, url };
-  songs.splice(insertIndex, 0, newSong);
-  writeSongs(songs);
-
-  if (lyricArray && Array.isArray(lyricArray)) {
-    const lyrics = readLyrics();
-    lyrics[newId] = lyricArray;
-    writeLyrics(lyrics);
-  }
-
-  sendDiscord(newSong, categoryName, lyricCount);
-  
-  res.status(201).json(newSong);
 });
 
 app.put("/songs/:id", requireApiKey, (req, res) => {
