@@ -148,6 +148,7 @@ app.post("/songs", requireApiKey, (req, res) => {
     songs.splice(insertIndex, 0, newSong);
     writeSongs(songs);
 
+    const lyricCount = (lyricArray && Array.isArray(lyricArray)) ? lyricArray.length : 0;
     if (lyricArray && Array.isArray(lyricArray)) {
       const lyrics = readLyrics();
       lyrics[newId] = lyricArray;
