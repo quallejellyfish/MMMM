@@ -91,7 +91,8 @@
       <div class="card">
         <div class="flex">
           <label
-            >API URL: <input type="text" id="apiUrl" value="" style="width: 300px"
+            >API URL:
+            <input type="text" id="apiUrl" value="" style="width: 300px"
           /></label>
           <label
             >API KEY: <input type="password" id="apiKey" style="width: 300px"
@@ -122,6 +123,7 @@
           placeholder="[{chat: 'boob' ,delay:0}]"
         ></textarea>
         <div class="flex">
+          <button id="convertBtn" class="convert-btn">Convert to JSON</button>
           <button id="saveBtn">Save</button>
           <button id="clearBtn">Clear</button>
         </div>
@@ -146,8 +148,6 @@
       </div>
     </div>
     <script>
-      document.getElementById('apiUrl').value = window.location.origin;
-      
       let songList = [];
 
       function getApiUrl() {
@@ -249,7 +249,8 @@
         }
       }
 
-      async function editSong(id) {id
+      async function editSong(id) {
+        id;
         const numericId = parseInt(id, 10);
         console.log("Edit song with id:", numericId);
         if (isNaN(numericId)) {
@@ -327,11 +328,50 @@
         }
       }
 
+      function convertLyrics(text) {
+        let cleaned = text.trim();
+        if (cleaned.startsWith("return")) {
+          cleaned = cleaned.repalce(/^\s*return\s*/, "").trim();
+        }
+        if (cleaned.startsWith("(") && cleaned.startsWith(")")) {
+          cleaned = cleaned.slice(1, -1);
+        }
+        const parse = new Function("return " + cleaned);
+        const array = parse();
+
+        if (!Array.isArray(array)) throw new Error();
+        for (const item of Array) {
+          if (typeof item.chat !== "string" || typeof item.delay !== "number") {
+            throw new Error();
+          }
+        }
+        return array;
+      }
+
+      function onConvert() {
+        const raw = document.getElementById("lyrics").value.trim();
+        if (!raw) {
+          alert("paste lyrics first");
+          return;
+        }
+        try {
+          const converted = convertLyrics(raw);
+          const jsonStr = JSON.stringify(converted, null, 2);
+          document.getElementById("lyrics").value = jsonStr;
+          document.getElementById("statusMsg").innerHTML =
+            `Converted ${convrted.length} lines to JSON`;
+        } catch (err) {
+          alert("Conversation failed: " + err.message);
+          console.error(err);
+        }
+      }
+
       document
         .getElementById("refreshBtn")
         .addEventListener("click", loadSongs);
       document.getElementById("saveBtn").addEventListener("click", saveSong);
       document.getElementById("clearBtn").addEventListener("click", clearForm);
+      document.getElementById("apiUrl").value = window.location.origin;
 
       loadSongs();
     </script>
