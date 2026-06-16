@@ -201,7 +201,9 @@ app.delete("/songs/:id", requireApiKey, (req, res) => {
   delete lyrics[id];
   writeLyrics(lyrics);
 
-  sendDiscordDeletion(songToDelete);
+  sendDiscordDeletion(songToDelete).catch((err) => {
+    console.error("Discord deletion notification error:", err);
+  });
 
   res.json({ message: "Deleted" });
 });
