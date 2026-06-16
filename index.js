@@ -1,6 +1,7 @@
 const express = require("express");
 const fs = require("fs");
 const cors = require("cors");
+const { timeStamp } = require("console");
 const app = express();
 const PORT = process.env.PORT || 3000;
 
@@ -8,6 +9,7 @@ const GITHUB_TOKEN = process.env.GITHUB_TOKEN;
 const GITHUB_REPO = process.env.GITHUB_REPO;
 const GITHUB_BRANCH = process.env.GITHUB_BRANCH;
 const API_KEY = process.env.API_KEY;
+const DISCORD_WEBHOOK = process.env.DISCORD_WEBHOOK;
 
 const CATEGORIES = [
   { id: 999, name: "🇺🇸-----English Songs-----" },
@@ -18,6 +20,43 @@ const CATEGORIES = [
   { id: 999, name: "🦊----- Krimsonthefox Music-----" },
   { id: 999, name: "❓-----Not My Songs-----" },
 ];
+
+async function sendDiscord(song, categoryName, lyricsCount) {
+  if (!DISCORD_WEBHOOK) return;
+
+  const embed = {
+    title: "🎵 New Song Added",
+    color: 0x5865f2,
+    fields: [
+      { name: "Name", value: song.name, inline: true },
+      { name: "ID", value: String(song.id), inline: true },
+      { name: "Category", value: categoryName, inline: true },
+      { name: "Lyrics Lines", value: String(lyricsCount), inline: true },
+      { name: "Audio URL", value: `[Link](${song.url})`, inline: false },
+    ],
+    timestamp: new Date().toISOString(),
+    footer: { text: "MMMM - Music Menu Mod Manager - Wolfi" },
+  };
+
+  try {
+    const response = await fetch(DISCORD_WEBHOOK, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ embeds: [embed] }),
+    });
+    if (!response.ok) {
+      console.error(
+        "Webhook failed:",
+        response.status,
+        await response.text(),
+      );
+    } else {
+      console.log("Sent.");
+    }
+  } catch (err) {
+    console.log(err)
+  }
+}
 
 function requireApiKey(req, res, next) {
   const key = req.headers["x-api-key"];
@@ -79,12 +118,18 @@ app.post("/songs", requireApiKey, (req, res) => {
   );
   const newId = maxId + 1;
 
-  let insertIndex = songs.length
-  if (categoryIndex !== undefined && categoryIndex >= 0 && categoryIndex < CATEGORIES.length) {
-    const targetName = CATEGORIES[categoryIndex].name
-    const foundIndex = songs.findIndex(s => s.id === 999 && s.name === targetName)
+  let insertIndex = songs.length;
+  if (
+    categoryIndex !== undefined &&
+    categoryIndex >= 0 &&
+    categoryIndex < CATEGORIES.length
+  ) {
+    const targetName = CATEGORIES[categoryIndex].name;
+    const foundIndex = songs.findIndex(
+      (s) => s.id === 999 && s.name === targetName,
+    );
     if (foundIndex !== -1) {
-      insertIndex = foundIndex
+      insertIndex = foundIndex + 1;
     }
   }
 
@@ -97,6 +142,8 @@ app.post("/songs", requireApiKey, (req, res) => {
     lyrics[newId] = lyricArray;
     writeLyrics(lyrics);
   }
+
+  sendDiscordNotification(newSong, categoryName, lyricCount);
   
   res.status(201).json(newSong);
 });
