@@ -1,21 +1,25 @@
 const express = require("express");
 const fs = require("fs");
-const cors = require('cors');
+const cors = require("cors");
 const app = express();
 const PORT = process.env.PORT || 3000;
 
+const GITHUB_TOKEN = process.env.GITHUB_TOKEN;
+const GITHUB_REPO = process.env.GITHUB_REPO;
+const GITHUB_BRANCH = process.env.GITHUB_BRANCH;
+
 const API_KEY = process.env.API_KEY;
 function requireApiKey(req, res, next) {
-  const key = req.headers['x-api-key'];
+  const key = req.headers["x-api-key"];
   if (key !== API_KEY) {
-    return res.status(401).json({ error: 'no' });
+    return res.status(401).json({ error: "no" });
   }
   next();
 }
 
 app.use(cors());
 app.use(express.static(__dirname));
-app.use(express.json({ limit: '10mb' }));
+app.use(express.json({ limit: "10mb" }));
 
 const SONGS_FILE = "./songs.json";
 const LYRICS_FILE = "./lyrics.json";
@@ -38,7 +42,6 @@ function writeLyrics(lyrics) {
   fs.writeFileSync(LYRICS_FILE, JSON.stringify(lyrics, null, 2));
 }
 
-
 // PUBLIC
 
 app.get("/songs", (req, res) => {
@@ -52,15 +55,15 @@ app.get("/songs/:id/lyrics", (req, res) => {
   res.json(lyrics[id] || []);
 });
 
-// PROTECTED 
+// PROTECTED
 
-app.post('/songs', requireApiKey, (req, res) => {
+app.post("/songs", requireApiKey, (req, res) => {
   const { name, url, lyrics: lyricArray } = req.body;
   if (!name || !url) {
-    return res.status(400).json({ error: 'name and url are required' });
+    return res.status(400).json({ error: "name and url are required" });
   }
   const songs = readSongs();
-  const nextId = songs.length > 0 ? Math.max(...songs.map(s => s.id)) + 1 : 0;
+  const nextId = songs.length > 0 ? Math.max(...songs.map((s) => s.id)) + 1 : 0;
   const newSong = { id: nextId, name, url };
   songs.push(newSong);
   writeSongs(songs);
@@ -73,31 +76,32 @@ app.post('/songs', requireApiKey, (req, res) => {
   res.status(201).json(newSong);
 });
 
-app.put('/songs/:id', requireApiKey, (req, res) => {
+app.put("/songs/:id", requireApiKey, (req, res) => {
   const id = parseInt(req.params.id);
   const { name, url } = req.body;
   const songs = readSongs();
-  const index = songs.findIndex(s => s.id === id);
-  if (index === -1) return res.status(404).json({ error: 'Song not found' });
+  const index = songs.findIndex((s) => s.id === id);
+  if (index === -1) return res.status(404).json({ error: "Song not found" });
   if (name) songs[index].name = name;
   if (url) songs[index].url = url;
   writeSongs(songs);
   res.json(songs[index]);
 });
 
-app.delete('/songs/:id', requireApiKey, (req, res) => {
+app.delete("/songs/:id", requireApiKey, (req, res) => {
   const id = parseInt(req.params.id);
   let songs = readSongs();
-  const newSongs = songs.filter(s => s.id !== id);
-  if (newSongs.length === songs.length) return res.status(404).json({ error: 'Song not found' });
+  const newSongs = songs.filter((s) => s.id !== id);
+  if (newSongs.length === songs.length)
+    return res.status(404).json({ error: "Song not found" });
   writeSongs(newSongs);
   const lyrics = readLyrics();
   delete lyrics[id];
   writeLyrics(lyrics);
-  res.json({ message: 'Deleted' });
+  res.json({ message: "Deleted" });
 });
 
-app.get('/songs/:id/lyrics', requireApiKey, (req, res) => {
+app.get("/songs/:id/lyrics", requireApiKey, (req, res) => {
   const id = parseInt(req.params.id);
   console.log(`Fetching lyrics for ID: ${id} (type: ${typeof id})`);
   const lyrics = readLyrics();
@@ -106,12 +110,78 @@ app.get('/songs/:id/lyrics', requireApiKey, (req, res) => {
   res.json(result);
 });
 
-// ROOT
+// GITHUB
+app.post("/sync-github", requireApiKey, async (req, res) => {
+  if (!GITHUB_TOKEN || !GITHUB_REPO) {
+    return res.status(500);
+  }
 
-app.get('/', (req, res) => {
-  res.sendFile(__dirname + '/manager.html');
+  try {
+    const songs = readSongs();
+    const lyrics = readLyrics();
+
+    async function updateFile(path, content) {
+      const url = `https://api.github.com/repos/${GITHUB_REPO}/contents/${path}`;
+      const base64Content = Buffer.from(
+        JSON.stringify(content, null, 2),
+        "utf-8",
+      ).toString("base64");
+
+      let sha = null;
+      try {
+        const getRes = await fetch(url, {
+          headers: {
+            Authorization: `token ${GITHUB_TOKEN}`,
+            Accept: "application/vnd.github.v3+json",
+          },
+        });
+        if (getRes.ok) {
+          const data = await getRes.json;
+          sha = data.sha;
+        }
+      } catch (e) {}
+      const body = {
+        message: `Update ${path}`,
+        content: base64Content,
+        branch: GITHUB_BRANCH,
+      };
+
+      if (sha) body.sha = sha;
+
+      const putRes = await fetch(url, {
+        method: "PUT",
+        headers: {
+          Authorization: `token ${GITHUB_TOKEN}`,
+          Accept: "application/vnd.github.v3+json",
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(body),
+      });
+
+      if (!putRes.ok) {
+        const errText = await putRes.text();
+        throw new Error(
+          `GitHub API error for ${path}: ${putRes.status} ${errText}`,
+        );
+      }
+      return putRes.json();
+    }
+
+    await updateFile('songs.json', songs);
+    await updateFile('lyrics.json', lyrics);
+
+    res.json({ message: 'Successfully synced to GitHub.' });
+  } catch (err) {
+    console.error('GitHub sync error:', err);
+    res.status(500).json({ error: err.message });
+  }
 });
 
-app.get('/health', (req, res) => res.send('OK'));
+// ROOT
+app.get("/", (req, res) => {
+  res.sendFile(__dirname + "/manager.html");
+});
+
+app.get("/health", (req, res) => res.send("OK"));
 
 app.listen(PORT, () => console.log(`API running on port ${PORT}`));
