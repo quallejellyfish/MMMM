@@ -7,8 +7,18 @@ const PORT = process.env.PORT || 3000;
 const GITHUB_TOKEN = process.env.GITHUB_TOKEN;
 const GITHUB_REPO = process.env.GITHUB_REPO;
 const GITHUB_BRANCH = process.env.GITHUB_BRANCH;
-
 const API_KEY = process.env.API_KEY;
+
+const CATEGORIES = [
+  { id: 999, name: "🇺🇸-----English Songs-----" },
+  { id: 999, name: "🇩🇪-----German Songs-----" },
+  { id: 999, name: "🇨🇳-----Chinese Songs-----" },
+  { id: 999, name: "💥-----Pulary Songs-----" },
+  { id: 999, name: "🌍-----other language Songs-----" },
+  { id: 999, name: "🦊----- Krimsonthefox Music-----" },
+  { id: 999, name: "❓-----Not My Songs-----" },
+];
+
 function requireApiKey(req, res, next) {
   const key = req.headers["x-api-key"];
   if (key !== API_KEY) {
@@ -25,19 +35,20 @@ const SONGS_FILE = "./songs.json";
 const LYRICS_FILE = "./lyrics.json";
 
 function readSongs() {
-  if (!fs.existsSync(SONGS_FILE)) return [];
+  if (!fs.existsSync(SONGS_FILE)) {
+    const init = CATEGORIES.map((c) => ({ id: c.id, name: c.name, url: "" }));
+    writeSongs(init);
+    return init;
+  }
   return JSON.parse(fs.readFileSync(SONGS_FILE, "utf8"));
 }
-
 function writeSongs(songs) {
   fs.writeFileSync(SONGS_FILE, JSON.stringify(songs, null, 2));
 }
-
 function readLyrics() {
   if (!fs.existsSync(LYRICS_FILE)) return {};
   return JSON.parse(fs.readFileSync(LYRICS_FILE, "utf8"));
 }
-
 function writeLyrics(lyrics) {
   fs.writeFileSync(LYRICS_FILE, JSON.stringify(lyrics, null, 2));
 }
@@ -56,23 +67,37 @@ app.get("/songs/:id/lyrics", (req, res) => {
 });
 
 // PROTECTED
-
 app.post("/songs", requireApiKey, (req, res) => {
-  const { name, url, lyrics: lyricArray } = req.body;
+  const { name, url, lyrics: lyricArray, categoryIndex } = req.body;
   if (!name || !url) {
     return res.status(400).json({ error: "name and url are required" });
   }
   const songs = readSongs();
-  const nextId = songs.length > 0 ? Math.max(...songs.map((s) => s.id)) + 1 : 0;
-  const newSong = { id: nextId, name, url };
-  songs.push(newSong);
+  const maxId = songs.reduce(
+    (max, s) => (s.id !== 999 && s.id > max ? s.id : max),
+    -1,
+  );
+  const newId = maxId + 1;
+
+  let insertIndex = songs.length
+  if (categoryIndex !== undefined && categoryIndex >= 0 && categoryIndex < CATEGORIES.length) {
+    const targetName = CATEGORIES[categoryIndex].name
+    const foundIndex = songs.findIndex(s => s.id === 999 && s.name === targetName)
+    if (foundIndex !== -1) {
+      insertIndex = foundIndex
+    }
+  }
+
+  const newSong = { id: newId, name, url };
+  songs.splice(insertIndex, 0, newSong);
   writeSongs(songs);
 
   if (lyricArray && Array.isArray(lyricArray)) {
     const lyrics = readLyrics();
-    lyrics[nextId] = lyricArray;
+    lyrics[newId] = lyricArray;
     writeLyrics(lyrics);
   }
+  
   res.status(201).json(newSong);
 });
 
@@ -169,24 +194,28 @@ app.post("/sync-github", requireApiKey, async (req, res) => {
         console.log(`Creating new file ${path}`);
       }
 
-const putRes = await fetch(url, {
-        method: 'PUT',
+      const putRes = await fetch(url, {
+        method: "PUT",
         headers: {
           Authorization: `token ${GITHUB_TOKEN}`,
-          Accept: 'application/vnd.github.v3+json',
-          'Content-Type': 'application/json'
+          Accept: "application/vnd.github.v3+json",
+          "Content-Type": "application/json",
         },
-        body: JSON.stringify(body)
+        body: JSON.stringify(body),
       });
 
       if (!putRes.ok) {
         const errText = await putRes.text();
         console.error(`GitHub API error for ${path}:`, putRes.status, errText);
-        throw new Error(`GitHub API error for ${path}: ${putRes.status} ${errText}`);
+        throw new Error(
+          `GitHub API error for ${path}: ${putRes.status} ${errText}`,
+        );
       }
-      
+
       const result = await putRes.json();
-      console.log(`Successfully updated ${path}, commit: ${result.commit?.sha}`);
+      console.log(
+        `Successfully updated ${path}, commit: ${result.commit?.sha}`,
+      );
       return result;
     }
 
