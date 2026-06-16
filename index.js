@@ -173,6 +173,7 @@ app.post("/songs", requireApiKey, (req, res) => {
   }
 
   sendDiscordAddition(newSong, categoryName, lyricCount);
+  broadcastEvent("song-changed", { action: "add", songId: newId });
 
   res.status(201).json(newSong);
 });
@@ -186,6 +187,7 @@ app.put("/songs/:id", requireApiKey, (req, res) => {
   if (name) songs[index].name = name;
   if (url) songs[index].url = url;
   writeSongs(songs);
+  broadcastEvent("song-changed", { action: "edit", songId: id });
   res.json(songs[index]);
 });
 
@@ -196,8 +198,8 @@ app.delete("/songs/:id", requireApiKey, (req, res) => {
   if (!songToDelete) {
     return res.status(404).json({ error: "Song not found" });
   }
-  
-  const newSongs = songs.filter(s => s.id !== id);
+
+  const newSongs = songs.filter((s) => s.id !== id);
   writeSongs(newSongs);
   const lyrics = readLyrics();
   delete lyrics[id];
@@ -206,6 +208,7 @@ app.delete("/songs/:id", requireApiKey, (req, res) => {
   sendDiscordDeletion(songToDelete).catch((err) => {
     console.error("Discord deletion notification error:", err);
   });
+  broadcastEvent('song-changed', { action: 'delete', songId: id });
 
   res.json({ message: "Deleted" });
 });
@@ -312,6 +315,32 @@ app.post("/sync-github", requireApiKey, async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 });
+
+//SSE
+
+let sseClients = [];
+app.get("/events", (req, res) => {
+  res.writeHead(200, {
+    "Content-Type": "text/event-stream",
+    "Cache-Control": "no-cache",
+    Connection: "keep-alive",
+    "Access-Control-Allow-Origin": "*",
+  });
+  res.write("retry: 10000\n\n");
+  sseClients.push(res);
+  req.on("close", () => {
+    sseClients = sseClients.filter((client) => client !== res);
+  });
+});
+
+function broadcastEvent(event, data) {
+  const payload = `event: ${event}\ndata: ${JSON.stringify(data)}\n\n`;
+  sseClients.forEach((client) => {
+    try {
+      client.write(payload);
+    } catch (e) {}
+  });
+}
 
 // ROOT
 app.get("/", (req, res) => {
