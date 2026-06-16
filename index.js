@@ -116,54 +116,48 @@ app.get("/songs/:id/lyrics", (req, res) => {
 
 // PROTECTED
 app.post("/songs", requireApiKey, (req, res) => {
-  try {
-    const { name, url, lyrics: lyricArray, categoryIndex } = req.body;
-    if (!name || !url) {
-      return res.status(400).json({ error: "name and url are required" });
-    }
-    const songs = readSongs();
-    const maxId = songs.reduce(
-      (max, s) => (s.id !== 999 && s.id > max ? s.id : max),
-      -1,
-    );
-    const newId = maxId + 1;
-
-    let insertIndex = songs.length;
-    let categoryName = "Uncategorized";
-    if (
-      categoryIndex !== undefined &&
-      categoryIndex >= 0 &&
-      categoryIndex < CATEGORIES.length
-    ) {
-      categoryName = CATEGORIES[categoryIndex].name;
-      const foundIndex = songs.findIndex(
-        (s) => s.id === 999 && s.name === categoryName,
-      );
-      if (foundIndex !== -1) {
-        insertIndex = foundIndex + 1;
-      }
-    }
-
-    const newSong = { id: newId, name, url };
-    songs.splice(insertIndex, 0, newSong);
-    writeSongs(songs);
-
-    const lyricCount = (lyricArray && Array.isArray(lyricArray)) ? lyricArray.length : 0;
-    if (lyricArray && Array.isArray(lyricArray)) {
-      const lyrics = readLyrics();
-      lyrics[newId] = lyricArray;
-      writeLyrics(lyrics);
-    }
-
-    sendDiscord(newSong, categoryName, lyricCount).catch((err) => {
-      console.error("Discord notification error:", err);
-    });
-
-    res.status(201).json(newSong);
-  } catch (err) {
-    console.error("Error in POST /songs:", err.stack);
-    res.status(500).json({ error: err.message });
+  const { name, url, lyrics: lyricArray, categoryIndex } = req.body;
+  if (!name || !url) {
+    return res.status(400).json({ error: "name and url are required" });
   }
+  const songs = readSongs();
+  const maxId = songs.reduce(
+    (max, s) => (s.id !== 999 && s.id > max ? s.id : max),
+    -1,
+  );
+  const newId = maxId + 1;
+
+  let insertIndex = songs.length;
+  let categoryName = "Uncategorized";
+  if (
+    categoryIndex !== undefined &&
+    categoryIndex >= 0 &&
+    categoryIndex < CATEGORIES.length
+  ) {
+    categoryName = CATEGORIES[categoryIndex].name;
+    const foundIndex = songs.findIndex(
+      (s) => s.id === 999 && s.name === categoryName,
+    );
+    if (foundIndex !== -1) {
+      insertIndex = foundIndex + 1;
+    }
+  }
+
+  const newSong = { id: newId, name, url };
+  songs.splice(insertIndex, 0, newSong);
+  writeSongs(songs);
+
+  const lyricCount =
+    lyricArray && Array.isArray(lyricArray) ? lyricArray.length : 0;
+  if (lyricArray && Array.isArray(lyricArray)) {
+    const lyrics = readLyrics();
+    lyrics[newId] = lyricArray;
+    writeLyrics(lyrics);
+  }
+
+  sendDiscord(newSong, categoryName, lyricCount);
+
+  res.status(201).json(newSong);
 });
 
 app.put("/songs/:id", requireApiKey, (req, res) => {
