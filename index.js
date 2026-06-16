@@ -129,14 +129,15 @@ app.post("/songs", requireApiKey, (req, res) => {
     const newId = maxId + 1;
 
     let insertIndex = songs.length;
+    let categoryName = "Uncategorized";
     if (
       categoryIndex !== undefined &&
       categoryIndex >= 0 &&
       categoryIndex < CATEGORIES.length
     ) {
-      const targetName = CATEGORIES[categoryIndex].name;
+      categoryName = CATEGORIES[categoryIndex].name;
       const foundIndex = songs.findIndex(
-        (s) => s.id === 999 && s.name === targetName,
+        (s) => s.id === 999 && s.name === categoryName,
       );
       if (foundIndex !== -1) {
         insertIndex = foundIndex + 1;
