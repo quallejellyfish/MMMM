@@ -9,7 +9,7 @@ const GITHUB_TOKEN = process.env.GITHUB_TOKEN;
 const GITHUB_REPO = process.env.GITHUB_REPO;
 const GITHUB_BRANCH = process.env.GITHUB_BRANCH;
 const API_KEY = process.env.API_KEY;
-const DISCORD_WEBHOOK = process.env.DISCORD_WEBHOOK;
+const DISCORD_WEBHOOK_URL = process.env.DISCORD_WEBHOOK;
 
 const CATEGORIES = [
   { id: 999, name: "🇺🇸-----English Songs-----" },
