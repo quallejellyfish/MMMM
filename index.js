@@ -14,6 +14,7 @@ function requireApiKey(req, res, next) {
 }
 
 app.use(cors());
+app.use(express.static(__dirname));
 app.use(express.json({ limit: '10mb' }));
 
 const SONGS_FILE = "./songs.json";
@@ -98,6 +99,10 @@ app.get('/songs/:id/lyrics', requireApiKey, (req, res) => {
   const result = lyrics[id] || [];
   console.log(`Found ${result.length} lines`);
   res.json(result);
+});
+
+app.get('/', (req, res) => {
+  res.sendFile(__dirname + '/manager.html');
 });
 
 app.get('/health', (req, res) => res.send('OK'));

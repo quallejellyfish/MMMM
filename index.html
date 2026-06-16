@@ -91,7 +91,7 @@
       <div class="card">
         <div class="flex">
           <label
-            >API URL: <input type="text" id="apiUrl" style="width: 300px"
+            >API URL: <input type="text" id="apiUrl" value="" style="width: 300px"
           /></label>
           <label
             >API KEY: <input type="password" id="apiKey" style="width: 300px"
@@ -146,6 +146,8 @@
       </div>
     </div>
     <script>
+      document.getElementById('apiUrl').value = window.location.origin;
+      
       let songList = [];
 
       function getApiUrl() {
