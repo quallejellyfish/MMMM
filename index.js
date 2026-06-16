@@ -143,7 +143,7 @@ app.post("/songs", requireApiKey, (req, res) => {
     writeLyrics(lyrics);
   }
 
-  sendDiscordNotification(newSong, categoryName, lyricCount);
+  sendDiscord(newSong, categoryName, lyricCount);
   
   res.status(201).json(newSong);
 });
