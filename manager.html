@@ -336,16 +336,31 @@
         if (cleaned.startsWith("(") && cleaned.startsWith(")")) {
           cleaned = cleaned.slice(1, -1);
         }
-        const parse = new Function("return " + cleaned);
-        const array = parse();
+        let result;
 
-        if (!Array.isArray(array)) throw new Error();
-        for (const item of Array) {
-          if (typeof item.chat !== "string" || typeof item.delay !== "number") {
-            throw new Error();
+        try {
+          const parse = new Function("return " + cleaned);
+          result = parse();
+        } catch (e) {
+          console.warn("Failed, falling back to eval:", e);
+          try {
+            result = eval("(" + cleaned + ")");
+          } catch (e2) {
+            throw new Error("Failed to parse lyrics: " + e2.message);
           }
         }
-        return array;
+
+        if (!Array.isArray(array)) throw new Error("Got: " + typeof reuslt);
+        for (let i = 0; i < result.length; i++) {
+          const item = result[i];
+          if (typeof item.chat !== "string" || typeof item.delay !== "number") {
+            throw new Error(
+              'item at index ${i} is invalid: missing "chat" (string) or "delay" (number).',
+            );
+          }
+        }
+
+        return result;
       }
 
       function onConvert() {
