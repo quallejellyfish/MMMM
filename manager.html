@@ -350,7 +350,7 @@
           }
         }
 
-        if (!Array.isArray(array)) throw new Error("Got: " + typeof reuslt);
+        if (!Array.isArray(result)) throw new Error("Got: " + typeof reuslt);
         for (let i = 0; i < result.length; i++) {
           const item = result[i];
           if (typeof item.chat !== "string" || typeof item.delay !== "number") {
