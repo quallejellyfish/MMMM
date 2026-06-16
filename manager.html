@@ -38,9 +38,19 @@
         border-radius: 8px;
         cursor: pointer;
         margin: 4px;
+        transition: background 0.3s ease-in-out;
+      }
+      button:hover {
+        background: #ba4085;
+      }
+      button.danger:hover {
+        background: #990f0f;
       }
       .danger {
         background: #ff5555;
+      }
+      a:hover {
+        color: #ba4085;
       }
       input,
       textarea {
@@ -118,7 +128,7 @@
           placeholder="jukehost or whatever ends with .mp3"
         />
         <label>Category (only for new songs)</label><br />
-        <select id="categorySelect" style="font-size: 1rem;">
+        <select id="categorySelect" style="font-size: 1rem">
           <option value="0">🇺🇸 English</option>
           <option value="1">🇩🇪 German</option>
           <option value="2">🇨🇳 Chinese</option>
@@ -138,6 +148,9 @@
           <button id="convertBtn">Convert to JSON</button>
           <button id="saveBtn">Save</button>
           <button id="clearBtn">Clear</button>
+          <button id="deleteBtn" class="danger" style="display: none">
+            Delete this song
+          </button>
         </div>
       </div>
       <div class="card">
@@ -244,7 +257,7 @@
               name,
               url,
               lyrics: lyricsArray,
-              categoryIndex
+              categoryIndex,
             });
             document.getElementById("statusMsg").innerHTML =
               `Added: ${name} (ID: ${newSong.id})`;
@@ -295,6 +308,12 @@
           console.error("Failed to load lyrics:", err);
           document.getElementById("lyrics").value = "[]";
         }
+
+        document.getElementById("deleteBtn").style.display = "inline-block";
+        document.getElementById("deleteBtn").onclick = () =>
+          deleteSong(numericId);
+
+        window.scrollTo({ top: 0, behavior: "smooth" });
       }
 
       async function deleteSong(id) {
@@ -316,6 +335,7 @@
         document.getElementById("songName").value = "";
         document.getElementById("audioUrl").value = "";
         document.getElementById("lyrics").value = "";
+        document.getElementById("categorySelect").value = 0;
       }
 
       async function renderTable() {
