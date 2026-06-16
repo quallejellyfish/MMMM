@@ -21,47 +21,64 @@ const CATEGORIES = [
   { id: 999, name: "❓-----Not My Songs-----" },
 ];
 
-async function sendDiscord(song, categoryName, lyricCount) {
+async function sendDiscordAddition(song, categoryName, lyricCount) {
   if (!DISCORD_WEBHOOK_URL) {
     console.log("Discord webhook not configured, skipping notification.");
     return;
   }
-
-  const embed = {
-    title: "🎵 New Song Added",
-    color: 0x00ff88,
-    fields: [
-      { name: "Name", value: song.name, inline: true },
-      { name: "ID", value: String(song.id), inline: true },
-      {
-        name: "Category",
-        value: categoryName || "Uncategorized",
-        inline: true,
-      },
-      { name: "Lyrics Lines", value: String(lyricCount), inline: true },
-      { name: "Audio URL", value: `[Link](${song.url})`, inline: false },
-    ],
-    timestamp: new Date().toISOString(),
-    footer: { text: "Song Manager API" },
-  };
-
   try {
+    const embed = {
+      title: "🎵 New Song Added",
+      color: 0x00ff88,
+      fields: [
+        { name: "Name", value: song.name, inline: true },
+        { name: "ID", value: String(song.id), inline: true },
+        {
+          name: "Category",
+          value: categoryName || "Uncategorized",
+          inline: true,
+        },
+        { name: "Lyrics Lines", value: String(lyricCount), inline: true },
+        { name: "Audio URL", value: `[Link](${song.url})`, inline: false },
+      ],
+      timestamp: new Date().toISOString(),
+      footer: { text: "Song Manager API" },
+    };
+
     const response = await fetch(DISCORD_WEBHOOK_URL, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ embeds: [embed] }),
     });
-    if (!response.ok) {
-      console.error(
-        "Discord webhook failed:",
-        response.status,
-        await response.text(),
-      );
-    } else {
-      console.log("Discord notification sent.");
-    }
+    if (!response.ok)
+      console.error("Discord delete webhook failed:", response.status);
   } catch (err) {
-    console.error("Error sending Discord webhook:", err);
+    console.error("Discord delete notification error:", err);
+  }
+}
+
+async function sendDiscordDeletion(song) {
+  if (!DISCORD_WEBHOOK_URL) return;
+  try {
+    const embed = {
+      title: "🗑️ Song Deleted",
+      color: 0xff5555,
+      fields: [
+        { name: "Name", value: song.name, inline: true },
+        { name: "ID", value: String(song.id), inline: true },
+      ],
+      timestamp: new Date().toISOString(),
+      footer: { text: "Song Manager API" },
+    };
+    const response = await fetch(DISCORD_WEBHOOK_URL, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ embeds: [embed] }),
+    });
+    if (!response.ok)
+      console.error("Discord delete webhook failed:", response.status);
+  } catch (err) {
+    console.error("Discord delete notification error:", err);
   }
 }
 
@@ -155,7 +172,7 @@ app.post("/songs", requireApiKey, (req, res) => {
     writeLyrics(lyrics);
   }
 
-  sendDiscord(newSong, categoryName, lyricCount);
+  sendDiscordAddition(newSong, categoryName, lyricCount);
 
   res.status(201).json(newSong);
 });
@@ -174,14 +191,18 @@ app.put("/songs/:id", requireApiKey, (req, res) => {
 
 app.delete("/songs/:id", requireApiKey, (req, res) => {
   const id = parseInt(req.params.id);
-  let songs = readSongs();
-  const newSongs = songs.filter((s) => s.id !== id);
-  if (newSongs.length === songs.length)
+  const songs = readSongs();
+  const songToDelete = songs.find((s) => s.id === id);
+  if (!songToDelete) {
     return res.status(404).json({ error: "Song not found" });
+  }
   writeSongs(newSongs);
   const lyrics = readLyrics();
   delete lyrics[id];
   writeLyrics(lyrics);
+
+  sendDiscordDeletion(songToDelete);
+
   res.json({ message: "Deleted" });
 });
 
