@@ -196,6 +196,8 @@ app.delete("/songs/:id", requireApiKey, (req, res) => {
   if (!songToDelete) {
     return res.status(404).json({ error: "Song not found" });
   }
+  
+  const newSongs = songs.filter(s => s.id !== id);
   writeSongs(newSongs);
   const lyrics = readLyrics();
   delete lyrics[id];
