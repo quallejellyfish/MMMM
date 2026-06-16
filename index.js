@@ -135,44 +135,67 @@ app.post("/sync-github", requireApiKey, async (req, res) => {
             Accept: "application/vnd.github.v3+json",
           },
         });
-        if (getRes.ok) {
-          const data = await getRes.json;
+
+        if (getRes.status === 200) {
+          const data = await getRes.json();
           sha = data.sha;
+          console.log(`Found existing file ${path} with SHA: ${sha}`);
+        } else if (getRes.status === 404) {
+          console.log(`File ${path} does not exist yet, will create it.`);
+        } else {
+          const errText = await getRes.text();
+          throw new Error(
+            `Failed to get file info: ${getRes.status} ${errText}`,
+          );
         }
-      } catch (e) {}
+      } catch (e) {
+        if (e.message.includes("404")) {
+          console.log(`File ${path} not found, will create.`);
+        } else {
+          throw e;
+        }
+      }
+
       const body = {
         message: `Update ${path}`,
         content: base64Content,
         branch: GITHUB_BRANCH,
       };
 
-      if (sha) body.sha = sha;
+      if (sha) {
+        body.sha = sha;
+        console.log(`Updating existing file ${path} with SHA: ${sha}`);
+      } else {
+        console.log(`Creating new file ${path}`);
+      }
 
-      const putRes = await fetch(url, {
-        method: "PUT",
+const putRes = await fetch(url, {
+        method: 'PUT',
         headers: {
           Authorization: `token ${GITHUB_TOKEN}`,
-          Accept: "application/vnd.github.v3+json",
-          "Content-Type": "application/json",
+          Accept: 'application/vnd.github.v3+json',
+          'Content-Type': 'application/json'
         },
-        body: JSON.stringify(body),
+        body: JSON.stringify(body)
       });
 
       if (!putRes.ok) {
         const errText = await putRes.text();
-        throw new Error(
-          `GitHub API error for ${path}: ${putRes.status} ${errText}`,
-        );
+        console.error(`GitHub API error for ${path}:`, putRes.status, errText);
+        throw new Error(`GitHub API error for ${path}: ${putRes.status} ${errText}`);
       }
-      return putRes.json();
+      
+      const result = await putRes.json();
+      console.log(`Successfully updated ${path}, commit: ${result.commit?.sha}`);
+      return result;
     }
 
-    await updateFile('songs.json', songs);
-    await updateFile('lyrics.json', lyrics);
+    await updateFile("songs.json", songs);
+    await updateFile("lyrics.json", lyrics);
 
-    res.json({ message: 'Successfully synced to GitHub.' });
+    res.json({ message: "Successfully synced to GitHub." });
   } catch (err) {
-    console.error('GitHub sync error:', err);
+    console.error("GitHub sync error:", err);
     res.status(500).json({ error: err.message });
   }
 });
