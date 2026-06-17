@@ -263,9 +263,10 @@
               `Added: ${name} (ID: ${newSong.id})`;
           } else {
             const idNum = parseInt(editId, 10);
-            await apiRequest(`/songs/${idNum}`, "PUT", { name, url });
             if (lyricsArray.length) {
-              await apiRequest(`/songs/${idNum}/lyrics`, "PUT", {
+              await apiRequest(`/songs/${idNum}`, "PUT", {
+                name,
+                url,
                 lyrics: lyricsArray,
               });
               document.getElementById("statusMsg").innerHTML =
