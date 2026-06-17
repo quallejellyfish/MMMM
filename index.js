@@ -260,7 +260,7 @@ app.put('/songs/:id', requireApiKey, (req, res) => {
 
     if (changes.name || changes.url) {
       const newSong = { ...songs[index] };
-      sendDiscordEditNotification(oldSong, newSong, changes, oldCount, newCount).catch(err => console.error(err));
+      sendDiscordEdit(oldSong, newSong, changes, oldCount, newCount).catch(err => console.error(err));
     }
 
     res.json(songs[index]);
