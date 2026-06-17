@@ -261,19 +261,18 @@
             statusMsg.innerHTML = `✅ Added "${name}" (ID: ${newSong.id})`;
           } else {
             const idNum = parseInt(editId, 10);
-            await apiRequest(`/songs/${idNum}`, "PUT", { name, url });
-            if (lyricsArray.length) {
-              await apiRequest(`/songs/${idNum}/lyrics`, "PUT", {
-                lyrics: lyricsArray,
-                skipDiscord: true,
-              });
-            }
-            statusMsg.innerHTML = `Updated song ID ${idNum}`;
+            await apiRequest(`/songs/${idNum}`, "PUT", { name, url, categoryIndex });
+            await apiRequest(`/songs/${idNum}/lyrics`, "PUT", {
+              lyrics: lyricsArray,
+              skipDiscord: true,
+            });
+
+            statusMsg.innerHTML = `✅ Updated song ID ${idNum}`;
           }
           clearForm();
           await loadSongs();
         } catch (err) {
-          console.log("a");
+          console.error(err);
         }
       }
 
