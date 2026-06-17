@@ -264,6 +264,20 @@ app.put('/songs/:id', requireApiKey, (req, res) => {
     const oldSong = { ...songs[index] };
     const changes = { name: false, url: false, category: false };
 
+    // Track old category name
+    let oldCategoryName = 'Uncategorized';
+    let lastCategory = 'Uncategorized';
+    const songId = songs[index].id;
+    for (let i = 0; i < songs.length; i++) {
+      if (songs[i].id === 999) {
+        lastCategory = songs[i].name;
+      }
+      if (songs[i].id === songId) {
+        oldCategoryName = lastCategory;
+        break;
+      }
+    }
+
     if (name && name !== oldSong.name) {
       songs[index].name = name;
       changes.name = true;
@@ -275,27 +289,7 @@ app.put('/songs/:id', requireApiKey, (req, res) => {
 
     if (categoryIndex !== undefined && categoryIndex >= 0 && categoryIndex < CATEGORIES.length) {
       const newCategoryName = CATEGORIES[categoryIndex].name;
-      let oldCategoryName = 'Unknown';
-      for (let i = 0; i < songs.length; i++) {
-        if (songs[i].id === 999) {
-        }
-      }
-
-      let currentCategoryName = 'Uncategorized';
-      const songId = songs[index].id;
-      let lastCategory = 'Uncategorized';
-      for (let i = 0; i < songs.length; i++) {
-        if (songs[i].id === 999) {
-          lastCategory = songs[i].name;
-        }
-        if (songs[i].id === songId) {
-          currentCategoryName = lastCategory;
-          break;
-        }
-      }
-
-      const newCategoryName = CATEGORIES[categoryIndex].name;
-      if (newCategoryName !== currentCategoryName) {
+      if (newCategoryName !== oldCategoryName) {
         const songToMove = songs.splice(index, 1)[0];
         let insertIndex = songs.length;
         const foundIndex = songs.findIndex(s => s.id === 999 && s.name === newCategoryName);
@@ -304,8 +298,7 @@ app.put('/songs/:id', requireApiKey, (req, res) => {
         }
         songs.splice(insertIndex, 0, songToMove);
         changes.category = true;
-        oldSong.category = currentCategoryName;
-        newSong.category = newCategoryName;
+        oldSong.category = oldCategoryName;
       }
     }
 
@@ -318,27 +311,29 @@ app.put('/songs/:id', requireApiKey, (req, res) => {
     const newCount = oldLyrics.length;
 
     if (changes.name || changes.url || changes.category) {
-      const newSong = { ...songs[index] };
-      if (!changes.category) {
-        let currentCategory = 'Uncategorized';
-        let lastCategory = 'Uncategorized';
-        const songId = songs[index].id;
+      const newSong = { ...songs.find(s => s.id === id) };
+      if (changes.category) {
+        let newCategoryName = 'Uncategorized';
+        let lastCat = 'Uncategorized';
         for (let i = 0; i < songs.length; i++) {
           if (songs[i].id === 999) {
-            lastCategory = songs[i].name;
+            lastCat = songs[i].name;
           }
-          if (songs[i].id === songId) {
-            currentCategory = lastCategory;
+          if (songs[i].id === id) {
+            newCategoryName = lastCat;
             break;
           }
         }
-        oldSong.category = currentCategory;
-        newSong.category = currentCategory;
+        newSong.category = newCategoryName;
+        oldSong.category = oldCategoryName;
+      } else {
+        newSong.category = oldCategoryName;
+        oldSong.category = oldCategoryName;
       }
       sendDiscordEditNotification(oldSong, newSong, changes, oldCount, newCount).catch(err => console.error(err));
     }
 
-    res.json(songs[index]);
+    res.json(songs.find(s => s.id === id));
   } catch (err) {
     console.error('Error in PUT /songs:', err.stack);
     res.status(500).json({ error: err.message });
