@@ -91,7 +91,8 @@ async function sendDiscordEdit(
 ) {
   if (!DISCORD_WEBHOOK_URL) return;
   try {
-    let fields = [];
+    const fields = [];
+
     if (changes.name) {
       fields.push({
         name: "Name",
@@ -99,13 +100,15 @@ async function sendDiscordEdit(
         inline: true,
       });
     }
+
     if (changes.url) {
       fields.push({
         name: "URL",
-        value: `[old](${oldSong.url}) → [new](${newSong.url})`,
+        value: `[Old](${oldSong.url}) → [New](${newSong.url})`,
         inline: false,
       });
     }
+
     if (
       lyricsOldCount !== undefined &&
       lyricsNewCount !== undefined &&
@@ -117,19 +120,27 @@ async function sendDiscordEdit(
         inline: true,
       });
     }
-    if (fields.length === 0) return;
+
+    if (fields.length <= 1) return;
 
     const embed = {
       title: "📝 Song Updated",
       color: 0xffaa00,
-      fields: fields,
+      fields,
       timestamp: new Date().toISOString(),
-      footer: { text: `ID: ${oldSong.id}` },
+      footer: {
+        text: `Song ID: ${oldSong.id}`,
+      },
     };
-    const response = await fetch(DISCORD_WEBHOOK_URL, {
+
+    await fetch(DISCORD_WEBHOOK_URL, {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ embeds: [embed] }),
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        embeds: [embed],
+      }),
     });
     if (!response.ok)
       console.error("Discord edit webhook failed:", response.status);
@@ -288,19 +299,22 @@ app.delete("/songs/:id", requireApiKey, (req, res) => {
   res.json({ message: "Deleted" });
 });
 
-app.put('/songs/:id/lyrics', requireApiKey, (req, res) => {
+app.put("/songs/:id/lyrics", requireApiKey, (req, res) => {
   const id = parseInt(req.params.id);
   const { lyrics: lyricArray } = req.body;
   try {
-    if (!Array.isArray(lyricArray)) return res.status(400).json({ error: 'lyrics must be an array' });
+    if (!Array.isArray(lyricArray))
+      return res.status(400).json({ error: "lyrics must be an array" });
     for (let item of lyricArray) {
-      if (typeof item.chat !== 'string' || typeof item.delay !== 'number') {
-        return res.status(400).json({ error: 'Must have chat(string) and delay(number)' });
+      if (typeof item.chat !== "string" || typeof item.delay !== "number") {
+        return res
+          .status(400)
+          .json({ error: "Must have chat(string) and delay(number)" });
       }
     }
     const songs = readSongs();
-    const song = songs.find(s => s.id === id);
-    if (!song) return res.status(404).json({ error: 'Song not found' });
+    const song = songs.find((s) => s.id === id);
+    if (!song) return res.status(404).json({ error: "Song not found" });
 
     const lyrics = readLyrics();
     const oldLyrics = lyrics[id] || [];
@@ -309,17 +323,11 @@ app.put('/songs/:id/lyrics', requireApiKey, (req, res) => {
 
     lyrics[id] = lyricArray;
     writeLyrics(lyrics);
-    broadcastEvent('song-changed', { action: 'edit', songId: id });
+    broadcastEvent("song-changed", { action: "edit", songId: id });
 
-    if (oldCount !== newCount || JSON.stringify(oldLyrics) !== JSON.stringify(lyricArray)) {
-      const oldSong = { ...song };
-      const newSong = { ...song };
-      sendDiscordEdit(oldSong, newSong, {}, oldCount, newCount).catch(err => console.error(err));
-    }
-
-    res.json({ message: 'Lyrics updated' });
+    res.json({ message: "Lyrics updated" });
   } catch (err) {
-    console.error('Error in PUT /songs/:id/lyrics:', err.stack);
+    console.error("Error in PUT /songs/:id/lyrics:", err.stack);
     res.status(500).json({ error: err.message });
   }
 });
