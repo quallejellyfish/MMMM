@@ -252,32 +252,28 @@
 
         try {
           if (editId === "") {
-            //add new
             const newSong = await apiRequest("/songs", "POST", {
               name,
               url,
               lyrics: lyricsArray,
               categoryIndex,
             });
-            document.getElementById("statusMsg").innerHTML =
-              `Added: ${name} (ID: ${newSong.id})`;
+            statusMsg.innerHTML = `✅ Added "${name}" (ID: ${newSong.id})`;
           } else {
             const idNum = parseInt(editId, 10);
+            await apiRequest(`/songs/${idNum}`, "PUT", { name, url });
             if (lyricsArray.length) {
-              await apiRequest(`/songs/${idNum}`, "PUT", {
-                name,
-                url,
+              await apiRequest(`/songs/${idNum}/lyrics`, "PUT", {
                 lyrics: lyricsArray,
+                skipDiscord: true,
               });
-              document.getElementById("statusMsg").innerHTML =
-                `Updated song ID: ${editId})`;
             }
-            clearForm();
-            await loadSongs();
+            statusMsg.innerHTML = `Updated song ID ${idNum}`;
           }
+          clearForm();
+          await loadSongs();
         } catch (err) {
-          // alert("Save failed:" + err.message);
-          // console.error(err);
+          console.log("a");
         }
       }
 
