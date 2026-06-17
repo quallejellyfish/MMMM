@@ -247,7 +247,7 @@ app.post("/songs", requireApiKey, (req, res) => {
 
 app.put("/songs/:id", requireApiKey, (req, res) => {
   const id = parseInt(req.params.id);
-  const { name, url } = req.body;
+  const { name, url, lyrics: lyricArray } = req.body;
   const songs = readSongs();
   const index = songs.findIndex((s) => s.id === id);
   if (index === -1) return res.status(404).json({ error: "Song not found" });
@@ -268,9 +268,8 @@ app.put("/songs/:id", requireApiKey, (req, res) => {
   broadcastEvent("song-changed", { action: "edit", songId: id });
 
   if (changes.name || changes.url) {
-    const newSong = { ...songs[index] };
-    sendDiscordEdit(oldSong, newSong, changes).catch((err) =>
-      console.error(err),
+    sendDiscordEdit(oldSong, songs[index], changes, oldCount, newCount).catch(
+      console.error,
     );
   }
 
@@ -324,6 +323,12 @@ app.put("/songs/:id/lyrics", requireApiKey, (req, res) => {
     lyrics[id] = lyricArray;
     writeLyrics(lyrics);
     broadcastEvent("song-changed", { action: "edit", songId: id });
+
+    if (
+      oldCount !== newCount ||
+      JSON.stringify(oldLyrics) !== JSON.stringify(lyricArray)
+    ) {
+    }
 
     res.json({ message: "Lyrics updated" });
   } catch (err) {
