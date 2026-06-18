@@ -357,8 +357,9 @@
 
       let draggedRow = null;
       let dragGhost = null;
+      let dragInsertLine = null;
       let dragInitialIndex = -1;
-      let dragCurrentTargetRow = null;
+      let ghostMouseMove = null;
       async function renderTable() {
         const tbody = document.getElementById("songsTableBody");
         if (!songList.length) {
@@ -380,6 +381,10 @@
           handleCell.classList.add("drag-handle");
           handleCell.draggable = true;
 
+          const isCategory = song.id === 999;
+          handleCell.draggable = !isCategory;
+          handleCell.style.cursor = isCategory ? "default" : "grab";
+
           // credits: YouTube
           const svg = document.createElementNS(
             "http://www.w3.org/2000/svg",
@@ -396,6 +401,9 @@
           svg.style.width = "20px";
           svg.style.height = "20px";
           svg.style.margin = "0 auto";
+          if (isCategory) {
+            svg.style.opacity = "0.3";
+          }
 
           const path1 = document.createElementNS(
             "http://www.w3.org/2000/svg",
@@ -406,105 +414,143 @@
             "M20 7H4a1 1 0 000 2h16a1 1 0 100-2Zm0 8H4a1 1 0 000 2h16a1 1 0 100-2Z",
           );
           path1.style.fill = "#888";
+
           svg.appendChild(path1);
-
-          const isCategory = song.id === 999;
-          handleCell.draggable = !isCategory;
-          handleCell.style.cursor = isCategory ? "default" : "grab";
-          if (isCategory) {
-            svg.style.opacity = "0.3";
-          }
-
           handleCell.appendChild(svg);
 
-          handleCell.addEventListener(
-            "dragstart",
-            (e) => {
-              draggedRow = row;
-              dragInitialIndex = parseInt(row.dataset.index);
-              e.dataTransfer.effectAllowed = "move";
-              e.dataTransfer.setData("text/plain", String(dragInitialIndex));
-              const ghost = row.cloneNode(true);
-              ghost.style.position = "fixed";
-              ghost.style.pointerEvents = "none";
-              ghost.style.opacity = "0.6";
-              ghost.style.transform = "scale(0.95)";
-              ghost.style.width = row.offsetWidth + "px";
-              ghost.style.background = "#2d2d3a";
-              ghost.style.border = "2px solid #ff79c6";
-              ghost.style.borderRadius = "8px";
-              ghost.style.zIndex = "9999";
-              document.body.appendChild(ghost);
-              dragGhost = ghost;
-              const rect = row.getBoundingClientRect();
-              ghost.style.top = rect.top + "px";
-              ghost.style.left = rect.left + "px";
-              row.style.opacity = "0.3";
-              document
-                .querySelectorAll(".drag-over")
-                .forEach((el) => el.classList.remove("drag-over"));
-            },
-            true,
-          );
-
-          document.addEventListener("dragover", (e) => {
-            if (dragGhost) {
-              dragGhost.style.top = e.clientY - 20 + "px";
-              dragGhost.style.left = e.clientX - 40 + "px";
+          handleCell.addEventListener("dragstart", (e) => {
+            if (isCategory) {
+              e.preventDefault();
+              return;
             }
+            draggedRow = row;
+            dragInitialIndex = parseInt(row.dataset.index);
+            e.dataTransfer.effectAllowed = "move";
+            e.dataTransfer.setData("text/plain", String(dragInitialIndex));
+
+            const ghost = row.cloneNode(true);
+            ghost.style.position = "fixed";
+            ghost.style.pointerEvents = "none";
+            ghost.style.opacity = "0.6";
+            ghost.style.transform = "scale(0.95)";
+            ghost.style.width = row.offsetWidth + "px";
+            ghost.style.background = "#2d2d3a";
+            ghost.style.border = "2px solid #ff79c6";
+            ghost.style.borderRadius = "8px";
+            ghost.style.zIndex = "9999";
+            ghost.style.boxShadow = "0 8px 32px rgba(0,0,0,0.4)";
+            document.body.appendChild(ghost);
+            dragGhost = ghost;
+
+            const rect = row.getBoundingClientRect();
+            ghost.style.top = e.clientY - 20 + "px";
+            ghost.style.left = e.clientX - 40 + "px";
+
+            row.style.opacity = "0.3";
+
+            if (dragInsertLine) {
+              dragInsertLine.remove();
+              dragInsertLine = null;
+            }
+
+            if (ghostMouseMove) {
+              document.removeEventListener("mousemove", ghostMouseMove);
+              ghostMouseMove = null;
+            }
+
+            ghostMouseMove = (ev) => {
+              if (dragGhost) {
+                dragGhost.style.top = ev.clientY - 20 + "px";
+                dragGhost.style.left = ev.clientX - 40 + "px";
+              }
+            };
+            document.addEventListener("mousemove", ghostMouseMove);
           });
 
-          handleCell.addEventListener(
-            "dragend",
-            () => {
-              if (dragGhost) {
-                document.body.removeChild(dragGhost);
-                dragGhost = null;
-              }
-              document.querySelectorAll("tr").forEach((tr) => {
-                tr.style.opacity = "1";
-                tr.classList.remove("drag-over");
-              });
-              if (draggedRow) {
-                draggedRow.style.opacity = "1";
-                draggedRow = null;
-              }
-              dragInitialIndex = -1;
-              dragCurrentTargetRow = null;
-            },
-            true,
-          );
+          handleCell.addEventListener("dragend", () => {
+            if (dragGhost) {
+              document.body.removeChild(dragGhost);
+              dragGhost = null;
+            }
+            if (dragInsertLine) {
+              dragInsertLine.remove();
+              dragInsertLine = null;
+            }
+            if (ghostMouseMove) {
+              document.removeEventListener("mousemove", ghostMouseMove);
+              ghostMouseMove = null;
+            }
+            document.querySelectorAll("tr").forEach((tr) => {
+              tr.style.opacity = "1";
+              tr.classList.remove("drag-over");
+            });
+            if (draggedRow) {
+              draggedRow.style.opacity = "1";
+              draggedRow = null;
+            }
+            dragInitialIndex = -1;
+          });
 
           row.addEventListener("dragover", (e) => {
             e.preventDefault();
             e.dataTransfer.dropEffect = "move";
-            document
-              .querySelectorAll(".drag-over")
-              .forEach((el) => el.classList.remove("drag-over"));
-            if (draggedRow && draggedRow !== row) {
-              row.classList.add("drag-over");
-              dragCurrentTargetRow = row;
+            if (!draggedRow || draggedRow === row) return;
+
+            const rect = row.getBoundingClientRect();
+            const mid = rect.top + rect.height / 2;
+            const insertAbove = e.clientY < mid;
+
+            if (dragInsertLine) {
+              dragInsertLine.remove();
+              dragInsertLine = null;
             }
+            const line = document.createElement("div");
+            line.style.position = "fixed";
+            line.style.height = "2px";
+            line.style.backgroundColor = "#ff79c6";
+            line.style.left = rect.left + "px";
+            line.style.width = rect.width + "px";
+            line.style.zIndex = "9998";
+            if (insertAbove) {
+              line.style.top = rect.top - 1 + "px";
+            } else {
+              line.style.top = rect.bottom - 1 + "px";
+            }
+            document.body.appendChild(line);
+            dragInsertLine = line;
+
+            row.dataset.insertAbove = insertAbove ? "true" : "false";
           });
 
-          row.addEventListener("dragleave", () => {
-            row.classList.remove("drag-over");
-            if (dragCurrentTargetRow === row) {
-              dragCurrentTargetRow = null;
+          row.addEventListener("dragleave", (e) => {
+            if (dragInsertLine && !row.contains(e.relatedTarget)) {
+              dragInsertLine.remove();
+              dragInsertLine = null;
             }
           });
 
           row.addEventListener("drop", async (e) => {
             e.preventDefault();
-            row.classList.remove("drag-over");
-            if (dragCurrentTargetRow === row) {
-              dragCurrentTargetRow = null;
+            if (dragInsertLine) {
+              dragInsertLine.remove();
+              dragInsertLine = null;
             }
+
             if (!draggedRow || draggedRow === row) return;
 
             const fromIndex = parseInt(draggedRow.dataset.index);
             const toIndex = parseInt(row.dataset.index);
             if (fromIndex === toIndex) return;
+
+            const insertAbove = row.dataset.insertAbove === "true";
+            let targetIndex = toIndex;
+            if (!insertAbove) {
+              targetIndex = toIndex + 1;
+            }
+            let newIndex = targetIndex;
+            if (fromIndex < newIndex) {
+              newIndex = targetIndex - 1;
+            }
 
             const [movedSong] = songList.splice(fromIndex, 1);
             songList.splice(toIndex, 0, movedSong);
