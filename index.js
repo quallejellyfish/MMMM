@@ -207,29 +207,23 @@ app.get("/songs/:id/lyrics", (req, res) => {
 });
 
 // PROTECTED
-app.put("/songs/reorder", requireApiKey, (req, res) => {
+app.put('/songs/reorder', requireApiKey, (req, res) => {
   try {
-    console.log('Received reorder request body:', req.body);
     const { songs: newSongs } = req.body;
     if (!Array.isArray(newSongs)) {
-      return res.status(400).json({ error: "songs must be an array" });
+      return res.status(400).json({ error: 'songs must be an array' });
     }
-
     for (let s of newSongs) {
-      if (typeof s.id !== "number" || typeof s.name !== "string") {
-        return res
-          .status(400)
-          .json({ error: "each song must have an id and name" });
+      if (typeof s.id !== 'number' || typeof s.name !== 'string') {
+        return res.status(400).json({ error: 'each song must have id and name' });
       }
     }
-
-    writeSongs();
-    console.log("Songs reordered successfully.");
-    broadcastEvent("song-changed", { action: "reorder" });
-    res.json({ message: "Order updated!" });
+    writeSongs(newSongs);
+    broadcastEvent('song-changed', { action: 'reorder' });
+    res.json({ message: 'Order updated!' });
   } catch (err) {
-    console.error("Error in /songs/reorder:", err.stack);
-    res.status(500).json({ error: err.message, stack: err.stack });
+    console.error('Error in /songs/reorder:', err.stack);
+    res.status(500).json({ error: err.message });
   }
 });
 
