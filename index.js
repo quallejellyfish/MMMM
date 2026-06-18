@@ -83,7 +83,7 @@ async function sendDiscordDeletion(song) {
   }
 }
 
-async function sendDiscordEditNotification(
+async function sendDiscordEdit(
   oldSong,
   newSong,
   changes,
@@ -253,20 +253,20 @@ app.post("/songs", requireApiKey, (req, res) => {
   res.status(201).json(newSong);
 });
 
-app.put('/songs/:id', requireApiKey, (req, res) => {
+app.put("/songs/:id", requireApiKey, (req, res) => {
   const id = parseInt(req.params.id);
   const { name, url, categoryIndex } = req.body;
   try {
     const songs = readSongs();
-    const index = songs.findIndex(s => s.id === id);
-    if (index === -1) return res.status(404).json({ error: 'Song not found' });
+    const index = songs.findIndex((s) => s.id === id);
+    if (index === -1) return res.status(404).json({ error: "Song not found" });
 
     const oldSong = { ...songs[index] };
     const changes = { name: false, url: false, category: false };
 
     // Track old category name
-    let oldCategoryName = 'Uncategorized';
-    let lastCategory = 'Uncategorized';
+    let oldCategoryName = "Uncategorized";
+    let lastCategory = "Uncategorized";
     const songId = songs[index].id;
     for (let i = 0; i < songs.length; i++) {
       if (songs[i].id === 999) {
@@ -287,12 +287,18 @@ app.put('/songs/:id', requireApiKey, (req, res) => {
       changes.url = true;
     }
 
-    if (categoryIndex !== undefined && categoryIndex >= 0 && categoryIndex < CATEGORIES.length) {
+    if (
+      categoryIndex !== undefined &&
+      categoryIndex >= 0 &&
+      categoryIndex < CATEGORIES.length
+    ) {
       const newCategoryName = CATEGORIES[categoryIndex].name;
       if (newCategoryName !== oldCategoryName) {
         const songToMove = songs.splice(index, 1)[0];
         let insertIndex = songs.length;
-        const foundIndex = songs.findIndex(s => s.id === 999 && s.name === newCategoryName);
+        const foundIndex = songs.findIndex(
+          (s) => s.id === 999 && s.name === newCategoryName,
+        );
         if (foundIndex !== -1) {
           insertIndex = foundIndex + 1;
         }
@@ -303,7 +309,7 @@ app.put('/songs/:id', requireApiKey, (req, res) => {
     }
 
     writeSongs(songs);
-    broadcastEvent('song-changed', { action: 'edit', songId: id });
+    broadcastEvent("song-changed", { action: "edit", songId: id });
 
     const lyrics = readLyrics();
     const oldLyrics = lyrics[id] || [];
@@ -311,10 +317,10 @@ app.put('/songs/:id', requireApiKey, (req, res) => {
     const newCount = oldLyrics.length;
 
     if (changes.name || changes.url || changes.category) {
-      const newSong = { ...songs.find(s => s.id === id) };
+      const newSong = { ...songs.find((s) => s.id === id) };
       if (changes.category) {
-        let newCategoryName = 'Uncategorized';
-        let lastCat = 'Uncategorized';
+        let newCategoryName = "Uncategorized";
+        let lastCat = "Uncategorized";
         for (let i = 0; i < songs.length; i++) {
           if (songs[i].id === 999) {
             lastCat = songs[i].name;
@@ -330,12 +336,18 @@ app.put('/songs/:id', requireApiKey, (req, res) => {
         newSong.category = oldCategoryName;
         oldSong.category = oldCategoryName;
       }
-      sendDiscordEditNotification(oldSong, newSong, changes, oldCount, newCount).catch(err => console.error(err));
+      sendDiscordEditNotification(
+        oldSong,
+        newSong,
+        changes,
+        oldCount,
+        newCount,
+      ).catch((err) => console.error(err));
     }
 
-    res.json(songs.find(s => s.id === id));
+    res.json(songs.find((s) => s.id === id));
   } catch (err) {
-    console.error('Error in PUT /songs:', err.stack);
+    console.error("Error in PUT /songs:", err.stack);
     res.status(500).json({ error: err.message });
   }
 });
@@ -371,11 +383,9 @@ app.put("/songs/:id/lyrics", requireApiKey, (req, res) => {
     }
     for (let item of lyricArray) {
       if (typeof item.chat !== "string" || typeof item.delay !== "number") {
-        return res
-          .status(400)
-          .json({
-            error: "Each lyric must have chat(string) and delay(number)",
-          });
+        return res.status(400).json({
+          error: "Each lyric must have chat(string) and delay(number)",
+        });
       }
     }
 
@@ -414,6 +424,25 @@ app.put("/songs/:id/lyrics", requireApiKey, (req, res) => {
     console.error("Error in PUT /songs/:id/lyrics:", err.stack);
     res.status(500).json({ error: err.message });
   }
+});
+
+app.put("/songs/reorder", requireApiKey, (req, res) => {
+  const { songs: newSongs } = req.body;
+  if (!Array.isArray(newSongs)) {
+    return res.status(400).json({ error: "songs must be an array" });
+  }
+
+  for (let s of newSongs) {
+    if (typeof s.id !== "number" || typeof s.name !== "string") {
+      return res
+        .status(400)
+        .json({ error: "each song must have an id and name" });
+    }
+  }
+
+  writeSongs();
+  broadcastEvent("song-changed", { action: "reorder" });
+  res.json({ message: "Order updated!" });
 });
 
 // GITHUB
