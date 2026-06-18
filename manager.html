@@ -506,15 +506,15 @@
             const toIndex = parseInt(row.dataset.index);
             if (fromIndex === toIndex) return;
 
-            const [movedSong] = songlist.splice(fromIndex, 1);
-            songlist.splice(toIndex, 0, movedSong);
+            const [movedSong] = songList.splice(fromIndex, 1);
+            songList.splice(toIndex, 0, movedSong);
 
             try {
-              await apiRequest("/songs/reorder", "PUT", { songs: songlist });
+              await apiRequest("/songs/reorder", "PUT", { songs: songList });
               document.getElementById("statusMsg").innerHTML =
                 "Reordered songs";
               renderTable();
-              songsHash = JSON.stringify(songlist);
+              songsHash = JSON.stringify(songList);
             } catch (err) {
               alert("Reorder failed: " + err.message);
               await loadSongs();
