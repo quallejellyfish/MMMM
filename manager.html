@@ -93,20 +93,19 @@
         border-radius: 12px;
         overflow-x: auto;
       }
-      .drag-handle {
-        cursor: grab;
-        font-size: 18px;
-        color: #888;
-      }
-      .drag-handle:hover {
-        color: #fff;
+      .drag-handle:hover svg path {
+        fill: #fff !important;
       }
       tr.drag-over {
-        border-top: 2px solid #ff79c6;
-        background: rgba(255, 121, 198, 0.1);
+        border-top: 3px solid #ff79c6;
+        background: rgba(255, 121, 198, 0.08);
       }
-      tr.dragging {
-        opacity: 0.5;
+      .drag-ghost {
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+        border: 2px solid #ff79c6 !important;
+      }
+      #songsTableBody tr {
+        transition: opacity 0.15s ease;
       }
     </style>
   </head>
@@ -221,7 +220,7 @@
           const res = await fetch(url);
           if (!res.ok) throw new Error(await res.text());
           songList = await res.json();
-          songsHash = JSON.stringify(songList)
+          songsHash = JSON.stringify(songList);
           renderTable();
           document.getElementById("statusMsg").innerHTML =
             `Loaded ${songList.length} songs`;
@@ -357,6 +356,9 @@
       }
 
       let draggedRow = null;
+      let dragGhost = null;
+      let dragInitialIndex = -1;
+      let dragCurrentTargetRow = null;
       async function renderTable() {
         const tbody = document.getElementById("songsTableBody");
         if (!songList.length) {
@@ -378,53 +380,136 @@
           handleCell.classList.add("drag-handle");
           handleCell.draggable = true;
 
-          row.addEventListener("dragstart", (e) => {
-            draggedRow = row;
-            e.dataTransfer.effectedAllowed = "move";
-            e.dataTransfer.setData("text/plain", String(i));
-            row.style.opacity = "0.5";
+          // credits: YouTube
+          const svg = document.createElementNS(
+            "http://www.w3.org/2000/svg",
+            "svg",
+          );
+          svg.setAttribute("xmlns", "http://www.w3.org/2000/svg");
+          svg.setAttribute("height", "24");
+          svg.setAttribute("viewBox", "0 0 24 24");
+          svg.setAttribute("width", "24");
+          svg.setAttribute("focusable", "false");
+          svg.setAttribute("aria-hidden", "true");
+          svg.style.pointerEvents = "none";
+          svg.style.display = "block";
+          svg.style.width = "20px";
+          svg.style.height = "20px";
+          svg.style.margin = "0 auto";
+
+          const path1 = document.createElementNS(
+            "http://www.w3.org/2000/svg",
+            "path",
+          );
+          path1.setAttribute(
+            "d",
+            "M20 7H4a1 1 0 000 2h16a1 1 0 100-2Zm0 8H4a1 1 0 000 2h16a1 1 0 100-2Z",
+          );
+          path1.style.fill = "#888";
+          svg.appendChild(path1);
+
+          handleCell.appendChild(svg);
+
+          handleCell.addEventListener(
+            "dragstart",
+            (e) => {
+              draggedRow = row;
+              dragInitialIndex = parseInt(row.dataset.index);
+              e.dataTransfer.effectAllowed = "move";
+              e.dataTransfer.setData("text/plain", String(dragInitialIndex));
+              const ghost = row.cloneNode(true);
+              ghost.style.position = "fixed";
+              ghost.style.pointerEvents = "none";
+              ghost.style.opacity = "0.6";
+              ghost.style.transform = "scale(0.95)";
+              ghost.style.width = row.offsetWidth + "px";
+              ghost.style.background = "#2d2d3a";
+              ghost.style.border = "2px solid #ff79c6";
+              ghost.style.borderRadius = "8px";
+              ghost.style.zIndex = "9999";
+              document.body.appendChild(ghost);
+              dragGhost = ghost;
+              const rect = row.getBoundingClientRect();
+              ghost.style.top = rect.top + "px";
+              ghost.style.left = rect.left + "px";
+              row.style.opacity = "0.3";
+              document
+                .querySelectorAll(".drag-over")
+                .forEach((el) => el.classList.remove("drag-over"));
+            },
+            true,
+          );
+
+          document.addEventListener("dragover", (e) => {
+            if (dragGhost) {
+              dragGhost.style.top = e.clientY - 20 + "px";
+              dragGhost.style.left = e.clientX - 40 + "px";
+            }
           });
 
-          row.addEventListener("dragend", (e) => {
-            row.style.opacity = "1";
-            document
-              .querySelector("tr.drag-over")
-              .forEach((el) => el.classList.remove("drag-over"));
-          });
+          handleCell.addEventListener(
+            "dragend",
+            () => {
+              if (dragGhost) {
+                document.body.removeChild(dragGhost);
+                dragGhost = null;
+              }
+              document.querySelectorAll("tr").forEach((tr) => {
+                tr.style.opacity = "1";
+                tr.classList.remove("drag-over");
+              });
+              if (draggedRow) {
+                draggedRow.style.opacity = "1";
+                draggedRow = null;
+              }
+              dragInitialIndex = -1;
+              dragCurrentTargetRow = null;
+            },
+            true,
+          );
 
           row.addEventListener("dragover", (e) => {
             e.preventDefault();
-            e.dataTransfer.droppEffect = "move";
+            e.dataTransfer.dropEffect = "move";
             document
-              .querySelector("tr.drag-over")
+              .querySelectorAll(".drag-over")
               .forEach((el) => el.classList.remove("drag-over"));
-            row.classList.add("drag-over");
+            if (draggedRow && draggedRow !== row) {
+              row.classList.add("drag-over");
+              dragCurrentTargetRow = row;
+            }
           });
 
           row.addEventListener("dragleave", () => {
             row.classList.remove("drag-over");
+            if (dragCurrentTargetRow === row) {
+              dragCurrentTargetRow = null;
+            }
           });
 
           row.addEventListener("drop", async (e) => {
             e.preventDefault();
             row.classList.remove("drag-over");
+            if (dragCurrentTargetRow === row) {
+              dragCurrentTargetRow = null;
+            }
             if (!draggedRow || draggedRow === row) return;
 
             const fromIndex = parseInt(draggedRow.dataset.index);
             const toIndex = parseInt(row.dataset.index);
             if (fromIndex === toIndex) return;
 
-            const [movedSong] = songList.splice(fromIndex, 1);
-            songList.splice(toIndex, 0, movedSong);
+            const [movedSong] = songsList.splice(fromIndex, 1);
+            songsList.splice(toIndex, 0, movedSong);
 
             try {
-              await apiRequest("/songs/reorder", "PUT", { songs: songList });
+              await apiRequest("/songs/reorder", "PUT", { songs: songsList });
               document.getElementById("statusMsg").innerHTML =
                 "Reordered songs";
               renderTable();
-              songsHash = JSON.stringify(songList);
+              songsHash = JSON.stringify(songsList);
             } catch (err) {
-              alert("reorder failed: " + err.message);
+              alert("Reorder failed: " + err.message);
               await loadSongs();
             }
           });
