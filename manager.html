@@ -355,7 +355,7 @@
         document.getElementById("lyrics").value = "";
         document.getElementById("categorySelect").value = 0;
       }
-      
+
       let draggedRow = null;
       async function renderTable() {
         const tbody = document.getElementById("songsTableBody");
@@ -367,8 +367,8 @@
         for (let i = 0; i < songList.length; i++) {
           const song = songList[i];
           const row = tbody.insertRow();
-          row.dataset.index = index;
-          row.dataset.id = id;
+          row.dataset.index = i;
+          row.dataset.id = song.id;
 
           const handleCell = row.insertCell(0);
           handleCell.style.cursor = "grab";
