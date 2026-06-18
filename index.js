@@ -207,6 +207,25 @@ app.get("/songs/:id/lyrics", (req, res) => {
 });
 
 // PROTECTED
+app.put("/songs/reorder", requireApiKey, (req, res) => {
+  const { songs: newSongs } = req.body;
+  if (!Array.isArray(newSongs)) {
+    return res.status(400).json({ error: "songs must be an array" });
+  }
+
+  for (let s of newSongs) {
+    if (typeof s.id !== "number" || typeof s.name !== "string") {
+      return res
+        .status(400)
+        .json({ error: "each song must have an id and name" });
+    }
+  }
+
+  writeSongs();
+  broadcastEvent("song-changed", { action: "reorder" });
+  res.json({ message: "Order updated!" });
+});
+
 app.post("/songs", requireApiKey, (req, res) => {
   const { name, url, lyrics: lyricArray, categoryIndex } = req.body;
   if (!name || !url) {
@@ -251,25 +270,6 @@ app.post("/songs", requireApiKey, (req, res) => {
   broadcastEvent("song-changed", { action: "add", songId: newId });
 
   res.status(201).json(newSong);
-});
-
-app.put("/songs/reorder", requireApiKey, (req, res) => {
-  const { songs: newSongs } = req.body;
-  if (!Array.isArray(newSongs)) {
-    return res.status(400).json({ error: "songs must be an array" });
-  }
-
-  for (let s of newSongs) {
-    if (typeof s.id !== "number" || typeof s.name !== "string") {
-      return res
-        .status(400)
-        .json({ error: "each song must have an id and name" });
-    }
-  }
-
-  writeSongs();
-  broadcastEvent("song-changed", { action: "reorder" });
-  res.json({ message: "Order updated!" });
 });
 
 app.put("/songs/:id", requireApiKey, (req, res) => {
