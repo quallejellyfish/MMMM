@@ -359,7 +359,9 @@
       let dragGhost = null;
       let dragInsertLine = null;
       let dragInitialIndex = -1;
-      let ghostMouseMove = null;
+      let ghostOffsetX = 0;
+      let ghostOffsetY = 0;
+      let dragUpdateListener = null;
       async function renderTable() {
         const tbody = document.getElementById("songsTableBody");
         if (!songList.length) {
@@ -428,10 +430,14 @@
             e.dataTransfer.effectAllowed = "move";
             e.dataTransfer.setData("text/plain", String(dragInitialIndex));
 
+            const rect = row.getBoundingClientRect();
+            ghostOffsetX = e.clientX - rect.left;
+            ghostOffsetY = e.clientY - rect.top;
+
             const ghost = row.cloneNode(true);
             ghost.style.position = "fixed";
             ghost.style.pointerEvents = "none";
-            ghost.style.opacity = "0.6";
+            ghost.style.opacity = "0.7";
             ghost.style.transform = "scale(0.95)";
             ghost.style.width = row.offsetWidth + "px";
             ghost.style.background = "#2d2d3a";
@@ -439,12 +445,10 @@
             ghost.style.borderRadius = "8px";
             ghost.style.zIndex = "9999";
             ghost.style.boxShadow = "0 8px 32px rgba(0,0,0,0.4)";
+            ghost.style.top = e.clientY - ghostOffsetY + "px";
+            ghost.style.left = e.clientX - ghostOffsetX + "px";
             document.body.appendChild(ghost);
             dragGhost = ghost;
-
-            const rect = row.getBoundingClientRect();
-            ghost.style.top = e.clientY - 20 + "px";
-            ghost.style.left = e.clientX - 40 + "px";
 
             row.style.opacity = "0.3";
 
@@ -453,18 +457,18 @@
               dragInsertLine = null;
             }
 
-            if (ghostMouseMove) {
-              document.removeEventListener("mousemove", ghostMouseMove);
-              ghostMouseMove = null;
+            if (dragUpdateListener) {
+              document.removeEventListener("drag", dragUpdateListener);
+              dragUpdateListener = null;
             }
 
-            ghostMouseMove = (ev) => {
+            dragUpdateListener = (ev) => {
               if (dragGhost) {
-                dragGhost.style.top = ev.clientY - 20 + "px";
-                dragGhost.style.left = ev.clientX - 40 + "px";
+                dragGhost.style.top = ev.clientY - ghostOffsetY + "px";
+                dragGhost.style.left = ev.clientX - ghostOffsetX + "px";
               }
             };
-            document.addEventListener("mousemove", ghostMouseMove);
+            document.addEventListener("drag", dragUpdateListener);
           });
 
           handleCell.addEventListener("dragend", () => {
@@ -511,6 +515,7 @@
             line.style.left = rect.left + "px";
             line.style.width = rect.width + "px";
             line.style.zIndex = "9998";
+            line.style.pointerEvents = "none";
             if (insertAbove) {
               line.style.top = rect.top - 1 + "px";
             } else {
