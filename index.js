@@ -253,6 +253,25 @@ app.post("/songs", requireApiKey, (req, res) => {
   res.status(201).json(newSong);
 });
 
+app.put("/songs/reorder", requireApiKey, (req, res) => {
+  const { songs: newSongs } = req.body;
+  if (!Array.isArray(newSongs)) {
+    return res.status(400).json({ error: "songs must be an array" });
+  }
+
+  for (let s of newSongs) {
+    if (typeof s.id !== "number" || typeof s.name !== "string") {
+      return res
+        .status(400)
+        .json({ error: "each song must have an id and name" });
+    }
+  }
+
+  writeSongs();
+  broadcastEvent("song-changed", { action: "reorder" });
+  res.json({ message: "Order updated!" });
+});
+
 app.put("/songs/:id", requireApiKey, (req, res) => {
   const id = parseInt(req.params.id);
   const { name, url, categoryIndex } = req.body;
@@ -424,25 +443,6 @@ app.put("/songs/:id/lyrics", requireApiKey, (req, res) => {
     console.error("Error in PUT /songs/:id/lyrics:", err.stack);
     res.status(500).json({ error: err.message });
   }
-});
-
-app.put("/songs/reorder", requireApiKey, (req, res) => {
-  const { songs: newSongs } = req.body;
-  if (!Array.isArray(newSongs)) {
-    return res.status(400).json({ error: "songs must be an array" });
-  }
-
-  for (let s of newSongs) {
-    if (typeof s.id !== "number" || typeof s.name !== "string") {
-      return res
-        .status(400)
-        .json({ error: "each song must have an id and name" });
-    }
-  }
-
-  writeSongs();
-  broadcastEvent("song-changed", { action: "reorder" });
-  res.json({ message: "Order updated!" });
 });
 
 // GITHUB
