@@ -480,9 +480,9 @@
               dragInsertLine.remove();
               dragInsertLine = null;
             }
-            if (ghostMouseMove) {
-              document.removeEventListener("mousemove", ghostMouseMove);
-              ghostMouseMove = null;
+            if (dragUpdateListener) {
+              document.removeEventListener("drag", dragUpdateListener);
+              dragUpdateListener = null;
             }
             document.querySelectorAll("tr").forEach((tr) => {
               tr.style.opacity = "1";
