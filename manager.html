@@ -362,6 +362,7 @@
       let isDragging = false;
       let ghostOffsetX = 0;
       let ghostOffsetY = 0;
+      let lyricCache = {};
 
       async function renderTable() {
         const tbody = document.getElementById("songsTableBody");
@@ -370,6 +371,8 @@
           return;
         }
         tbody.innerHTML = "";
+
+        lyricCache = {};
 
         for (let i = 0; i < songList.length; i++) {
           const song = songList[i];
@@ -510,38 +513,26 @@
           async function onDragEnd(e) {
             if (!isDragging) return;
             isDragging = false;
-
             document.removeEventListener("mousemove", onDragMove);
             document.removeEventListener("mouseup", onDragEnd);
-
             if (dragGhost) {
               document.body.removeChild(dragGhost);
               dragGhost = null;
             }
-
             let targetRow = null;
             if (dragInsertLine) {
               const dropTarget = document.elementFromPoint(
                 e.clientX,
                 e.clientY,
               );
-              if (dropTarget) {
-                targetRow = dropTarget.closest("tr");
-              }
-            }
-
-            if (dragInsertLine) {
+              if (dropTarget) targetRow = dropTarget.closest("tr");
               dragInsertLine.remove();
               dragInsertLine = null;
             }
-
-            document.querySelectorAll("tr").forEach((tr) => {
-              tr.style.opacity = "1";
-              tr.classList.remove("drag-over");
-            });
-            if (draggedRow) {
-              draggedRow.style.opacity = "1";
-            }
+            document
+              .querySelectorAll("tr")
+              .forEach((tr) => (tr.style.opacity = "1"));
+            if (draggedRow) draggedRow.style.opacity = "1";
 
             if (targetRow && targetRow !== draggedRow) {
               const fromIndex = parseInt(draggedRow.dataset.index);
@@ -549,34 +540,44 @@
               if (fromIndex !== toIndex) {
                 const insertAbove = targetRow.dataset.insertAbove === "true";
                 let targetIndex = toIndex;
-                if (!insertAbove) {
-                  targetIndex = toIndex + 1;
-                }
+                if (!insertAbove) targetIndex = toIndex + 1;
                 let newIndex = targetIndex;
-                if (fromIndex < newIndex) {
-                  newIndex = targetIndex - 1;
+                if (fromIndex < newIndex) newIndex = targetIndex - 1;
+
+                if (newIndex < fromIndex) {
+                  targetRow.parentNode.insertBefore(draggedRow, targetRow);
+                } else {
+                  const nextRow = targetRow.nextSibling;
+                  if (nextRow) {
+                    targetRow.parentNode.insertBefore(draggedRow, nextRow);
+                  } else {
+                    targetRow.parentNode.appendChild(draggedRow);
+                  }
                 }
 
                 const [movedSong] = songList.splice(fromIndex, 1);
                 songList.splice(newIndex, 0, movedSong);
 
+                document
+                  .querySelectorAll("#songsTableBody tr")
+                  .forEach((row, idx) => {
+                    row.dataset.index = idx;
+                  });
+
                 try {
                   await apiRequest("/songs/reorder", "PUT", {
                     songs: songList,
                   });
-                  document.getElementById("statusMsg").innerHTML =
-                    "✅ Reordered songs";
-                  renderTable();
                   songsHash = JSON.stringify(songList);
+                  document.getElementById("statusMsg").innerHTML =
+                    "Reordered songs";
                 } catch (err) {
                   alert("Reorder failed: " + err.message);
                   await loadSongs();
                 }
               }
             }
-
             draggedRow = null;
-            dragInitialIndex = -1;
             dragInsertLine = null;
           }
 
@@ -588,11 +589,18 @@
           const cellLyrics = row.insertCell(4);
           cellLyrics.textContent = "...";
           (async () => {
+            if (lyricCache[song.id]) {
+              cellLyrics.textContent = lyricCache[song.id];
+              return;
+            }
             try {
               const lyrics = await loadLyrics(song.id);
-              cellLyrics.textContent = `${lyrics.length} lines`;
+              const count = lyrics.length;
+              lyricCache[song.id] = `${count} lines`;
+              cellLyrics.textContent = lyricCache[song.id];
             } catch (e) {
               cellLyrics.textContent = "0 lines";
+              lyricCache[song.id] = "0 lines";
             }
           })();
 
