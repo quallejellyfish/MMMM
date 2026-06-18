@@ -408,6 +408,13 @@
           path1.style.fill = "#888";
           svg.appendChild(path1);
 
+          const isCategory = song.id === 999;
+          handleCell.draggable = !isCategory;
+          handleCell.style.cursor = isCategory ? "default" : "grab";
+          if (isCategory) {
+            svg.style.opacity = "0.3";
+          }
+
           handleCell.appendChild(svg);
 
           handleCell.addEventListener(
@@ -499,15 +506,15 @@
             const toIndex = parseInt(row.dataset.index);
             if (fromIndex === toIndex) return;
 
-            const [movedSong] = songList.splice(fromIndex, 1);
-            songList.splice(toIndex, 0, movedSong);
+            const [movedSong] = songlist.splice(fromIndex, 1);
+            songlist.splice(toIndex, 0, movedSong);
 
             try {
-              await apiRequest("/songs/reorder", "PUT", { songs: songList });
+              await apiRequest("/songs/reorder", "PUT", { songs: songlist });
               document.getElementById("statusMsg").innerHTML =
                 "Reordered songs";
               renderTable();
-              songsHash = JSON.stringify(songList);
+              songsHash = JSON.stringify(songlist);
             } catch (err) {
               alert("Reorder failed: " + err.message);
               await loadSongs();
