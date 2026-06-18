@@ -359,9 +359,10 @@
       let dragGhost = null;
       let dragInsertLine = null;
       let dragInitialIndex = -1;
+      let isDragging = false;
       let ghostOffsetX = 0;
       let ghostOffsetY = 0;
-      let dragUpdateListener = null;
+
       async function renderTable() {
         const tbody = document.getElementById("songsTableBody");
         if (!songList.length) {
@@ -369,25 +370,22 @@
           return;
         }
         tbody.innerHTML = "";
+
         for (let i = 0; i < songList.length; i++) {
           const song = songList[i];
           const row = tbody.insertRow();
           row.dataset.index = i;
           row.dataset.id = song.id;
 
+          const isCategory = song.id === 999;
+
           const handleCell = row.insertCell(0);
-          handleCell.style.cursor = "grab";
+          handleCell.style.cursor = isCategory ? "default" : "grab";
           handleCell.style.textAlign = "center";
           handleCell.style.userSelect = "none";
-          handleCell.style.textContent = "二";
-          handleCell.classList.add("drag-handle");
-          handleCell.draggable = true;
+          handleCell.style.width = "30px";
+          handleCell.style.verticalAlign = "middle";
 
-          const isCategory = song.id === 999;
-          handleCell.draggable = !isCategory;
-          handleCell.style.cursor = isCategory ? "default" : "grab";
-
-          // credits: YouTube
           const svg = document.createElementNS(
             "http://www.w3.org/2000/svg",
             "svg",
@@ -403,9 +401,7 @@
           svg.style.width = "20px";
           svg.style.height = "20px";
           svg.style.margin = "0 auto";
-          if (isCategory) {
-            svg.style.opacity = "0.3";
-          }
+          if (isCategory) svg.style.opacity = "0.3";
 
           const path1 = document.createElementNS(
             "http://www.w3.org/2000/svg",
@@ -415,92 +411,76 @@
             "d",
             "M20 7H4a1 1 0 000 2h16a1 1 0 100-2Zm0 8H4a1 1 0 000 2h16a1 1 0 100-2Z",
           );
-          path1.style.fill = "#888";
-
+          path1.style.fill = isCategory ? "#666" : "#888";
           svg.appendChild(path1);
           handleCell.appendChild(svg);
 
-          handleCell.addEventListener("dragstart", (e) => {
-            if (isCategory) {
+          if (!isCategory) {
+            handleCell.addEventListener("mousedown", (e) => {
+              if (e.button !== 0) return;
               e.preventDefault();
+
+              draggedRow = row;
+              dragInitialIndex = parseInt(row.dataset.index);
+              isDragging = true;
+
+              const rect = row.getBoundingClientRect();
+              ghostOffsetX = e.clientX - rect.left;
+              ghostOffsetY = e.clientY - rect.top;
+
+              const ghost = row.cloneNode(true);
+              ghost.style.position = "fixed";
+              ghost.style.pointerEvents = "none";
+              ghost.style.opacity = "0.7";
+              ghost.style.transform = "scale(0.95)";
+              ghost.style.width = row.offsetWidth + "px";
+              ghost.style.background = "#2d2d3a";
+              ghost.style.border = "2px solid #ff79c6";
+              ghost.style.borderRadius = "8px";
+              ghost.style.zIndex = "9999";
+              ghost.style.boxShadow = "0 8px 32px rgba(0,0,0,0.4)";
+              ghost.style.top = e.clientY - ghostOffsetY + "px";
+              ghost.style.left = e.clientX - ghostOffsetX + "px";
+              document.body.appendChild(ghost);
+              dragGhost = ghost;
+
+              row.style.opacity = "0.3";
+
+              if (dragInsertLine) {
+                dragInsertLine.remove();
+                dragInsertLine = null;
+              }
+
+              document.addEventListener("mousemove", onDragMove);
+              document.addEventListener("mouseup", onDragEnd);
+            });
+          }
+
+          function onDragMove(e) {
+            if (!isDragging || !dragGhost) return;
+
+            dragGhost.style.top = e.clientY - ghostOffsetY + "px";
+            dragGhost.style.left = e.clientX - ghostOffsetX + "px";
+
+            const dropTarget = document.elementFromPoint(e.clientX, e.clientY);
+            if (!dropTarget) {
+              if (dragInsertLine) {
+                dragInsertLine.remove();
+                dragInsertLine = null;
+              }
               return;
             }
-            draggedRow = row;
-            dragInitialIndex = parseInt(row.dataset.index);
-            e.dataTransfer.effectAllowed = "move";
-            e.dataTransfer.setData("text/plain", String(dragInitialIndex));
 
-            const rect = row.getBoundingClientRect();
-            ghostOffsetX = e.clientX - rect.left;
-            ghostOffsetY = e.clientY - rect.top;
-
-            const ghost = row.cloneNode(true);
-            ghost.style.position = "fixed";
-            ghost.style.pointerEvents = "none";
-            ghost.style.opacity = "0.7";
-            ghost.style.transform = "scale(0.95)";
-            ghost.style.width = row.offsetWidth + "px";
-            ghost.style.background = "#2d2d3a";
-            ghost.style.border = "2px solid #ff79c6";
-            ghost.style.borderRadius = "8px";
-            ghost.style.zIndex = "9999";
-            ghost.style.boxShadow = "0 8px 32px rgba(0,0,0,0.4)";
-            ghost.style.top = e.clientY - ghostOffsetY + "px";
-            ghost.style.left = e.clientX - ghostOffsetX + "px";
-            document.body.appendChild(ghost);
-            dragGhost = ghost;
-
-            row.style.opacity = "0.3";
-
-            if (dragInsertLine) {
-              dragInsertLine.remove();
-              dragInsertLine = null;
-            }
-
-            if (dragUpdateListener) {
-              document.removeEventListener("drag", dragUpdateListener);
-              dragUpdateListener = null;
-            }
-
-            dragUpdateListener = (ev) => {
-              if (dragGhost) {
-                dragGhost.style.top = ev.clientY - ghostOffsetY + "px";
-                dragGhost.style.left = ev.clientX - ghostOffsetX + "px";
+            let targetRow = dropTarget.closest("tr");
+            if (!targetRow || targetRow === draggedRow) {
+              if (dragInsertLine) {
+                dragInsertLine.remove();
+                dragInsertLine = null;
               }
-            };
-            document.addEventListener("drag", dragUpdateListener);
-          });
+              return;
+            }
 
-          handleCell.addEventListener("dragend", () => {
-            if (dragGhost) {
-              document.body.removeChild(dragGhost);
-              dragGhost = null;
-            }
-            if (dragInsertLine) {
-              dragInsertLine.remove();
-              dragInsertLine = null;
-            }
-            if (dragUpdateListener) {
-              document.removeEventListener("drag", dragUpdateListener);
-              dragUpdateListener = null;
-            }
-            document.querySelectorAll("tr").forEach((tr) => {
-              tr.style.opacity = "1";
-              tr.classList.remove("drag-over");
-            });
-            if (draggedRow) {
-              draggedRow.style.opacity = "1";
-              draggedRow = null;
-            }
-            dragInitialIndex = -1;
-          });
-
-          row.addEventListener("dragover", (e) => {
-            e.preventDefault();
-            e.dataTransfer.dropEffect = "move";
-            if (!draggedRow || draggedRow === row) return;
-
-            const rect = row.getBoundingClientRect();
+            const rect = targetRow.getBoundingClientRect();
             const mid = rect.top + rect.height / 2;
             const insertAbove = e.clientY < mid;
 
@@ -524,69 +504,97 @@
             document.body.appendChild(line);
             dragInsertLine = line;
 
-            row.dataset.insertAbove = insertAbove ? "true" : "false";
-          });
+            targetRow.dataset.insertAbove = insertAbove ? "true" : "false";
+          }
 
-          row.addEventListener("dragleave", (e) => {
-            if (dragInsertLine && !row.contains(e.relatedTarget)) {
-              dragInsertLine.remove();
-              dragInsertLine = null;
+          async function onDragEnd(e) {
+            if (!isDragging) return;
+            isDragging = false;
+
+            document.removeEventListener("mousemove", onDragMove);
+            document.removeEventListener("mouseup", onDragEnd);
+
+            if (dragGhost) {
+              document.body.removeChild(dragGhost);
+              dragGhost = null;
             }
-          });
 
-          row.addEventListener("drop", async (e) => {
-            e.preventDefault();
+            let targetRow = null;
+            if (dragInsertLine) {
+              const dropTarget = document.elementFromPoint(
+                e.clientX,
+                e.clientY,
+              );
+              if (dropTarget) {
+                targetRow = dropTarget.closest("tr");
+              }
+            }
+
             if (dragInsertLine) {
               dragInsertLine.remove();
               dragInsertLine = null;
             }
 
-            if (!draggedRow || draggedRow === row) return;
-
-            const fromIndex = parseInt(draggedRow.dataset.index);
-            const toIndex = parseInt(row.dataset.index);
-            if (fromIndex === toIndex) return;
-
-            const insertAbove = row.dataset.insertAbove === "true";
-            let targetIndex = toIndex;
-            if (!insertAbove) {
-              targetIndex = toIndex + 1;
-            }
-            let newIndex = targetIndex;
-            if (fromIndex < newIndex) {
-              newIndex = targetIndex - 1;
+            document.querySelectorAll("tr").forEach((tr) => {
+              tr.style.opacity = "1";
+              tr.classList.remove("drag-over");
+            });
+            if (draggedRow) {
+              draggedRow.style.opacity = "1";
             }
 
-            const [movedSong] = songList.splice(fromIndex, 1);
-            songList.splice(toIndex, 0, movedSong);
+            if (targetRow && targetRow !== draggedRow) {
+              const fromIndex = parseInt(draggedRow.dataset.index);
+              const toIndex = parseInt(targetRow.dataset.index);
+              if (fromIndex !== toIndex) {
+                const insertAbove = targetRow.dataset.insertAbove === "true";
+                let targetIndex = toIndex;
+                if (!insertAbove) {
+                  targetIndex = toIndex + 1;
+                }
+                let newIndex = targetIndex;
+                if (fromIndex < newIndex) {
+                  newIndex = targetIndex - 1;
+                }
 
-            try {
-              await apiRequest("/songs/reorder", "PUT", { songs: songList });
-              document.getElementById("statusMsg").innerHTML =
-                "Reordered songs";
-              renderTable();
-              songsHash = JSON.stringify(songList);
-            } catch (err) {
-              alert("Reorder failed: " + err.message);
-              await loadSongs();
+                const [movedSong] = songList.splice(fromIndex, 1);
+                songList.splice(newIndex, 0, movedSong);
+
+                try {
+                  await apiRequest("/songs/reorder", "PUT", {
+                    songs: songList,
+                  });
+                  document.getElementById("statusMsg").innerHTML =
+                    "✅ Reordered songs";
+                  renderTable();
+                  songsHash = JSON.stringify(songList);
+                } catch (err) {
+                  alert("Reorder failed: " + err.message);
+                  await loadSongs();
+                }
+              }
             }
-          });
+
+            draggedRow = null;
+            dragInitialIndex = -1;
+            dragInsertLine = null;
+          }
 
           row.insertCell(1).textContent = song.id;
           row.insertCell(2).textContent = song.name;
           row.insertCell(3).innerHTML =
             `<a href="${song.url}" target="_blank" style="color:#ff79c6;">link</a>`;
 
-          const cellLyircs = row.insertCell(4);
-          cellLyircs.textContent = "...";
-          async () => {
+          const cellLyrics = row.insertCell(4);
+          cellLyrics.textContent = "...";
+          (async () => {
             try {
-              const lyrics = await loadLyrics(sond.id);
-              cellLyircs.textContent = `${lyrics.length} lines`;
+              const lyrics = await loadLyrics(song.id);
+              cellLyrics.textContent = `${lyrics.length} lines`;
             } catch (e) {
-              cellLyircs.textContent = "0 lines";
+              cellLyrics.textContent = "0 lines";
             }
-          };
+          })();
 
           const actions = row.insertCell(5);
           const editBtn = document.createElement("button");
