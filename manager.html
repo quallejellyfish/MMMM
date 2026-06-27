@@ -216,10 +216,7 @@
 
       async function loadSongs() {
         try {
-          const url = `${getApiUrl()}/songs`;
-          const res = await fetch(url);
-          if (!res.ok) throw new Error(await res.text());
-          songList = await res.json();
+          songList = await apiRequest("/songs", "GET");
           songsHash = JSON.stringify(songList);
           renderTable();
           document.getElementById("statusMsg").innerHTML =
@@ -227,15 +224,15 @@
         } catch (err) {
           document.getElementById("statusMsg").innerHTML =
             `Error: ${err.message}`;
-          // console.error(err);
         }
       }
 
       async function loadLyrics(songId) {
-        const url = `${getApiUrl()}/songs/${songId}/lyrics`;
-        const res = await fetch(url);
-        if (!res.ok) return [];
-        return res.json();
+        try {
+          return await apiRequest(`/songs/${songId}/lyrics`, "GET");
+        } catch {
+          return [];
+        }
       }
 
       async function saveSong() {
