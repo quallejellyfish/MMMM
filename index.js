@@ -194,13 +194,13 @@ function writeLyrics(lyrics) {
   fs.writeFileSync(LYRICS_FILE, JSON.stringify(lyrics, null, 2));
 }
 
-// PUBLIC
-app.get("/songs", (req, res) => {
+// not PUBLIC anymore
+app.get("/songs", requireApiKey, (req, res) => {
   const songs = readSongs();
   res.json(songs);
 });
 
-app.get("/songs/:id/lyrics", (req, res) => {
+app.get("/songs/:id/lyrics", requireApiKey, (req, res) => {
   const id = parseInt(req.params.id);
   const lyrics = readLyrics();
   res.json(lyrics[id] || []);
