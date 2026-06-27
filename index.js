@@ -172,6 +172,11 @@ app.use(cors());
 app.use(express.static(__dirname));
 app.use(express.json({ limit: "10mb" }));
 
+// ROOT
+app.get("/", (req, res) => {
+  res.sendFile(__dirname + "/manager.html");
+});
+
 const SONGS_FILE = "./songs.json";
 const LYRICS_FILE = "./lyrics.json";
 
@@ -207,22 +212,24 @@ app.get("/songs/:id/lyrics", requireApiKey, (req, res) => {
 });
 
 // PROTECTED
-app.put('/songs/reorder', requireApiKey, (req, res) => {
+app.put("/songs/reorder", requireApiKey, (req, res) => {
   try {
     const { songs: newSongs } = req.body;
     if (!Array.isArray(newSongs)) {
-      return res.status(400).json({ error: 'songs must be an array' });
+      return res.status(400).json({ error: "songs must be an array" });
     }
     for (let s of newSongs) {
-      if (typeof s.id !== 'number' || typeof s.name !== 'string') {
-        return res.status(400).json({ error: 'each song must have id and name' });
+      if (typeof s.id !== "number" || typeof s.name !== "string") {
+        return res
+          .status(400)
+          .json({ error: "each song must have id and name" });
       }
     }
     writeSongs(newSongs);
-    broadcastEvent('song-changed', { action: 'reorder' });
-    res.json({ message: 'Order updated!' });
+    broadcastEvent("song-changed", { action: "reorder" });
+    res.json({ message: "Order updated!" });
   } catch (err) {
-    console.error('Error in /songs/reorder:', err.stack);
+    console.error("Error in /songs/reorder:", err.stack);
     res.status(500).json({ error: err.message });
   }
 });
@@ -543,6 +550,12 @@ app.post("/sync-github", requireApiKey, async (req, res) => {
 //SSE
 let sseClients = [];
 app.get("/events", (req, res) => {
+  const apiKey = req.headers["x-api-key"] || req.query.apiKey;
+  if (apiKey !== API_KEY) {
+    res.status(401).send("Unauthorized");
+    return;
+  }
+
   res.writeHead(200, {
     "Content-Type": "text/event-stream",
     "Cache-Control": "no-cache",
@@ -564,11 +577,6 @@ function broadcastEvent(event, data) {
     } catch (e) {}
   });
 }
-
-// ROOT
-app.get("/", (req, res) => {
-  res.sendFile(__dirname + "/manager.html");
-});
 
 app.get("/health", (req, res) => res.send("OK"));
 
