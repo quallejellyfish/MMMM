@@ -674,16 +674,24 @@
         .addEventListener("click", async () => {
           const btn = document.getElementById("syncGitBtn");
           const originalText = btn.textContent;
-          btn.textContent = "";
+          const statusMsg = document.getElementById("statusMsg");
+
+          btn.textContent = "Syncing...";
           btn.disabled = true;
+          statusMsg.innerHTML = "Syncing to GitHub...";
+
           try {
             await apiRequest("/sync-github", "POST");
-            document.getElementById("statusMsg").innerHTML =
-              "Synced to GitHub successfully";
+            statusMsg.innerHTML = "Synced to GitHub successfully!";
           } catch (err) {
-            alert("Sync failed: " + err.message);
-            document.getElementById("statusMsg").innerHTML =
-              "Synced to GitHub failed";
+            statusMsg.innerHTML = `Sync failed: ${err.message}`;
+            if (err.message.includes("GitHub credentials not configured")) {
+              alert(
+                "GITHUB_TOKEN and GITHUB_REPO environment variables missing",
+              );
+            } else {
+              alert("Sync failed: " + err.message);
+            }
           } finally {
             btn.textContent = originalText;
             btn.disabled = false;
