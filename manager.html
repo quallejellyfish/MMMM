@@ -285,6 +285,7 @@
               skipDiscord: true,
             });
 
+            delete lyricCache[idNum];
             statusMsg.innerHTML = `✅ Updated song ID ${idNum}`;
           }
           clearForm();
@@ -359,7 +360,6 @@
       let isDragging = false;
       let ghostOffsetX = 0;
       let ghostOffsetY = 0;
-      let lyricCache = {};
 
       async function renderTable() {
         const tbody = document.getElementById("songsTableBody");
@@ -368,8 +368,6 @@
           return;
         }
         tbody.innerHTML = "";
-
-        lyricCache = {};
 
         for (let i = 0; i < songList.length; i++) {
           const song = songList[i];
