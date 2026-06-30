@@ -190,6 +190,8 @@
     </div>
     <script>
       let songList = [];
+      let lyricCache = {};
+      let songsHash = '';
 
       function getApiUrl() {
         return document.getElementById("apiUrl").value.replace(/\$/, "");
