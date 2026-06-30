@@ -83,7 +83,7 @@ async function sendDiscordDeletion(song) {
   }
 }
 
-async function sendDiscordEdit(
+async function sendDiscordEditNotification(
   oldSong,
   newSong,
   changes,
