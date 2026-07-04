@@ -8,5 +8,6 @@
   "dependencies": {
     "cors": "^2.8.6",
     "express": "^4.22.2"
+    "jsonwebtoken": "^9.0.0"
   }
 }
