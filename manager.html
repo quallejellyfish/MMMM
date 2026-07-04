@@ -191,7 +191,7 @@
     <script>
       let songList = [];
       let lyricCache = {};
-      let songsHash = '';
+      let songsHash = "";
 
       function getApiUrl() {
         return document.getElementById("apiUrl").value.replace(/\$/, "");
@@ -297,6 +297,29 @@
         }
       }
 
+      function getCategoryIndexForSong(songId) {
+        let currentCategory = "Uncategorized";
+        for (const song of songList) {
+          if (song.id === 999) {
+            currentCategory = song.name;
+          }
+          if (song.id === songId) {
+            break;
+          }
+        }
+
+        const categoryMap = {
+          "🇺🇸-----English Songs-----": 0,
+          "🇩🇪-----German Songs-----": 1,
+          "🇨🇳-----Chinese Songs-----": 2,
+          "💥-----Pulary Songs-----": 3,
+          "🌍-----other language Songs-----": 4,
+          "🦊----- Krimsonthefox Music-----": 5,
+          "-----Not My Songs-----": 6,
+        };
+        return categoryMap[currentCategory] ?? 0;
+      }
+
       async function editSong(id) {
         id;
         const numericId = parseInt(id, 10);
@@ -325,6 +348,9 @@
           console.error("Failed to load lyrics:", err);
           document.getElementById("lyrics").value = "[]";
         }
+
+        const categoryIndex = getCategoryIndexForSong(numericId);
+        document.getElementById("categorySelect").value = categoryIndex;
 
         document.getElementById("deleteBtn").style.display = "inline-block";
         document.getElementById("deleteBtn").onclick = () =>
@@ -643,7 +669,7 @@
           const item = result[i];
           if (typeof item.chat !== "string" || typeof item.delay !== "number") {
             throw new Error(
-              'item at index ${i} is invalid: missing "chat" (string) or "delay" (number).',
+              `item at index ${i} is invalid: missing "chat" (string) or "delay" (number).`,
             );
           }
         }
