@@ -68023,6 +68023,586 @@
       "delay": 161721
     }
   ],
+  "181": [
+    {
+      "chat": "Haai hai mou ima kara yaru tte",
+      "delay": 923
+    },
+    {
+      "chat": "Haai hai yareba",
+      "delay": 3401
+    },
+    {
+      "chat": "dekiru ko datte",
+      "delay": 4623
+    },
+    {
+      "chat": "Haai hai dakara hottoite tte",
+      "delay": 5771
+    },
+    {
+      "chat": "Ima yarou to omotteta noni",
+      "delay": 8070
+    },
+    {
+      "chat": "Da daraku drop and down",
+      "delay": 10189
+    },
+    {
+      "chat": "Da daraku drop and down x2",
+      "delay": 12725
+    },
+    {
+      "chat": "Da daraku drop and down..",
+      "delay": 14973
+    },
+    {
+      "chat": "and down and down and down!",
+      "delay": 17154
+    },
+    {
+      "chat": "Heikousen tadori shousou",
+      "delay": 19866
+    },
+    {
+      "chat": "Enchousen uso de kyoukou",
+      "delay": 21667
+    },
+    {
+      "chat": "Kishikaisei dekita mousou",
+      "delay": 24502
+    },
+    {
+      "chat": "Mou tensei sasete yo",
+      "delay": 26703
+    },
+    {
+      "chat": "NaNaNaNaNa",
+      "delay": 28179
+    },
+    {
+      "chat": "Kanbi na kairaku ankooru",
+      "delay": 29156
+    },
+    {
+      "chat": "Touhikou tomaranai oorunaito",
+      "delay": 30434
+    },
+    {
+      "chat": "Itsumo nangi na",
+      "delay": 33520
+    },
+    {
+      "chat": "joukyou hoorudoon",
+      "delay": 34230
+    },
+    {
+      "chat": "Shoumonai",
+      "delay": 35181
+    },
+    {
+      "chat": "Minai furi dake yuutousei!",
+      "delay": 35896
+    },
+    {
+      "chat": "Haai hai mou ima kara yaru tte",
+      "delay": 38098
+    },
+    {
+      "chat": "Haai hai yareba",
+      "delay": 40800
+    },
+    {
+      "chat": "dekiru ko datte",
+      "delay": 42039
+    },
+    {
+      "chat": "Haai hai dakara hottoite tte",
+      "delay": 43207
+    },
+    {
+      "chat": "Ima yarou to omotteta noni",
+      "delay": 45631
+    },
+    {
+      "chat": "Shuujuuryoku ima foorindaun",
+      "delay": 47650
+    },
+    {
+      "chat": "Damedame yaruki",
+      "delay": 50169
+    },
+    {
+      "chat": "okinai eburinai",
+      "delay": 51507
+    },
+    {
+      "chat": "Genjitsutouhi no intaanetto",
+      "delay": 52634
+    },
+    {
+      "chat": "Subete wasurete",
+      "delay": 54866
+    },
+    {
+      "chat": "Daraku daraku daraku daraku",
+      "delay": 56079
+    },
+    {
+      "chat": "Aah, aah, aah..",
+      "delay": 57174
+    },
+    {
+      "chat": "Saiteigendo DEAD END",
+      "delay": 59108
+    },
+    {
+      "chat": "Mukau anhappii",
+      "delay": 60547
+    },
+    {
+      "chat": "Aah, aah, aah..",
+      "delay": 62089
+    },
+    {
+      "chat": "Nukedasenai endoresu",
+      "delay": 63736
+    },
+    {
+      "chat": "Guru guru guru guru!",
+      "delay": 65591
+    },
+    {
+      "chat": "Saitei de saiyaku na yuutopia",
+      "delay": 66631
+    },
+    {
+      "chat": "Taihai shita kontorooru",
+      "delay": 70429
+    },
+    {
+      "chat": "Shizumu karada",
+      "delay": 72196
+    },
+    {
+      "chat": "mochiagaranai ya",
+      "delay": 72917
+    },
+    {
+      "chat": "Seppaku suru boodaarain",
+      "delay": 74929
+    },
+    {
+      "chat": "Shiranu zonzenu kaeriminu",
+      "delay": 76939
+    },
+    {
+      "chat": "Taida na zeitaku danbooru",
+      "delay": 79645
+    },
+    {
+      "chat": "Kouishou naoranai hoorudo",
+      "delay": 80685
+    },
+    {
+      "chat": "mii taito",
+      "delay": 83505
+    },
+    {
+      "chat": "Kako no chinpu na",
+      "delay": 84469
+    },
+    {
+      "chat": "sentaku renzoku",
+      "delay": 85007
+    },
+    {
+      "chat": "Kyoumi nai",
+      "delay": 85614
+    },
+    {
+      "chat": "Honki daseba sugoi tte",
+      "delay": 86299
+    },
+    {
+      "chat": "Mada omotten no",
+      "delay": 87972
+    },
+    {
+      "chat": "Yattemo yattemo",
+      "delay": 93364
+    },
+    {
+      "chat": "nicchimo sacchimo",
+      "delay": 94350
+    },
+    {
+      "chat": "Ikanai ijoujitai",
+      "delay": 94880
+    },
+    {
+      "chat": "Aa da no koo da no",
+      "delay": 96131
+    },
+    {
+      "chat": "piichiku paachiku",
+      "delay": 96685
+    },
+    {
+      "chat": "Iiwake narabeta",
+      "delay": 97341
+    },
+    {
+      "chat": "entairyou hassei",
+      "delay": 97893
+    },
+    {
+      "chat": "QOL ima foorindaun",
+      "delay": 99557
+    },
+    {
+      "chat": "Mudamuda okorarete",
+      "delay": 101636
+    },
+    {
+      "chat": "mo kawaranai",
+      "delay": 103428
+    },
+    {
+      "chat": "Nijigen takushou animeeshon",
+      "delay": 104143
+    },
+    {
+      "chat": "Subete nagedashi",
+      "delay": 106245
+    },
+    {
+      "chat": "niyaniya niyaniya",
+      "delay": 107570
+    },
+    {
+      "chat": "Shuujuuryoku ima",
+      "delay": 108834
+    },
+    {
+      "chat": "raizingu appu",
+      "delay": 109975
+    },
+    {
+      "chat": "Imasara owaru wake",
+      "delay": 111050
+    },
+    {
+      "chat": "nai rasutonaito",
+      "delay": 112604
+    },
+    {
+      "chat": "Genjitsu chokushi no",
+      "delay": 113494
+    },
+    {
+      "chat": "shuuchaku ten",
+      "delay": 114735
+    },
+    {
+      "chat": "Tomaranai ase",
+      "delay": 115795
+    },
+    {
+      "chat": "Daraku daraku daraku daraku",
+      "delay": 117004
+    },
+    {
+      "chat": "Aah, aah, aah..",
+      "delay": 118219
+    },
+    {
+      "chat": "Yukusue kakkou BAD ROUND",
+      "delay": 119951
+    },
+    {
+      "chat": "Kizukeba makki",
+      "delay": 121406
+    },
+    {
+      "chat": "Aah, aah, aah..",
+      "delay": 122892
+    },
+    {
+      "chat": "Nigedasenai hoopuresu",
+      "delay": 124658
+    },
+    {
+      "chat": "Guru guru guru guru",
+      "delay": 126434
+    },
+    {
+      "chat": "Saitei de saiyaku na yuutopia",
+      "delay": 127548
+    },
+    {
+      "chat": "Saikou de sairyou",
+      "delay": 129759
+    },
+    {
+      "chat": "na disutopia",
+      "delay": 131066
+    }
+  ],
+  "182": [
+    {
+      "chat": "Er shi wo chang chang ting",
+      "delay": 17920
+    },
+    {
+      "chat": "ren shuo",
+      "delay": 19166
+    },
+    {
+      "chat": "Guo zhe xiao jiao de na ge",
+      "delay": 19722
+    },
+    {
+      "chat": "Shi kun zai shen shan li de",
+      "delay": 21635
+    },
+    {
+      "chat": "a mo",
+      "delay": 23393
+    },
+    {
+      "chat": "Ta he a gong shi bao ban de",
+      "delay": 25366
+    },
+    {
+      "chat": "Da zi ye bu shi ji ge",
+      "delay": 27325
+    },
+    {
+      "chat": "Jie hun qian lian mian dou mei",
+      "delay": 29289
+    },
+    {
+      "chat": "jian guo",
+      "delay": 31003
+    },
+    {
+      "chat": "Chui yan piao guo",
+      "delay": 31929
+    },
+    {
+      "chat": "Zhu fan de chai huo ba yao ya",
+      "delay": 33873
+    },
+    {
+      "chat": "wan le",
+      "delay": 37494
+    },
+    {
+      "chat": "Huang hun ri luo",
+      "delay": 39592
+    },
+    {
+      "chat": "A gong qiao zhe wan kuai ba",
+      "delay": 41622
+    },
+    {
+      "chat": "ge chang zhe",
+      "delay": 44099
+    },
+    {
+      "chat": "Ta mei tian bai zhe shou zhi",
+      "delay": 47386
+    },
+    {
+      "chat": "tou shu ri zi guo",
+      "delay": 48959
+    },
+    {
+      "chat": "Deng yuan fang kai lai de che",
+      "delay": 49977
+    },
+    {
+      "chat": "Men kou de ban deng zai na",
+      "delay": 51377
+    },
+    {
+      "chat": "cong mei nuo guo",
+      "delay": 52676
+    },
+    {
+      "chat": "Yan shen hai zai qi pan zhe",
+      "delay": 53552
+    },
+    {
+      "chat": "Ta sheng le yi ge you yi ge",
+      "delay": 55166
+    },
+    {
+      "chat": "Dou bei hao jiao de hu sheng",
+      "delay": 57220
+    },
+    {
+      "chat": "chui zou le",
+      "delay": 59424
+    },
+    {
+      "chat": "Shan na bian shi shen me",
+      "delay": 62180
+    },
+    {
+      "chat": "Shi lie shi de ying po",
+      "delay": 64172
+    },
+    {
+      "chat": "Shi ta men pin si bao wei de",
+      "delay": 66006
+    },
+    {
+      "chat": "xin zhong guo",
+      "delay": 68649
+    },
+    {
+      "chat": "He na bian shi shen me",
+      "delay": 69909
+    },
+    {
+      "chat": "Shi mian yan de zhan huo",
+      "delay": 71795
+    },
+    {
+      "chat": "Ta wang zhe yuan fang lei yi",
+      "delay": 73683
+    },
+    {
+      "chat": "di di de luo",
+      "delay": 75736
+    },
+    {
+      "chat": "He ping lai le",
+      "delay": 77587
+    },
+    {
+      "chat": "Ta men zou le",
+      "delay": 81390
+    },
+    {
+      "chat": "Ta deng de ren zai ye hui",
+      "delay": 85166
+    },
+    {
+      "chat": "bu lai le",
+      "delay": 89552
+    },
+    {
+      "chat": "Chui yan piao guo",
+      "delay": 109013
+    },
+    {
+      "chat": "Zhu fan de chai huo ba yao ya",
+      "delay": 110593
+    },
+    {
+      "chat": "wan le",
+      "delay": 114382
+    },
+    {
+      "chat": "Huang hun ri luo",
+      "delay": 116305
+    },
+    {
+      "chat": "A gong qiao zhe wan kuai ba",
+      "delay": 118341
+    },
+    {
+      "chat": "ge chang zhe",
+      "delay": 121562
+    },
+    {
+      "chat": "Ta mei tian bai zhe shou zhi",
+      "delay": 124114
+    },
+    {
+      "chat": "tou shu ri zi guo",
+      "delay": 125623
+    },
+    {
+      "chat": "Deng yuan fang kai lai de che",
+      "delay": 126515
+    },
+    {
+      "chat": "Men kou de ban deng zai na",
+      "delay": 128264
+    },
+    {
+      "chat": "cong mei nuo guo",
+      "delay": 129995
+    },
+    {
+      "chat": "Yan shen hai zai qi pan zhe",
+      "delay": 130219
+    },
+    {
+      "chat": "Ta sheng le yi ge you yi ge",
+      "delay": 131862
+    },
+    {
+      "chat": "Dou bei hao jiao de hu sheng",
+      "delay": 133856
+    },
+    {
+      "chat": "chui zou le",
+      "delay": 135845
+    },
+    {
+      "chat": "Shan na bian shi shen me",
+      "delay": 138878
+    },
+    {
+      "chat": "Shi lie shi de ying po",
+      "delay": 140958
+    },
+    {
+      "chat": "Shi ta men pin si bao wei de",
+      "delay": 142778
+    },
+    {
+      "chat": "xin zhong guo",
+      "delay": 145313
+    },
+    {
+      "chat": "He na bian shi shen me",
+      "delay": 146738
+    },
+    {
+      "chat": "Shi mian yan de zhan huo",
+      "delay": 148581
+    },
+    {
+      "chat": "Ta wang zhe yuan fang lei yi",
+      "delay": 150446
+    },
+    {
+      "chat": "di di de luo",
+      "delay": 152662
+    },
+    {
+      "chat": "He ping lai le",
+      "delay": 154444
+    },
+    {
+      "chat": "Ta men zou le",
+      "delay": 158080
+    },
+    {
+      "chat": "Ta deng de ren zai ye hui",
+      "delay": 161947
+    },
+    {
+      "chat": "bu lai le",
+      "delay": 166279
+    }
+  ],
   "999": [
     {
       "chat": "",
