@@ -2,6 +2,7 @@ const express = require("express");
 const fs = require("fs");
 const cors = require("cors");
 const { timeStamp } = require("console");
+const jwt = require('jsonwebtoken');
 const app = express();
 const PORT = process.env.PORT || 3000;
 
@@ -10,6 +11,7 @@ const GITHUB_REPO = process.env.GITHUB_REPO;
 const GITHUB_BRANCH = process.env.GITHUB_BRANCH;
 const API_KEY = process.env.API_KEY;
 const DISCORD_WEBHOOK_URL = process.env.DISCORD_WEBHOOK_URL;
+const JWT_SECRET = process.env.JWT_SECRET;
 
 const CATEGORIES = [
   { id: 999, name: "🇺🇸-----English Songs-----" },
@@ -550,10 +552,16 @@ app.post("/sync-github", requireApiKey, async (req, res) => {
 //SSE
 let sseClients = [];
 app.get("/events", (req, res) => {
-  const apiKey = req.headers["x-api-key"] || req.query.apiKey;
+  let apiKey = req.headers["x-api-key"];
+  if (!apiKey && req.query.token) {
+    try {
+      apiKey = Buffer.from(req.query.token, "base64").toString("utf8");
+    } catch (e) {
+      return res.status(401).send("Unauthorized");
+    }
+  }
   if (apiKey !== API_KEY) {
-    res.status(401).send("Unauthorized");
-    return;
+    return res.status(401).send("Unauthorized");
   }
 
   res.writeHead(200, {
@@ -563,6 +571,7 @@ app.get("/events", (req, res) => {
     "Access-Control-Allow-Origin": "*",
   });
   res.write("retry: 10000\n\n");
+
   sseClients.push(res);
   req.on("close", () => {
     sseClients = sseClients.filter((client) => client !== res);
@@ -577,6 +586,15 @@ function broadcastEvent(event, data) {
     } catch (e) {}
   });
 }
+
+app.post('/auth', (req, res) => {
+    const { apiKey } = req.body;
+    if (apiKey !== API_KEY) {
+        return res.status(401).json({ error: 'Invalid API key' });
+    }
+    const token = jwt.sign({ type: 'sse' }, JWT_SECRET, { expiresIn: '1h' });
+    res.json({ token });
+});
 
 app.get("/health", (req, res) => res.send("OK"));
 
