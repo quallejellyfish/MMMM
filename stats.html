@@ -93,6 +93,9 @@
             <input type="text" value="" style="width: 300px" id="apiUrl"
           /></label>
           <label
+            >API Key: <input type="password" id="apiKey" style="width: 200px"
+          /></label>
+          <label
             >Your Stats Key:
             <input
               type="text"
@@ -135,18 +138,25 @@
         return document.getElementById("apiUrl").value.replace(/\$/, "");
       }
 
+      function getApiKey() {
+        return document.getElementById("apiKey").value;
+      }
+
       async function loadSongs() {
         const status = document.getElementById("statusMsg");
         const url = getApiUrl();
+        const key = getApiKey();
         if (!url) {
-          status.textContent = "Enter an API URL";
+          status.textContent = "Please enter an API URL.";
           return;
         }
         try {
-          const res = await fetch(`${url}/songs`);
+          const headers = {};
+          if (key) headers["X-API-Key"] = key;
+          const res = await fetch(`${url}/songs`, { headers });
           if (!res.ok) throw new Error(await res.text());
           songList = await res.json();
-          status.textContent = `Loaded ${songList.length} songs`;
+          status.textContent = `Loaded ${songList.length} songs.`;
           renderTable();
         } catch (err) {
           status.textContent = `Error: ${err.message}`;
@@ -166,7 +176,7 @@
           return;
         }
         const status = document.getElementById("statusMsg");
-        status.textContent = "Fetching stats...";
+        status.textContent = "⏳ Fetching stats...";
         try {
           const res = await fetch(`${url}/stats/${key}`);
           if (res.status === 404) {
