@@ -98,44 +98,32 @@
               type="text"
               id="statsKey"
               placeholder="Enter your stats key"
-              style="width: 300px"
+              style="width: 200px"
           /></label>
-          <button id="fetchBtn">Load from Server</button>
+          <button id="fetchBtn">Load Stats</button>
           <button id="refreshSongsBtn">Refresh Songs</button>
         </div>
         <div class="status" id="statusMsg">
-          Enter API URL, your stats key, and click "Load from Server"
+          Enter API URL, your stats key, and click "Load Stats"
         </div>
       </div>
       <div class="card">
-        <h2>Paste JSON manually</h2>
-        <textarea
-          id="statsData"
-          rows="4"
-          placeholder='{"0": 10, "1": 5, ...}'
-        ></textarea>
-        <div class="flex">
-          <button id="parseBtn">Show Stats</button>
-          <button id="clearBtn">Clear</button>
-        </div>
-        <div class="card">
-          <h2>Stats Table</h2>
-          <div style="overflow-x: auto">
-            <table id="statsTable">
-              <thead>
-                <tr>
-                  <th>ID</th>
-                  <th>Song Name</th>
-                  <th>Plays</th>
-                </tr>
-              </thead>
-              <tbody id="statsTableBody">
-                <tr>
-                  <td colspan="3">No data loaded.</td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
+        <h2>Stats Table</h2>
+        <div style="overflow-x: auto">
+          <table id="statsTable">
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Song Name</th>
+                <th>Plays</th>
+              </tr>
+            </thead>
+            <tbody id="statsTableBody">
+              <tr>
+                <td colspan="3">No data loaded.</td>
+              </tr>
+            </tbody>
+          </table>
         </div>
       </div>
     </div>
@@ -169,46 +157,32 @@
       async function fetchStatsFromServer() {
         const key = document.getElementById("statsKey").value.trim();
         if (!key) {
-          alert("Enter your stats key");
+          alert("Please enter your stats key.");
           return;
         }
         const url = getApiUrl();
         if (!url) {
-          alert("Enter an API URL");
+          alert("Please enter the API URL.");
           return;
         }
         const status = document.getElementById("statusMsg");
         status.textContent = "Fetching stats...";
         try {
           const res = await fetch(`${url}/stats/${key}`);
+          if (res.status === 404) {
+            status.textContent = "No stats found for this key.";
+            playData = {};
+            renderTable();
+            return;
+          }
           if (!res.ok) throw new Error(await res.text());
           const data = await res.json();
           playData = data;
-          status.textContent = `Loaded ${Object.keys(playData).length} entries`;
+          status.textContent = `Loaded ${Object.keys(playData).length} entries.`;
           renderTable();
         } catch (err) {
           status.textContent = `Error: ${err.message}`;
-          console.error(err);
-        }
-      }
-
-      function parseStats() {
-        const raw = document.getElementById("statsData").value.trim();
-        if (!raw) {
-          alert("Paste your stats data first");
-          return;
-        }
-        try {
-          playData = JSON.parse(raw);
-          if (typeof playData !== "object" || Array.isArray(playData)) {
-            throw new Error("Data must be an object");
-          }
-          document.getElementById("statusMsg").textContent =
-            `Parsed ${Object.keys(playData).length} entries`;
-          renderTable();
-        } catch (err) {
-          alert("Invalid JSON " + err.message);
-          console.error(err);
+          alert("Failed to load stats: " + err.message);
         }
       }
 
@@ -216,7 +190,7 @@
         const tbody = document.getElementById("statsTableBody");
         if (!songList.length && !Object.keys(playData).length) {
           tbody.innerHTML =
-            "<tr><td colspan='3'>Load songs and paste stats to see data.</td></tr>";
+            '<tr><td colspan="3">Load songs and stats to see data.</td></tr>';
           return;
         }
 
@@ -257,13 +231,6 @@
       document
         .getElementById("refreshSongsBtn")
         .addEventListener("click", loadSongs);
-      document.getElementById("parseBtn").addEventListener("click", parseStats);
-      document.getElementById("clearBtn").addEventListener("click", () => {
-        document.getElementById("statsData").value = "";
-        playData = {};
-        renderTable();
-        document.getElementById("statusMsg").textContent = "🗑️ Cleared stats.";
-      });
 
       document.getElementById("apiUrl").value = window.location.origin;
 
