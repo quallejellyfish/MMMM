@@ -2,7 +2,7 @@ const express = require("express");
 const fs = require("fs");
 const cors = require("cors");
 const { timeStamp } = require("console");
-const jwt = require('jsonwebtoken');
+const jwt = require("jsonwebtoken");
 const app = express();
 const PORT = process.env.PORT || 3000;
 
@@ -160,33 +160,40 @@ async function sendDiscordEditNotification(
   }
 }
 
-async function sendGitHubSyncNotification(success, message, details = '') {
-    if (!DISCORD_WEBHOOK_URL) return;
-    try {
-        const embed = {
-            title: '🔗 GitHub Sync',
-            color: success ? 0x3498db : 0xe74c3c, // blue for success, red for failure
-            description: success ? '✅ Sync completed successfully' : '❌ Sync failed',
-            fields: [
-                { name: 'Repository', value: GITHUB_REPO || 'Not configured', inline: true },
-                { name: 'Branch', value: GITHUB_BRANCH || 'main', inline: true },
-                { name: 'Message', value: message, inline: false }
-            ],
-            timestamp: new Date().toISOString(),
-            footer: { text: 'Song Manager API' }
-        };
-        if (details) {
-            embed.fields.push({ name: 'Details', value: details, inline: false });
-        }
-        const response = await fetch(DISCORD_WEBHOOK_URL, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ embeds: [embed] })
-        });
-        if (!response.ok) console.error('GitHub sync Discord webhook failed:', response.status);
-    } catch (err) {
-        console.error('Error sending GitHub sync Discord notification:', err);
+async function sendGitHubSyncNotification(success, message, details = "") {
+  if (!DISCORD_WEBHOOK_URL) return;
+  try {
+    const embed = {
+      title: "🔗 GitHub Sync",
+      color: success ? 0x3498db : 0xe74c3c, // blue for success, red for failure
+      description: success
+        ? "✅ Sync completed successfully"
+        : "❌ Sync failed",
+      fields: [
+        {
+          name: "Repository",
+          value: GITHUB_REPO || "Not configured",
+          inline: true,
+        },
+        { name: "Branch", value: GITHUB_BRANCH || "main", inline: true },
+        { name: "Message", value: message, inline: false },
+      ],
+      timestamp: new Date().toISOString(),
+      footer: { text: "Song Manager API" },
+    };
+    if (details) {
+      embed.fields.push({ name: "Details", value: details, inline: false });
     }
+    const response = await fetch(DISCORD_WEBHOOK_URL, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ embeds: [embed] }),
+    });
+    if (!response.ok)
+      console.error("GitHub sync Discord webhook failed:", response.status);
+  } catch (err) {
+    console.error("Error sending GitHub sync Discord notification:", err);
+  }
 }
 
 function requireApiKey(req, res, next) {
@@ -203,13 +210,13 @@ app.use(cors());
 app.use(express.static(__dirname));
 app.use(express.json({ limit: "10mb" }));
 
-app.post('/auth', (req, res) => {
-    const { apiKey } = req.body;
-    if (apiKey !== API_KEY) {
-        return res.status(401).json({ error: 'Invalid API key' });
-    }
-    const token = jwt.sign({ type: 'sse' }, JWT_SECRET, { expiresIn: '1h' });
-    res.json({ token });
+app.post("/auth", (req, res) => {
+  const { apiKey } = req.body;
+  if (apiKey !== API_KEY) {
+    return res.status(401).json({ error: "Invalid API key" });
+  }
+  const token = jwt.sign({ type: "sse" }, JWT_SECRET, { expiresIn: "1h" });
+  res.json({ token });
 });
 
 // ROOT
@@ -219,6 +226,7 @@ app.get("/", (req, res) => {
 
 const SONGS_FILE = "./songs.json";
 const LYRICS_FILE = "./lyrics.json";
+const STATS_FILE = "./stats.json";
 
 function readSongs() {
   if (!fs.existsSync(SONGS_FILE)) {
@@ -238,8 +246,15 @@ function readLyrics() {
 function writeLyrics(lyrics) {
   fs.writeFileSync(LYRICS_FILE, JSON.stringify(lyrics, null, 2));
 }
+function readStats() {
+  if (!fs.existsSync(STATS_FILE)) return {};
+  return JSON.parse(fs.readFileSync(STATS_FILE, "utf8"));
+}
+function writeStats() {
+  fs.writeFileSync(STATS_FILE, JSON.stringify(stats, null, 2));
+}
 
-// not PUBLIC anymore
+// PROTECTED
 app.get("/songs", requireApiKey, (req, res) => {
   const songs = readSongs();
   res.json(songs);
@@ -251,7 +266,6 @@ app.get("/songs/:id/lyrics", requireApiKey, (req, res) => {
   res.json(lyrics[id] || []);
 });
 
-// PROTECTED
 app.put("/songs/reorder", requireApiKey, (req, res) => {
   try {
     const { songs: newSongs } = req.body;
@@ -493,61 +507,103 @@ app.put("/songs/:id/lyrics", requireApiKey, (req, res) => {
   }
 });
 
+app.post("/stats/upload", requireApiKey, (req, res) => {
+  const { key, stats } = req.body;
+  if (!key || typeof key !== "string") {
+    return res.status(400).json({ error: "key is required" });
+  }
+  if (!stats || typeof stats !== "object") {
+    return res.status(400).json({ error: "stats must be an object" });
+  }
+  let allStats = readStats();
+  if (!allStats[key]) allStats[key] = {};
+  for (const [id, count] of Object.entries(stats)) {
+    allStats[key][id] = (allStats[key][id] || 0) + count;
+  }
+  writeStats(allStats);
+  res.json({ message: "Stats uploaded" });
+});
+
+app.get('/stats/:key', (req, res) => {
+  const { key } = req.params;
+  const allStats = readStats();
+  const stats = allStats[key] || {};
+  res.json(stats);
+});
+
 // GITHUB
-app.post('/sync-github', requireApiKey, async (req, res) => {
-    if (!GITHUB_TOKEN || !GITHUB_REPO) {
-        const errorMsg = 'GitHub credentials not configured on server.';
-        await sendGitHubSyncNotification(false, errorMsg, 'GITHUB_TOKEN and GITHUB_REPO missing environment variables.');
-        return res.status(500).json({ error: errorMsg });
-    }
+app.post("/sync-github", requireApiKey, async (req, res) => {
+  if (!GITHUB_TOKEN || !GITHUB_REPO) {
+    const errorMsg = "GitHub credentials not configured on server.";
+    await sendGitHubSyncNotification(
+      false,
+      errorMsg,
+      "GITHUB_TOKEN and GITHUB_REPO missing environment variables.",
+    );
+    return res.status(500).json({ error: errorMsg });
+  }
 
-    try {
-        const songs = readSongs();
-        const lyrics = readLyrics();
+  try {
+    const songs = readSongs();
+    const lyrics = readLyrics();
 
-        async function updateFile(path, content) {
-            const url = `https://api.github.com/repos/${GITHUB_REPO}/contents/${path}`;
-            const base64Content = Buffer.from(JSON.stringify(content, null, 2), 'utf8').toString('base64');
-            let sha = null;
-            try {
-                const getRes = await fetch(url, {
-                    headers: { Authorization: `token ${GITHUB_TOKEN}`, Accept: 'application/vnd.github.v3+json' }
-                });
-                if (getRes.ok) {
-                    const data = await getRes.json();
-                    sha = data.sha;
-                }
-            } catch (e) { /* file doesn't exist */ }
-            const body = { message: `Update ${path}`, content: base64Content, branch: GITHUB_BRANCH };
-            if (sha) body.sha = sha;
-            const putRes = await fetch(url, {
-                method: 'PUT',
-                headers: {
-                    Authorization: `token ${GITHUB_TOKEN}`,
-                    Accept: 'application/vnd.github.v3+json',
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(body)
-            });
-            if (!putRes.ok) {
-                const errText = await putRes.text();
-                throw new Error(`GitHub API error for ${path}: ${putRes.status} ${errText}`);
-            }
-            return putRes.json();
+    async function updateFile(path, content) {
+      const url = `https://api.github.com/repos/${GITHUB_REPO}/contents/${path}`;
+      const base64Content = Buffer.from(
+        JSON.stringify(content, null, 2),
+        "utf8",
+      ).toString("base64");
+      let sha = null;
+      try {
+        const getRes = await fetch(url, {
+          headers: {
+            Authorization: `token ${GITHUB_TOKEN}`,
+            Accept: "application/vnd.github.v3+json",
+          },
+        });
+        if (getRes.ok) {
+          const data = await getRes.json();
+          sha = data.sha;
         }
-
-        await updateFile('songs.json', songs);
-        await updateFile('lyrics.json', lyrics);
-
-        const successMsg = `Updated songs.json (${songs.length} songs) and lyrics.json (${Object.keys(lyrics).length} entries).`;
-        await sendGitHubSyncNotification(true, successMsg);
-        res.json({ message: 'Successfully synced to GitHub.' });
-    } catch (err) {
-        console.error('GitHub sync error:', err);
-        const errorMsg = err.message || 'Unknown error';
-        await sendGitHubSyncNotification(false, 'Sync failed', errorMsg);
-        res.status(500).json({ error: errorMsg });
+      } catch (e) {
+        /* file doesn't exist */
+      }
+      const body = {
+        message: `Update ${path}`,
+        content: base64Content,
+        branch: GITHUB_BRANCH,
+      };
+      if (sha) body.sha = sha;
+      const putRes = await fetch(url, {
+        method: "PUT",
+        headers: {
+          Authorization: `token ${GITHUB_TOKEN}`,
+          Accept: "application/vnd.github.v3+json",
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(body),
+      });
+      if (!putRes.ok) {
+        const errText = await putRes.text();
+        throw new Error(
+          `GitHub API error for ${path}: ${putRes.status} ${errText}`,
+        );
+      }
+      return putRes.json();
     }
+
+    await updateFile("songs.json", songs);
+    await updateFile("lyrics.json", lyrics);
+
+    const successMsg = `Updated songs.json (${songs.length} songs) and lyrics.json (${Object.keys(lyrics).length} entries).`;
+    await sendGitHubSyncNotification(true, successMsg);
+    res.json({ message: "Successfully synced to GitHub." });
+  } catch (err) {
+    console.error("GitHub sync error:", err);
+    const errorMsg = err.message || "Unknown error";
+    await sendGitHubSyncNotification(false, "Sync failed", errorMsg);
+    res.status(500).json({ error: errorMsg });
+  }
 });
 
 //SSE
