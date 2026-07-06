@@ -1,0 +1,273 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>MMMM - Play Stats</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Hammersmith+One&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      * {
+        box-sizing: border-box;
+        font-family: "Hammersmith One", sans-serif;
+      }
+      body {
+        background: #1e1e2f;
+        color: #eee;
+        padding: 20px;
+      }
+      .container {
+        max-width: 1400px;
+        margin: 0 auto;
+      }
+      .card {
+        background: #2d2d3a;
+        border-radius: 16px;
+        padding: 20px;
+        margin: 20px 0;
+      }
+      button,
+      .button {
+        background: #ff79c6;
+        border: none;
+        padding: 8px 16px;
+        border-radius: 8px;
+        cursor: pointer;
+        margin: 4px;
+        transition: background 0.3s ease-in-out;
+      }
+      button:hover {
+        background: #ba4085;
+      }
+      button.danger:hover {
+        background: #990f0f;
+      }
+      .danger {
+        background: #ff5555;
+      }
+      a:hover {
+        color: #ba4085;
+      }
+      input,
+      textarea {
+        width: 100%;
+        padding: 10px;
+        margin: 8px 0;
+        background: #3a3a4a;
+        border: 1px solid #555;
+        border-radius: 8px;
+        color: #fff;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+      }
+      th,
+      td {
+        text-align: left;
+        padding: 10px;
+        border-bottom: 1px solid #444;
+      }
+      .flex {
+        display: flex;
+        gap: 12px;
+        flex-wrap: wrap;
+        align-items: center;
+      }
+      .status {
+        background: #3a3a4a;
+        padding: 8px 16px;
+        border-radius: 12px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1>Play Stats</h1>
+      <div class="card">
+        <div class="flex">
+          <label
+            >API URL:
+            <input type="text" value="" style="width: 300px" id="apiUrl"
+          /></label>
+          <label
+            >Your Stats Key:
+            <input
+              type="text"
+              id="statsKey"
+              placeholder="Enter your stats key"
+              style="width: 300px"
+          /></label>
+          <button id="fetchBtn">Load from Server</button>
+          <button id="refreshSongsBtn">Refresh Songs</button>
+        </div>
+        <div class="status" id="statusMsg">
+          Enter API URL, your stats key, and click "Load from Server"
+        </div>
+      </div>
+      <div class="card">
+        <h2>Paste JSON manually</h2>
+        <textarea
+          id="statsData"
+          rows="4"
+          placeholder='{"0": 10, "1": 5, ...}'
+        ></textarea>
+        <div class="flex">
+          <button id="parseBtn">Show Stats</button>
+          <button id="clearBtn">Clear</button>
+        </div>
+        <div class="card">
+          <h2>Stats Table</h2>
+          <div style="overflow-x: auto">
+            <table id="statsTable">
+              <thead>
+                <tr>
+                  <th>ID</th>
+                  <th>Song Name</th>
+                  <th>Plays</th>
+                </tr>
+              </thead>
+              <tbody id="statsTableBody">
+                <tr>
+                  <td colspan="3">No data loaded.</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+    <script>
+      let songList = [];
+      let playData = {};
+
+      function getApiUrl() {
+        return document.getElementById("apiUrl").value.replace(/\$/, "");
+      }
+
+      async function loadSongs() {
+        const status = document.getElementById("statusMsg");
+        const url = getApiUrl();
+        if (!url) {
+          status.textContent = "Enter an API URL";
+          return;
+        }
+        try {
+          const res = await fetch(`${url}/songs`);
+          if (!res.ok) throw new Error(await res.text());
+          songList = await res.json();
+          status.textContent = `Loaded ${songList.length} songs`;
+          renderTable();
+        } catch (err) {
+          status.textContent = `Error: ${err.message}`;
+          conso.error(err);
+        }
+      }
+
+      async function fetchStatsFromServer() {
+        const key = document.getElementById("statsKey").value.trim();
+        if (!key) {
+          alert("Enter your stats key");
+          return;
+        }
+        const url = getApiUrl();
+        if (!url) {
+          alert("Enter an API URL");
+          return;
+        }
+        const status = document.getElementById("statusMsg");
+        status.textContent = "Fetching stats...";
+        try {
+          const res = await fetch(`${url}/stats/${key}`);
+          if (!res.ok) throw new Error(await res.text());
+          const data = await res.json();
+          playData = data;
+          status.textContent = `Loaded ${Object.keys(playData).length} entries`;
+          renderTable();
+        } catch (err) {
+          status.textContent = `Error: ${err.message}`;
+          conso.error(err);
+        }
+      }
+
+      function parseStats() {
+        const raw = document.getElementById("statsData").value.trim();
+        if (!raw) {
+          alert("Paste your stats data first");
+          return;
+        }
+        try {
+          playData = JSON.parse(raw);
+          if (typeof playData !== "object" || Array.isArray(playData)) {
+            throw new Error("Data must be an object");
+          }
+          document.getElementById("statusMsg").textContent =
+            `Parsed ${Object.keys(playData).length} entries`;
+          renderTable();
+        } catch (err) {
+          alert("Invalid JSON " + err.message);
+          console.error(err);
+        }
+      }
+
+      function renderTable() {
+        const tbody = document.getElementById("statsTableBody");
+        if (!songList.length && !Object.keys(playData).length) {
+          tbody.innerHTML =
+            "<tr><td colspan='3'>Load songs and paste stats to see data.</td></tr>";
+          return;
+        }
+
+        const nameMap = {};
+        songList.forEach((s) => {
+          nameMap[s.id] = s.name;
+        });
+
+        const rows = Object.entries(playData)
+          .map(([id, count]) => ({
+            id: parseInt(id),
+            name: nameMap[id] || "Unknown",
+            count: count,
+          }))
+          .sort((a, b) => b.count - a.count);
+
+        if (rows.length === 0) {
+          tbody.innerHTML = '<tr><td colspan="3">No play data found.</td></tr>';
+          return;
+        }
+
+        tbody.innerHTML = rows
+          .map(
+            (row) => `
+        <tr>
+          <td>${row.id}</td>
+          <td>${row.name}</td>
+          <td>${row.count}</td>
+        </tr>
+      `,
+          )
+          .join("");
+      }
+
+      document
+        .getElementById("fetchBtn")
+        .addEventListener("click", fetchStatsFromServer);
+      document
+        .getElementById("refreshSongsBtn")
+        .addEventListener("click", loadSongs);
+      document.getElementById("parseBtn").addEventListener("click", parseStats);
+      document.getElementById("clearBtn").addEventListener("click", () => {
+        document.getElementById("statsData").value = "";
+        playData = {};
+        renderTable();
+        document.getElementById("statusMsg").textContent = "🗑️ Cleared stats.";
+      });
+
+      document.getElementById("apiUrl").value = window.location.origin;
+
+      loadSongs();
+    </script>
+  </body>
+</html>
