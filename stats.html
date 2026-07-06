@@ -93,7 +93,7 @@
             <input type="text" value="" style="width: 300px" id="apiUrl"
           /></label>
           <label
-            >API Key: <input type="password" id="apiKey" style="width: 200px"
+            >API Key: <input type="password" id="apiKey" style="width: 180px"
           /></label>
           <label
             >Your Stats Key:
@@ -101,7 +101,7 @@
               type="text"
               id="statsKey"
               placeholder="Enter your stats key"
-              style="width: 200px"
+              style="width: 180px"
           /></label>
           <button id="fetchBtn">Load Stats</button>
           <button id="refreshSongsBtn">Refresh Songs</button>
@@ -176,8 +176,20 @@
           return;
         }
         const status = document.getElementById("statusMsg");
-        status.textContent = "⏳ Fetching stats...";
+        status.textContent = "Fetching stats...";
+
         try {
+          const headers = {};
+          const apiKey = getApiKey();
+          if (apiKey) headers["X-API-Key"] = apiKey;
+          const songRes = await fetch(`${url}/songs`, { headers });
+          if (songRes.ok) {
+            songList = await songRes.json();
+            status.textContent = `Loaded ${songList.length} songs. Fetching stats...`;
+          } else {
+            console.warn("Could not load songs, continuing with cached list.");
+          }
+
           const res = await fetch(`${url}/stats/${key}`);
           if (res.status === 404) {
             status.textContent = "No stats found for this key.";
