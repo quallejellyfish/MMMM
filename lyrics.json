@@ -52733,488 +52733,656 @@
   ],
   "137": [
     {
-      "chat": "zaochen wudian sishi qichuang",
-      "delay": 15053
+      "chat": "Zao chen wu dian si shi",
+      "delay": 14794
     },
     {
-      "chat": "xishu chonggezao",
-      "delay": 16165
+      "chat": "qi chuang",
+      "delay": 15804
     },
     {
-      "chat": "haiyou wufenzhong",
-      "delay": 17074
+      "chat": "Xi shu chong ge zao",
+      "delay": 16356
     },
     {
-      "chat": "chige shengrou mianbao",
-      "delay": 17976
+      "chat": "Hai you wu fen zhong chi",
+      "delay": 17221
     },
     {
-      "chat": "mingtian gen zuotian yiyang",
-      "delay": 19011
+      "chat": "ge sheng rou mian bao",
+      "delay": 18024
     },
     {
-      "chat": "heimaozi heise shoutao",
-      "delay": 20882
+      "chat": "Ming tian gen zuo tian de",
+      "delay": 18940
     },
     {
-      "chat": "heisedexue richu meidao",
-      "delay": 22249
+      "chat": "shi jian yi yang",
+      "delay": 19852
     },
     {
-      "chat": "nizhefengzou erduo huite-ng",
-      "delay": 23988
+      "chat": "Hei mao zi hei se shou tao",
+      "delay": 20832
     },
     {
-      "chat": "jiasu jiaobu che buhuiteng",
-      "delay": 25811
+      "chat": "Hei se de xue ri chu",
+      "delay": 22286
     },
     {
-      "chat": "buxiang shangche",
-      "delay": 27965
+      "chat": "mei dao",
+      "delay": 23101
     },
     {
-      "chat": "danwo tamabei qiangpo",
-      "delay": 28619
+      "chat": "Ni zhe feng zou er duo",
+      "delay": 23991
     },
     {
-      "chat": "yipaiyouyipai doushi shabi",
-      "delay": 29597
+      "chat": "hui teng",
+      "delay": 24951
     },
     {
-      "chat": "85fenzhong yinyue tingwan",
-      "delay": 31275
+      "chat": "Jia su jiao bu che bu",
+      "delay": 25872
     },
     {
-      "chat": "zhengkai yanjing",
-      "delay": 33012
+      "chat": "hui deng",
+      "delay": 26895
     },
     {
-      "chat": "womendao na pian changdi",
-      "delay": 31599
+      "chat": "Bu xiang shang che dan wo",
+      "delay": 27660
     },
     {
-      "chat": "zai wufenzhong jiaoyou",
-      "delay": 35382
+      "chat": "ta ma bei qiang po",
+      "delay": 28692
     },
     {
-      "chat": "ge siyanr de",
-      "delay": 35858
+      "chat": "Yi pai you yi pai de",
+      "delay": 29512
     },
     {
-      "chat": "shabi",
-      "delay": 37081
+      "chat": "dou shi sha bi",
+      "delay": 30514
     },
     {
-      "chat": "langfeiwo 45fenzhong shengm",
-      "delay": 37561
+      "chat": "Ba shi wu fen zhong de",
+      "delay": 31273
     },
     {
-      "chat": "rangwonankanshi zuida kending",
-      "delay": 39198
+      "chat": "yin yue ting wan cai",
+      "delay": 32206
     },
     {
-      "chat": "wo naqi yizi wang ta za",
-      "delay": 40680
+      "chat": "zheng kai yan jing",
+      "delay": 33058
     },
     {
-      "chat": "30zhishouzhezhu 30zhangzui",
-      "delay": 42407
+      "chat": "Wo men dao na pian gai",
+      "delay": 33518
     },
     {
-      "chat": "xiayimiao wo beibeihouzhua",
-      "delay": 44761
+      "chat": "si de chang di",
+      "delay": 34329
     },
     {
-      "chat": "hahaha",
-      "delay": 46758
+      "chat": "Zai wu fen zhong jiu you",
+      "delay": 35069
     },
     {
-      "chat": "niyiwei biwo da 30sui wo",
-      "delay": 47401
+      "chat": "ge si yan er de sha bi",
+      "delay": 35793
     },
     {
-      "chat": "buhui jiezhedia",
-      "delay": 49331
+      "chat": "Lang fei wo si shi wu",
+      "delay": 37001
     },
     {
-      "chat": "jiusuan biwoqiang wo 1mi3",
-      "delay": 50223
+      "chat": "fen zhong de sheng ming",
+      "delay": 37795
     },
     {
-      "chat": "jiusuan tianxie yao shu",
-      "delay": 51961
+      "chat": "Rang wo nan kan shi ta",
+      "delay": 38762
     },
     {
-      "chat": "hen piaoliang",
-      "delay": 53352
+      "chat": "zui da de ken ding",
+      "delay": 39680
     },
     {
-      "chat": "jiusuanwo aoguo zhe 45fen",
-      "delay": 54176
+      "chat": "Wo na qi yi zi wang ta",
+      "delay": 40652
     },
     {
-      "chat": "likaishijiaoqu caochang",
-      "delay": 55691
+      "chat": "na bian za",
+      "delay": 41765
     },
     {
-      "chat": "fandui shuochang de laji",
-      "delay": 57346
+      "chat": "Zhuan shen you 30 zhi shou",
+      "delay": 42448
+    },
+    {
+      "chat": "zhe zhu 30 zhang zui",
+      "delay": 43693
+    },
+    {
+      "chat": "Xia yi miao wo cong bei",
+      "delay": 44768
+    },
+    {
+      "chat": "hou bei ren zhua",
+      "delay": 45814
+    },
+    {
+      "chat": "Ha ha ha",
+      "delay": 46544
+    },
+    {
+      "chat": "Ni yi wei ni bi wo da",
+      "delay": 47415
+    },
+    {
+      "chat": "san shi sui wo bu hui",
+      "delay": 48517
+    },
+    {
+      "chat": "jie zhe da",
+      "delay": 49341
+    },
+    {
+      "chat": "Jiu suan ni bi wo qiang",
+      "delay": 50027
+    },
+    {
+      "chat": "wo cai yi mi san",
+      "delay": 51021
+    },
+    {
+      "chat": "Jiu suan tian xie yao shu",
+      "delay": 51928
+    },
+    {
+      "chat": "ken ding yao shu de",
+      "delay": 52912
+    },
+    {
+      "chat": "hen piao liang",
+      "delay": 53508
+    },
+    {
+      "chat": "Jiu suan wo ao guo zhe",
+      "delay": 54121
+    },
+    {
+      "chat": "si shi wu fen zhong",
+      "delay": 55067
+    },
+    {
+      "chat": "Li kai jiao shi qu cao",
+      "delay": 55640
+    },
+    {
+      "chat": "chang you yi dui fan dui",
+      "delay": 56426
+    },
+    {
+      "chat": "shuo chang de la ji",
+      "delay": 57419
+    },
+    {
+      "chat": "yao fen lei",
+      "delay": 58430
     },
     {
       "chat": "Dring Dring",
-      "delay": 59123
+      "delay": 59198
     },
     {
-      "chat": "naozhongsheng rangwo xingx",
-      "delay": 59823
+      "chat": "Nao zhong sheng rang",
+      "delay": 59985
     },
     {
-      "chat": "qilai zhuanqianmai",
-      "delay": 61831
+      "chat": "wo xing xing",
+      "delay": 60781
+    },
+    {
+      "chat": "Qi lai zhuan qian mai",
+      "delay": 61592
     },
     {
       "chat": "Bling Bling",
-      "delay": 62892
+      "delay": 62847
     },
     {
-      "chat": "ba shuo zuoren yao",
-      "delay": 63551
+      "chat": "Ba shuo zuo ren yao",
+      "delay": 63473
     },
     {
       "chat": "clean clean",
-      "delay": 64621
+      "delay": 64689
     },
     {
-      "chat": "meitian ting nasheng",
-      "delay": 65394
+      "chat": "Mei tian ting na sheng",
+      "delay": 65358
     },
     {
       "chat": "Dring Dring",
-      "delay": 66556
+      "delay": 66544
     },
     {
-      "chat": "naozhongsheng rangwo xingx",
-      "delay": 67389
+      "chat": "Nao zhong sheng rang",
+      "delay": 67245
     },
     {
-      "chat": "miandui shabi yao pinming",
-      "delay": 69115
+      "chat": "wo xing xing",
+      "delay": 68092
     },
     {
-      "chat": "xin xuexiao wo shi",
-      "delay": 70912
+      "chat": "Mian dui sha bi yao",
+      "delay": 69071
+    },
+    {
+      "chat": "pin ming",
+      "delay": 70153
+    },
+    {
+      "chat": "Xin xue xiao wo shi",
+      "delay": 70891
     },
     {
       "chat": "King King",
-      "delay": 71946
+      "delay": 71972
     },
     {
-      "chat": "meitian ting nasheng",
-      "delay": 72735
+      "chat": "Mei tian ting na sheng",
+      "delay": 72717
     },
     {
       "chat": "Dring Dring",
-      "delay": 73864
+      "delay": 73873
     },
     {
-      "chat": "naozhongsheng rangwo xingx",
-      "delay": 74609
+      "chat": "Nao zhong sheng rang",
+      "delay": 74559
     },
     {
-      "chat": "qilai zhuanqian mai",
-      "delay": 76451
+      "chat": "wo xing xing",
+      "delay": 75660
+    },
+    {
+      "chat": "Qi lai zhuan qian mai",
+      "delay": 76514
     },
     {
       "chat": "Bling Bling",
-      "delay": 77579
+      "delay": 77516
     },
     {
-      "chat": "ba shuo zuoren yao",
-      "delay": 78331
+      "chat": "Ba shuo zuo ren yao",
+      "delay": 78268
     },
     {
       "chat": "clean clean",
-      "delay": 79298
+      "delay": 79364
     },
     {
-      "chat": "meitian ting nasheng",
-      "delay": 80149
+      "chat": "Mei tian ting na sheng",
+      "delay": 80094
     },
     {
       "chat": "Dring Dring",
-      "delay": 81308
+      "delay": 81275
     },
     {
-      "chat": "naozhongsheng rangwo xingx",
-      "delay": 81985
+      "chat": "Nao zhong sheng rang",
+      "delay": 81988
     },
     {
-      "chat": "miandui shabi yao pinming",
-      "delay": 83800
+      "chat": "wo xing xing",
+      "delay": 82841
     },
     {
-      "chat": "lao xuexiao wo shi",
-      "delay": 85685
+      "chat": "Mian dui sha bi yao",
+      "delay": 83828
+    },
+    {
+      "chat": "pin ming",
+      "delay": 84915
+    },
+    {
+      "chat": "Lao xue xiao wo shi",
+      "delay": 85577
     },
     {
       "chat": "King King",
-      "delay": 86942
+      "delay": 86831
     },
     {
-      "chat": "meitian ting nasheng",
-      "delay": 87691
+      "chat": "Mei tian ting na sheng",
+      "delay": 87527
     },
     {
-      "chat": "you shuiguotoule",
-      "delay": 88670
+      "chat": "You shui guo tou le bu",
+      "delay": 88794
     },
     {
-      "chat": "buxiang qu xuexiao",
-      "delay": 89637
+      "chat": "xiang qu xue xiao",
+      "delay": 89724
     },
     {
-      "chat": "jiaobuhui wo jueqiao",
-      "delay": 90391
+      "chat": "Jiao bu hui wo jue qiao",
+      "delay": 90422
     },
     {
-      "chat": "jintian gangeqiune?",
-      "delay": 91381
+      "chat": "jin tian gan ge qiu ne",
+      "delay": 91369
     },
     {
-      "chat": "zhuanqianfangfa he zuotian",
-      "delay": 92392
+      "chat": "Zhuan qian de fang fa he",
+      "delay": 92312
     },
     {
-      "chat": "dingding Money daozhang",
-      "delay": 94272
+      "chat": "zuo tian yi yang",
+      "delay": 93149
     },
     {
-      "chat": "pinge ming ba",
-      "delay": 95965
+      "chat": "Ding ding ding ding",
+      "delay": 94164
     },
     {
-      "chat": "dou dei huozhe",
-      "delay": 97435
+      "chat": "Money dao zhang",
+      "delay": 95065
     },
     {
-      "chat": "xin bu xin ba",
-      "delay": 98355
+      "chat": "Pin ge ming ba dou de",
+      "delay": 95979
     },
     {
-      "chat": "doushi wo de",
-      "delay": 98989
+      "chat": "huo zhe",
+      "delay": 97024
     },
     {
-      "chat": "jiushuo wo shuo de",
-      "delay": 99705
+      "chat": "Xin bu xin ba dou shi",
+      "delay": 97574
     },
     {
-      "chat": "dou gei wo duo zhe",
-      "delay": 100631
+      "chat": "wo de",
+      "delay": 98489
     },
     {
-      "chat": "conglaimeisuoguo de bozi",
-      "delay": 101951
+      "chat": "Jiu xiang wo shuo de dou",
+      "delay": 98991
     },
     {
-      "chat": "yingming gei tuozhe",
-      "delay": 103438
+      "chat": "gei wo duo zhe",
+      "delay": 99854
     },
     {
-      "chat": "yiciyouyici de juqi quantou",
-      "delay": 103399
+      "chat": "Cong lai mei suo guo de",
+      "delay": 100595
     },
     {
-      "chat": "領xiu cai neng chidao haorou",
-      "delay": 104957
+      "chat": "bo zi ye hui ba ying",
+      "delay": 101542
     },
     {
-      "chat": "zuobudao ni xihuan de diyi",
-      "delay": 107125
+      "chat": "ming gei tuo zhe",
+      "delay": 102590
     },
     {
-      "chat": "congxiaodaoda wo xuehui",
-      "delay": 108680
+      "chat": "Yi ci you yi ci de",
+      "delay": 103581
     },
     {
-      "chat": "nimen douxiang hunjin bangp",
-      "delay": 111311
+      "chat": "ju qi quan tou",
+      "delay": 104364
     },
     {
-      "chat": "danwo yijing kaiqi wo de",
-      "delay": 113108
+      "chat": "Bu tui hou de ling xiu",
+      "delay": 105050
     },
     {
-      "chat": "new life",
-      "delay": 114086
+      "chat": "cai neng chi dao hao rou",
+      "delay": 105959
     },
     {
-      "chat": "cong wo chusheng yilai",
-      "delay": 114703
+      "chat": "Zuo bu dao rang ni xi",
+      "delay": 107223
     },
     {
-      "chat": "kanguanle bianmai",
-      "delay": 115537
+      "chat": "huan de di yi",
+      "delay": 108170
     },
     {
-      "chat": "wei ai de biantai",
-      "delay": 116439
+      "chat": "Cong xiao dao da wo xue",
+      "delay": 108908
     },
     {
-      "chat": "wo cai buhui rennai",
-      "delay": 117645
+      "chat": "hui de zhi you fan ji",
+      "delay": 109861
+    },
+    {
+      "chat": "Ni men dou xiang hun jin",
+      "delay": 111349
+    },
+    {
+      "chat": "wo de bang pai",
+      "delay": 112223
+    },
+    {
+      "chat": "Dan wo yi jing kai qi",
+      "delay": 113109
+    },
+    {
+      "chat": "wo de new life",
+      "delay": 113905
+    },
+    {
+      "chat": "Cong wo chu sheng yi lai",
+      "delay": 114671
+    },
+    {
+      "chat": "kan guan le bian mai",
+      "delay": 115473
+    },
+    {
+      "chat": "Wei ai de bian tai wo",
+      "delay": 116416
+    },
+    {
+      "chat": "cai bu hui ren nai",
+      "delay": 117385
     },
     {
       "chat": "Bang Bang Bang",
-      "delay": 118467
+      "delay": 118309
     },
     {
-      "chat": "wozhihui jiaode xiangni xuany",
-      "delay": 119036
+      "chat": "Wo zhi hui jiao ao di",
+      "delay": 119030
     },
     {
-      "chat": "de chengjiu",
-      "delay": 120638
+      "chat": "xiang ni xuan yao wo",
+      "delay": 120065
     },
     {
-      "chat": "buhui duini chuixu",
-      "delay": 121532
+      "chat": "de cheng jiu",
+      "delay": 120650
     },
     {
-      "chat": "yinwei dong guiju",
-      "delay": 122404
+      "chat": "Bu hui dui ni chui xu",
+      "delay": 121379
     },
     {
-      "chat": "napawoguixi ye buhuifangxi",
-      "delay": 123374
+      "chat": "yin wei dong gui ju",
+      "delay": 122273
     },
     {
-      "chat": "quantou",
-      "delay": 125167
+      "chat": "Na pa wo gui xi ye bu",
+      "delay": 123302
     },
     {
-      "chat": "zhouzhe meitou",
+      "chat": "hui fang xia wo quan tou",
+      "delay": 124528
+    },
+    {
+      "chat": "Zhou zhe mei tou xiang",
       "delay": 125700
     },
     {
-      "chat": "xiangzhe nanzheng beidou",
-      "delay": 126783
+      "chat": "zhe nan zheng bei dou",
+      "delay": 126636
     },
     {
-      "chat": "mafan zaida ye shuaibeihou",
-      "delay": 127833
+      "chat": "Ma fan zai da ye hui",
+      "delay": 127517
     },
     {
-      "chat": "niwen yihou wozenme chuto",
-      "delay": 129335
+      "chat": "shuai zai bei hou",
+      "delay": 128593
     },
     {
-      "chat": "zhihao shouli de mai chush",
-      "delay": 130821
+      "chat": "Ni wen yi hou wo yao",
+      "delay": 129326
+    },
+    {
+      "chat": "zen me chu tou",
+      "delay": 130511
+    },
+    {
+      "chat": "Zhi shao shou li de mai",
+      "delay": 130819
+    },
+    {
+      "chat": "wo hai na de chu shou",
+      "delay": 131746
     },
     {
       "chat": "Dring Dring",
-      "delay": 132916
+      "delay": 132978
     },
     {
-      "chat": "naozhongsheng rangwo xingx",
-      "delay": 133796
+      "chat": "Nao zhong sheng rang",
+      "delay": 133609
     },
     {
-      "chat": "qilai zhuanqian mai",
-      "delay": 135503
+      "chat": "wo xing xing",
+      "delay": 134546
+    },
+    {
+      "chat": "Qi lai zhuan qian mai",
+      "delay": 135416
     },
     {
       "chat": "Bling Bling",
-      "delay": 136573
+      "delay": 136707
     },
     {
-      "chat": "ba shuo zuoren yao",
-      "delay": 137367
+      "chat": "Ba shuo zuo ren yao",
+      "delay": 137333
     },
     {
       "chat": "clean clean",
-      "delay": 138574
+      "delay": 138539
     },
     {
-      "chat": "meitian ting nasheng",
-      "delay": 139280
+      "chat": "Mei tian ting na sheng",
+      "delay": 139257
     },
     {
       "chat": "Dring Dring",
-      "delay": 140346
+      "delay": 140407
     },
     {
-      "chat": "naozhongsheng rangwo xingx",
+      "chat": "Nao zhong sheng rang",
       "delay": 141068
     },
     {
-      "chat": "miandui shabi yao pinming",
-      "delay": 142880
+      "chat": "wo xing xing",
+      "delay": 149303
     },
     {
-      "chat": "xin xuexiao wo shi",
-      "delay": 144732
+      "chat": "Mian dui sha bi yao",
+      "delay": 142990
+    },
+    {
+      "chat": "pin ming",
+      "delay": 144079
+    },
+    {
+      "chat": "Xin xue xiao wo shi",
+      "delay": 144760
     },
     {
       "chat": "King King",
-      "delay": 145917
+      "delay": 145869
     },
     {
-      "chat": "meitian ting nasheng",
-      "delay": 146639
+      "chat": "Mei tian ting na sheng",
+      "delay": 146622
     },
     {
       "chat": "Dring Dring",
-      "delay": 147712
+      "delay": 147781
     },
     {
-      "chat": "naozhongsheng rangwo xingx",
-      "delay": 148456
+      "chat": "Nao zhong sheng rang",
+      "delay": 148441
     },
     {
-      "chat": "qilai zhuanqian mai",
-      "delay": 150272
+      "chat": "wo xing xing",
+      "delay": 149504
+    },
+    {
+      "chat": "Qi lai zhuan qian mai",
+      "delay": 150369
     },
     {
       "chat": "Bling Bling",
-      "delay": 151320
+      "delay": 151502
     },
     {
-      "chat": "ba shuo zuoren yao",
-      "delay": 152320
+      "chat": "Ba shuo zuo ren yao",
+      "delay": 152202
     },
     {
       "chat": "clean clean",
-      "delay": 153275
+      "delay": 153210
     },
     {
-      "chat": "meitian ting nasheng",
-      "delay": 153990
+      "chat": "Mei tian ting na sheng",
+      "delay": 154007
     },
     {
       "chat": "Dring Dring",
-      "delay": 155092
+      "delay": 155184
     },
     {
-      "chat": "naozhongsheng rangwo xingx",
-      "delay": 155868
+      "chat": "Nao zhong sheng rang",
+      "delay": 155897
     },
     {
-      "chat": "miandui shabi yao pinming",
+      "chat": "wo xing xing",
+      "delay": 156782
+    },
+    {
+      "chat": "Mian dui sha bi yao",
       "delay": 157662
     },
     {
-      "chat": "lao xuexiao wo shi",
-      "delay": 159526
+      "chat": "pin ming",
+      "delay": 158836
+    },
+    {
+      "chat": "Lao xue xiao wo shi",
+      "delay": 159533
     },
     {
       "chat": "King King",
-      "delay": 160689
+      "delay": 160679
     },
     {
-      "chat": "meitian ting nasheng",
-      "delay": 161352
+      "chat": "Mei tian ting na sheng",
+      "delay": 161383
     }
   ],
   "138": [
