@@ -39621,264 +39621,336 @@
   ],
   "101": [
     {
+      "chat": "Pa ppara pa guri guri dance!",
+      "delay": 3164
+    },
+    {
+      "chat": "Pa ppara pa",
+      "delay": 5715
+    },
+    {
+      "chat": "guri guri guri guri",
+      "delay": 6833
+    },
+    {
+      "chat": "Pa ppara pa guri guri dance!",
+      "delay": 8331
+    },
+    {
+      "chat": "Pa ppara pa",
+      "delay": 10792
+    },
+    {
+      "chat": "guri guri gu- gu- gu- gu-",
+      "delay": 12110
+    },
+    {
       "chat": "Hontou ni miseta mozouhin",
-      "delay": 13791
+      "delay": 13579
     },
     {
-      "chat": "Kokoro de sagesumu you and me",
-      "delay": 16284
+      "chat": "Kokoro de sagesumu You & Me",
+      "delay": 16070
     },
     {
-      "chat": "Teisai wo tamotsu gizensya",
-      "delay": 18960
+      "chat": "Teisai o tamotsu gizensha",
+      "delay": 18685
     },
     {
-      "chat": "Umareta uso no shoutai yeah",
-      "delay": 21319
+      "chat": "Umareta uso no shoutai",
+      "delay": 21183
     },
     {
-      "chat": "Aijou creation",
-      "delay": 24162
+      "chat": "Aijou kurieishon",
+      "delay": 23805
     },
     {
-      "chat": "Shousan decoration",
-      "delay": 24880
+      "chat": "Shousan dekoreeshon",
+      "delay": 24918
     },
     {
-      "chat": "Blah, blah",
-      "delay": 26040
+      "chat": "blah blah",
+      "delay": 25868
     },
     {
       "chat": "Anta no setsumeisho",
-      "delay": 26708
+      "delay": 26546
     },
     {
       "chat": "Wakaranai yaiya",
-      "delay": 27626
+      "delay": 27562
     },
     {
-      "chat": "Taida no reflection",
-      "delay": 29256
+      "chat": "Taida no rifurekushon",
+      "delay": 29131
     },
     {
-      "chat": "Inga no ouhou show",
-      "delay": 30476
+      "chat": "Inga no ouhou SHOW",
+      "delay": 30039
     },
     {
-      "chat": "Blah blah",
-      "delay": 31327
+      "chat": "blah blah",
+      "delay": 31028
     },
     {
-      "chat": "Houkai mode wo suishin",
-      "delay": 31911
+      "chat": "Houkai moodo o suishin",
+      "delay": 31732
     },
     {
-      "chat": "Yokusei no!",
-      "delay": 33766
+      "chat": "Yokusei NO!",
+      "delay": 33700
     },
     {
-      "chat": "Aishite hate yorokobi sad",
-      "delay": 34893
+      "chat": "Aishite heito",
+      "delay": 34513
     },
     {
-      "chat": "Joushou-chuu down,",
-      "delay": 37268
+      "chat": "Yorokobi saddo",
+      "delay": 35736
     },
     {
-      "chat": "down, down,",
-      "delay": 38500
+      "chat": "Joushou chuu",
+      "delay": 37065
     },
     {
-      "chat": "Shinjite doubt",
-      "delay": 39887
+      "chat": "DOWN DOWN DOWN",
+      "delay": 38115
     },
     {
-      "chat": "zetsubou de somari",
-      "delay": 40900
+      "chat": "DOWN DOWN DOWN (x2)",
+      "delay": 38911
     },
     {
-      "chat": "Yukai ni odorimasho",
-      "delay": 42820
+      "chat": "Shinjite dauto",
+      "delay": 39604
     },
     {
-      "chat": "Saa sessesse sei no yoi",
-      "delay": 44623
+      "chat": "Zetsubou de somari yukai",
+      "delay": 40976
     },
     {
-      "chat": "Zen yoi uso ga honto wo",
-      "delay": 46212
+      "chat": "ni odorimasho",
+      "delay": 43131
     },
     {
-      "chat": "Zenbu nomikomonde",
-      "delay": 48124
+      "chat": "Saa,",
+      "delay": 44173
     },
     {
-      "chat": "Sessesse sei no yoi yoi yoi",
-      "delay": 49986
+      "chat": "Se sse sei no ryou zen sui",
+      "delay": 44706
     },
     {
-      "chat": "Kimi no sono te de isso",
-      "delay": 52189
+      "chat": "Uso ga honto o zenbu nomikonde,",
+      "delay": 46941
     },
     {
-      "chat": "Kudakechita kako wo",
-      "delay": 65984
+      "chat": "Se sse sei no yoi yoi yoi",
+      "delay": 49785
     },
     {
-      "chat": "Jitto nagameteteta",
-      "delay": 67408
+      "chat": "Kimi no sono te de isso raku",
+      "delay": 51902
     },
     {
-      "chat": "Majimebutta mirai",
-      "delay": 68496
+      "chat": "ni shite!",
+      "delay": 53797
     },
     {
-      "chat": "Zutto shinjiteteta",
-      "delay": 69396
+      "chat": "Pa ppara pa guri guri dance!",
+      "delay": 55100
     },
     {
-      "chat": "Hajiketon da risou",
-      "delay": 71093
+      "chat": "Pa ppara pa",
+      "delay": 57590
     },
     {
-      "chat": "Hiroi atsumete",
-      "delay": 71000
+      "chat": "guri guri guri guri",
+      "delay": 58725
     },
     {
-      "chat": "Norari kurari haikai-chuu",
-      "delay": 74728
+      "chat": "Pa ppara pa guri guri dance!",
+      "delay": 60257
     },
     {
-      "chat": "Nandemo imitation",
-      "delay": 76191
+      "chat": "Pa ppara pa",
+      "delay": 62706
     },
     {
-      "chat": "Sugusama rotation",
-      "delay": 76830
+      "chat": "guri guri guri guri..",
+      "delay": 63919
     },
     {
-      "chat": "Blah, blah kaimu na seigousei",
-      "delay": 77766
+      "chat": "Kudake chitta kako o",
+      "delay": 65502
+    },
+    {
+      "chat": "jitto nagameteta",
+      "delay": 67126
+    },
+    {
+      "chat": "Majime butta mirai",
+      "delay": 68232
+    },
+    {
+      "chat": "zutto shinjiteta",
+      "delay": 69718
+    },
+    {
+      "chat": "Hajike tonda risou",
+      "delay": 70766
+    },
+    {
+      "chat": "hiroi atsumete",
+      "delay": 72302
+    },
+    {
+      "chat": "Norari kurari haikaichuu!",
+      "delay": 73196
+    },
+    {
+      "chat": "Nan demo imiteeshon",
+      "delay": 75880
+    },
+    {
+      "chat": "Sugusama rooteeshon",
+      "delay": 76725
+    },
+    {
+      "chat": "blah blah,",
+      "delay": 77608
+    },
+    {
+      "chat": "Kaimu na seigousei",
+      "delay": 78505
     },
     {
       "chat": "Furimidasu boku wa",
-      "delay": 79481
+      "delay": 79404
     },
     {
       "chat": "Namida sae uso ni nomare",
-      "delay": 81115
+      "delay": 81023
     },
     {
-      "chat": "Nagai kurai yoru wo",
-      "delay": 83553
+      "chat": "Nagai kurai yoru o",
+      "delay": 83458
     },
     {
-      "chat": "Maiban koushin-chuu",
-      "delay": 84600
+      "chat": "maiban koushinchuu!",
+      "delay": 84780
     },
     {
-      "chat": "Katamari melt",
-      "delay": 86735
+      "chat": "Katamari meruto,",
+      "delay": 86601
     },
     {
-      "chat": "Hidari ni turn right",
-      "delay": 87955
+      "chat": "Hidari ni taan raito,",
+      "delay": 87748
     },
     {
-      "chat": "Chinbotsu-chuu dawn,",
-      "delay": 89241
+      "chat": "Chinbotsu chuu",
+      "delay": 88980
     },
     {
-      "chat": "dawn, dawn,",
-      "delay": 90500
+      "chat": "DAWN DAWN DAWN",
+      "delay": 90128
+    },
+    {
+      "chat": "DAWN DAWN DAWN (x2)",
+      "delay": 90750
     },
     {
       "chat": "Kurushimi enjoy",
-      "delay": 92086
+      "delay": 91550
     },
     {
-      "chat": "Karappo na atama n naka ga",
-      "delay": 93047
+      "chat": "Karappo na ataman naka ga",
+      "delay": 92850
     },
     {
-      "chat": "Urusee na kiete kure",
-      "delay": 94546
+      "chat": "urusee na!",
+      "delay": 95197
     },
     {
-      "chat": "Saasessesse sei no yoi",
-      "delay": 98385
+      "chat": "Kiete kure!!",
+      "delay": 96448
     },
     {
-      "chat": "Zen yoi uso mo honto mo",
-      "delay": 99771
+      "chat": "Saa,",
+      "delay": 98098
     },
     {
-      "chat": "Zenbu owarasete",
-      "delay": 101589
+      "chat": "Se sse sei no ryou zen sui",
+      "delay": 98631
     },
     {
-      "chat": "Sessesse sei no yoi yoi yoi",
-      "delay": 103784
+      "chat": "Uso mo honto mo",
+      "delay": 100495
+    },
+    {
+      "chat": "zenbu owarasete",
+      "delay": 101740
+    },
+    {
+      "chat": "Se sse sei no yoi yoi yoi",
+      "delay": 103571
     },
     {
       "chat": "Kimi no sono te de",
-      "delay": 105931
+      "delay": 105753
     },
     {
-      "chat": "Gyutto dakishimete",
-      "delay": 106890
+      "chat": "gyutto dakishimete",
+      "delay": 106999
     },
     {
-      "chat": "Saa sessesse sei no yoi",
-      "delay": 108682
+      "chat": "Saa,",
+      "delay": 108421
     },
     {
-      "chat": "Zen yoi uso ga honto wo",
-      "delay": 111696
+      "chat": "Se sse sei no ryou zen sui",
+      "delay": 108983
     },
     {
-      "chat": "Zenbu nomikomonde",
-      "delay": 112353
+      "chat": "Uso ga honto o zenbu nomikonde",
+      "delay": 111123
     },
     {
-      "chat": "Sessesse sei no yoi yoi yoi",
-      "delay": 114355
+      "chat": "Se sse sei no yoi yoi yoi",
+      "delay": 113834
     },
     {
-      "chat": "Kimi no sono te de isso",
-      "delay": 116444
+      "chat": "Kimi no sono te de isso raku",
+      "delay": 116252
     },
     {
-      "chat": "Raku ni shite",
-      "delay": 118015
+      "chat": "ni shite!",
+      "delay": 118234
     },
     {
-      "chat": "Chinpu na jinsei",
-      "delay": 119329
+      "chat": "Chinpu na jinsei 1, 2, 3,",
+      "delay": 119133
     },
     {
-      "chat": "one, two, three",
-      "delay": 120500
+      "chat": "Toritsukuroi uso",
+      "delay": 121758
     },
     {
-      "chat": "Toritstukuroi uso wo",
-      "delay": 121896
+      "chat": "o nurikatameta",
+      "delay": 123200
     },
     {
-      "chat": "nurikatameta",
-      "delay": 122800
+      "chat": "Hanran bunshi no shinyuu e",
+      "delay": 124427
     },
     {
-      "chat": "Hanran bunshi no shinyuu he",
-      "delay": 124696
+      "chat": "Shuushifu utasete!",
+      "delay": 126909
     },
     {
-      "chat": "Shuushifu utasete",
-      "delay": 126908
-    },
-    {
-      "chat": "Tada ima wa odorasete",
-      "delay": 129221
+      "chat": "Tada ima wa odorasete!",
+      "delay": 129250
     }
   ],
   "102": [
