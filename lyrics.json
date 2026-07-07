@@ -39629,7 +39629,7 @@
       "delay": 5715
     },
     {
-      "chat": "guri guri guri guri",
+      "chat": "guri guri guri guri,",
       "delay": 6833
     },
     {
@@ -39669,7 +39669,7 @@
       "delay": 24918
     },
     {
-      "chat": "blah blah",
+      "chat": "blah blah,",
       "delay": 25868
     },
     {
@@ -39765,7 +39765,7 @@
       "delay": 57590
     },
     {
-      "chat": "guri guri guri guri",
+      "chat": "guri guri guri guri,",
       "delay": 58725
     },
     {
@@ -39951,6 +39951,30 @@
     {
       "chat": "Tada ima wa odorasete!",
       "delay": 129250
+    },
+    {
+      "chat": "Pa ppara pa guri guri dance!",
+      "delay": 132241
+    },
+    {
+      "chat": "Pa ppara pa",
+      "delay": 134893
+    },
+    {
+      "chat": "guri guri guri guri,",
+      "delay": 135793
+    },
+    {
+      "chat": "Pa ppara pa guri guri dance!",
+      "delay": 137458
+    },
+    {
+      "chat": "Pa ppara pa",
+      "delay": 140086
+    },
+    {
+      "chat": "guri guri gu- gu- gu- gu-",
+      "delay": 141159
     }
   ],
   "102": [
