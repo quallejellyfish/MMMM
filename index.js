@@ -266,48 +266,56 @@ async function getStatsFile(key) {
   }
 }
 async function writeStatsFile(key, stats) {
-    const url = `https://api.github.com/repos/${GITHUB_REPO}/contents/${STATS_FOLDER}/${key}.json`;
-    const content = JSON.stringify(stats, null, 2);
-    const base64Content = Buffer.from(content, 'utf8').toString('base64');
+  const url = `https://api.github.com/repos/${GITHUB_REPO}/contents/${STATS_FOLDER}/${key}.json`;
+  const content = JSON.stringify(stats, null, 2);
+  const base64Content = Buffer.from(content, "utf8").toString("base64");
 
-    let sha = null;
-    try {
-        const getRes = await fetch(url, {
-            headers: { Authorization: `token ${GITHUB_TOKEN}`, Accept: 'application/vnd.github.v3+json' }
-        });
-        if (getRes.ok) {
-            const data = await getRes.json();
-            sha = data.sha;
-        }
-    } catch (e) { }
-
-    const body = {
-        message: `Update stats for ${key}`,
-        content: base64Content,
-        branch: GITHUB_BRANCH || 'main'
-    };
-    if (sha) body.sha = sha;
-
-    const putRes = await fetch(url, {
-        method: 'PUT',
-        headers: {
-            Authorization: `token ${GITHUB_TOKEN}`,
-            Accept: 'application/vnd.github.v3+json',
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(body)
+  let sha = null;
+  try {
+    const getRes = await fetch(url, {
+      headers: {
+        Authorization: `token ${GITHUB_TOKEN}`,
+        Accept: "application/vnd.github.v3+json",
+      },
     });
-    if (!putRes.ok) {
-        const errText = await putRes.text();
-        throw new Error(`GitHub API error: ${putRes.status} ${errText}`);
+    if (getRes.ok) {
+      const data = await getRes.json();
+      sha = data.sha;
     }
-    return putRes.json();
+  } catch (e) {}
+
+  const body = {
+    message: `Update stats for ${key}`,
+    content: base64Content,
+    branch: GITHUB_BRANCH || "main",
+  };
+  if (sha) body.sha = sha;
+
+  const putRes = await fetch(url, {
+    method: "PUT",
+    headers: {
+      Authorization: `token ${GITHUB_TOKEN}`,
+      Accept: "application/vnd.github.v3+json",
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(body),
+  });
+  if (!putRes.ok) {
+    const errText = await putRes.text();
+    throw new Error(`GitHub API error: ${putRes.status} ${errText}`);
+  }
+  return putRes.json();
 }
 
 // PROTECTED
 app.get("/songs", requireApiKey, (req, res) => {
   const songs = readSongs();
-  res.json(songs);
+  const lyrics = readLyrics();
+  const enhanced = songs.map((song) => {
+    const count = lyrics[song.id] ? lyrics[song.id].length : 0;
+    return { ...song, lyricsCount: count };
+  });
+  res.json(enhanced);
 });
 
 app.get("/songs/:id/lyrics", requireApiKey, (req, res) => {
@@ -557,43 +565,47 @@ app.put("/songs/:id/lyrics", requireApiKey, (req, res) => {
   }
 });
 
-app.post('/stats/upload', requireApiKey, async (req, res) => {
-    const { key, stats } = req.body;
-    if (!key || typeof key !== 'string') {
-        return res.status(400).json({ error: 'key is required' });
-    }
-    if (!stats || typeof stats !== 'object') {
-        return res.status(400).json({ error: 'stats must be an object' });
-    }
+app.post("/stats/upload", requireApiKey, async (req, res) => {
+  const { key, stats } = req.body;
+  if (!key || typeof key !== "string") {
+    return res.status(400).json({ error: "key is required" });
+  }
+  if (!stats || typeof stats !== "object") {
+    return res.status(400).json({ error: "stats must be an object" });
+  }
 
-    if (!GITHUB_TOKEN || !GITHUB_REPO) {
-        return res.status(500).json({ error: 'GitHub credentials not configured.' });
-    }
+  if (!GITHUB_TOKEN || !GITHUB_REPO) {
+    return res
+      .status(500)
+      .json({ error: "GitHub credentials not configured." });
+  }
 
-    try {
-        await writeStatsFile(key, stats);
-        res.json({ message: `Stats for "${key}" saved successfully` });
-    } catch (err) {
-        console.error('Stats upload error:', err);
-        res.status(500).json({ error: err.message });
-    }
+  try {
+    await writeStatsFile(key, stats);
+    res.json({ message: `Stats for "${key}" saved successfully` });
+  } catch (err) {
+    console.error("Stats upload error:", err);
+    res.status(500).json({ error: err.message });
+  }
 });
 
-app.get('/stats/:key', async (req, res) => {
-    const { key } = req.params;
-    if (!GITHUB_TOKEN || !GITHUB_REPO) {
-        return res.status(500).json({ error: 'GitHub credentials not configured.' });
+app.get("/stats/:key", async (req, res) => {
+  const { key } = req.params;
+  if (!GITHUB_TOKEN || !GITHUB_REPO) {
+    return res
+      .status(500)
+      .json({ error: "GitHub credentials not configured." });
+  }
+  try {
+    const stats = await getStatsFile(key);
+    if (stats === null) {
+      return res.status(404).json({ error: "No stats found for this key." });
     }
-    try {
-        const stats = await getStatsFile(key);
-        if (stats === null) {
-            return res.status(404).json({ error: 'No stats found for this key.' });
-        }
-        res.json(stats);
-    } catch (err) {
-        console.error('Stats fetch error:', err);
-        res.status(500).json({ error: err.message });
-    }
+    res.json(stats);
+  } catch (err) {
+    console.error("Stats fetch error:", err);
+    res.status(500).json({ error: err.message });
+  }
 });
 
 // GITHUB
