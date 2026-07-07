@@ -611,22 +611,7 @@
             `<a href="${song.url}" target="_blank" style="color:#ff79c6;">link</a>`;
 
           const cellLyrics = row.insertCell(4);
-          cellLyrics.textContent = "...";
-          (async () => {
-            if (lyricCache[song.id]) {
-              cellLyrics.textContent = lyricCache[song.id];
-              return;
-            }
-            try {
-              const lyrics = await loadLyrics(song.id);
-              const count = lyrics.length;
-              lyricCache[song.id] = `${count} lines`;
-              cellLyrics.textContent = lyricCache[song.id];
-            } catch (e) {
-              cellLyrics.textContent = "0 lines";
-              lyricCache[song.id] = "0 lines";
-            }
-          })();
+          cellLyrics.textContent = `${song.lyricsCount ?? 0} lines`;
 
           const actions = row.insertCell(5);
           const editBtn = document.createElement("button");
