@@ -450,11 +450,6 @@ app.put("/songs/:id", requireApiKey, (req, res) => {
     writeSongs(songs);
     broadcastEvent("song-changed", { action: "edit", songId: id });
 
-    const lyrics = readLyrics();
-    const oldLyrics = lyrics[id] || [];
-    const oldCount = oldLyrics.length;
-    const newCount = oldLyrics.length;
-
     if (changes.name || changes.url || changes.category) {
       const newSong = { ...songs.find((s) => s.id === id) };
       if (changes.category) {
@@ -475,13 +470,9 @@ app.put("/songs/:id", requireApiKey, (req, res) => {
         newSong.category = oldCategoryName;
         oldSong.category = oldCategoryName;
       }
-      sendDiscordEditNotification(
-        oldSong,
-        newSong,
-        changes,
-        oldCount,
-        newCount,
-      ).catch((err) => console.error(err));
+      sendDiscordEditNotification(oldSong, newSong, changes).catch((err) =>
+        console.error(err),
+      );
     }
 
     res.json(songs.find((s) => s.id === id));
