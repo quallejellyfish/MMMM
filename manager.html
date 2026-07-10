@@ -284,7 +284,7 @@
             });
             await apiRequest(`/songs/${idNum}/lyrics`, "PUT", {
               lyrics: lyricsArray,
-              skipDiscord: true,
+              // skipDiscord: true,
             });
 
             delete lyricCache[idNum];
