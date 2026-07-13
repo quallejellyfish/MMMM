@@ -70637,6 +70637,324 @@
       "delay": 140041
     }
   ],
+  "189": [
+    {
+      "chat": "Doushite sugu shitte shimau no",
+      "delay": 1527
+    },
+    {
+      "chat": "Kyoushin de kurushinde",
+      "delay": 2951
+    },
+    {
+      "chat": "shi batou",
+      "delay": 3679
+    },
+    {
+      "chat": "Koushin de furu inseki",
+      "delay": 4250
+    },
+    {
+      "chat": "masshou ka",
+      "delay": 5253
+    },
+    {
+      "chat": "Warukunai",
+      "delay": 6017
+    },
+    {
+      "chat": "Kyoumi nee sukui hade kandou",
+      "delay": 7059
+    },
+    {
+      "chat": "Joubi nee kusuri tabe bad",
+      "delay": 8550
+    },
+    {
+      "chat": "Chou kue furu mitame angouka",
+      "delay": 9852
+    },
+    {
+      "chat": "Kane ni yoru",
+      "delay": 11298
+    },
+    {
+      "chat": "Joushiki nee kuruippa",
+      "delay": 12781
+    },
+    {
+      "chat": "de rantou",
+      "delay": 13658
+    },
+    {
+      "chat": "Houchigee suru inkya de bando",
+      "delay": 14212
+    },
+    {
+      "chat": "Soushin de kurushii dame",
+      "delay": 15490
+    },
+    {
+      "chat": "cancel wa",
+      "delay": 16620
+    },
+    {
+      "chat": "Kusa haeru",
+      "delay": 17365
+    },
+    {
+      "chat": "Doushite sugu mite shimau no",
+      "delay": 18404
+    },
+    {
+      "chat": "Doushite sugu itte shimau no",
+      "delay": 19871
+    },
+    {
+      "chat": "Doushite sugu kowarechau kana",
+      "delay": 21296
+    },
+    {
+      "chat": "Paparaparapara",
+      "delay": 22957
+    },
+    {
+      "chat": "Kinmirai shika katan",
+      "delay": 24079
+    },
+    {
+      "chat": "Shoppin mooru no",
+      "delay": 25410
+    },
+    {
+      "chat": "gendai konpyuu",
+      "delay": 26214
+    },
+    {
+      "chat": "Komado shi ka katan",
+      "delay": 26812
+    },
+    {
+      "chat": "Monti hooru no keihi",
+      "delay": 28328
+    },
+    {
+      "chat": "de pinbooru",
+      "delay": 29322
+    },
+    {
+      "chat": "Oiru massaaji 100 fun",
+      "delay": 30370
+    },
+    {
+      "chat": "koosu ashiyutsuki",
+      "delay": 31595
+    },
+    {
+      "chat": "Yuzu o soete",
+      "delay": 32424
+    },
+    {
+      "chat": "Tetetetoteto tetetetorisu",
+      "delay": 34160
+    },
+    {
+      "chat": "Doushite konna me ni ni ni",
+      "delay": 36803
+    },
+    {
+      "chat": "Kyoumi ga nai koto honki janai",
+      "delay": 39657
+    },
+    {
+      "chat": "mono zenbu atomawashi de",
+      "delay": 42271
+    },
+    {
+      "chat": "Shitteru koto wa shiranpuri",
+      "delay": 45318
+    },
+    {
+      "chat": "watashi wa owatteru",
+      "delay": 48132
+    },
+    {
+      "chat": "Hazukashii kako shitteru",
+      "delay": 50964
+    },
+    {
+      "chat": "yatsura no kioku kesasete",
+      "delay": 53425
+    },
+    {
+      "chat": "Meiwaku kakete gomen tte ba",
+      "delay": 56671
+    },
+    {
+      "chat": "nee dareka tasukete",
+      "delay": 59624
+    },
+    {
+      "chat": "Moushin de sugu hikarechau no",
+      "delay": 63720
+    },
+    {
+      "chat": "Kyoushin de sugu hikarechau no",
+      "delay": 64947
+    },
+    {
+      "chat": "Shiritaku nai shiritaku nai",
+      "delay": 66474
+    },
+    {
+      "chat": "shiritaku nai",
+      "delay": 67248
+    },
+    {
+      "chat": "Tatarataratara",
+      "delay": 67770
+    },
+    {
+      "chat": "Mou minee sugu hikare sad",
+      "delay": 69285
+    },
+    {
+      "chat": "Joukin de kuruitate mad",
+      "delay": 70691
+    },
+    {
+      "chat": "Ikitaku nai ikitaku nai",
+      "delay": 72040
+    },
+    {
+      "chat": "ikitaku nai",
+      "delay": 73238
+    },
+    {
+      "chat": "Baibai",
+      "delay": 73837
+    },
+    {
+      "chat": "Rinji kyuugyou sentaku booru",
+      "delay": 74996
+    },
+    {
+      "chat": "Naichingeeru no haishin geemu",
+      "delay": 76350
+    },
+    {
+      "chat": "Meishi koukan no mei shiin",
+      "delay": 77749
+    },
+    {
+      "chat": "Shakkin booru de",
+      "delay": 79001
+    },
+    {
+      "chat": "chinchiro haibooru",
+      "delay": 79987
+    },
+    {
+      "chat": "Onsen ryokou 3 haku",
+      "delay": 81057
+    },
+    {
+      "chat": "4 ka shokujitsuki",
+      "delay": 82626
+    },
+    {
+      "chat": "Hayaku ikitee",
+      "delay": 84037
+    },
+    {
+      "chat": "Tetetetoteto tetetetorisu",
+      "delay": 85036
+    },
+    {
+      "chat": "Kyoukansei shuuchi haji haji",
+      "delay": 87312
+    },
+    {
+      "chat": "Utsu toka sou toka",
+      "delay": 90519
+    },
+    {
+      "chat": "isogashikute nemurenai",
+      "delay": 91797
+    },
+    {
+      "chat": "wa kyou mo",
+      "delay": 94241
+    },
+    {
+      "chat": "Dareka hayaku nagutte kizetsu",
+      "delay": 96278
+    },
+    {
+      "chat": "sasete kure yo",
+      "delay": 99337
+    },
+    {
+      "chat": "Jinsei kyanseru",
+      "delay": 101780
+    },
+    {
+      "chat": "kyanseru kaiwai",
+      "delay": 102940
+    },
+    {
+      "chat": "Bonyari to shita fuan",
+      "delay": 104679
+    },
+    {
+      "chat": "Watashi no sei watashi ga warui",
+      "delay": 107597
+    },
+    {
+      "chat": "yo sou da yo",
+      "delay": 110835
+    },
+    {
+      "chat": "Kyoumi ga detemo honki de",
+      "delay": 113080
+    },
+    {
+      "chat": "yattemo zenbu karamawari de",
+      "delay": 114152
+    },
+    {
+      "chat": "Shiranai kuse ni usotsuki",
+      "delay": 115809
+    },
+    {
+      "chat": "watashi wa owatteru",
+      "delay": 121459
+    },
+    {
+      "chat": "Hazukashii kako shitteru",
+      "delay": 124318
+    },
+    {
+      "chat": "yatsura no kioku kesasete",
+      "delay": 126764
+    },
+    {
+      "chat": "Meiwaku kakete gomen tte ba",
+      "delay": 130225
+    },
+    {
+      "chat": "nee dareka tasukete",
+      "delay": 132831
+    },
+    {
+      "chat": "Meiwaku kakete gomen tte ba",
+      "delay": 135858
+    },
+    {
+      "chat": "nee dareka yurushite",
+      "delay": 138106
+    }
+  ],
   "999": [
     {
       "chat": "",
