@@ -312,143 +312,79 @@ async function writeStatsFile(key, stats) {
   return putRes.json();
 }
 
-const rooms = new Map();
+const syncRooms = new Map();
 
-wss.on("connection", (ws) => {
-  console.log("WebSocket client connected");
-
-  ws.on("message", (data) => {
-    try {
-      const msg = JSON.parse(data);
-      console.log("Received:", msg);
-      handleMessage(ws, msg);
-    } catch (e) {
-      console.warn("Invalid message:", e);
-    }
-  });
-
-  ws.on("close", () => {
-    console.log("WebSocket client disconnected");
-    for (const [code, room] of rooms) {
-      if (room.members.has(ws)) {
-        const memberInfo = room.members.get(ws);
-        room.members.delete(ws);
-        if (room.members.size === 0) {
-          rooms.delete(code);
-          console.log(`Room ${code} deleted`);
-        } else if (memberInfo && memberInfo.name === room.leader) {
-          const firstMember = room.members.values().next().value;
-          if (firstMember) {
-            room.leader = firstMember.name;
-            broadcastRoom(code, {
-              type: "leader_changed",
-              leader: firstMember.name,
-            });
-            console.log(`Leader changed to ${firstMember.name}`);
-          }
-        }
-        broadcastRoom(code, {
-          type: "member_left",
-          name: memberInfo?.name || "unknown",
-        });
-        break;
-      }
-    }
-  });
-
-  ws.on("error", (err) => {
-    console.error("WebSocket error:", err);
+app.get("/sync/:roomCode", (req, res) => {
+  const { roomCode } = req.params;
+  const room = syncRooms.get(roomCode);
+  if (!room) {
+    return res.json({ exists: false });
+  }
+  res.json({
+    exists: true,
+    leader: room.leader,
+    members: room.members,
+    currentSong: room.currentSong,
+    lastUpdate: room.lastUpdate,
   });
 });
 
-function handleMessage(ws, msg) {
-  const { type, roomCode, name, songId } = msg;
+app.post("/sync/join", express.json(), (req, res) => {
+  const { roomCode, name } = req.body;
+  if (!roomCode || !name)
+    return res.status(400).json({ error: "Missing roomCode or name" });
 
-  if (type === "ping") {
-    ws.send(JSON.stringify({ type: "pong" }));
-    return;
-  }
-
-  if (type === "join") {
-    if (!roomCode || !name) return;
-    let room = rooms.get(roomCode);
-    if (!room) {
-      room = { leader: name, members: new Map(), currentSong: null };
-      rooms.set(roomCode, room);
-      console.log(`Room ${roomCode} created, leader: ${name}`);
-    }
-    if (room.members.has(ws)) return;
-    const isLeader = room.leader === name;
-    room.members.set(ws, { name, isLeader });
-    broadcastRoom(roomCode, { type: "member_joined", name });
-    const membersList = [];
-    for (const [, info] of room.members) {
-      membersList.push(info.name);
-    }
-    const stateMsg = {
-      type: "room_state",
-      leader: room.leader,
-      members: membersList,
-      currentSong: room.currentSong,
+  let room = syncRooms.get(roomCode);
+  if (!room) {
+    room = {
+      leader: name,
+      members: [],
+      currentSong: null,
+      lastUpdate: Date.now(),
     };
-    ws.send(JSON.stringify(stateMsg));
-    console.log(`Sent room_state to ${name}:`, stateMsg);
-    console.log(
-      `User ${name} joined room ${roomCode}, members: ${membersList.length}`,
-    );
-    return;
+    syncRooms.set(roomCode, room);
   }
+  if (!room.members.includes(name)) {
+    room.members.push(name);
+    room.lastUpdate = Date.now();
+  }
+  res.json({
+    leader: room.leader,
+    members: room.members,
+    currentSong: room.currentSong,
+  });
+});
 
-  if (type === "play") {
-    const room = rooms.get(roomCode);
-    if (!room) return;
-    const member = room.members.get(ws);
-    if (!member || member.name !== room.leader) return;
+app.post("/sync/leave", express.json(), (req, res) => {
+  const { roomCode, name } = req.body;
+  if (!roomCode || !name)
+    return res.status(400).json({ error: "Missing roomCode or name" });
+  const room = syncRooms.get(roomCode);
+  if (!room) return res.json({ message: "Room not found" });
+  room.members = room.members.filter((m) => m !== name);
+  room.lastUpdate = Date.now();
+  if (room.members.length === 0) {
+    syncRooms.delete(roomCode);
+  } else if (room.leader === name) {
+    room.leader = room.members[0];
+  }
+  res.json({ message: "Left" });
+});
+
+app.post('/sync/play', express.json(), (req, res) => {
+    const { roomCode, name, songId } = req.body;
+    if (!roomCode || !name || songId === undefined) {
+        return res.status(400).json({ error: 'Missing roomCode, name, or songId' });
+    }
+    const room = syncRooms.get(roomCode);
+    if (!room) return res.status(404).json({ error: 'Room not found' });
+    if (room.leader !== name) {
+        return res.status(403).json({ error: 'Only the leader can play a song' });
+    }
     room.currentSong = songId;
-    broadcastRoom(roomCode, { type: "play", songId, timestamp: Date.now() });
-    console.log(`Leader ${member.name} broadcasted play of song ${songId}`);
-    return;
-  }
-
-  if (type === "make_leader") {
-    const room = rooms.get(roomCode);
-    if (!room) return;
-    const member = room.members.get(ws);
-    if (!member || member.name !== room.leader) return;
-    const newLeaderName = msg.targetName;
-    let targetFound = false;
-    for (const [client, info] of room.members) {
-      if (info.name === newLeaderName) {
-        info.isLeader = true;
-        targetFound = true;
-      } else {
-        info.isLeader = false;
-      }
-    }
-    if (targetFound) {
-      room.leader = newLeaderName;
-      broadcastRoom(roomCode, {
-        type: "leader_changed",
-        leader: newLeaderName,
-      });
-      console.log(`Leader changed to ${newLeaderName}`);
-    }
-    return;
-  }
-
-  console.warn("Unknown message type:", type);
-}
-
-function broadcastRoom(roomCode, message) {
-  const room = rooms.get(roomCode);
-  if (!room) return;
-  const payload = JSON.stringify(message);
-  for (const client of room.members.keys()) {
-    if (client.readyState === WebSocket.OPEN) {
-      client.send(payload);
-    }
-  }
-}
+    room.lastUpdate = Date.now();
+    res.json({ message: 'Song set' });
+});
 
 // PROTECTED
 app.get("/songs", requireApiKey, (req, res) => {
