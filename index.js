@@ -7,7 +7,7 @@ const Websocket = require("ws");
 const http = require("http");
 const app = express();
 const server = http.createServer(app);
-const wss = new WebSocket.server({ server });
+const wss = new WebSocket.Server({ server });
 
 const PORT = process.env.PORT || 3000;
 const GITHUB_TOKEN = process.env.GITHUB_TOKEN;
