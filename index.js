@@ -3,8 +3,9 @@ const fs = require("fs");
 const cors = require("cors");
 const { timeStamp } = require("console");
 const jwt = require("jsonwebtoken");
-const { WebSocketServer } = require("ws");
 const http = require("http");
+const { WebSocketServer } = require("ws");
+
 const app = express();
 const server = http.createServer(app);
 const wss = new WebSocketServer({ server });
@@ -309,6 +310,143 @@ async function writeStatsFile(key, stats) {
     throw new Error(`GitHub API error: ${putRes.status} ${errText}`);
   }
   return putRes.json();
+}
+
+const rooms = new Map(); // { leader: string, members: Map<ws, { name, isLeader }>, currentSong: null }
+
+wss.on("connection", (ws) => {
+  console.log("WebSocket client connected");
+
+  ws.on("message", (data) => {
+    try {
+      const msg = JSON.parse(data);
+      console.log("📩 Received:", msg);
+      handleSyncMessage(ws, msg);
+    } catch (e) {
+      console.warn("Invalid message:", e);
+    }
+  });
+
+  ws.on("close", () => {
+    console.log("WebSocket client disconnected");
+    for (const [code, room] of rooms) {
+      if (room.members.has(ws)) {
+        const memberInfo = room.members.get(ws);
+        room.members.delete(ws);
+        if (room.members.size === 0) {
+          rooms.delete(code);
+        } else if (memberInfo && memberInfo.name === room.leader) {
+          const firstMember = room.members.values().next().value;
+          if (firstMember) {
+            room.leader = firstMember.name;
+            broadcastRoom(code, {
+              type: "leader_changed",
+              leader: firstMember.name,
+            });
+          }
+        }
+        broadcastRoom(code, {
+          type: "member_left",
+          name: memberInfo?.name || "unknown",
+        });
+        break;
+      }
+    }
+  });
+
+  ws.on("error", (err) => {
+    console.error("WebSocket error:", err);
+  });
+});
+
+function handleMessage(ws, msg) {
+  const { type, roomCode, name, songId } = msg;
+
+  if (type === "join") {
+    if (!roomCode || !name) return;
+    let room = rooms.get(roomCode);
+    if (!room) {
+      room = { leader: name, members: new Map(), currentSong: null };
+      rooms.set(roomCode, room);
+      console.log(`Room ${roomCode} created, leader: ${name}`);
+    }
+    if (room.members.has(ws)) return;
+    const isLeader = room.leader === name;
+    room.members.set(ws, { name, isLeader });
+    broadcastRoom(roomCode, { type: "member_joined", name });
+    const membersList = [];
+    for (const [_, info] of room.members) {
+      membersList.push(info.name);
+    }
+    ws.send(
+      JSON.stringify({
+        type: "room_state",
+        leader: room.leader,
+        members: membersList,
+        currentSong: room.currentSong,
+      }),
+    );
+    console.log(
+      `User ${name} joined room ${roomCode}, members: ${membersList.length}`,
+    );
+    return;
+  }
+
+  if (type === "play") {
+    const room = rooms.get(roomCode);
+    if (!room) return;
+    const member = room.members.get(ws);
+    if (!member || member.name !== room.leader) return;
+    room.currentSong = songId;
+    broadcastRoom(roomCode, { type: "play", songId, timestamp: Date.now() });
+    return;
+  }
+
+  if (type === "make_leader") {
+    const room = rooms.get(roomCode);
+    if (!room) return;
+    const member = room.members.get(ws);
+    if (!member || member.name !== room.leader) return;
+    const newLeaderName = msg.targetName;
+    let targetFound = false;
+    for (const [client, info] of room.members) {
+      if (info.name === newLeaderName) {
+        info.isLeader = true;
+        targetFound = true;
+      } else {
+        info.isLeader = false;
+      }
+    }
+    if (targetFound) {
+      room.leader = newLeaderName;
+      broadcastRoom(roomCode, {
+        type: "leader_changed",
+        leader: newLeaderName,
+      });
+    }
+    return;
+  }
+
+  console.warn("Unknown message type:", type);
+}
+
+function getMemberNames(room) {
+  const names = [];
+  for (const info of room.members.values()) {
+    names.push(info.name);
+  }
+  return names;
+}
+
+function broadcastRoom(roomCode, message) {
+  const room = rooms.get(roomCode);
+  if (!room) return;
+  const payload = JSON.stringify(message);
+  for (const client of room.members.keys()) {
+    if (client.readyState === WebSocket.OPEN) {
+      client.send(payload);
+    }
+  }
 }
 
 // PROTECTED
@@ -712,150 +850,6 @@ function broadcastEvent(event, data) {
       client.write(payload);
     } catch (e) {}
   });
-}
-
-const rooms = new Map();
-
-wss.on("connection", (ws) => {
-  console.log("New WebSocket connection");
-
-  ws.on("message", (data) => {
-    try {
-      const msg = JSON.parse(data);
-      console.log("Received:", msg);
-      handleMessage(ws, msg);
-    } catch (e) {
-      console.warn("Invalid message:", e);
-    }
-  });
-
-  ws.on("close", () => {
-    for (const [code, room] of rooms) {
-      if (room.members.has(ws)) {
-        const memberInfo = room.members.get(ws);
-        room.members.delete(ws);
-        if (room.members.size === 0) {
-          rooms.delete(code);
-          console.log(`Room ${code} deleted (empty)`);
-        } else {
-          if (memberInfo && memberInfo.name === room.leader) {
-            const firstEntry = room.members.values().next();
-            if (!firstEntry.done) {
-              const newLeader = firstEntry.value.name;
-              room.leader = newLeader;
-              for (const [client, info] of room.members) {
-                info.isLeader = info.name === newLeader;
-              }
-              broadcastRoom(code, {
-                type: "leader_changed",
-                leader: newLeader,
-              });
-              console.log(`Leader changed to ${newLeader}`);
-            }
-          }
-          broadcastRoom(code, {
-            type: "member_left",
-            name: memberInfo ? memberInfo.name : "unknown",
-          });
-        }
-        break;
-      }
-    }
-  });
-
-  ws.on("error", (err) => {
-    console.error("WebSocket error:", err);
-  });
-});
-
-function handleMessage(ws, msg) {
-  const { type, roomCode, name, songId } = msg;
-
-  if (type === "join") {
-    if (!roomCode || !name) return;
-    let room = rooms.get(roomCode);
-    if (!room) {
-      room = { leader: name, members: new Map(), currentSong: null };
-      rooms.set(roomCode, room);
-      console.log(`Room ${roomCode} created, leader: ${name}`);
-    }
-    if (room.members.has(ws)) return;
-    const isLeader = room.leader === name;
-    room.members.set(ws, { name, isLeader });
-    broadcastRoom(roomCode, { type: "member_joined", name });
-    const membersList = [];
-    for (const [_, info] of room.members) {
-      membersList.push(info.name);
-    }
-    ws.send(
-      JSON.stringify({
-        type: "room_state",
-        leader: room.leader,
-        members: membersList,
-        currentSong: room.currentSong,
-      }),
-    );
-    console.log(
-      `User ${name} joined room ${roomCode}, members: ${membersList.length}`,
-    );
-    return;
-  }
-
-  if (type === "play") {
-    const room = rooms.get(roomCode);
-    if (!room) return;
-    const member = room.members.get(ws);
-    if (!member || member.name !== room.leader) return;
-    room.currentSong = songId;
-    broadcastRoom(roomCode, { type: "play", songId, timestamp: Date.now() });
-    return;
-  }
-
-  if (type === "make_leader") {
-    const room = rooms.get(roomCode);
-    if (!room) return;
-    const member = room.members.get(ws);
-    if (!member || member.name !== room.leader) return;
-    const newLeaderName = msg.targetName;
-    let targetFound = false;
-    for (const [client, info] of room.members) {
-      if (info.name === newLeaderName) {
-        info.isLeader = true;
-        targetFound = true;
-      } else {
-        info.isLeader = false;
-      }
-    }
-    if (targetFound) {
-      room.leader = newLeaderName;
-      broadcastRoom(roomCode, {
-        type: "leader_changed",
-        leader: newLeaderName,
-      });
-    }
-    return;
-  }
-
-  console.warn("Unknown message type:", type);
-}
-
-function getMemberNames(room) {
-  const names = [];
-  for (const info of room.members.values()) {
-    names.push(info.name);
-  }
-  return names;
-}
-
-function broadcastRoom(roomCode, message) {
-  const room = rooms.get(roomCode);
-  if (!room) return;
-  const payload = JSON.stringify(message);
-  for (const client of room.members.keys()) {
-    if (client.readyState === WebSocket.OPEN) {
-      client.send(payload);
-    }
-  }
 }
 
 app.get("/health", (req, res) => res.send("OK"));
