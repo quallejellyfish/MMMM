@@ -81,11 +81,29 @@
         padding: 8px 16px;
         border-radius: 12px;
       }
+
+      .container h1 a {
+        transition:
+          color 0.4s ease-in-out,
+          text-decoration-style 0.9s ease-in-out;
+        color: #fff;
+        font-size: 1.7rem;
+        text-decoration: underline;
+      }
+      .container h1 a:hover {
+        color: #a4a4a4 !important;
+        text-decoration-style: wavy !important;
+        text-decoration-color: #fff;
+      }
     </style>
   </head>
   <body>
     <div class="container">
-      <h1>Play Stats</h1>
+      <h1>
+        <span>MMMM - Play Stats</span>
+        <span>|</span>
+        <a href="./index.html">Go to Song List</a>
+      </h1>
       <div class="card">
         <div class="flex">
           <label
