@@ -107,11 +107,28 @@
       #songsTableBody tr {
         transition: opacity 0.15s ease;
       }
+      .container h1 a {
+        transition:
+          color 0.4s ease-in-out,
+          text-decoration-style 0.9s ease-in-out;
+        color: #fff;
+        font-size: 1.7rem;
+        text-decoration: underline;
+      }
+      .container h1 a:hover {
+        color: #a4a4a4 !important;
+        text-decoration-style: wavy !important;
+        text-decoration-color: #fff;
+      }
     </style>
   </head>
   <body>
     <div class="container">
-      <h1>MMMM - Music Menu Mod Manager</h1>
+      <h1>
+        <span>MMMM - Music Menu Mod Manager</span>
+        <span>|</span>
+        <a href="/stats.html">Go to Stats Leaderboard</a>
+      </h1>
       <div class="card">
         <div class="flex">
           <label
