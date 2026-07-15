@@ -3,9 +3,13 @@ const fs = require("fs");
 const cors = require("cors");
 const { timeStamp } = require("console");
 const jwt = require("jsonwebtoken");
+const Websocket = require("ws");
+const http = require("http");
 const app = express();
-const PORT = process.env.PORT || 3000;
+const server = http.createServer(app);
+const wss = new WebSocket.server({ server });
 
+const PORT = process.env.PORT || 3000;
 const GITHUB_TOKEN = process.env.GITHUB_TOKEN;
 const GITHUB_REPO = process.env.GITHUB_REPO;
 const GITHUB_BRANCH = process.env.GITHUB_BRANCH;
@@ -470,9 +474,7 @@ app.put("/songs/:id", requireApiKey, (req, res) => {
         newSong.category = oldCategoryName;
         oldSong.category = oldCategoryName;
       }
-      sendDiscordEditNotification(oldSong, newSong, changes).catch((err) =>
-        console.error(err),
-      );
+      sendDiscordEditNotification(oldSong, newSong, changes);
     }
 
     res.json(songs.find((s) => s.id === id));
@@ -712,6 +714,125 @@ function broadcastEvent(event, data) {
   });
 }
 
+const rooms = new Map();
+
+wss.on("connection", (ws) => {
+  console.log("New Websocket connection");
+
+  ws.on("message", (data) => {
+    try {
+      const msg = JSON.parse(data);
+      handleMessage(ws, msg);
+    } catch (e) {
+      console.warn("Invalid message", e);
+    }
+  });
+
+  ws.on("close", () => {
+    for (const [code, room] of rooms) {
+      if (room.members.has(ws)) {
+        room.members.delete(ws);
+        if (room.members.size === 0) {
+          rooms.delete(code);
+        } else {
+          if (room.leader === room.members.get(ws)?.name) {
+            const firstMember = room.members.values().next().value;
+            if (firstMember) {
+              room.leader = firstMember.name;
+              broadcastRoom(code, {
+                type: "leader_changed",
+                leader: room.keader,
+              });
+            }
+          }
+          broadcastRoom(code, {
+            type: "member_left",
+            name: room.members.get(ws)?.name,
+          });
+        }
+        break;
+      }
+    }
+  });
+});
+
+function handleMessage() {
+  const { type, roomCode, name, songId, command } = msg;
+
+  if (type === "join") {
+    if (!roomCode || !name) return;
+    let room = rooms.get(roomCode);
+    if (!room) {
+      room = { leader: name, members: new Map(), currentSong: null };
+      rooms.set(roomCode, room);
+    }
+    room.members.set(ws, { name, isLeader: room.leader === name });
+    broadcastRoom(roomCode, { type: "member_joined", name });
+    ws.send(
+      JSON.stringify({
+        type: "room_state",
+        leader: room.leader,
+        members: getMemberNames(room),
+        currentSong: room.currentSong,
+      }),
+    );
+    return;
+  }
+
+  if (type === "play") {
+    const room = rooms.get(roomCode);
+    if (!room) return;
+    const member = room.members.get(ws);
+    if (!member || member.name !== room.leader) return;
+    room.currentSong = songId;
+    broadcastRoom(roomCode, { type: "play", songId, timestamp: Date.now() });
+    return;
+  }
+
+  if (type === "make_leader") {
+    const room = rooms.get(roomCode);
+    if (!room) return;
+    const member = room.members.get(ws);
+    if (!member || member.name !== room.leader) return;
+    const newLeaderName = msg.targetName;
+    for (const [client, info] of room.members) {
+      if (info.name === newLeaderName) {
+        info.isLeader = true;
+        room.isLeader = newLeaderName;
+        for (const [otherClient, otherInfo] of room.members) {
+          if (otherClient !== client) otherInfo.isLeader = false;
+        }
+        broadcastRoom(roomCode, {
+          type: "leader_changed",
+          leader: newLeaderName,
+        });
+        break;
+      }
+    }
+    return;
+  }
+}
+
+function getMemberNames(room) {
+  const names = [];
+  for (const info of room.members.values()) {
+    names.push(info.name);
+  }
+  return names;
+}
+
+function broadcastRoom(roomCode, message) {
+  const room = rooms.get(roomCode);
+  if (!room) return;
+  const payload = JSON.stringify(message);
+  for (const client of room.members.keys()) {
+    if (client.readyState === WebSocket.OPEN) {
+      client.send(payload);
+    }
+  }
+}
+
 app.get("/health", (req, res) => res.send("OK"));
 
-app.listen(PORT, () => console.log(`API running on port ${PORT}`));
+//app.listen(PORT, () => console.log(`API running on port ${PORT}`));
+server.listen(PORT, () => console.log(`API running on port ${PORT}`));
