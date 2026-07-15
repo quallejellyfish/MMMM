@@ -287,7 +287,7 @@ async function writeStatsFile(key, stats) {
       const data = await getRes.json();
       sha = data.sha;
     }
-  } catch (e) {}
+  } catch (e) { /* file doesn't exist */ }
 
   const body = {
     message: `Update stats for ${key}`,
@@ -305,6 +305,7 @@ async function writeStatsFile(key, stats) {
     },
     body: JSON.stringify(body),
   });
+
   if (!putRes.ok) {
     const errText = await putRes.text();
     throw new Error(`GitHub API error: ${putRes.status} ${errText}`);
@@ -388,6 +389,7 @@ app.post("/sync/join", express.json(), (req, res) => {
     room.members.push(name);
   }
   room.lastUpdate = Date.now();
+  broadcastSyncUpdate(roomCode);
   res.json({
     leader: room.leader,
     members: room.members,
