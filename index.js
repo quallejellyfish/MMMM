@@ -3,11 +3,11 @@ const fs = require("fs");
 const cors = require("cors");
 const { timeStamp } = require("console");
 const jwt = require("jsonwebtoken");
-const Websocket = require("ws");
+const { WebSocketServer } = require("ws");
 const http = require("http");
 const app = express();
 const server = http.createServer(app);
-const wss = new WebSocket.Server({ server });
+const wss = new WebSocketServer({ server });
 
 const PORT = process.env.PORT || 3000;
 const GITHUB_TOKEN = process.env.GITHUB_TOKEN;
