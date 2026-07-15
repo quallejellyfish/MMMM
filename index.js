@@ -312,7 +312,7 @@ async function writeStatsFile(key, stats) {
   return putRes.json();
 }
 
-const rooms = new Map(); // { leader: string, members: Map<ws, { name, isLeader }>, currentSong: null }
+const rooms = new Map();
 
 wss.on("connection", (ws) => {
   console.log("WebSocket client connected");
@@ -320,8 +320,8 @@ wss.on("connection", (ws) => {
   ws.on("message", (data) => {
     try {
       const msg = JSON.parse(data);
-      console.log("📩 Received:", msg);
-      handleSyncMessage(ws, msg);
+      console.log("Received:", msg);
+      handleMessage(ws, msg);
     } catch (e) {
       console.warn("Invalid message:", e);
     }
@@ -335,6 +335,7 @@ wss.on("connection", (ws) => {
         room.members.delete(ws);
         if (room.members.size === 0) {
           rooms.delete(code);
+          console.log(`Room ${code} deleted`);
         } else if (memberInfo && memberInfo.name === room.leader) {
           const firstMember = room.members.values().next().value;
           if (firstMember) {
@@ -343,6 +344,7 @@ wss.on("connection", (ws) => {
               type: "leader_changed",
               leader: firstMember.name,
             });
+            console.log(`Leader changed to ${firstMember.name}`);
           }
         }
         broadcastRoom(code, {
@@ -362,6 +364,11 @@ wss.on("connection", (ws) => {
 function handleMessage(ws, msg) {
   const { type, roomCode, name, songId } = msg;
 
+  if (type === "ping") {
+    ws.send(JSON.stringify({ type: "pong" }));
+    return;
+  }
+
   if (type === "join") {
     if (!roomCode || !name) return;
     let room = rooms.get(roomCode);
@@ -375,17 +382,17 @@ function handleMessage(ws, msg) {
     room.members.set(ws, { name, isLeader });
     broadcastRoom(roomCode, { type: "member_joined", name });
     const membersList = [];
-    for (const [_, info] of room.members) {
+    for (const [, info] of room.members) {
       membersList.push(info.name);
     }
-    ws.send(
-      JSON.stringify({
-        type: "room_state",
-        leader: room.leader,
-        members: membersList,
-        currentSong: room.currentSong,
-      }),
-    );
+    const stateMsg = {
+      type: "room_state",
+      leader: room.leader,
+      members: membersList,
+      currentSong: room.currentSong,
+    };
+    ws.send(JSON.stringify(stateMsg));
+    console.log(`Sent room_state to ${name}:`, stateMsg);
     console.log(
       `User ${name} joined room ${roomCode}, members: ${membersList.length}`,
     );
@@ -399,6 +406,7 @@ function handleMessage(ws, msg) {
     if (!member || member.name !== room.leader) return;
     room.currentSong = songId;
     broadcastRoom(roomCode, { type: "play", songId, timestamp: Date.now() });
+    console.log(`Leader ${member.name} broadcasted play of song ${songId}`);
     return;
   }
 
@@ -423,19 +431,12 @@ function handleMessage(ws, msg) {
         type: "leader_changed",
         leader: newLeaderName,
       });
+      console.log(`Leader changed to ${newLeaderName}`);
     }
     return;
   }
 
   console.warn("Unknown message type:", type);
-}
-
-function getMemberNames(room) {
-  const names = [];
-  for (const info of room.members.values()) {
-    names.push(info.name);
-  }
-  return names;
 }
 
 function broadcastRoom(roomCode, message) {
