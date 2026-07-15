@@ -107,6 +107,7 @@
       #songsTableBody tr {
         transition: opacity 0.15s ease;
       }
+
       .container h1 a {
         transition:
           color 0.4s ease-in-out,
@@ -185,7 +186,7 @@
         </div>
       </div>
       <div class="card">
-        <h2>Songs on Server</h2>
+        <h2>Songs on Server <span id="songCount"></span></h2>
         <table id="songsTable">
           <thead>
             <tr>
@@ -231,6 +232,11 @@
           throw new Error(`API error ${res.status}: ${error}`);
         }
         return res.json();
+      }
+
+      function updateSongCount() {
+        const count = songList.filter((s) => s.id !== 999).length;
+        document.getElementById("songCount").textContent = `- ${count} songs`;
       }
 
       async function loadSongs() {
@@ -411,6 +417,7 @@
         const tbody = document.getElementById("songsTableBody");
         if (!songList.length) {
           tbody.innerHTML = '<tr><td colspan="6">No songs yet.</td></tr>';
+          updateSongCount();
           return;
         }
         tbody.innerHTML = "";
@@ -643,6 +650,7 @@
           actions.appendChild(editBtn);
           actions.appendChild(delBtn);
         }
+        updateSongCount();
       }
 
       function convertLyrics(text) {
