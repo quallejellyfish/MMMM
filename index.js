@@ -717,47 +717,59 @@ function broadcastEvent(event, data) {
 const rooms = new Map();
 
 wss.on("connection", (ws) => {
-  console.log("New Websocket connection");
+  console.log("New WebSocket connection");
 
   ws.on("message", (data) => {
     try {
       const msg = JSON.parse(data);
+      console.log("Received:", msg);
       handleMessage(ws, msg);
     } catch (e) {
-      console.warn("Invalid message", e);
+      console.warn("Invalid message:", e);
     }
   });
 
   ws.on("close", () => {
     for (const [code, room] of rooms) {
       if (room.members.has(ws)) {
+        const memberInfo = room.members.get(ws);
         room.members.delete(ws);
         if (room.members.size === 0) {
           rooms.delete(code);
+          console.log(`Room ${code} deleted (empty)`);
         } else {
-          if (room.leader === room.members.get(ws)?.name) {
-            const firstMember = room.members.values().next().value;
-            if (firstMember) {
-              room.leader = firstMember.name;
+          if (memberInfo && memberInfo.name === room.leader) {
+            const firstEntry = room.members.values().next();
+            if (!firstEntry.done) {
+              const newLeader = firstEntry.value.name;
+              room.leader = newLeader;
+              for (const [client, info] of room.members) {
+                info.isLeader = info.name === newLeader;
+              }
               broadcastRoom(code, {
                 type: "leader_changed",
-                leader: room.keader,
+                leader: newLeader,
               });
+              console.log(`Leader changed to ${newLeader}`);
             }
           }
           broadcastRoom(code, {
             type: "member_left",
-            name: room.members.get(ws)?.name,
+            name: memberInfo ? memberInfo.name : "unknown",
           });
         }
         break;
       }
     }
   });
+
+  ws.on("error", (err) => {
+    console.error("WebSocket error:", err);
+  });
 });
 
-function handleMessage() {
-  const { type, roomCode, name, songId, command } = msg;
+function handleMessage(ws, msg) {
+  const { type, roomCode, name, songId } = msg;
 
   if (type === "join") {
     if (!roomCode || !name) return;
@@ -765,16 +777,26 @@ function handleMessage() {
     if (!room) {
       room = { leader: name, members: new Map(), currentSong: null };
       rooms.set(roomCode, room);
+      console.log(`Room ${roomCode} created, leader: ${name}`);
     }
-    room.members.set(ws, { name, isLeader: room.leader === name });
+    if (room.members.has(ws)) return;
+    const isLeader = room.leader === name;
+    room.members.set(ws, { name, isLeader });
     broadcastRoom(roomCode, { type: "member_joined", name });
+    const membersList = [];
+    for (const [_, info] of room.members) {
+      membersList.push(info.name);
+    }
     ws.send(
       JSON.stringify({
         type: "room_state",
         leader: room.leader,
-        members: getMemberNames(room),
+        members: membersList,
         currentSong: room.currentSong,
       }),
+    );
+    console.log(
+      `User ${name} joined room ${roomCode}, members: ${membersList.length}`,
     );
     return;
   }
@@ -795,22 +817,26 @@ function handleMessage() {
     const member = room.members.get(ws);
     if (!member || member.name !== room.leader) return;
     const newLeaderName = msg.targetName;
+    let targetFound = false;
     for (const [client, info] of room.members) {
       if (info.name === newLeaderName) {
         info.isLeader = true;
-        room.isLeader = newLeaderName;
-        for (const [otherClient, otherInfo] of room.members) {
-          if (otherClient !== client) otherInfo.isLeader = false;
-        }
-        broadcastRoom(roomCode, {
-          type: "leader_changed",
-          leader: newLeaderName,
-        });
-        break;
+        targetFound = true;
+      } else {
+        info.isLeader = false;
       }
+    }
+    if (targetFound) {
+      room.leader = newLeaderName;
+      broadcastRoom(roomCode, {
+        type: "leader_changed",
+        leader: newLeaderName,
+      });
     }
     return;
   }
+
+  console.warn("Unknown message type:", type);
 }
 
 function getMemberNames(room) {
