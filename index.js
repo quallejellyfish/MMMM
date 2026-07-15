@@ -314,109 +314,113 @@ async function writeStatsFile(key, stats) {
 
 const syncRooms = new Map();
 
-app.get("/sync/:roomCode", (req, res) => {
-  const { roomCode } = req.params;
-  const room = syncRooms.get(roomCode);
-  if (!room) {
-    return res.json({ exists: false });
-  }
-  const now = Date.now();
-  res.json({
-    exists: true,
-    leader: room.leader,
-    members: room.members,
-    currentSong: room.currentSong,
-    paused: room.paused || false,
-    lastUpdate: room.lastUpdate,
-  });
+app.get('/sync/:roomCode', (req, res) => {
+    const { roomCode } = req.params;
+    const room = syncRooms.get(roomCode);
+    if (!room) {
+        return res.json({ exists: false });
+    }
+    res.json({
+        exists: true,
+        leader: room.leader,
+        members: room.members,
+        currentSong: room.currentSong,
+        paused: room.paused || false,
+        lastUpdate: room.lastUpdate
+    });
 });
 
-app.post("/sync/join", express.json(), (req, res) => {
-  const { roomCode, name } = req.body;
-  if (!roomCode || !name) {
-    return res.status(400).json({ error: "Missing roomCode or name" });
-  }
-  let room = syncRooms.get(roomCode);
-  if (!room) {
-    room = {
-      leader: name,
-      members: [],
-      currentSong: null,
-      paused: false,
-      lastUpdate: Date.now(),
-    };
-    syncRooms.set(roomCode, room);
-  }
-  if (!room.members.includes(name)) {
-    room.members.push(name);
-  }
-  room.lastUpdate = Date.now();
-  res.json({
-    leader: room.leader,
-    members: room.members,
-    currentSong: room.currentSong,
-    paused: room.paused || false,
-  });
+app.post('/sync/join', express.json(), (req, res) => {
+    const { roomCode, name } = req.body;
+    if (!roomCode || !name) {
+        return res.status(400).json({ error: 'Missing roomCode or name' });
+    }
+    let room = syncRooms.get(roomCode);
+    if (!room) {
+        room = { leader: name, members: [], currentSong: null, paused: false, lastUpdate: Date.now() };
+        syncRooms.set(roomCode, room);
+    }
+    if (!room.members.includes(name)) {
+        room.members.push(name);
+    }
+    room.lastUpdate = Date.now();
+    res.json({
+        leader: room.leader,
+        members: room.members,
+        currentSong: room.currentSong,
+        paused: room.paused || false
+    });
 });
 
-app.post("/sync/leave", express.json(), (req, res) => {
-  const { roomCode, name } = req.body;
-  if (!roomCode || !name)
-    return res.status(400).json({ error: "Missing roomCode or name" });
-  const room = syncRooms.get(roomCode);
-  if (!room) return res.json({ message: "Room not found" });
-  room.members = room.members.filter((m) => m !== name);
-  room.lastUpdate = Date.now();
-  if (room.members.length === 0) {
-    syncRooms.delete(roomCode);
-  } else if (room.leader === name) {
-    room.leader = room.members[0];
-  }
-  res.json({ message: "Left" });
+app.post('/sync/leave', express.json(), (req, res) => {
+    const { roomCode, name } = req.body;
+    if (!roomCode || !name) return res.status(400).json({ error: 'Missing roomCode or name' });
+    const room = syncRooms.get(roomCode);
+    if (!room) return res.json({ message: 'Room not found' });
+    room.members = room.members.filter(m => m !== name);
+    room.lastUpdate = Date.now();
+    if (room.members.length === 0) {
+        syncRooms.delete(roomCode);
+    } else if (room.leader === name) {
+        room.leader = room.members[0];
+    }
+    res.json({ message: 'Left' });
 });
 
-app.post("/sync/play", express.json(), (req, res) => {
-  const { roomCode, name, songId } = req.body;
-  if (!roomCode || !name || songId === undefined) {
-    return res.status(400).json({ error: "Missing roomCode, name, or songId" });
-  }
-  const room = syncRooms.get(roomCode);
-  if (!room) return res.status(404).json({ error: "Room not found" });
-  if (room.leader !== name) {
-    return res.status(403).json({ error: "Only the leader can play a song" });
-  }
-  room.currentSong = songId;
-  room.paused = false;
-  room.lastUpdate = Date.now();
-  res.json({ message: "Song set" });
+app.post('/sync/play', express.json(), (req, res) => {
+    const { roomCode, name, songId } = req.body;
+    if (!roomCode || !name || songId === undefined) {
+        return res.status(400).json({ error: 'Missing roomCode, name, or songId' });
+    }
+    const room = syncRooms.get(roomCode);
+    if (!room) return res.status(404).json({ error: 'Room not found' });
+    if (room.leader !== name) {
+        return res.status(403).json({ error: 'Only the leader can play a song' });
+    }
+    room.currentSong = songId;
+    room.paused = false;
+    room.lastUpdate = Date.now();
+    res.json({ message: 'Song set' });
 });
 
-app.post("/sync/pause", express.json(), (req, res) => {
-  const { roomCode, name, paused } = req.body;
-  if (!roomCode || !name)
-    return res.status(400).json({ error: "Missing roomCode or name" });
-  const room = syncRooms.get(roomCode);
-  if (!room) return res.status(404).json({ error: "Room not found" });
-  if (room.leader !== name) {
-    return res.status(403).json({ error: "Only the leader can pause" });
-  }
-  room.paused = paused;
-  room.lastUpdate = Date.now();
-  res.json({ message: "Pause state updated" });
+app.post('/sync/pause', express.json(), (req, res) => {
+    const { roomCode, name, paused } = req.body;
+    if (!roomCode || !name) return res.status(400).json({ error: 'Missing roomCode or name' });
+    const room = syncRooms.get(roomCode);
+    if (!room) return res.status(404).json({ error: 'Room not found' });
+    if (room.leader !== name) {
+        return res.status(403).json({ error: 'Only the leader can pause' });
+    }
+    room.paused = paused;
+    room.lastUpdate = Date.now();
+    res.json({ message: 'Pause state updated' });
 });
 
-app.post("/sync/heartbeat", express.json(), (req, res) => {
-  const { roomCode, name } = req.body;
-  if (!roomCode || !name)
-    return res.status(400).json({ error: "Missing roomCode or name" });
-  const room = syncRooms.get(roomCode);
-  if (!room) return res.status(404).json({ error: "Room not found" });
-  if (!room.members.includes(name)) {
-    room.members.push(name);
-    if (!room.leader) room.leader = name;
-  }
-  room.lastUpdate = Date.now();
-  res.json({ ok: true });
+app.post('/sync/stop', express.json(), (req, res) => {
+    const { roomCode, name } = req.body;
+    if (!roomCode || !name) return res.status(400).json({ error: 'Missing roomCode or name' });
+    const room = syncRooms.get(roomCode);
+    if (!room) return res.status(404).json({ error: 'Room not found' });
+    if (room.leader !== name) {
+        return res.status(403).json({ error: 'Only the leader can stop' });
+    }
+    room.currentSong = null;
+    room.paused = true;
+    room.lastUpdate = Date.now();
+    res.json({ message: 'Stopped' });
+});
+
+app.post('/sync/heartbeat', express.json(), (req, res) => {
+    const { roomCode, name } = req.body;
+    if (!roomCode || !name) return res.status(400).json({ error: 'Missing roomCode or name' });
+    const room = syncRooms.get(roomCode);
+    if (!room) return res.status(404).json({ error: 'Room not found' });
+    if (!room.members.includes(name)) {
+        room.members.push(name);
+        if (!room.leader) room.leader = name;
+    }
+    room.lastUpdate = Date.now();
+    res.json({ ok: true });
 });
 
 // PROTECTED
