@@ -287,7 +287,7 @@ async function writeStatsFile(key, stats) {
       const data = await getRes.json();
       sha = data.sha;
     }
-  } catch (e) { /* file doesn't exist */ }
+  } catch (e) {}
 
   const body = {
     message: `Update stats for ${key}`,
@@ -296,7 +296,7 @@ async function writeStatsFile(key, stats) {
   };
   if (sha) body.sha = sha;
 
-  const putRes = await fetch(url, {
+  let putRes = await fetch(url, {
     method: "PUT",
     headers: {
       Authorization: `token ${GITHUB_TOKEN}`,
@@ -306,6 +306,29 @@ async function writeStatsFile(key, stats) {
     body: JSON.stringify(body),
   });
 
+  if (putRes.status === 409) {
+    console.log(`Conflict for ${key}, retrying with latest SHA...`);
+    const getRes = await fetch(url, {
+      headers: {
+        Authorization: `token ${GITHUB_TOKEN}`,
+        Accept: "application/vnd.github.v3+json",
+      },
+    });
+    if (getRes.ok) {
+      const data = await getRes.json();
+      body.sha = data.sha;
+      putRes = await fetch(url, {
+        method: "PUT",
+        headers: {
+          Authorization: `token ${GITHUB_TOKEN}`,
+          Accept: "application/vnd.github.v3+json",
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(body),
+      });
+    }
+  }
+
   if (!putRes.ok) {
     const errText = await putRes.text();
     throw new Error(`GitHub API error: ${putRes.status} ${errText}`);
@@ -313,7 +336,6 @@ async function writeStatsFile(key, stats) {
   return putRes.json();
 }
 
-const syncRooms = new Map();
 let syncSSEClients = {};
 
 app.get("/sync/events/:roomCode", (req, res) => {
@@ -337,36 +359,42 @@ app.get("/sync/events/:roomCode", (req, res) => {
   }
   syncSSEClients[roomCode].push(res);
 
-  res.write(
-    `data: ${JSON.stringify({ type: "room_state", leader: room.leader, members: room.members, currentSong: room.currentSong, paused: room.paused || false })}\n\n`,
-  );
+  const payload = JSON.stringify({
+    type: "room_state",
+    leader: room.leader,
+    members: room.members,
+    currentSong: room.currentSong,
+    paused: room.paused || false,
+  });
+  res.write(`data: ${payload}\n\n`);
 
   req.on("close", () => {
     syncSSEClients[roomCode] = syncSSEClients[roomCode].filter(
       (c) => c !== res,
     );
-    if (syncSSEClients[roomCode].length === 0) {
-      delete syncSSEClients[roomCode];
-    }
+    if (syncSSEClients[roomCode].length === 0) delete syncSSEClients[roomCode];
   });
 });
 
 function broadcastSyncUpdate(roomCode) {
-    const room = syncRooms.get(roomCode);
-    if (!room) return;
-    const clients = syncSSEClients[roomCode] || [];
-    const payload = JSON.stringify({
-        type: 'room_state',
-        leader: room.leader,
-        members: room.members,
-        currentSong: room.currentSong,
-        paused: room.paused || false
-    });
-    for (const client of clients) {
-        try {
-            client.write(`data: ${payload}\n\n`);
-        } catch (e) { /* client disconnected */ }
+  const room = syncRooms.get(roomCode);
+  if (!room) return;
+  const clients = syncSSEClients[roomCode] || [];
+  const payload = JSON.stringify({
+    type: "room_state",
+    leader: room.leader,
+    members: room.members,
+    currentSong: room.currentSong,
+    paused: room.paused || false,
+    currentTime: room.currentTime || 0
+  });
+  for (const client of clients) {
+    try {
+      client.write(`data: ${payload}\n\n`);
+    } catch (e) {
+      /* client disconnected */
     }
+  }
 }
 
 app.post("/sync/join", express.json(), (req, res) => {
@@ -427,6 +455,7 @@ app.post("/sync/play", express.json(), (req, res) => {
   }
   room.currentSong = songId;
   room.paused = false;
+  room.currentTime = currentTime || 0;
   room.lastUpdate = Date.now();
   broadcastSyncUpdate(roomCode);
   res.json({ message: "Song set" });
