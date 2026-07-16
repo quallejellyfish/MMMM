@@ -8,7 +8,8 @@
   {
     "id": 191,
     "name": "Putin - Bad History",
-    "url": "https://audio.jukehost.co.uk/019f652f-0247-732b-a2b1-b25da6c87f8e"
+    "url": "https://audio.jukehost.co.uk/019f652f-0247-732b-a2b1-b25da6c87f8e",
+    "lyricsCount": 87
   },
   {
     "id": 180,
@@ -319,7 +320,8 @@
   {
     "id": 190,
     "name": "Rote Armee",
-    "url": "https://audio.jukehost.co.uk/019f650d-7c78-70cf-b012-d12c16aba998"
+    "url": "https://audio.jukehost.co.uk/019f650d-7c78-70cf-b012-d12c16aba998",
+    "lyricsCount": 91
   },
   {
     "id": 176,
@@ -670,11 +672,6 @@
     "lyricsCount": 1
   },
   {
-    "id": 189,
-    "name": "Tetoris",
-    "url": "https://audio.jukehost.co.uk/019f5b29-9690-7028-994f-a1db1d9a5693"
-  },
-  {
     "id": 65,
     "name": "find your flame",
     "url": "https://audio.jukehost.co.uk/WLGeOnIbMFcO5VeytVNEE8bt0yjnTvWK",
@@ -807,12 +804,6 @@
     "lyricsCount": 82
   },
   {
-    "id": 99,
-    "name": "daikirai",
-    "url": "https://audio.jukehost.co.uk/YprqnSDwHXlfMYk07HjNDwzXtuXxk9jA",
-    "lyricsCount": 81
-  },
-  {
     "id": 101,
     "name": "Split Dance",
     "url": "https://audio.jukehost.co.uk/YQ4WL2W9HXNBrEKLPestwLi4DcikSaPl",
@@ -873,6 +864,12 @@
     "lyricsCount": 135
   },
   {
+    "id": 99,
+    "name": "daikirai",
+    "url": "https://audio.jukehost.co.uk/YprqnSDwHXlfMYk07HjNDwzXtuXxk9jA",
+    "lyricsCount": 81
+  },
+  {
     "id": 163,
     "name": "daikirai juby&rachie",
     "url": "https://audio.jukehost.co.uk/019ed07c-087b-72ce-8178-9898c134f4b3",
@@ -883,6 +880,12 @@
     "name": "Mesmerizer rachie&will",
     "url": "https://audio.jukehost.co.uk/019f57e5-d439-7060-9ac4-8f18553c5d16",
     "lyricsCount": 120
+  },
+  {
+    "id": 198,
+    "name": "Override will",
+    "url": "https://audio.jukehost.co.uk/019f6cae-c9ec-7071-a19d-1acc477b3572",
+    "lyricsCount": 93
   },
   {
     "id": 141,
@@ -901,6 +904,12 @@
     "name": "execution clap",
     "url": "https://audio.jukehost.co.uk/H16VbPRwMgOVoaArfYglAQr9mOlPqzUg",
     "lyricsCount": 80
+  },
+  {
+    "id": 189,
+    "name": "Tetoris",
+    "url": "https://audio.jukehost.co.uk/019f5b29-9690-7028-994f-a1db1d9a5693",
+    "lyricsCount": 79
   },
   {
     "id": 145,
@@ -945,16 +954,16 @@
     "lyricsCount": 31
   },
   {
-    "id": 53,
-    "name": "queen ra i ba i be i bi",
-    "url": "https://audio.jukehost.co.uk/lx1twXh5FMXZbiTfA1UNA8ZondKwSH7n",
-    "lyricsCount": 57
-  },
-  {
     "id": 178,
     "name": "Lonely Bug",
     "url": "https://audio.jukehost.co.uk/019f2efd-a06b-704c-8d90-f03c610c251b",
     "lyricsCount": 27
+  },
+  {
+    "id": 53,
+    "name": "queen ra i ba i be i bi",
+    "url": "https://audio.jukehost.co.uk/lx1twXh5FMXZbiTfA1UNA8ZondKwSH7n",
+    "lyricsCount": 57
   },
   {
     "id": 999,
@@ -965,7 +974,8 @@
   {
     "id": 192,
     "name": "Sigma Boy",
-    "url": "https://audio.jukehost.co.uk/019f6531-1e4d-720a-8f09-869f3f489257"
+    "url": "https://audio.jukehost.co.uk/019f6531-1e4d-720a-8f09-869f3f489257",
+    "lyricsCount": 64
   },
   {
     "id": 2,
@@ -1036,27 +1046,32 @@
   {
     "id": 197,
     "name": "fill me up",
-    "url": "https://audio.jukehost.co.uk/019f67b8-6e89-7165-a9ac-26c0227f4ec1"
+    "url": "https://audio.jukehost.co.uk/019f67b8-6e89-7165-a9ac-26c0227f4ec1",
+    "lyricsCount": 58
   },
   {
     "id": 196,
     "name": "good girl",
-    "url": "https://audio.jukehost.co.uk/019f67b0-1675-70db-8e7d-ce06d316c7e1"
+    "url": "https://audio.jukehost.co.uk/019f67b0-1675-70db-8e7d-ce06d316c7e1",
+    "lyricsCount": 72
   },
   {
     "id": 195,
     "name": "boop me harder",
-    "url": "https://audio.jukehost.co.uk/019f67a4-50ff-703b-ae21-ad6e2fee83aa"
+    "url": "https://audio.jukehost.co.uk/019f67a4-50ff-703b-ae21-ad6e2fee83aa",
+    "lyricsCount": 103
   },
   {
     "id": 194,
     "name": "Chasing Tails",
-    "url": "https://audio.jukehost.co.uk/019f6795-effa-7166-830c-971a089c447f"
+    "url": "https://audio.jukehost.co.uk/019f6795-effa-7166-830c-971a089c447f",
+    "lyricsCount": 103
   },
   {
     "id": 193,
     "name": "Furry Thirst (e621)",
-    "url": "https://audio.jukehost.co.uk/019f6785-613e-7308-952d-794ba6e22f72"
+    "url": "https://audio.jukehost.co.uk/019f6785-613e-7308-952d-794ba6e22f72",
+    "lyricsCount": 73
   },
   {
     "id": 85,
@@ -1182,6 +1197,6 @@
     "id": 31,
     "name": "voe giants",
     "url": "https://audio.jukehost.co.uk/xpTRtNy1Q4lGo8VtSGR0S4rBJmDN6aFG",
-    "lyricsCount": 45
+    "lyricsCount": 63
   }
 ]
