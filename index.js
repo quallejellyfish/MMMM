@@ -492,6 +492,25 @@ app.post("/sync/stop", express.json(), (req, res) => {
   res.json({ message: "Stopped" });
 });
 
+app.post('/sync/make_leader', express.json(), (req, res) => {
+    const { roomCode, name, targetName } = req.body;
+    if (!roomCode || !name || !targetName) {
+        return res.status(400).json({ error: 'Missing roomCode, name, or targetName' });
+    }
+    const room = syncRooms.get(roomCode);
+    if (!room) return res.status(404).json({ error: 'Room not found' });
+    if (room.leader !== name) {
+        return res.status(403).json({ error: 'Only the leader can make a new leader' });
+    }
+    if (!room.members.includes(targetName)) {
+        return res.status(404).json({ error: 'Target member not in room' });
+    }
+    room.leader = targetName;
+    room.lastUpdate = Date.now();
+    broadcastSyncUpdate(roomCode);
+    res.json({ message: `Leader changed to ${targetName}` });
+});
+
 // PROTECTED
 app.get("/songs", requireApiKey, (req, res) => {
   const songs = readSongs();
