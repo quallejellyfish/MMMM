@@ -241,10 +241,7 @@
         if (!lyrics || lyrics.length === 0) {
           body.textContent = "No lyrics available.";
         } else {
-          const formatted = lyrics
-            .map((l) => `[${l.delay}ms] ${l.chat}`)
-            .join("\n");
-          body.textContent = formatted;
+          body.textContent = JSON.stringify(lyrics, null, 2);
         }
         modal.style.display = "flex";
       }
@@ -253,7 +250,6 @@
         document.getElementById("lyricsModal").style.display = "none";
       }
 
-      // Copy lyrics to clipboard
       document.getElementById("copyLyricsBtn").addEventListener("click", () => {
         const body = document.getElementById("modalBody");
         const text = body.textContent;
