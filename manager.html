@@ -208,28 +208,6 @@
       </div>
     </div>
     <script>
-      (async function verifyKey() {
-        const key = localStorage.getItem("apiKey");
-        if (!key) {
-          window.location.href = "/";
-          return;
-        }
-        try {
-          const res = await fetch("/verify-key", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ apiKey: key }),
-          });
-          const data = await res.json();
-          if (!data.valid) {
-            localStorage.removeItem("apiKey");
-            window.location.href = "/";
-          }
-        } catch (e) {
-          window.location.href = "/";
-        }
-      })();
-
       let songList = [];
       let lyricCache = {};
       let songsHash = "";
@@ -237,17 +215,11 @@
       function getApiUrl() {
         return document.getElementById("apiUrl").value.replace(/\$/, "");
       }
-      function getApiKey() {
-        return localStorage.getItem("apiKey") || "";
-      }
 
       async function apiRequest(endpoint, method, body = null) {
         const url = `${getApiUrl()}${endpoint}`;
-        const headers = {
-          "Content-Type": "application/json",
-          "X-API-Key": getApiKey(),
-        };
-        const options = { method, headers };
+        const headers = { "Content-Type": "application/json" };
+        const options = { method, headers, credentials: "include" };
         if (body) options.body = JSON.stringify(body);
         const res = await fetch(url, options);
         if (!res.ok) {
