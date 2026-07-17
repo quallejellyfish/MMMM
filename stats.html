@@ -28,30 +28,19 @@
         padding: 20px;
         margin: 20px 0;
       }
-      button,
-      .button {
+      button {
         background: #ff79c6;
         border: none;
         padding: 8px 16px;
         border-radius: 8px;
         cursor: pointer;
         margin: 4px;
-        transition: background 0.3s ease-in-out;
+        transition: background 0.3s;
       }
       button:hover {
         background: #ba4085;
       }
-      button.danger:hover {
-        background: #990f0f;
-      }
-      .danger {
-        background: #ff5555;
-      }
-      a:hover {
-        color: #ba4085;
-      }
-      input,
-      textarea {
+      input {
         width: 100%;
         padding: 10px;
         margin: 8px 0;
@@ -81,19 +70,15 @@
         padding: 8px 16px;
         border-radius: 12px;
       }
-
       .container h1 a {
-        transition:
-          color 0.4s ease-in-out,
-          text-decoration-style 0.9s ease-in-out;
         color: #fff;
         font-size: 1.7rem;
         text-decoration: underline;
+        transition: color 0.4s;
       }
       .container h1 a:hover {
         color: #a4a4a4 !important;
         text-decoration-style: wavy !important;
-        text-decoration-color: #fff;
       }
     </style>
   </head>
@@ -102,21 +87,18 @@
       <h1>
         <span>MMMM - Play Stats</span>
         <span>|</span>
-        <a href="./manager.html">Go to Song List</a>
+        <a href="/manager.html">Go to Song List</a>
       </h1>
       <div class="card">
         <div class="flex">
           <label
             >API URL:
-            <input type="text" value="" style="width: 300px" id="apiUrl"
-          /></label>
-          <label
-            >API Key: <input type="password" id="apiKey" style="width: 180px"
+            <input type="text" id="apiUrl" value="" style="width: 300px"
           /></label>
           <label
             >Your Stats Key:
             <input
-              type="password"
+              type="text"
               id="statsKey"
               placeholder="Enter your stats key"
               style="width: 180px"
@@ -125,7 +107,7 @@
           <button id="refreshSongsBtn">Refresh Songs</button>
         </div>
         <div class="status" id="statusMsg">
-          Enter API URL, your stats key, and click "Load Stats"
+          Enter API URL, your stats key, and click "Load Stats".
         </div>
       </div>
       <div class="card">
@@ -148,31 +130,34 @@
         </div>
       </div>
     </div>
+
     <script>
       let songList = [];
       let playData = {};
 
       function getApiUrl() {
-        return document.getElementById("apiUrl").value.replace(/\$/, "");
-      }
-
-      function getApiKey() {
-        return document.getElementById("apiKey").value;
+        return document.getElementById("apiUrl").value.replace(/\/+$/, "");
       }
 
       async function loadSongs() {
         const status = document.getElementById("statusMsg");
         const url = getApiUrl();
-        const key = getApiKey();
         if (!url) {
           status.textContent = "Please enter an API URL.";
           return;
         }
         try {
-          const headers = {};
-          if (key) headers["X-API-Key"] = key;
-          const res = await fetch(`${url}/songs`, { headers });
-          if (!res.ok) throw new Error(await res.text());
+          const res = await fetch(`${url}/songs`, {
+            credentials: "include",
+          });
+          if (!res.ok) {
+            if (res.status === 401) {
+              status.textContent =
+                "Unauthorized – please log in at the root page.";
+              return;
+            }
+            throw new Error(await res.text());
+          }
           songList = await res.json();
           status.textContent = `Loaded ${songList.length} songs.`;
           renderTable();
@@ -194,23 +179,14 @@
           return;
         }
         const status = document.getElementById("statusMsg");
-        status.textContent = "Fetching stats...";
+        status.textContent = "⏳ Fetching stats...";
 
         try {
-          const headers = {};
-          const apiKey = getApiKey();
-          if (apiKey) headers["X-API-Key"] = apiKey;
-          const songRes = await fetch(`${url}/songs`, { headers });
-          if (songRes.ok) {
-            songList = await songRes.json();
-            status.textContent = `Loaded ${songList.length} songs. Fetching stats...`;
-          } else {
-            console.warn("Could not load songs, continuing with cached list.");
-          }
+          await loadSongs();
 
           const res = await fetch(`${url}/stats/${key}`);
           if (res.status === 404) {
-            status.textContent = "No stats found for this key.";
+            status.textContent = "❌ No stats found for this key.";
             playData = {};
             renderTable();
             return;
@@ -218,10 +194,10 @@
           if (!res.ok) throw new Error(await res.text());
           const data = await res.json();
           playData = data;
-          status.textContent = `Loaded ${Object.keys(playData).length} entries.`;
+          status.textContent = `✅ Loaded ${Object.keys(playData).length} entries.`;
           renderTable();
         } catch (err) {
-          status.textContent = `Error: ${err.message}`;
+          status.textContent = `❌ Error: ${err.message}`;
           alert("Failed to load stats: " + err.message);
         }
       }
@@ -233,12 +209,10 @@
             '<tr><td colspan="3">Load songs and stats to see data.</td></tr>';
           return;
         }
-
         const nameMap = {};
         songList.forEach((s) => {
           nameMap[s.id] = s.name;
         });
-
         const rows = Object.entries(playData)
           .map(([id, count]) => ({
             id: parseInt(id),
@@ -246,21 +220,19 @@
             count: count,
           }))
           .sort((a, b) => b.count - a.count);
-
         if (rows.length === 0) {
           tbody.innerHTML = '<tr><td colspan="3">No play data found.</td></tr>';
           return;
         }
-
         tbody.innerHTML = rows
           .map(
             (row) => `
-        <tr>
-          <td>${row.id}</td>
-          <td>${row.name}</td>
-          <td>${row.count}</td>
-        </tr>
-      `,
+      <tr>
+        <td>${row.id}</td>
+        <td>${row.name}</td>
+        <td>${row.count}</td>
+      </tr>
+    `,
           )
           .join("");
       }
@@ -271,7 +243,6 @@
       document
         .getElementById("refreshSongsBtn")
         .addEventListener("click", loadSongs);
-
       document.getElementById("apiUrl").value = window.location.origin;
 
       loadSongs();
