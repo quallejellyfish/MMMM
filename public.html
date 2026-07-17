@@ -1,0 +1,229 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Public Songs - MMMM</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Hammersmith+One&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      * {
+        box-sizing: border-box;
+        font-family: "Hammersmith One", sans-serif;
+      }
+      body {
+        background: #1e1e2f;
+        color: #eee;
+        padding: 20px;
+      }
+      .container {
+        max-width: 1400px;
+        margin: 0 auto;
+      }
+      .card {
+        background: #2d2d3a;
+        border-radius: 16px;
+        padding: 20px;
+        margin: 20px 0;
+      }
+      a {
+        color: #ff79c6;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+      }
+      th,
+      td {
+        text-align: left;
+        padding: 10px;
+        border-bottom: 1px solid #444;
+      }
+      th {
+        background: #3a3a4a;
+      }
+      .status {
+        background: #3a3a4a;
+        padding: 8px 16px;
+        border-radius: 12px;
+        margin-top: 10px;
+      }
+      button {
+        background: #ff79c6;
+        border: none;
+        padding: 4px 12px;
+        border-radius: 6px;
+        cursor: pointer;
+        font-weight: bold;
+      }
+      button:hover {
+        background: #ba4085;
+      }
+      .modal {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.7);
+        justify-content: center;
+        align-items: center;
+        z-index: 1000;
+      }
+      .modal-content {
+        background: #2d2d3a;
+        max-width: 600px;
+        width: 90%;
+        max-height: 80vh;
+        overflow-y: auto;
+        padding: 20px;
+        border-radius: 16px;
+        border: 1px solid #ff79c6;
+      }
+      .modal-content pre {
+        white-space: pre-wrap;
+        word-break: break-all;
+        background: #0f0f17;
+        padding: 12px;
+        border-radius: 8px;
+        color: #aaa;
+        max-height: 50vh;
+        overflow-y: auto;
+      }
+      .modal-close {
+        background: #ff5555;
+        border: none;
+        padding: 8px 16px;
+        border-radius: 6px;
+        cursor: pointer;
+        color: white;
+        float: right;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1>Public Songs</h1>
+      <a href="/">Back to Home</a>
+      <div class="card">
+        <div class="status" id="statusMsg">Loading...</div>
+        <table id="songsTable">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Name</th>
+              <th>URL</th>
+              <th>Lyrics</th>
+            </tr>
+          </thead>
+          <tbody id="songsTableBody">
+            <tr>
+              <td colspan="4">No public songs yet.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div id="lyricsModal" class="modal">
+      <div class="modal-content">
+        <button class="modal-close" onclick="closeModal()">✕ Close</button>
+        <h3 id="modalTitle">Lyrics</h3>
+        <pre id="modalBody">Loading...</pre>
+      </div>
+    </div>
+
+    <script>
+      let songList = [];
+      let lyricCache = {};
+
+      async function fetchPublicSongs() {
+        try {
+          const res = await fetch("/public/songs");
+          if (!res.ok) throw new Error(await res.text());
+          songList = await res.json();
+          renderTable();
+          document.getElementById("statusMsg").innerHTML =
+            `Loaded ${songList.length} public songs.`;
+        } catch (e) {
+          document.getElementById("statusMsg").innerHTML =
+            `Error: ${e.message}`;
+        }
+      }
+
+      async function fetchPublicLyrics(songId) {
+        if (lyricCache[songId]) return lyricCache[songId];
+        try {
+          const res = await fetch(`/public/lyrics/${songId}`);
+          if (!res.ok) return [];
+          const data = await res.json();
+          lyricCache[songId] = data;
+          return data;
+        } catch (e) {
+          return [];
+        }
+      }
+
+      function renderTable() {
+        const tbody = document.getElementById("songsTableBody");
+        if (!songList.length) {
+          tbody.innerHTML =
+            '<tr><td colspan="4">No public songs available.</td></tr>';
+          return;
+        }
+        tbody.innerHTML = "";
+        songList.forEach((song) => {
+          const row = tbody.insertRow();
+          row.insertCell(0).textContent = song.id;
+          row.insertCell(1).textContent = song.name;
+          row.insertCell(2).innerHTML =
+            `<a href="${song.url}" target="_blank">link</a>`;
+
+          const cellLyrics = row.insertCell(3);
+          const count = song.lyricsCount || 0;
+          cellLyrics.innerHTML = `${count} lines <button class="viewLyricsBtn" data-id="${song.id}">View</button>`;
+        });
+
+        document.querySelectorAll(".viewLyricsBtn").forEach((btn) => {
+          btn.addEventListener("click", async () => {
+            const id = parseInt(btn.dataset.id);
+            const lyrics = await fetchPublicLyrics(id);
+            showModal(lyrics, id);
+          });
+        });
+      }
+
+      function showModal(lyrics, songId) {
+        const modal = document.getElementById("lyricsModal");
+        const body = document.getElementById("modalBody");
+        const title = document.getElementById("modalTitle");
+        const song = songList.find((s) => s.id === songId);
+        title.textContent = `Lyrics for "${song ? song.name : songId}"`;
+        if (!lyrics || lyrics.length === 0) {
+          body.textContent = "No lyrics available.";
+        } else {
+          const lines = lyrics
+            .map((l) => `[${l.delay}ms] ${l.chat}`)
+            .join("\n");
+          body.textContent = lines;
+        }
+        modal.style.display = "flex";
+      }
+
+      function closeModal() {
+        document.getElementById("lyricsModal").style.display = "none";
+      }
+
+      document.getElementById("lyricsModal").addEventListener("click", (e) => {
+        if (e.target === e.currentTarget) closeModal();
+      });
+
+      fetchPublicSongs();
+    </script>
+  </body>
+</html>
