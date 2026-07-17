@@ -394,7 +394,7 @@ app.get("/", (req, res) => {
         }
 
         <div class="links">
-          <a href="/public" class="link-btn public">Public Songs</a>
+          <a href="/public.html" class="link-btn public">Public Songs</a>
           ${isAuthenticated ? `<a href="/manager.html" class="link-btn private">Private Manager</a>` : ""}
         </div>
       </div>
@@ -452,8 +452,8 @@ app.get("/public", (req, res) => {
         </head>
         <body>
             <div class="container">
-                <h1>🎵 Public Songs</h1>
-                <a href="/">⬅ Back</a>
+                <h1>Public Songs</h1>
+                <a href="/">Back</a>
                 <div id="loading">Loading...</div>
                 <table id="songsTable" style="display:none;">
                     <thead><tr><th>Name</th><th>URL</th><th>Lyrics Lines</th></tr></thead>
@@ -477,7 +477,7 @@ app.get("/public", (req, res) => {
                         songs.forEach(song => {
                             const row = tbody.insertRow();
                             row.insertCell(0).textContent = song.name;
-                            row.insertCell(1).innerHTML = "<a href="${song.url}" target="_blank">link</a>";
+                            row.insertCell(1).innerHTML = "<a href='${song.url}" target="_blank">link</a>";
                             row.insertCell(2).textContent = song.lyricsCount || '?';
                         });
                     } catch (e) {
@@ -531,6 +531,8 @@ app.get("/public/lyrics/:id", (req, res) => {
   const data = JSON.parse(fs.readFileSync(PUBLIC_LYRICS_FILE, "utf8"));
   res.json(data[id] || []);
 });
+
+app.get("/public.html", (req, res) => res.sendFile(__dirname + "/public.html"));
 
 const SONGS_FILE = "./songs.json";
 const LYRICS_FILE = "./lyrics.json";
