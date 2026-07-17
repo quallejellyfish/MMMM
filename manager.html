@@ -136,9 +136,6 @@
             >API URL:
             <input type="text" id="apiUrl" value="" style="width: 300px"
           /></label>
-          <label
-            >API KEY: <input type="password" id="apiKey" style="width: 300px"
-          /></label>
           <button id="refreshBtn">Refresh</button>
           <button id="syncGitBtn">Sync to GitHub</button>
         </div>
@@ -176,6 +173,10 @@
           rows="6"
           placeholder="[{chat: 'boob' ,delay:0}]"
         ></textarea>
+        <label
+          >Public?
+          <input type="checkbox" id="publicCheckbox" />
+        </label>
         <div class="flex">
           <button id="convertBtn">Convert to JSON</button>
           <button id="saveBtn">Save</button>
@@ -207,6 +208,10 @@
       </div>
     </div>
     <script>
+      if (!localStorage.getItem("apiKey")) {
+        window.location.href = "/";
+      }
+
       let songList = [];
       let lyricCache = {};
       let songsHash = "";
@@ -215,7 +220,7 @@
         return document.getElementById("apiUrl").value.replace(/\$/, "");
       }
       function getApiKey() {
-        return document.getElementById("apiKey").value;
+        return localStorage.getItem("apiKey") || "";
       }
 
       async function apiRequest(endpoint, method, body = null) {
@@ -296,6 +301,7 @@
               url,
               lyrics: lyricsArray,
               categoryIndex,
+              public: document.getElementById("publicCheckbox").checked,
             });
             statusMsg.innerHTML = `✅ Added "${name}" (ID: ${newSong.id})`;
           } else {
@@ -304,6 +310,7 @@
               name,
               url,
               categoryIndex,
+              public: document.getElementById("publicCheckbox").checked,
             });
             await apiRequest(`/songs/${idNum}/lyrics`, "PUT", {
               lyrics: lyricsArray,
@@ -359,6 +366,8 @@
         document.getElementById("editId").value = numericId;
         document.getElementById("songName").value = song.name;
         document.getElementById("audioUrl").value = song.url;
+        document.getElementById("publicCheckbox").checked =
+          song.public === true;
 
         try {
           const lyrics = await loadLyrics(numericId);
@@ -403,6 +412,7 @@
         document.getElementById("lyrics").value = "";
         document.getElementById("categorySelect").value = 0;
         document.getElementById("deleteBtn").style.display = "none";
+        document.getElementById("publicCheckbox").checked = false;
       }
 
       let draggedRow = null;
