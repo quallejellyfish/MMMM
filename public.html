@@ -30,9 +30,6 @@
         padding: 20px;
         margin: 20px 0;
       }
-      a {
-        color: #ff79c6;
-      }
       table {
         width: 100%;
         border-collapse: collapse;
@@ -104,11 +101,31 @@
         color: white;
         float: right;
       }
+      .container h1 a {
+        transition:
+          color 0.4s ease-in-out,
+          text-decoration-style 0.9s ease-in-out;
+        color: #fff;
+        font-size: 1.7rem;
+        text-decoration: underline;
+      }
+      .container h1 a:hover {
+        color: #a4a4a4 !important;
+        text-decoration-style: wavy !important;
+        text-decoration-color: #fff;
+      }
+      a {
+        color: #ff79c6;
+      }
     </style>
   </head>
   <body>
     <div class="container">
-      <h1>Public Songs</h1>
+      <h1>
+        <span>MMMM - Public Songs</span>
+        <span>|</span>
+        <a href="/stats.html">Go to Stats Leaderboard</a>
+      </h1>
       <a href="/">Back to Home</a>
       <div class="card">
         <div class="status" id="statusMsg">Loading...</div>
