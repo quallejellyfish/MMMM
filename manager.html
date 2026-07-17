@@ -208,9 +208,27 @@
       </div>
     </div>
     <script>
-      if (!localStorage.getItem("apiKey")) {
-        window.location.href = "/";
-      }
+      (async function verifyKey() {
+        const key = localStorage.getItem("apiKey");
+        if (!key) {
+          window.location.href = "/";
+          return;
+        }
+        try {
+          const res = await fetch("/verify-key", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ apiKey: key }),
+          });
+          const data = await res.json();
+          if (!data.valid) {
+            localStorage.removeItem("apiKey");
+            window.location.href = "/";
+          }
+        } catch (e) {
+          window.location.href = "/";
+        }
+      })();
 
       let songList = [];
       let lyricCache = {};
