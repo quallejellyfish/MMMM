@@ -1083,57 +1083,88 @@ app.post("/sync-github", requireApiKey, async (req, res) => {
     return res.status(500).json({ error: errorMsg });
   }
 
+  async function updateFile(path, content, retries = 2) {
+    const url = `https://api.github.com/repos/${GITHUB_REPO}/contents/${path}`;
+    const base64Content = Buffer.from(JSON.stringify(content, null, 2), "utf8").toString("base64");
+    let sha = null;
+    try {
+      const getRes = await fetch(url, {
+        headers: {
+          Authorization: `token ${GITHUB_TOKEN}`,
+          Accept: "application/vnd.github.v3+json",
+        },
+      });
+      if (getRes.ok) {
+        const data = await getRes.json();
+        sha = data.sha;
+      }
+    } catch (e) { /* file doesn't exist */ }
+
+    const body = {
+      message: `Update ${path}`,
+      content: base64Content,
+      branch: GITHUB_BRANCH || "main",
+    };
+    if (sha) body.sha = sha;
+
+    let putRes = await fetch(url, {
+      method: "PUT",
+      headers: {
+        Authorization: `token ${GITHUB_TOKEN}`,
+        Accept: "application/vnd.github.v3+json",
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(body),
+    });
+
+    if (putRes.status === 409 && retries > 0) {
+      console.log(`Conflict on ${path}, retrying...`);
+      const getRes = await fetch(url, {
+        headers: {
+          Authorization: `token ${GITHUB_TOKEN}`,
+          Accept: "application/vnd.github.v3+json",
+        },
+      });
+      if (getRes.ok) {
+        const data = await getRes.json();
+        body.sha = data.sha;
+        putRes = await fetch(url, {
+          method: "PUT",
+          headers: {
+            Authorization: `token ${GITHUB_TOKEN}`,
+            Accept: "application/vnd.github.v3+json",
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(body),
+        });
+      }
+      if (putRes.status === 409) {
+        return updateFile(path, content, retries - 1);
+      }
+    }
+
+    if (!putRes.ok) {
+      const errText = await putRes.text();
+      throw new Error(`GitHub API error for ${path}: ${putRes.status} ${errText}`);
+    }
+    return putRes.json();
+  }
+
   try {
     const songs = readSongs();
     const lyrics = readLyrics();
 
-    async function updateFile(path, content) {
-      const url = `https://api.github.com/repos/${GITHUB_REPO}/contents/${path}`;
-      const base64Content = Buffer.from(JSON.stringify(content, null, 2), "utf8").toString("base64");
-      let sha = null;
-      try {
-        const getRes = await fetch(url, {
-          headers: {
-            Authorization: `token ${GITHUB_TOKEN}`,
-            Accept: "application/vnd.github.v3+json",
-          },
-        });
-        if (getRes.ok) {
-          const data = await getRes.json();
-          sha = data.sha;
-        }
-      } catch (e) { /* file doesn't exist */ }
-      const body = {
-        message: `Update ${path}`,
-        content: base64Content,
-        branch: GITHUB_BRANCH,
-      };
-      if (sha) body.sha = sha;
-      const putRes = await fetch(url, {
-        method: "PUT",
-        headers: {
-          Authorization: `token ${GITHUB_TOKEN}`,
-          Accept: "application/vnd.github.v3+json",
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(body),
-      });
-      if (!putRes.ok) {
-        const errText = await putRes.text();
-        throw new Error(`GitHub API error for ${path}: ${putRes.status} ${errText}`);
-      }
-      return putRes.json();
+    let publicSongs = [];
+    let publicLyrics = {};
+    if (fs.existsSync(PUBLIC_SONGS_FILE) && fs.existsSync(PUBLIC_LYRICS_FILE)) {
+      publicSongs = JSON.parse(fs.readFileSync(PUBLIC_SONGS_FILE, "utf8"));
+      publicLyrics = JSON.parse(fs.readFileSync(PUBLIC_LYRICS_FILE, "utf8"));
     }
 
     await updateFile("songs.json", songs);
     await updateFile("lyrics.json", lyrics);
-
-    if (fs.existsSync(PUBLIC_SONGS_FILE) && fs.existsSync(PUBLIC_LYRICS_FILE)) {
-      const publicSongs = JSON.parse(fs.readFileSync(PUBLIC_SONGS_FILE, "utf8"));
-      const publicLyrics = JSON.parse(fs.readFileSync(PUBLIC_LYRICS_FILE, "utf8"));
-      await updateFile("public/public_songs.json", publicSongs);
-      await updateFile("public/public_lyrics.json", publicLyrics);
-    }
+    await updateFile("public/public_songs.json", publicSongs);
+    await updateFile("public/public_lyrics.json", publicLyrics);
 
     const successMsg = `Updated songs.json (${songs.length} songs), lyrics.json (${Object.keys(lyrics).length} entries), and public files.`;
     await sendGitHubSyncNotification(true, successMsg);
