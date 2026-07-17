@@ -5,7 +5,7 @@ const { timeStamp } = require("console");
 const jwt = require("jsonwebtoken");
 const http = require("http");
 const { WebSocketServer } = require("ws");
-const cookieParser = require('cookie-parser');
+const cookieParser = require("cookie-parser");
 
 const app = express();
 const server = http.createServer(app);
@@ -18,7 +18,8 @@ const GITHUB_BRANCH = process.env.GITHUB_BRANCH;
 const API_KEY = process.env.API_KEY;
 const DISCORD_WEBHOOK_URL = process.env.DISCORD_WEBHOOK_URL;
 const JWT_SECRET = process.env.JWT_SECRET;
-const COOKIE_SECRET = process.env.COOKIE_SECRET || "wolfi_likes_cookies_alot_and_i_mean_a_lot_very_cookiey";
+const COOKIE_SECRET =
+  process.env.COOKIE_SECRET;
 
 const CATEGORIES = [
   { id: 999, name: "🇺🇸-----English Songs-----" },
@@ -204,13 +205,15 @@ async function sendGitHubSyncNotification(success, message, details = "") {
 }
 
 function requireApiKey(req, res, next) {
-  const key = req.headers["x-api-key"];
-  console.log("Received API key:", key);
-  console.log("Expected API key:", API_KEY);
-  if (key !== API_KEY) {
-    return res.status(401).json({ error: "no" });
+  if (req.signedCookies.auth === "true") {
+    return next();
   }
-  next();
+  const key = req.headers["x-api-key"];
+  if (key === API_KEY) {
+    return next();
+  }
+  console.log("Unauthorized access attempt");
+  return res.status(401).json({ error: "Unauthorized" });
 }
 
 app.use(cors());
@@ -377,15 +380,19 @@ app.get("/", (req, res) => {
           ${isAuthenticated ? "You are authenticated." : "Enter your API key to access private manager."}
         </div>
 
-        ${!isAuthenticated ? `
+        ${
+          !isAuthenticated
+            ? `
           <input type="password" id="apiKeyInput" placeholder="API Key">
           <button id="saveKeyBtn">Save Key &amp; Unlock Private</button>
-        ` : `
+        `
+            : `
           <div style="margin: 12px 0;">
-            <span style="color: #8be9fd;">rivate manager is unlocked.</span>
+            <span style="color: #8be9fd;">Private manager is unlocked.</span>
           </div>
           <a href="/logout" class="logout-btn">Logout</a>
-        `}
+        `
+        }
 
         <div class="links">
           <a href="/public" class="link-btn public">Public Songs</a>
@@ -394,7 +401,9 @@ app.get("/", (req, res) => {
       </div>
 
       <script>
-        ${!isAuthenticated ? `
+        ${
+          !isAuthenticated
+            ? `
           document.getElementById('saveKeyBtn').addEventListener('click', async () => {
             const key = document.getElementById('apiKeyInput').value.trim();
             const statusMsg = document.getElementById('statusMsg');
@@ -419,7 +428,9 @@ app.get("/", (req, res) => {
               statusMsg.textContent = 'Error connecting to server.';
             }
           });
-        ` : ""}
+        `
+            : ""
+        }
       </script>
     </body>
     </html>
@@ -479,6 +490,14 @@ app.get("/public", (req, res) => {
         </body>
         </html>
     `);
+});
+
+app.get("/manager.html", (req, res) => {
+  if (req.signedCookies.auth === "true") {
+    res.sendFile(__dirname + "/manager.html");
+  } else {
+    res.redirect("/");
+  }
 });
 
 const PUBLIC_SONGS_FILE = "./public_songs.json";
