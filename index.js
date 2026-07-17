@@ -18,8 +18,7 @@ const GITHUB_BRANCH = process.env.GITHUB_BRANCH;
 const API_KEY = process.env.API_KEY;
 const DISCORD_WEBHOOK_URL = process.env.DISCORD_WEBHOOK_URL;
 const JWT_SECRET = process.env.JWT_SECRET;
-const COOKIE_SECRET =
-  process.env.COOKIE_SECRET;
+const COOKIE_SECRET = process.env.COOKIE_SECRET;
 
 const CATEGORIES = [
   { id: 999, name: "🇺🇸-----English Songs-----" },
@@ -243,7 +242,7 @@ app.post("/auth", (req, res) => {
 });
 
 app.post("/verify-key", express.json(), (req, res) => {
-  const [apiKey] = req.body;
+  const { apiKey } = req.body;
   if (!apiKey) {
     return res.status(400).json({ valid: false, error: "Missing API key" });
   }
@@ -1240,7 +1239,7 @@ function broadcastEvent(event, data) {
 
 app.get("/health", (req, res) => res.send("OK"));
 
-// app.use(express.static(__dirname));
+app.use(express.static(__dirname));
 
 //app.listen(PORT, () => console.log(`API running on port ${PORT}`));
 server.listen(PORT, () => console.log(`API running on port ${PORT}`));
