@@ -173,10 +173,16 @@
           rows="6"
           placeholder="[{chat: 'boob' ,delay:0}]"
         ></textarea>
-        <label
-          >Public?
-          <input type="checkbox" id="publicCheckbox" />
-        </label>
+        <div
+          style="display: flex; align-items: center; gap: 8px; margin: 8px 0"
+        >
+          <label style="margin: 0">Public?</label>
+          <input
+            type="checkbox"
+            id="publicCheckbox"
+            style="width: auto; margin: 0"
+          />
+        </div>
         <div class="flex">
           <button id="convertBtn">Convert to JSON</button>
           <button id="saveBtn">Save</button>
