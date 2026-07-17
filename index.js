@@ -5,6 +5,7 @@ const { timeStamp } = require("console");
 const jwt = require("jsonwebtoken");
 const http = require("http");
 const { WebSocketServer } = require("ws");
+const cookieParser = require('cookie-parser');
 
 const app = express();
 const server = http.createServer(app);
