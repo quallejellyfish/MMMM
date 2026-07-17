@@ -17,6 +17,7 @@ const GITHUB_BRANCH = process.env.GITHUB_BRANCH;
 const API_KEY = process.env.API_KEY;
 const DISCORD_WEBHOOK_URL = process.env.DISCORD_WEBHOOK_URL;
 const JWT_SECRET = process.env.JWT_SECRET;
+const COOKIE_SECRET = process.env.COOKIE_SECRET || "wolfi_likes_cookies_alot_and_i_mean_a_lot_very_cookiey";
 
 const CATEGORIES = [
   { id: 999, name: "🇺🇸-----English Songs-----" },
@@ -213,6 +214,20 @@ function requireApiKey(req, res, next) {
 
 app.use(cors());
 app.use(express.json({ limit: "10mb" }));
+app.use(cookieParser(COOKIE_SECRET));
+
+app.use((req, res, next) => {
+  if (req.path === "/manager.html") {
+    const auth = req.signedCookies.auth;
+    if (auth === "true") {
+      next();
+    } else {
+      res.redirect("/");
+    }
+  } else {
+    next();
+  }
+});
 
 app.post("/auth", (req, res) => {
   const { apiKey } = req.body;
@@ -223,56 +238,191 @@ app.post("/auth", (req, res) => {
   res.json({ token });
 });
 
+app.post("/verify-key", express.json(), (req, res) => {
+  const [apiKey] = req.body;
+  if (!apiKey) {
+    return res.status(400).json({ valid: false, error: "Missing API key" });
+  }
+  const isValid = apiKey === API_KEY;
+  res.json({ valid: isValid });
+});
+
+app.post("/login", express.json(), (req, res) => {
+  const { apiKey } = req.body;
+  if (!apiKey) {
+    return res.status(400).json({ success: false, message: "Missing API key" });
+  }
+  if (apiKey === API_KEY) {
+    res.cookie("auth", "true", {
+      httpOnly: true,
+      signed: true,
+      maxAge: 3600000, // 1 hour
+      sameSite: "lax",
+    });
+    return res.json({ success: true });
+  } else {
+    return res.status(401).json({ success: false, message: "Invalid API key" });
+  }
+});
+
+app.get("/logout", (req, res) => {
+  res.clearCookie("auth");
+  res.redirect("/");
+});
+
 // ROOT
 app.get("/", (req, res) => {
+  const isAuthenticated = req.signedCookies.auth === "true";
+
   res.send(`
-        <!DOCTYPE html> 
-        <html>
-        <head><title>MMMM - Music Menu Mod Manager</title>
-        <style>
-            body { background: #1e1e2f; color: #eee; font-family: system-ui; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
-            .container { background: #2d2d3a; padding: 40px; border-radius: 16px; text-align: center; max-width: 400px; }
-            input { width: 100%; padding: 10px; margin: 10px 0; background: #3a3a4a; border: 1px solid #555; border-radius: 8px; color: #fff; }
-            button { background: #ff79c6; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer; font-weight: bold; }
-            .links { margin-top: 20px; }
-            .links a { color: #ff79c6; display: block; margin: 8px 0; }
-        </style>
-        </head>
-        <body>
-            <div class="container">
-                <h1>Welcome to MMMM</h1>
-                <p>Enter your API key to access private manager.</p>
-                <input type="password" id="apiKeyInput" placeholder="API Key">
-                <button id="saveKeyBtn">Save Key</button>
-                <div id="message"></div>
-                <div class="links">
-                    <a href="/public">Public Songs</a>
-                    <a href="/manager.html" id="privateLink">Private Manager</a>
-                </div>
-            </div>
-            <script>
-                document.getElementById('saveKeyBtn').addEventListener('click', () => {
-                    const key = document.getElementById('apiKeyInput').value.trim();
-                    if (!key) {
-                        document.getElementById('message').textContent = 'Please enter a key.';
-                        return;
-                    }
-                    localStorage.setItem('apiKey', key);
-                    document.getElementById('message').textContent = 'Key saved! You can now access Private Manager.';
-                });
-                if (localStorage.getItem('apiKey')) {
-                    document.getElementById('message').textContent = 'Key already saved.';
-                }
-                document.getElementById('privateLink').addEventListener('click', (e) => {
-                    if (!localStorage.getItem('apiKey')) {
-                        e.preventDefault();
-                        alert('Please save your API key first.');
-                    }
-                });
-            </script>
-        </body>
-        </html>
-    `);
+    <!DOCTYPE html>
+    <html>
+    <head>
+      <title>MMMM - Music Menu Mod Manager</title>
+      <style>
+        * { box-sizing: border-box; }
+        body {
+          background: #1e1e2f;
+          color: #eee;
+          font-family: system-ui, -apple-system, sans-serif;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          height: 100vh;
+          margin: 0;
+          padding: 20px;
+        }
+        .container {
+          background: #2d2d3a;
+          padding: 40px;
+          border-radius: 16px;
+          text-align: center;
+          max-width: 500px;
+          width: 100%;
+          box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+        }
+        h1 { margin-top: 0; font-size: 2.2rem; }
+        input {
+          width: 100%;
+          padding: 14px;
+          margin: 12px 0;
+          background: #3a3a4a;
+          border: 1px solid #555;
+          border-radius: 8px;
+          color: #fff;
+          font-size: 1rem;
+        }
+        button {
+          background: #ff79c6;
+          border: none;
+          padding: 14px 24px;
+          border-radius: 8px;
+          cursor: pointer;
+          font-weight: bold;
+          font-size: 1.1rem;
+          transition: background 0.2s;
+          width: 100%;
+        }
+        button:hover { background: #ba4085; }
+        .message { margin: 12px 0; font-size: 0.95rem; color: #aaa; }
+        .links {
+          margin-top: 24px;
+          display: flex;
+          flex-direction: column;
+          gap: 14px;
+        }
+        .link-btn {
+          display: block;
+          background: #3a3a4a;
+          padding: 16px;
+          border-radius: 12px;
+          text-decoration: none;
+          color: #ff79c6;
+          font-weight: bold;
+          font-size: 1.3rem;
+          transition: background 0.2s, transform 0.1s;
+          border: 1px solid #555;
+        }
+        .link-btn:hover {
+          background: #4a4a5a;
+          transform: scale(1.02);
+        }
+        .link-btn.public {
+          color: #8be9fd;
+          border-color: #8be9fd;
+        }
+        .link-btn.private {
+          color: #ffb347;
+          border-color: #ffb347;
+        }
+        .logout-btn {
+          background: #e74c3c;
+          border: none;
+          padding: 8px 16px;
+          border-radius: 6px;
+          cursor: pointer;
+          color: white;
+          font-weight: bold;
+          margin-top: 12px;
+        }
+        .logout-btn:hover { background: #c0392b; }
+      </style>
+    </head>
+    <body>
+      <div class="container">
+        <h1>MMMM</h1>
+        <p>Music Menu Mod Manager</p>
+        <div class="message" id="statusMsg">
+          ${isAuthenticated ? "You are authenticated." : "Enter your API key to access private manager."}
+        </div>
+
+        ${!isAuthenticated ? `
+          <input type="password" id="apiKeyInput" placeholder="API Key">
+          <button id="saveKeyBtn">Save Key &amp; Unlock Private</button>
+        ` : `
+          <div style="margin: 12px 0;">
+            <span style="color: #8be9fd;">rivate manager is unlocked.</span>
+          </div>
+          <a href="/logout" class="logout-btn">Logout</a>
+        `}
+
+        <div class="links">
+          <a href="/public" class="link-btn public">Public Songs</a>
+          ${isAuthenticated ? `<a href="/manager.html" class="link-btn private">Private Manager</a>` : ""}
+        </div>
+      </div>
+
+      <script>
+        ${!isAuthenticated ? `
+          document.getElementById('saveKeyBtn').addEventListener('click', async () => {
+            const key = document.getElementById('apiKeyInput').value.trim();
+            const statusMsg = document.getElementById('statusMsg');
+            if (!key) {
+              statusMsg.textContent = 'Please enter a key.';
+              return;
+            }
+            try {
+              const res = await fetch('/login', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ apiKey: key })
+              });
+              const data = await res.json();
+              if (data.success) {
+                statusMsg.textContent = 'Key accepted. Refreshing...';
+                setTimeout(() => location.reload(), 500);
+              } else {
+                statusMsg.textContent = 'Invalid API key.';
+              }
+            } catch (e) {
+              statusMsg.textContent = 'Error connecting to server.';
+            }
+          });
+        ` : ""}
+      </script>
+    </body>
+    </html>
+  `);
 });
 
 app.get("/public", (req, res) => {
