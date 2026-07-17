@@ -212,7 +212,6 @@ function requireApiKey(req, res, next) {
 }
 
 app.use(cors());
-app.use(express.static(__dirname));
 app.use(express.json({ limit: "10mb" }));
 
 app.post("/auth", (req, res) => {
@@ -226,7 +225,142 @@ app.post("/auth", (req, res) => {
 
 // ROOT
 app.get("/", (req, res) => {
-  res.sendFile(__dirname + "/manager.html");
+  res.send(`
+        <!DOCTYPE html> 
+        <html>
+        <head><title>MMMM - Music Menu Mod Manager</title>
+        <style>
+            body { background: #1e1e2f; color: #eee; font-family: system-ui; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
+            .container { background: #2d2d3a; padding: 40px; border-radius: 16px; text-align: center; max-width: 400px; }
+            input { width: 100%; padding: 10px; margin: 10px 0; background: #3a3a4a; border: 1px solid #555; border-radius: 8px; color: #fff; }
+            button { background: #ff79c6; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer; font-weight: bold; }
+            .links { margin-top: 20px; }
+            .links a { color: #ff79c6; display: block; margin: 8px 0; }
+        </style>
+        </head>
+        <body>
+            <div class="container">
+                <h1>Welcome to MMMM</h1>
+                <p>Enter your API key to access private manager.</p>
+                <input type="password" id="apiKeyInput" placeholder="API Key">
+                <button id="saveKeyBtn">Save Key</button>
+                <div id="message"></div>
+                <div class="links">
+                    <a href="/public">Public Songs</a>
+                    <a href="/manager.html" id="privateLink">Private Manager</a>
+                </div>
+            </div>
+            <script>
+                document.getElementById('saveKeyBtn').addEventListener('click', () => {
+                    const key = document.getElementById('apiKeyInput').value.trim();
+                    if (!key) {
+                        document.getElementById('message').textContent = 'Please enter a key.';
+                        return;
+                    }
+                    localStorage.setItem('apiKey', key);
+                    document.getElementById('message').textContent = 'Key saved! You can now access Private Manager.';
+                });
+                if (localStorage.getItem('apiKey')) {
+                    document.getElementById('message').textContent = 'Key already saved.';
+                }
+                document.getElementById('privateLink').addEventListener('click', (e) => {
+                    if (!localStorage.getItem('apiKey')) {
+                        e.preventDefault();
+                        alert('Please save your API key first.');
+                    }
+                });
+            </script>
+        </body>
+        </html>
+    `);
+});
+
+app.get("/public", (req, res) => {
+  res.send(`
+        <!DOCTYPE html>
+        <html>
+        <head><title>Public Songs - MMMM</title>
+        <style>
+            body { background: #1e1e2f; color: #eee; font-family: system-ui; padding: 20px; }
+            .container { max-width: 1400px; margin: 0 auto; }
+            table { width: 100%; border-collapse: collapse; }
+            th, td { text-align: left; padding: 10px; border-bottom: 1px solid #444; }
+            th { background: #3a3a4a; }
+            a { color: #ff79c6; }
+        </style>
+        </head>
+        <body>
+            <div class="container">
+                <h1>🎵 Public Songs</h1>
+                <a href="/">⬅ Back</a>
+                <div id="loading">Loading...</div>
+                <table id="songsTable" style="display:none;">
+                    <thead><tr><th>Name</th><th>URL</th><th>Lyrics Lines</th></tr></thead>
+                    <tbody id="songsTableBody"></tbody>
+                </table>
+            </div>
+            <script>
+                async function loadPublicSongs() {
+                    try {
+                        const res = await fetch('/public/songs');
+                        const songs = await res.json();
+                        const tbody = document.getElementById('songsTableBody');
+                        const table = document.getElementById('songsTable');
+                        const loading = document.getElementById('loading');
+                        if (!songs.length) {
+                            loading.textContent = 'No public songs yet.';
+                            return;
+                        }
+                        loading.style.display = 'none';
+                        table.style.display = 'table';
+                        songs.forEach(song => {
+                            const row = tbody.insertRow();
+                            row.insertCell(0).textContent = song.name;
+                            row.insertCell(1).innerHTML = "<a href="${song.url}" target="_blank">link</a>";
+                            row.insertCell(2).textContent = song.lyricsCount || '?';
+                        });
+                    } catch (e) {
+                        document.getElementById('loading').textContent = 'Error loading songs.';
+                    }
+                }
+                loadPublicSongs();
+            </script>
+        </body>
+        </html>
+    `);
+});
+
+const PUBLIC_SONGS_FILE = "./public_songs.json";
+const PUBLIC_LYRICS_FILE = "./public_lyrics.json";
+
+function syncPublicFiles() {
+  const songs = readSongs();
+  const lyrics = readLyrics();
+  const publicSongs = songs.filter((s) => s.public === true && s.id !== 999);
+  const publicLyrics = {};
+  const publicSongsWithCount = publicSongs.map((s) => {
+    const count = lyrics[s.id] ? lyrics[s.id].length : 0;
+    publicLyrics[s.id] = lyrics[s.id] || [];
+    return { ...s, lyricsCount: count };
+  });
+  fs.writeFileSync(
+    PUBLIC_SONGS_FILE,
+    JSON.stringify(publicSongsWithCount, null, 2),
+  );
+  fs.writeFileSync(PUBLIC_LYRICS_FILE, JSON.stringify(publicLyrics, null, 2));
+}
+
+app.get("/public/songs", (req, res) => {
+  if (!fs.existsSync(PUBLIC_SONGS_FILE)) return res.json([]);
+  const data = fs.readFileSync(PUBLIC_SONGS_FILE, "utf8");
+  res.json(JSON.parse(data));
+});
+
+app.get("/public/lyrics/:id", (req, res) => {
+  const id = parseInt(req.params.id);
+  if (!fs.existsSync(PUBLIC_LYRICS_FILE)) return res.json({});
+  const data = JSON.parse(fs.readFileSync(PUBLIC_LYRICS_FILE, "utf8"));
+  res.json(data[id] || []);
 });
 
 const SONGS_FILE = "./songs.json";
@@ -562,7 +696,13 @@ app.put("/songs/reorder", requireApiKey, (req, res) => {
 });
 
 app.post("/songs", requireApiKey, (req, res) => {
-  const { name, url, lyrics: lyricArray, categoryIndex } = req.body;
+  const {
+    name,
+    url,
+    lyrics: lyricArray,
+    categoryIndex,
+    public: isPublic,
+  } = req.body;
   if (!name || !url) {
     return res.status(400).json({ error: "name and url are required" });
   }
@@ -603,13 +743,14 @@ app.post("/songs", requireApiKey, (req, res) => {
 
   sendDiscordAddition(newSong, categoryName, lyricCount);
   broadcastEvent("song-changed", { action: "add", songId: newId });
+  syncPublicFiles();
 
   res.status(201).json(newSong);
 });
 
 app.put("/songs/:id", requireApiKey, (req, res) => {
   const id = parseInt(req.params.id);
-  const { name, url, categoryIndex } = req.body;
+  const { name, url, categoryIndex, public: isPublic } = req.body;
   try {
     const songs = readSongs();
     const index = songs.findIndex((s) => s.id === id);
@@ -664,6 +805,7 @@ app.put("/songs/:id", requireApiKey, (req, res) => {
 
     writeSongs(songs);
     broadcastEvent("song-changed", { action: "edit", songId: id });
+    syncPublicFiles();
 
     if (changes.name || changes.url || changes.category) {
       const newSong = { ...songs.find((s) => s.id === id) };
@@ -713,6 +855,7 @@ app.delete("/songs/:id", requireApiKey, (req, res) => {
     console.error(err);
   });
   broadcastEvent("song-changed", { action: "delete", songId: id });
+  syncPublicFiles();
 
   res.json({ message: "Deleted" });
 });
@@ -926,6 +1069,8 @@ function broadcastEvent(event, data) {
 }
 
 app.get("/health", (req, res) => res.send("OK"));
+
+// app.use(express.static(__dirname));
 
 //app.listen(PORT, () => console.log(`API running on port ${PORT}`));
 server.listen(PORT, () => console.log(`API running on port ${PORT}`));
