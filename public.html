@@ -59,29 +59,76 @@
         border-radius: 6px;
         cursor: pointer;
         font-weight: bold;
+        transition: background 0.2s;
       }
       button:hover {
         background: #ba4085;
       }
-      .lyrics-cell {
-        max-width: 400px;
-        overflow: hidden;
-      }
-      .lyrics-content {
+      .modal {
         display: none;
-        max-height: 200px;
-        overflow-y: auto;
-        background: #0f0f17;
-        padding: 8px;
-        border-radius: 6px;
-        white-space: pre-wrap;
-        font-family: monospace;
-        font-size: 13px;
-        color: #ccc;
-        margin-top: 6px;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.7);
+        justify-content: center;
+        align-items: center;
+        z-index: 1000;
       }
-      .lyrics-content.open {
-        display: block;
+      .modal-content {
+        background: #2d2d3a;
+        max-width: 700px;
+        width: 90%;
+        max-height: 80vh;
+        overflow-y: auto;
+        padding: 20px;
+        border-radius: 16px;
+        border: 1px solid #ff79c6;
+        position: relative;
+      }
+      .modal-content pre {
+        white-space: pre-wrap;
+        word-break: break-all;
+        background: #0f0f17;
+        padding: 12px;
+        border-radius: 8px;
+        color: #ccc;
+        max-height: 50vh;
+        overflow-y: auto;
+        font-family: monospace;
+        font-size: 14px;
+        margin-top: 10px;
+      }
+      .modal-actions {
+        display: flex;
+        gap: 10px;
+        margin-top: 12px;
+        flex-wrap: wrap;
+      }
+      .modal-close {
+        background: #ff5555;
+        border: none;
+        padding: 6px 16px;
+        border-radius: 6px;
+        cursor: pointer;
+        color: white;
+        font-weight: bold;
+      }
+      .modal-close:hover {
+        background: #cc3333;
+      }
+      .copy-btn {
+        background: #3498db;
+        border: none;
+        padding: 6px 16px;
+        border-radius: 6px;
+        cursor: pointer;
+        color: white;
+        font-weight: bold;
+      }
+      .copy-btn:hover {
+        background: #2980b9;
       }
     </style>
   </head>
@@ -98,20 +145,34 @@
               <th>Name</th>
               <th>URL</th>
               <th>Lyrics</th>
+              <th>Actions</th>
             </tr>
           </thead>
           <tbody id="songsTableBody">
             <tr>
-              <td colspan="4">No public songs yet.</td>
+              <td colspan="5">No public songs yet.</td>
             </tr>
           </tbody>
         </table>
       </div>
     </div>
 
+    <!-- Lyrics Modal -->
+    <div id="lyricsModal" class="modal">
+      <div class="modal-content">
+        <h3 id="modalTitle">Lyrics</h3>
+        <pre id="modalBody">Loading...</pre>
+        <div class="modal-actions">
+          <button class="copy-btn" id="copyLyricsBtn">Copy to Clipboard</button>
+          <button class="modal-close" onclick="closeModal()">✕ Close</button>
+        </div>
+      </div>
+    </div>
+
     <script>
       let songList = [];
       let lyricCache = {};
+      let currentLyrics = [];
 
       async function fetchPublicSongs() {
         try {
@@ -144,7 +205,7 @@
         const tbody = document.getElementById("songsTableBody");
         if (!songList.length) {
           tbody.innerHTML =
-            '<tr><td colspan="4">No public songs available.</td></tr>';
+            '<tr><td colspan="5">No public songs available.</td></tr>';
           return;
         }
         tbody.innerHTML = "";
@@ -154,44 +215,70 @@
           row.insertCell(1).textContent = song.name;
           row.insertCell(2).innerHTML =
             `<a href="${song.url}" target="_blank">link</a>`;
-
-          const cellLyrics = row.insertCell(3);
           const count = song.lyricsCount || 0;
-          const toggleBtn = document.createElement("button");
-          toggleBtn.textContent = "Show lyrics";
-          const container = document.createElement("div");
-          container.innerHTML = `<span>${count} lines</span> `;
-          container.appendChild(toggleBtn);
-          const pre = document.createElement("pre");
-          pre.className = "lyrics-content";
-          pre.textContent = "Loading...";
-          container.appendChild(pre);
-          cellLyrics.appendChild(container);
+          row.insertCell(3).textContent = `${count} lines`;
 
-          let isOpen = false;
-          toggleBtn.addEventListener("click", async () => {
-            if (!isOpen) {
-              if (!lyricCache[song.id]) {
-                const lyrics = await fetchPublicLyrics(song.id);
-                if (lyrics.length) {
-                  pre.textContent = lyrics
-                    .map((l) => `[${l.delay}ms] ${l.chat}`)
-                    .join("\n");
-                } else {
-                  pre.textContent = "No lyrics available.";
-                }
-              }
-              pre.classList.add("open");
-              toggleBtn.textContent = "Hide lyrics";
-              isOpen = true;
-            } else {
-              pre.classList.remove("open");
-              toggleBtn.textContent = "Show lyrics";
-              isOpen = false;
-            }
+          // Actions cell
+          const actionsCell = row.insertCell(4);
+          const viewBtn = document.createElement("button");
+          viewBtn.textContent = "View";
+          viewBtn.addEventListener("click", () => {
+            openLyricsModal(song.id);
           });
+          actionsCell.appendChild(viewBtn);
         });
       }
+
+      async function openLyricsModal(songId) {
+        const modal = document.getElementById("lyricsModal");
+        const body = document.getElementById("modalBody");
+        const title = document.getElementById("modalTitle");
+        const song = songList.find((s) => s.id === songId);
+        title.textContent = `Lyrics for "${song ? song.name : songId}"`;
+
+        let lyrics = await fetchPublicLyrics(songId);
+        currentLyrics = lyrics;
+        if (!lyrics || lyrics.length === 0) {
+          body.textContent = "No lyrics available.";
+        } else {
+          const formatted = lyrics
+            .map((l) => `[${l.delay}ms] ${l.chat}`)
+            .join("\n");
+          body.textContent = formatted;
+        }
+        modal.style.display = "flex";
+      }
+
+      function closeModal() {
+        document.getElementById("lyricsModal").style.display = "none";
+      }
+
+      // Copy lyrics to clipboard
+      document.getElementById("copyLyricsBtn").addEventListener("click", () => {
+        const body = document.getElementById("modalBody");
+        const text = body.textContent;
+        if (!text || text === "No lyrics available." || text === "Loading...") {
+          alert("Nothing to copy.");
+          return;
+        }
+        navigator.clipboard
+          .writeText(text)
+          .then(() => {
+            const btn = document.getElementById("copyLyricsBtn");
+            const orig = btn.textContent;
+            btn.textContent = "Copied!";
+            setTimeout(() => {
+              btn.textContent = orig;
+            }, 1500);
+          })
+          .catch(() => {
+            alert("Failed to copy. Select the text manually and press Ctrl+C.");
+          });
+      });
+
+      document.getElementById("lyricsModal").addEventListener("click", (e) => {
+        if (e.target === e.currentTarget) closeModal();
+      });
 
       fetchPublicSongs();
     </script>
