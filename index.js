@@ -485,7 +485,7 @@ const STATS_FOLDER = "stats";
 
 function readSongs() {
   if (!fs.existsSync(SONGS_FILE)) {
-    const init = CATEGORIES.map((c) => ({ id: c.id, name: c.name, url: "" }));
+    const init = CATEGORIES.map(c => ({ id: c.id, name: c.name, url: "", public: false }));
     writeSongs(init);
     return init;
   }
@@ -845,7 +845,7 @@ app.post("/songs", requireApiKey, (req, res) => {
     }
   }
 
-  const newSong = { id: newId, name, url };
+  const newSong = { id: newId, name, url, public: isPublic || false };
   songs.splice(insertIndex, 0, newSong);
   writeSongs(songs);
 
@@ -896,6 +896,10 @@ app.put("/songs/:id", requireApiKey, (req, res) => {
     if (url && url !== oldSong.url) {
       songs[index].url = url;
       changes.url = true;
+    }
+
+    if (isPublic !== undefined) {
+      songs[index].public = isPublic;
     }
 
     if (
