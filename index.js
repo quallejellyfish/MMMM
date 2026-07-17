@@ -479,6 +479,26 @@ app.get("/public/lyrics/:id", (req, res) => {
   res.json(data[id] || []);
 });
 
+app.post("/public/stats/upload", express.json(), async (req, res) => {
+  const { key, stats } = req.body;
+  if (!key || typeof key !== "string") {
+    return res.status(400).json({ error: "key is required" });
+  }
+  if (!stats || typeof stats !== "object") {
+    return res.status(400).json({ error: "stats must be an object" });
+  }
+  if (!GITHUB_TOKEN || !GITHUB_REPO) {
+    return res.status(500).json({ error: "GitHub credentials not configured." });
+  }
+  try {
+    await writeStatsFile(key, stats);
+    res.json({ message: `Stats for "${key}" saved successfully` });
+  } catch (err) {
+    console.error("Public stats upload error:", err);
+    res.status(500).json({ error: err.message });
+  }
+});
+
 app.get("/public.html", (req, res) => res.sendFile(__dirname + "/public.html"));
 
 const SONGS_FILE = "./songs.json";
