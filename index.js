@@ -436,61 +436,6 @@ app.get("/", (req, res) => {
   `);
 });
 
-app.get("/public", (req, res) => {
-  res.send(`
-        <!DOCTYPE html>
-        <html>
-        <head><title>Public Songs - MMMM</title>
-        <style>
-            body { background: #1e1e2f; color: #eee; font-family: system-ui; padding: 20px; }
-            .container { max-width: 1400px; margin: 0 auto; }
-            table { width: 100%; border-collapse: collapse; }
-            th, td { text-align: left; padding: 10px; border-bottom: 1px solid #444; }
-            th { background: #3a3a4a; }
-            a { color: #ff79c6; }
-        </style>
-        </head>
-        <body>
-            <div class="container">
-                <h1>Public Songs</h1>
-                <a href="/">Back</a>
-                <div id="loading">Loading...</div>
-                <table id="songsTable" style="display:none;">
-                    <thead><tr><th>Name</th><th>URL</th><th>Lyrics Lines</th></tr></thead>
-                    <tbody id="songsTableBody"></tbody>
-                </table>
-            </div>
-            <script>
-                async function loadPublicSongs() {
-                    try {
-                        const res = await fetch('/public/songs');
-                        const songs = await res.json();
-                        const tbody = document.getElementById('songsTableBody');
-                        const table = document.getElementById('songsTable');
-                        const loading = document.getElementById('loading');
-                        if (!songs.length) {
-                            loading.textContent = 'No public songs yet.';
-                            return;
-                        }
-                        loading.style.display = 'none';
-                        table.style.display = 'table';
-                        songs.forEach(song => {
-                            const row = tbody.insertRow();
-                            row.insertCell(0).textContent = song.name;
-                            row.insertCell(1).innerHTML = "<a href='${song.url}" target="_blank">link</a>";
-                            row.insertCell(2).textContent = song.lyricsCount || '?';
-                        });
-                    } catch (e) {
-                        document.getElementById('loading').textContent = 'Error loading songs.';
-                    }
-                }
-                loadPublicSongs();
-            </script>
-        </body>
-        </html>
-    `);
-});
-
 app.get("/manager.html", (req, res) => {
   if (req.signedCookies.auth === "true") {
     res.sendFile(__dirname + "/manager.html");
