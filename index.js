@@ -1079,11 +1079,7 @@ app.get("/stats/:key", async (req, res) => {
 app.post("/sync-github", requireApiKey, async (req, res) => {
   if (!GITHUB_TOKEN || !GITHUB_REPO) {
     const errorMsg = "GitHub credentials not configured on server.";
-    await sendGitHubSyncNotification(
-      false,
-      errorMsg,
-      "GITHUB_TOKEN and GITHUB_REPO missing environment variables.",
-    );
+    await sendGitHubSyncNotification(false, errorMsg, "...");
     return res.status(500).json({ error: errorMsg });
   }
 
@@ -1093,10 +1089,7 @@ app.post("/sync-github", requireApiKey, async (req, res) => {
 
     async function updateFile(path, content) {
       const url = `https://api.github.com/repos/${GITHUB_REPO}/contents/${path}`;
-      const base64Content = Buffer.from(
-        JSON.stringify(content, null, 2),
-        "utf8",
-      ).toString("base64");
+      const base64Content = Buffer.from(JSON.stringify(content, null, 2), "utf8").toString("base64");
       let sha = null;
       try {
         const getRes = await fetch(url, {
@@ -1109,9 +1102,7 @@ app.post("/sync-github", requireApiKey, async (req, res) => {
           const data = await getRes.json();
           sha = data.sha;
         }
-      } catch (e) {
-        /* file doesn't exist */
-      }
+      } catch (e) { /* file doesn't exist */ }
       const body = {
         message: `Update ${path}`,
         content: base64Content,
@@ -1129,9 +1120,7 @@ app.post("/sync-github", requireApiKey, async (req, res) => {
       });
       if (!putRes.ok) {
         const errText = await putRes.text();
-        throw new Error(
-          `GitHub API error for ${path}: ${putRes.status} ${errText}`,
-        );
+        throw new Error(`GitHub API error for ${path}: ${putRes.status} ${errText}`);
       }
       return putRes.json();
     }
@@ -1139,7 +1128,14 @@ app.post("/sync-github", requireApiKey, async (req, res) => {
     await updateFile("songs.json", songs);
     await updateFile("lyrics.json", lyrics);
 
-    const successMsg = `Updated songs.json (${songs.length} songs) and lyrics.json (${Object.keys(lyrics).length} entries).`;
+    if (fs.existsSync(PUBLIC_SONGS_FILE) && fs.existsSync(PUBLIC_LYRICS_FILE)) {
+      const publicSongs = JSON.parse(fs.readFileSync(PUBLIC_SONGS_FILE, "utf8"));
+      const publicLyrics = JSON.parse(fs.readFileSync(PUBLIC_LYRICS_FILE, "utf8"));
+      await updateFile("public/public_songs.json", publicSongs);
+      await updateFile("public/public_lyrics.json", publicLyrics);
+    }
+
+    const successMsg = `Updated songs.json (${songs.length} songs), lyrics.json (${Object.keys(lyrics).length} entries), and public files.`;
     await sendGitHubSyncNotification(true, successMsg);
     res.json({ message: "Successfully synced to GitHub." });
   } catch (err) {
