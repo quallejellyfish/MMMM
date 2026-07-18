@@ -626,18 +626,17 @@ app.post("/sync/heartbeat", express.json(), (req, res) => {
   }
   const room = syncRooms.get(roomCode);
   if (!room) {
-    console.log(`[Heartbeat] Room ${roomCode} not found`);
+    console.log(`[Heartbeat] Room ${roomCode} not found for ${name}`);
     return res.status(404).json({ error: "Room not found" });
   }
   if (!room.memberLastSeen) room.memberLastSeen = {};
   if (room.members.includes(name)) {
     room.memberLastSeen[name] = Date.now();
-    //console.log(`[Heartbeat] ${name} in ${roomCode} updated`);
   } else {
     room.members.push(name);
     room.memberLastSeen[name] = Date.now();
     broadcastSyncUpdate(roomCode);
-    console.log(`[Heartbeat] ${name} re-joined ${roomCode}`);
+    console.log(`[Heartbeat] ${name} re‑joined ${roomCode}`);
   }
   res.json({ ok: true });
 });
@@ -672,7 +671,7 @@ setInterval(() => {
       broadcastSyncUpdate(roomCode);
     }
   }
-}, 20000); // 20 seconds
+}, 30000);
 
 function broadcastSyncUpdate(roomCode) {
   const room = syncRooms.get(roomCode);
