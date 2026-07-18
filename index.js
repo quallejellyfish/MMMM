@@ -615,12 +615,35 @@ async function writeStatsFile(key, stats) {
   return putRes.json();
 }
 
+// SYNC
 let syncSSEClients = {};
 const syncRooms = new Map();
+
+app.post("/sync/heartbeat", express.json(), (req, res) => {
+  const { roomCode, name } = req.body;
+  if (!roomCode || !name) {
+    return res.status(400).json({ error: "Missing roomCode or name" });
+  }
+  const room = syncRooms.get(roomCode);
+  if (!room) return res.status(404).json({ error: "Room not found" });
+  if (!room.memberLastSeen) room.memberLastSeen = {};
+  if (room.members.includes(name)) {
+    room.memberLastSeen[name] = Date.now();
+  } else {
+    room.members.push(name);
+    room.memberLastSeen[name] = Date.now();
+    broadcastSyncUpdate(roomCode);
+  }
+  res.json({ ok: true });
+});
 
 setInterval(() => {
   const now = Date.now();
   for (const [roomCode, room] of syncRooms) {
+    if (!room.memberLastSeen) {
+      room.memberLastSeen = {};
+      continue;
+    }
     const stale = room.members.filter(
       (name) => now - (room.memberLastSeen[name] || 0) > 20000,
     );
@@ -661,28 +684,9 @@ function broadcastSyncUpdate(roomCode) {
   for (const client of clients) {
     try {
       client.write(`data: ${payload}\n\n`);
-    } catch (e) {
-      /* client disconnected */
-    }
+    } catch (e) {}
   }
 }
-
-app.post("/sync/heartbeat", express.json(), (req, res) => {
-  const { roomCode, name } = req.body;
-  if (!roomCode || !name) {
-    return res.status(400).json({ error: "Missing roomCode or name" });
-  }
-  const room = syncRooms.get(roomCode);
-  if (!room) return res.status(404).json({ error: "Room not found" });
-  if (room.members.includes(name)) {
-    room.memberLastSeen[name] = Date.now();
-  } else {
-    room.members.push(name);
-    room.memberLastSeen[name] = Date.now();
-    broadcastSyncUpdate(roomCode);
-  }
-  res.json({ ok: true });
-});
 
 app.get("/sync/events/:roomCode", (req, res) => {
   const { roomCode } = req.params;
@@ -719,8 +723,9 @@ app.get("/sync/events/:roomCode", (req, res) => {
       syncSSEClients[roomCode] = syncSSEClients[roomCode].filter(
         (c) => c !== res,
       );
-      if (syncSSEClients[roomCode].length === 0)
+      if (syncSSEClients[roomCode].length === 0) {
         delete syncSSEClients[roomCode];
+      }
     }
   });
 });
@@ -738,6 +743,7 @@ app.post("/sync/join", express.json(), (req, res) => {
     room = {
       leader: name,
       members: [],
+      memberLastSeen: {},
       currentSong: null,
       paused: false,
       currentTime: 0,
@@ -751,9 +757,7 @@ app.post("/sync/join", express.json(), (req, res) => {
         for (const client of syncSSEClients[roomCode]) {
           try {
             client.end();
-          } catch (e) {
-            /* ignore */
-          }
+          } catch (e) {}
         }
         delete syncSSEClients[roomCode];
       }
@@ -802,7 +806,7 @@ app.post("/sync/leave", express.json(), (req, res) => {
   if (!room) return res.status(404).json({ error: "Room not found" });
 
   room.members = room.members.filter((m) => m !== name);
-  delete room.memberLastSeen[name];
+  if (room.memberLastSeen) delete room.memberLastSeen[name];
   room.lastUpdate = Date.now();
 
   if (room.members.length === 0) {
@@ -810,9 +814,7 @@ app.post("/sync/leave", express.json(), (req, res) => {
       for (const client of syncSSEClients[roomCode]) {
         try {
           client.end();
-        } catch (e) {
-          /* ignore */
-        }
+        } catch (e) {}
       }
       delete syncSSEClients[roomCode];
     }
@@ -845,8 +847,9 @@ app.post("/sync/play", express.json(), (req, res) => {
 
 app.post("/sync/pause", express.json(), (req, res) => {
   const { roomCode, name, paused, currentTime } = req.body;
-  if (!roomCode || !name)
+  if (!roomCode || !name) {
     return res.status(400).json({ error: "Missing roomCode or name" });
+  }
   const room = syncRooms.get(roomCode);
   if (!room) return res.status(404).json({ error: "Room not found" });
   if (room.leader !== name) {
@@ -861,8 +864,9 @@ app.post("/sync/pause", express.json(), (req, res) => {
 
 app.post("/sync/stop", express.json(), (req, res) => {
   const { roomCode, name } = req.body;
-  if (!roomCode || !name)
+  if (!roomCode || !name) {
     return res.status(400).json({ error: "Missing roomCode or name" });
+  }
   const room = syncRooms.get(roomCode);
   if (!room) return res.status(404).json({ error: "Room not found" });
   if (room.leader !== name) {
