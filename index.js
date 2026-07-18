@@ -625,14 +625,19 @@ app.post("/sync/heartbeat", express.json(), (req, res) => {
     return res.status(400).json({ error: "Missing roomCode or name" });
   }
   const room = syncRooms.get(roomCode);
-  if (!room) return res.status(404).json({ error: "Room not found" });
+  if (!room) {
+    console.log(`[Heartbeat] Room ${roomCode} not found`);
+    return res.status(404).json({ error: "Room not found" });
+  }
   if (!room.memberLastSeen) room.memberLastSeen = {};
   if (room.members.includes(name)) {
     room.memberLastSeen[name] = Date.now();
+    //console.log(`[Heartbeat] ${name} in ${roomCode} updated`);
   } else {
     room.members.push(name);
     room.memberLastSeen[name] = Date.now();
     broadcastSyncUpdate(roomCode);
+    console.log(`[Heartbeat] ${name} re-joined ${roomCode}`);
   }
   res.json({ ok: true });
 });
@@ -645,10 +650,10 @@ setInterval(() => {
       continue;
     }
     const stale = room.members.filter(
-      (name) => now - (room.memberLastSeen[name] || 0) > 20000,
+      (name) => now - (room.memberLastSeen[name] || 0) > 60000,
     );
     if (stale.length) {
-      console.log(`Removing stale members from ${roomCode}:`, stale);
+      console.log(`[Cleanup] Removing stale members from ${roomCode}:`, stale);
       room.members = room.members.filter((name) => !stale.includes(name));
       stale.forEach((name) => delete room.memberLastSeen[name]);
       if (room.members.length === 0) {
@@ -661,13 +666,13 @@ setInterval(() => {
           delete syncSSEClients[roomCode];
         }
         syncRooms.delete(roomCode);
-        console.log(`Deleted empty room ${roomCode}`);
+        console.log(`[Cleanup] Deleted empty room ${roomCode}`);
         continue;
       }
       broadcastSyncUpdate(roomCode);
     }
   }
-}, 10000);
+}, 20000); // 20 seconds
 
 function broadcastSyncUpdate(roomCode) {
   const room = syncRooms.get(roomCode);
@@ -751,6 +756,7 @@ app.post("/sync/join", express.json(), (req, res) => {
     };
     syncRooms.set(roomCode, room);
     isNewRoom = true;
+    console.log(`[Join] New room ${roomCode} created by ${name}`);
   } else {
     if (room.members.length === 0) {
       if (syncSSEClients[roomCode]) {
@@ -773,15 +779,18 @@ app.post("/sync/join", express.json(), (req, res) => {
       };
       syncRooms.set(roomCode, room);
       isNewRoom = true;
+      console.log(`[Join] Recreated empty room ${roomCode}`);
+    } else {
+      console.log(
+        `[Join] ${name} joining existing room ${roomCode} with ${room.members.length} members`,
+      );
     }
   }
 
   if (!room.members.includes(name)) {
     room.members.push(name);
-    room.memberLastSeen[name] = Date.now();
-  } else {
-    room.memberLastSeen[name] = Date.now();
   }
+  room.memberLastSeen[name] = Date.now();
   if (!room.leader) room.leader = name;
 
   room.lastUpdate = Date.now();
@@ -819,8 +828,10 @@ app.post("/sync/leave", express.json(), (req, res) => {
       delete syncSSEClients[roomCode];
     }
     syncRooms.delete(roomCode);
+    console.log(`[Leave] Room ${roomCode} deleted (empty)`);
   } else if (room.leader === name) {
     room.leader = room.members[0];
+    console.log(`[Leave] New leader: ${room.leader}`);
   }
 
   broadcastSyncUpdate(roomCode);
