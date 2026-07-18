@@ -675,12 +675,24 @@ app.get("/sync/events/:roomCode", (req, res) => {
   });
 });
 
+req.on('close', () => {
+  if (syncSSEClients[roomCode]) {
+    syncSSEClients[roomCode] = syncSSEClients[roomCode].filter(c => c !== res);
+    if (syncSSEClients[roomCode].length === 0) {
+      delete syncSSEClients[roomCode];
+    }
+  }
+});
+
 app.post("/sync/join", express.json(), (req, res) => {
   const { roomCode, name } = req.body;
   if (!roomCode || !name) {
     return res.status(400).json({ error: "Missing roomCode or name" });
   }
+
   let room = syncRooms.get(roomCode);
+  let isNewRoom = false;
+
   if (!room) {
     room = {
       leader: name,
@@ -691,36 +703,70 @@ app.post("/sync/join", express.json(), (req, res) => {
       lastUpdate: Date.now(),
     };
     syncRooms.set(roomCode, room);
+    isNewRoom = true;
+  } else {
+    if (room.members.length === 0) {
+      if (syncSSEClients[roomCode]) {
+        for (const client of syncSSEClients[roomCode]) {
+          try { client.end(); } catch (e) { /* ignore */ }
+        }
+        delete syncSSEClients[roomCode];
+      }
+      syncRooms.delete(roomCode);
+      room = {
+        leader: name,
+        members: [],
+        currentSong: null,
+        paused: false,
+        currentTime: 0,
+        lastUpdate: Date.now(),
+      };
+      syncRooms.set(roomCode, room);
+      isNewRoom = true;
+    }
   }
+
   if (!room.members.includes(name)) {
     room.members.push(name);
   }
   if (!room.leader) room.leader = name;
+
   room.lastUpdate = Date.now();
   broadcastSyncUpdate(roomCode);
+
   res.json({
     leader: room.leader,
     members: room.members,
     currentSong: room.currentSong,
     paused: room.paused || false,
     currentTime: room.currentTime || 0,
+    isNewRoom: isNewRoom,
   });
 });
 
 app.post("/sync/leave", express.json(), (req, res) => {
   const { roomCode, name } = req.body;
-  if (!roomCode || !name)
+  if (!roomCode || !name) {
     return res.status(400).json({ error: "Missing roomCode or name" });
+  }
   const room = syncRooms.get(roomCode);
   if (!room) return res.status(404).json({ error: "Room not found" });
-  room.members = room.members.filter((m) => m !== name);
+
+  room.members = room.members.filter(m => m !== name);
   room.lastUpdate = Date.now();
+
   if (room.members.length === 0) {
+    if (syncSSEClients[roomCode]) {
+      for (const client of syncSSEClients[roomCode]) {
+        try { client.end(); } catch (e) { /* ignore */ }
+      }
+      delete syncSSEClients[roomCode];
+    }
     syncRooms.delete(roomCode);
-    syncSSEClients[roomCode] = [];
   } else if (room.leader === name) {
     room.leader = room.members[0];
   }
+
   broadcastSyncUpdate(roomCode);
   res.json({ message: "Left" });
 });
