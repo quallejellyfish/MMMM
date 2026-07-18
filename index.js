@@ -488,7 +488,9 @@ app.post("/public/stats/upload", express.json(), async (req, res) => {
     return res.status(400).json({ error: "stats must be an object" });
   }
   if (!GITHUB_TOKEN || !GITHUB_REPO) {
-    return res.status(500).json({ error: "GitHub credentials not configured." });
+    return res
+      .status(500)
+      .json({ error: "GitHub credentials not configured." });
   }
   try {
     await writeStatsFile(key, stats);
@@ -668,20 +670,15 @@ app.get("/sync/events/:roomCode", (req, res) => {
   res.write(`data: ${payload}\n\n`);
 
   req.on("close", () => {
-    syncSSEClients[roomCode] = syncSSEClients[roomCode].filter(
-      (c) => c !== res,
-    );
-    if (syncSSEClients[roomCode].length === 0) delete syncSSEClients[roomCode];
-  });
-});
-
-req.on('close', () => {
-  if (syncSSEClients[roomCode]) {
-    syncSSEClients[roomCode] = syncSSEClients[roomCode].filter(c => c !== res);
-    if (syncSSEClients[roomCode].length === 0) {
-      delete syncSSEClients[roomCode];
+    if (syncSSEClients[roomCode]) {
+      syncSSEClients[roomCode] = syncSSEClients[roomCode].filter(
+        (c) => c !== res,
+      );
+      if (syncSSEClients[roomCode].length === 0) {
+        delete syncSSEClients[roomCode];
+      }
     }
-  }
+  });
 });
 
 app.post("/sync/join", express.json(), (req, res) => {
@@ -708,7 +705,11 @@ app.post("/sync/join", express.json(), (req, res) => {
     if (room.members.length === 0) {
       if (syncSSEClients[roomCode]) {
         for (const client of syncSSEClients[roomCode]) {
-          try { client.end(); } catch (e) { /* ignore */ }
+          try {
+            client.end();
+          } catch (e) {
+            /* ignore */
+          }
         }
         delete syncSSEClients[roomCode];
       }
@@ -752,13 +753,17 @@ app.post("/sync/leave", express.json(), (req, res) => {
   const room = syncRooms.get(roomCode);
   if (!room) return res.status(404).json({ error: "Room not found" });
 
-  room.members = room.members.filter(m => m !== name);
+  room.members = room.members.filter((m) => m !== name);
   room.lastUpdate = Date.now();
 
   if (room.members.length === 0) {
     if (syncSSEClients[roomCode]) {
       for (const client of syncSSEClients[roomCode]) {
-        try { client.end(); } catch (e) { /* ignore */ }
+        try {
+          client.end();
+        } catch (e) {
+          /* ignore */
+        }
       }
       delete syncSSEClients[roomCode];
     }
