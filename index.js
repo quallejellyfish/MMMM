@@ -786,6 +786,8 @@ app.post("/sync/join", express.json(), (req, res) => {
     }
   }
 
+  if (!room.memberLastSeen) room.memberLastSeen = {};
+
   if (!room.members.includes(name)) {
     room.members.push(name);
   }
