@@ -106,7 +106,7 @@ async function sendDiscordEditNotification(
     // Always show the song name
     fields.push({ name: "Song", value: newSong.name, inline: true });
 
-    // show name change if it changed
+    // name change
     if (changes.name) {
       fields.push({
         name: "Name Change",
@@ -115,7 +115,7 @@ async function sendDiscordEditNotification(
       });
     }
 
-    // show URL change if it changed
+    // URL change
     if (changes.url) {
       fields.push({
         name: "URL",
@@ -124,7 +124,27 @@ async function sendDiscordEditNotification(
       });
     }
 
-    // show lyrics change if the count changed
+    // Category change
+    if (changes.category) {
+      fields.push({
+        name: "Category",
+        value: `~~${oldSong.category}~~ → ${newSong.category}`,
+        inline: true,
+      });
+    }
+
+    // Public change
+    if (changes.public !== undefined) {
+      const oldPublic = oldSong.public ? "Public" : "Private";
+      const newPublic = newSong.public ? "Public" : "Private";
+      fields.push({
+        name: "Visibility",
+        value: `${oldPublic} → ${newPublic}`,
+        inline: true,
+      });
+    }
+
+    // Lyrics count change
     if (
       lyricsOldCount !== undefined &&
       lyricsNewCount !== undefined &&
@@ -133,15 +153,6 @@ async function sendDiscordEditNotification(
       fields.push({
         name: "Lyrics Lines",
         value: `${lyricsOldCount} → ${lyricsNewCount}`,
-        inline: true,
-      });
-    }
-
-    // Show category change if it changed
-    if (changes.category) {
-      fields.push({
-        name: "Category",
-        value: `~~${oldSong.category}~~ → ${newSong.category}`,
         inline: true,
       });
     }
@@ -1024,9 +1035,8 @@ app.put("/songs/:id", requireApiKey, (req, res) => {
     if (index === -1) return res.status(404).json({ error: "Song not found" });
 
     const oldSong = { ...songs[index] };
-    const changes = { name: false, url: false, category: false };
+    const changes = { name: false, url: false, category: false, public: false };
 
-    // Track old category name
     let oldCategoryName = "Uncategorized";
     let lastCategory = "Uncategorized";
     const songId = songs[index].id;
@@ -1049,8 +1059,14 @@ app.put("/songs/:id", requireApiKey, (req, res) => {
       changes.url = true;
     }
 
-    if (isPublic !== undefined) {
+    if (isPublic !== undefined && isPublic !== oldSong.public) {
       songs[index].public = isPublic;
+      changes.public = true;
+    }
+
+    const newSong = { ...songs.find((s) => s.id === id) };
+    if (!changes.public) {
+      oldSong.public = newSong.public;
     }
 
     if (
