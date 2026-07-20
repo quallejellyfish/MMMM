@@ -1,4 +1,4756 @@
 {
+  "10": [
+    {
+      "chat": "Welcome to the wild",
+      "delay": 15800
+    },
+    {
+      "chat": "no heroes and villains",
+      "delay": 17640
+    },
+    {
+      "chat": "Welcome to the war",
+      "delay": 21200
+    },
+    {
+      "chat": "we've only begun, so",
+      "delay": 23300
+    },
+    {
+      "chat": "Pick up your weapon",
+      "delay": 26550
+    },
+    {
+      "chat": "and face it",
+      "delay": 27770
+    },
+    {
+      "chat": "There's blood on the crown",
+      "delay": 29200
+    },
+    {
+      "chat": "go and take it",
+      "delay": 30400
+    },
+    {
+      "chat": "You get one shot",
+      "delay": 32000
+    },
+    {
+      "chat": "to make it out alive, so",
+      "delay": 34600
+    },
+    {
+      "chat": "Higher and higher",
+      "delay": 37450
+    },
+    {
+      "chat": "you chase it",
+      "delay": 38600
+    },
+    {
+      "chat": "It's deep in your bones",
+      "delay": 40000
+    },
+    {
+      "chat": "go and take it",
+      "delay": 41260
+    },
+    {
+      "chat": "This is your moment",
+      "delay": 42890
+    },
+    {
+      "chat": "now is your time, so",
+      "delay": 45700
+    },
+    {
+      "chat": "Prove yourself and",
+      "delay": 48390
+    },
+    {
+      "chat": "RISE, RISE",
+      "delay": 50340
+    },
+    {
+      "chat": "Make 'em remember you",
+      "delay": 53670
+    },
+    {
+      "chat": "RISE",
+      "delay": 55800
+    },
+    {
+      "chat": "Push through hell and",
+      "delay": 59180
+    },
+    {
+      "chat": "RISE, RISE",
+      "delay": 61180
+    },
+    {
+      "chat": "They will remember you",
+      "delay": 64630
+    },
+    {
+      "chat": "RISE",
+      "delay": 66600
+    },
+    {
+      "chat": "Welcome to the climb up",
+      "delay": 69999
+    },
+    {
+      "chat": "reach for the summit",
+      "delay": 72750
+    },
+    {
+      "chat": "Visions pray that one",
+      "delay": 75400
+    },
+    {
+      "chat": "false step lead the end, so",
+      "delay": 77390
+    },
+    {
+      "chat": "Higher and higher",
+      "delay": 80800
+    },
+    {
+      "chat": "you chase it",
+      "delay": 81880
+    },
+    {
+      "chat": "It's deep in your bones",
+      "delay": 83370
+    },
+    {
+      "chat": "go and take it",
+      "delay": 84580
+    },
+    {
+      "chat": "This is your moment",
+      "delay": 86290
+    },
+    {
+      "chat": "take to the skies, go",
+      "delay": 88880
+    },
+    {
+      "chat": "Prove yourself and",
+      "delay": 91800
+    },
+    {
+      "chat": "RISE, RISE",
+      "delay": 93700
+    },
+    {
+      "chat": "Make 'em remember you",
+      "delay": 97100
+    },
+    {
+      "chat": "RISE",
+      "delay": 99030
+    },
+    {
+      "chat": "Push through hell and",
+      "delay": 102570
+    },
+    {
+      "chat": "RISE, RISE",
+      "delay": 104580
+    },
+    {
+      "chat": "They will remember you",
+      "delay": 108000
+    },
+    {
+      "chat": "RISE",
+      "delay": 110000
+    },
+    {
+      "chat": "So get along",
+      "delay": 114970
+    },
+    {
+      "chat": "so get along, go",
+      "delay": 115880
+    },
+    {
+      "chat": "Get along 'long",
+      "delay": 117800
+    },
+    {
+      "chat": "go a lil' harder",
+      "delay": 119000
+    },
+    {
+      "chat": "So get along",
+      "delay": 120400
+    },
+    {
+      "chat": "so get along, go",
+      "delay": 121500
+    },
+    {
+      "chat": "Get along 'long",
+      "delay": 123200
+    },
+    {
+      "chat": "go a lil' harder",
+      "delay": 124400
+    },
+    {
+      "chat": "And as you fight among",
+      "delay": 124600
+    },
+    {
+      "chat": "the death beneath the dirt",
+      "delay": 126670
+    },
+    {
+      "chat": "Do you know yet?",
+      "delay": 130240
+    },
+    {
+      "chat": "Do you want it?",
+      "delay": 132920
+    },
+    {
+      "chat": "And when the giants call to",
+      "delay": 135600
+    },
+    {
+      "chat": "ask you what you're worth",
+      "delay": 137750
+    },
+    {
+      "chat": "Do you know if",
+      "delay": 141000
+    },
+    {
+      "chat": "Win or die, you'll",
+      "delay": 142900
+    },
+    {
+      "chat": "Prove yourself and",
+      "delay": 147400
+    },
+    {
+      "chat": "RISE, RISE",
+      "delay": 149300
+    },
+    {
+      "chat": "Make 'em remember you",
+      "delay": 152540
+    },
+    {
+      "chat": "RISE",
+      "delay": 154740
+    },
+    {
+      "chat": "Push through hell and",
+      "delay": 158150
+    },
+    {
+      "chat": "RISE, RISE",
+      "delay": 160100
+    },
+    {
+      "chat": "They will remember you",
+      "delay": 163540
+    },
+    {
+      "chat": "RISE",
+      "delay": 165570
+    },
+    {
+      "chat": "RISE, RISE",
+      "delay": 170930
+    },
+    {
+      "chat": "Pick up your weapon",
+      "delay": 173000
+    },
+    {
+      "chat": "and face it",
+      "delay": 174100
+    },
+    {
+      "chat": "RISE",
+      "delay": 176600
+    },
+    {
+      "chat": "It's deep in your blood",
+      "delay": 178400
+    },
+    {
+      "chat": "go and take it",
+      "delay": 179680
+    },
+    {
+      "chat": "RISE, RISE",
+      "delay": 182230
+    },
+    {
+      "chat": "Higher and higher",
+      "delay": 184200
+    },
+    {
+      "chat": "you chase it",
+      "delay": 186550
+    },
+    {
+      "chat": "RISE",
+      "delay": 187630
+    },
+    {
+      "chat": "RISE, RISE",
+      "delay": 192900
+    }
+  ],
+  "24": [
+    {
+      "chat": "Took a swing at a wrecking",
+      "delay": 3487
+    },
+    {
+      "chat": "ball, and",
+      "delay": 5385
+    },
+    {
+      "chat": "I prayed for my downfall, when",
+      "delay": 6612
+    },
+    {
+      "chat": "I found no way to reconcile",
+      "delay": 9614
+    },
+    {
+      "chat": "'Cause in my heart",
+      "delay": 11965
+    },
+    {
+      "chat": "it's not worthwhile",
+      "delay": 13746
+    },
+    {
+      "chat": "Its a bloody battlefield where",
+      "delay": 15675
+    },
+    {
+      "chat": "Some go down, other's heal",
+      "delay": 18846
+    },
+    {
+      "chat": "In the end it's all the same",
+      "delay": 22046
+    },
+    {
+      "chat": "All you can do",
+      "delay": 24839
+    },
+    {
+      "chat": "is play the game",
+      "delay": 25954
+    },
+    {
+      "chat": "Oh, do we say goodbye?",
+      "delay": 27629
+    },
+    {
+      "chat": "Refuse to question why?",
+      "delay": 32210
+    },
+    {
+      "chat": "I'm too sad to say I'm sorry",
+      "delay": 36558
+    },
+    {
+      "chat": "So lie",
+      "delay": 40000
+    },
+    {
+      "chat": "pretend that you're okay",
+      "delay": 41000
+    },
+    {
+      "chat": "Swear that you will stay",
+      "delay": 44000
+    },
+    {
+      "chat": "Keep trying for one day",
+      "delay": 49000
+    },
+    {
+      "chat": "I'm sick of all these lies",
+      "delay": 54000
+    },
+    {
+      "chat": "Don't care if I capsize",
+      "delay": 56000
+    },
+    {
+      "chat": "There's nothing",
+      "delay": 60000
+    },
+    {
+      "chat": "left for me to hide",
+      "delay": 61000
+    },
+    {
+      "chat": "Don't wanna live a lie",
+      "delay": 63000
+    },
+    {
+      "chat": "Too many lows, too many highs",
+      "delay": 65000
+    },
+    {
+      "chat": "Too many things to criticize",
+      "delay": 69000
+    },
+    {
+      "chat": "And so I leave it all behind",
+      "delay": 72000
+    },
+    {
+      "chat": "Don't wanna live a lie",
+      "delay": 75000
+    },
+    {
+      "chat": "Life kept spitting",
+      "delay": 102000
+    },
+    {
+      "chat": "at my feet and",
+      "delay": 103000
+    },
+    {
+      "chat": "Forced me down",
+      "delay": 104000
+    },
+    {
+      "chat": "a dead end street when",
+      "delay": 105000
+    },
+    {
+      "chat": "All I had went up in flames",
+      "delay": 108000
+    },
+    {
+      "chat": "Burnin', only dark remains",
+      "delay": 111000
+    },
+    {
+      "chat": "I cover up every",
+      "delay": 114000
+    },
+    {
+      "chat": "part of my skin, oh",
+      "delay": 115000
+    },
+    {
+      "chat": "'Cause' I don't like",
+      "delay": 117000
+    },
+    {
+      "chat": "the person within, no",
+      "delay": 118000
+    },
+    {
+      "chat": "I know I'm the one to blame",
+      "delay": 120000
+    },
+    {
+      "chat": "All I can do is take the shame",
+      "delay": 123000
+    },
+    {
+      "chat": "Oh, do we say goodbye?",
+      "delay": 125000
+    },
+    {
+      "chat": "Refuse to question why?",
+      "delay": 131000
+    },
+    {
+      "chat": "I'm too sad to say I'm sorry",
+      "delay": 135000
+    },
+    {
+      "chat": "So lie",
+      "delay": 138000
+    },
+    {
+      "chat": "and pretend that you're ok",
+      "delay": 140000
+    },
+    {
+      "chat": "Swear that you will stay",
+      "delay": 143000
+    },
+    {
+      "chat": "Keep trying for one day",
+      "delay": 148000
+    },
+    {
+      "chat": "Whoa, I'm sick",
+      "delay": 152000
+    },
+    {
+      "chat": "of all these lies",
+      "delay": 152500
+    },
+    {
+      "chat": "Don't care if I capsize",
+      "delay": 156000
+    },
+    {
+      "chat": "There's nothing",
+      "delay": 158000
+    },
+    {
+      "chat": "left for me to hide",
+      "delay": 159000
+    },
+    {
+      "chat": "Don't wanna live a lie",
+      "delay": 162000
+    },
+    {
+      "chat": "Too many lows, too many highs",
+      "delay": 164000
+    },
+    {
+      "chat": "Too many things to criticize",
+      "delay": 167000
+    },
+    {
+      "chat": "And so I leave it all behind",
+      "delay": 170000
+    },
+    {
+      "chat": "Don't wanna to live a lie",
+      "delay": 173000
+    },
+    {
+      "chat": "A lie",
+      "delay": 178000
+    },
+    {
+      "chat": "I don't wanna live a lie",
+      "delay": 186000
+    },
+    {
+      "chat": "Don't want",
+      "delay": 190000
+    },
+    {
+      "chat": "Live a lie, ooh, yeah",
+      "delay": 193000
+    },
+    {
+      "chat": "I'm sick of all these lies",
+      "delay": 201000
+    },
+    {
+      "chat": "Don't care if I capsize",
+      "delay": 205000
+    },
+    {
+      "chat": "Oh no",
+      "delay": 209000
+    }
+  ],
+  "25": [
+    {
+      "chat": "Baby, this is do or die",
+      "delay": 4030
+    },
+    {
+      "chat": "Feel it in my veins at night",
+      "delay": 6655
+    },
+    {
+      "chat": "Emotional suicide",
+      "delay": 9368
+    },
+    {
+      "chat": "You know it's an eye for eye",
+      "delay": 12124
+    },
+    {
+      "chat": "I didn't wanna walk",
+      "delay": 14527
+    },
+    {
+      "chat": "didn't wanna walk the plank",
+      "delay": 15989
+    },
+    {
+      "chat": "No, but then ready or not",
+      "delay": 19345
+    },
+    {
+      "chat": "then ready or not it came",
+      "delay": 21443
+    },
+    {
+      "chat": "Like the thunder",
+      "delay": 23864
+    },
+    {
+      "chat": "I was on my way",
+      "delay": 25449
+    },
+    {
+      "chat": "to going under (under)",
+      "delay": 26471
+    },
+    {
+      "chat": "Swimming in the pain",
+      "delay": 28027
+    },
+    {
+      "chat": "yeah, I was covered",
+      "delay": 29078
+    },
+    {
+      "chat": "In a tidal wave",
+      "delay": 30472
+    },
+    {
+      "chat": "in a tidal wave",
+      "delay": 32483
+    },
+    {
+      "chat": "But I'm a fighter (hu)",
+      "delay": 34441
+    },
+    {
+      "chat": "Tryna take me down",
+      "delay": 36035
+    },
+    {
+      "chat": "I'm going higher (I'm higher)",
+      "delay": 37270
+    },
+    {
+      "chat": "Baby, you've",
+      "delay": 38753
+    },
+    {
+      "chat": "been playing with some fire",
+      "delay": 39645
+    },
+    {
+      "chat": "You've been playing with fire",
+      "delay": 41269
+    },
+    {
+      "chat": "One day you will see",
+      "delay": 43395
+    },
+    {
+      "chat": "What you made of me",
+      "delay": 46593
+    },
+    {
+      "chat": "Found my inner beast",
+      "delay": 49252
+    },
+    {
+      "chat": "You'll watch it release",
+      "delay": 52018
+    },
+    {
+      "chat": "In thе dead of night",
+      "delay": 54615
+    },
+    {
+      "chat": "In the dead of night",
+      "delay": 65702
+    },
+    {
+      "chat": "In the dead of",
+      "delay": 71539
+    },
+    {
+      "chat": "Night",
+      "delay": 74635
+    },
+    {
+      "chat": "Baby, when it's do or die",
+      "delay": 78883
+    },
+    {
+      "chat": "You know it's an eye for eye",
+      "delay": 81419
+    },
+    {
+      "chat": "Feel the energy align (oh)",
+      "delay": 84236
+    },
+    {
+      "chat": "In the dead of night",
+      "delay": 86840
+    },
+    {
+      "chat": "In the dead of night",
+      "delay": 89386
+    },
+    {
+      "chat": "In the dead of night",
+      "delay": 95682
+    },
+    {
+      "chat": "In the dead of night",
+      "delay": 98108
+    },
+    {
+      "chat": "You can save your alibi",
+      "delay": 110718
+    },
+    {
+      "chat": "I already know you lied",
+      "delay": 113044
+    },
+    {
+      "chat": "Oh no, no don't even try",
+      "delay": 115969
+    },
+    {
+      "chat": "Watch the flame in me ignite",
+      "delay": 118794
+    },
+    {
+      "chat": "You didn't wanna walk",
+      "delay": 121519
+    },
+    {
+      "chat": "didn't wanna walk the plank",
+      "delay": 122549
+    },
+    {
+      "chat": "But then ready or not",
+      "delay": 126316
+    },
+    {
+      "chat": "then ready or not it came",
+      "delay": 128043
+    },
+    {
+      "chat": "Baby, it was dark",
+      "delay": 130130
+    },
+    {
+      "chat": "It was hard to see",
+      "delay": 131452
+    },
+    {
+      "chat": "And that's when a spark",
+      "delay": 132765
+    },
+    {
+      "chat": "lit inside of me, oh",
+      "delay": 134036
+    },
+    {
+      "chat": "I was lost in reverie",
+      "delay": 137831
+    },
+    {
+      "chat": "oh-oh, oh-oh",
+      "delay": 141418
+    },
+    {
+      "chat": "One day you will see",
+      "delay": 142629
+    },
+    {
+      "chat": "What you made of me",
+      "delay": 145263
+    },
+    {
+      "chat": "What's inside of me",
+      "delay": 148066
+    },
+    {
+      "chat": "Oh, one day you will see",
+      "delay": 151204
+    },
+    {
+      "chat": "I found my inner beast",
+      "delay": 155906
+    },
+    {
+      "chat": "You'll watch it release",
+      "delay": 158579
+    },
+    {
+      "chat": "In the dead of night, oh",
+      "delay": 161323
+    },
+    {
+      "chat": "In the dead of night",
+      "delay": 172405
+    },
+    {
+      "chat": "In the dead of...",
+      "delay": 174866
+    },
+    {
+      "chat": "In the dead of night, oh-woah",
+      "delay": 177399
+    },
+    {
+      "chat": "In the dead of night",
+      "delay": 180572
+    },
+    {
+      "chat": "Baby, when it's do or die",
+      "delay": 185724
+    },
+    {
+      "chat": "You know it's an eye for eye",
+      "delay": 188107
+    },
+    {
+      "chat": "Feel the energy align",
+      "delay": 190628
+    },
+    {
+      "chat": "In the dead of night",
+      "delay": 192998
+    },
+    {
+      "chat": "In the dead of night",
+      "delay": 196522
+    },
+    {
+      "chat": "In the dead of night",
+      "delay": 199153
+    },
+    {
+      "chat": "In the dead of night",
+      "delay": 201643
+    },
+    {
+      "chat": "In the dead of night",
+      "delay": 203893
+    },
+    {
+      "chat": "And one day you will see",
+      "delay": 206604
+    },
+    {
+      "chat": "What you made of me",
+      "delay": 209286
+    },
+    {
+      "chat": "What's inside of me",
+      "delay": 212028
+    },
+    {
+      "chat": "Oh, and one day you will see",
+      "delay": 215617
+    },
+    {
+      "chat": "I found my inner beast",
+      "delay": 219619
+    },
+    {
+      "chat": "And you'll watch it release",
+      "delay": 222411
+    }
+  ],
+  "31": [
+    {
+      "chat": "Took a swing at a wrecking",
+      "delay": 3487
+    },
+    {
+      "chat": "ball, and",
+      "delay": 5385
+    },
+    {
+      "chat": "I prayed for my downfall, when",
+      "delay": 6612
+    },
+    {
+      "chat": "I found no way to reconcile",
+      "delay": 9614
+    },
+    {
+      "chat": "'Cause in my heart",
+      "delay": 11965
+    },
+    {
+      "chat": "it's not worthwhile",
+      "delay": 13746
+    },
+    {
+      "chat": "Its a bloody battlefield where",
+      "delay": 15675
+    },
+    {
+      "chat": "Some go down, other's heal",
+      "delay": 18846
+    },
+    {
+      "chat": "In the end it's all the same",
+      "delay": 22046
+    },
+    {
+      "chat": "All you can do",
+      "delay": 24839
+    },
+    {
+      "chat": "is play the game",
+      "delay": 25954
+    },
+    {
+      "chat": "Oh, do we say goodbye?",
+      "delay": 27629
+    },
+    {
+      "chat": "Refuse to question why?",
+      "delay": 32210
+    },
+    {
+      "chat": "I'm too sad to say I'm sorry",
+      "delay": 36558
+    },
+    {
+      "chat": "So lie",
+      "delay": 40000
+    },
+    {
+      "chat": "pretend that you're okay",
+      "delay": 41000
+    },
+    {
+      "chat": "Swear that you will stay",
+      "delay": 44000
+    },
+    {
+      "chat": "Keep trying for one day",
+      "delay": 49000
+    },
+    {
+      "chat": "I'm sick of all these lies",
+      "delay": 54000
+    },
+    {
+      "chat": "Don't care if I capsize",
+      "delay": 56000
+    },
+    {
+      "chat": "There's nothing",
+      "delay": 60000
+    },
+    {
+      "chat": "left for me to hide",
+      "delay": 61000
+    },
+    {
+      "chat": "Don't wanna live a lie",
+      "delay": 63000
+    },
+    {
+      "chat": "Too many lows, too many highs",
+      "delay": 65000
+    },
+    {
+      "chat": "Too many things to criticize",
+      "delay": 69000
+    },
+    {
+      "chat": "And so I leave it all behind",
+      "delay": 72000
+    },
+    {
+      "chat": "Don't wanna live a lie",
+      "delay": 75000
+    },
+    {
+      "chat": "Life kept spitting",
+      "delay": 102000
+    },
+    {
+      "chat": "at my feet and",
+      "delay": 103000
+    },
+    {
+      "chat": "Forced me down",
+      "delay": 104000
+    },
+    {
+      "chat": "a dead end street when",
+      "delay": 105000
+    },
+    {
+      "chat": "All I had went up in flames",
+      "delay": 108000
+    },
+    {
+      "chat": "Burnin', only dark remains",
+      "delay": 111000
+    },
+    {
+      "chat": "I cover up every",
+      "delay": 114000
+    },
+    {
+      "chat": "part of my skin, oh",
+      "delay": 115000
+    },
+    {
+      "chat": "'Cause' I don't like",
+      "delay": 117000
+    },
+    {
+      "chat": "the person within, no",
+      "delay": 118000
+    },
+    {
+      "chat": "I know I'm the one to blame",
+      "delay": 120000
+    },
+    {
+      "chat": "All I can do is take the shame",
+      "delay": 123000
+    },
+    {
+      "chat": "Oh, do we say goodbye?",
+      "delay": 125000
+    },
+    {
+      "chat": "Refuse to question why?",
+      "delay": 131000
+    },
+    {
+      "chat": "I'm too sad to say I'm sorry",
+      "delay": 135000
+    },
+    {
+      "chat": "So lie",
+      "delay": 138000
+    },
+    {
+      "chat": "and pretend that you're ok",
+      "delay": 140000
+    },
+    {
+      "chat": "Swear that you will stay",
+      "delay": 143000
+    },
+    {
+      "chat": "Keep trying for one day",
+      "delay": 148000
+    },
+    {
+      "chat": "Whoa, I'm sick",
+      "delay": 152000
+    },
+    {
+      "chat": "of all these lies",
+      "delay": 152500
+    },
+    {
+      "chat": "Don't care if I capsize",
+      "delay": 156000
+    },
+    {
+      "chat": "There's nothing",
+      "delay": 158000
+    },
+    {
+      "chat": "left for me to hide",
+      "delay": 159000
+    },
+    {
+      "chat": "Don't wanna live a lie",
+      "delay": 162000
+    },
+    {
+      "chat": "Too many lows, too many highs",
+      "delay": 164000
+    },
+    {
+      "chat": "Too many things to criticize",
+      "delay": 167000
+    },
+    {
+      "chat": "And so I leave it all behind",
+      "delay": 170000
+    },
+    {
+      "chat": "Don't wanna to live a lie",
+      "delay": 173000
+    },
+    {
+      "chat": "A lie",
+      "delay": 178000
+    },
+    {
+      "chat": "I don't wanna live a lie",
+      "delay": 186000
+    },
+    {
+      "chat": "Don't want",
+      "delay": 190000
+    },
+    {
+      "chat": "Live a lie, ooh, yeah",
+      "delay": 193000
+    },
+    {
+      "chat": "I'm sick of all these lies",
+      "delay": 201000
+    },
+    {
+      "chat": "Don't care if I capsize",
+      "delay": 205000
+    },
+    {
+      "chat": "Oh no",
+      "delay": 209000
+    }
+  ],
+  "32": [
+    {
+      "chat": "Energy, a heart explosion",
+      "delay": 8498
+    },
+    {
+      "chat": "All I need, adrenaline",
+      "delay": 11897
+    },
+    {
+      "chat": "Never stop to is in my mind",
+      "delay": 14802
+    },
+    {
+      "chat": "Fire away, adrenaline",
+      "delay": 17185
+    },
+    {
+      "chat": "Energy, a heart explosion",
+      "delay": 20615
+    },
+    {
+      "chat": "All I need, adrenaline",
+      "delay": 23643
+    },
+    {
+      "chat": "Never stop to is in my mind",
+      "delay": 26653
+    },
+    {
+      "chat": "Fire away, adrenaline",
+      "delay": 29618
+    },
+    {
+      "chat": "Body feels like lava flowin'",
+      "delay": 59000
+    },
+    {
+      "chat": "Hard adrenaline",
+      "delay": 62000
+    },
+    {
+      "chat": "Rushin' through",
+      "delay": 65000
+    },
+    {
+      "chat": "the pain and squeezing",
+      "delay": 66000
+    },
+    {
+      "chat": "Power's runnin' in my veins",
+      "delay": 68000
+    },
+    {
+      "chat": "Fight or flight",
+      "delay": 70000
+    },
+    {
+      "chat": "And my mind turns crazy",
+      "delay": 72000
+    },
+    {
+      "chat": "It's time to do or die",
+      "delay": 75000
+    },
+    {
+      "chat": "Fear thunders in",
+      "delay": 77000
+    },
+    {
+      "chat": "my heart and I, and I",
+      "delay": 79000
+    },
+    {
+      "chat": "Energy, a heart explosion",
+      "delay": 83000
+    },
+    {
+      "chat": "All I need, adrenaline",
+      "delay": 86000
+    },
+    {
+      "chat": "Never stop to is in my mind",
+      "delay": 89000
+    },
+    {
+      "chat": "Fire away, adrenaline",
+      "delay": 92000
+    },
+    {
+      "chat": "Rollercoaster of emotion",
+      "delay": 96000
+    },
+    {
+      "chat": "I just need adrenaline",
+      "delay": 99000
+    },
+    {
+      "chat": "Setting all the worlds afire",
+      "delay": 101000
+    },
+    {
+      "chat": "Energy, adrenaline",
+      "delay": 105000
+    },
+    {
+      "chat": "It's no game,",
+      "delay": 120000
+    },
+    {
+      "chat": "we're messin' 'round with",
+      "delay": 121000
+    },
+    {
+      "chat": "Hard adrenaline",
+      "delay": 123000
+    },
+    {
+      "chat": "Waste a wave of",
+      "delay": 126000
+    },
+    {
+      "chat": "hungry feelings",
+      "delay": 128000
+    },
+    {
+      "chat": "Just bring out the best in me",
+      "delay": 129000
+    },
+    {
+      "chat": "Fight or flight",
+      "delay": 131000
+    },
+    {
+      "chat": "And my mind turns crazy",
+      "delay": 133000
+    },
+    {
+      "chat": "It's time to do or die",
+      "delay": 135000
+    },
+    {
+      "chat": "Fear thunders in",
+      "delay": 138000
+    },
+    {
+      "chat": "my heart and I, and I",
+      "delay": 140000
+    },
+    {
+      "chat": "Energy, a heart explosion",
+      "delay": 144000
+    },
+    {
+      "chat": "All I need, adrenaline",
+      "delay": 147000
+    },
+    {
+      "chat": "Never stop to is in my mind",
+      "delay": 150000
+    },
+    {
+      "chat": "Fire away, adrenaline",
+      "delay": 153000
+    },
+    {
+      "chat": "Rollercoaster of emotion",
+      "delay": 156000
+    },
+    {
+      "chat": "I just need adrenaline",
+      "delay": 159000
+    },
+    {
+      "chat": "Setting all the worlds afire",
+      "delay": 162000
+    },
+    {
+      "chat": "Energy, adrenaline",
+      "delay": 165000
+    },
+    {
+      "chat": "Body feels like lava flowin'",
+      "delay": 194000
+    },
+    {
+      "chat": "Hard adrenaline",
+      "delay": 197000
+    },
+    {
+      "chat": "Rushin' through the",
+      "delay": 200000
+    },
+    {
+      "chat": "pain and squeezing",
+      "delay": 202000
+    },
+    {
+      "chat": "Power's runnin' in my veins",
+      "delay": 203000
+    },
+    {
+      "chat": "Fight or flight",
+      "delay": 206000
+    },
+    {
+      "chat": "And my mind turns crazy",
+      "delay": 207000
+    },
+    {
+      "chat": "It's time to do or die",
+      "delay": 210000
+    },
+    {
+      "chat": "Fear thunders in",
+      "delay": 212000
+    },
+    {
+      "chat": "my heart and I, and I",
+      "delay": 214000
+    },
+    {
+      "chat": "Energy, a heart explosion",
+      "delay": 218000
+    },
+    {
+      "chat": "All I need, adrenaline",
+      "delay": 222000
+    },
+    {
+      "chat": "Never stop to is in my mind",
+      "delay": 225000
+    },
+    {
+      "chat": "Fire away, adrenaline",
+      "delay": 227000
+    },
+    {
+      "chat": "Rollercoaster of emotion",
+      "delay": 233000
+    },
+    {
+      "chat": "I just need adrenaline",
+      "delay": 235000
+    },
+    {
+      "chat": "Setting all the worlds afire",
+      "delay": 238000
+    },
+    {
+      "chat": "Energy, adrenaline",
+      "delay": 241000
+    }
+  ],
+  "36": [
+    {
+      "chat": "Ferg",
+      "delay": 15220
+    },
+    {
+      "chat": "Hoo, hoo, hoo, ayy",
+      "delay": 16544
+    },
+    {
+      "chat": "I feel like I'm a giant but I'm 5'8\"",
+      "delay": 18764
+    },
+    {
+      "chat": "I feel more defiant when y'all hate",
+      "delay": 20579
+    },
+    {
+      "chat": "Y'all the only ****** runnin' in the car race",
+      "delay": 22348
+    },
+    {
+      "chat": "Serve a ***** with the butter like parquet (Yeah)",
+      "delay": 23982
+    },
+    {
+      "chat": "Rap ****** all soft, so strange",
+      "delay": 27839
+    },
+    {
+      "chat": "I'm a little bit of Pac, bit of Kanye",
+      "delay": 29745
+    },
+    {
+      "chat": "You a little bit of Fox and Beyonce (Right)",
+      "delay": 31438
+    },
+    {
+      "chat": "Any beef come to me get sauteed",
+      "delay": 35283
+    },
+    {
+      "chat": "Yeah, the fake ones runnin' with the hard face",
+      "delay": 37020
+    },
+    {
+      "chat": "Bet that pump to your tongue make your heart race (Grrr)",
+      "delay": 38760
+    },
+    {
+      "chat": "And I hope you take it all the wrong way",
+      "delay": 42801
+    },
+    {
+      "chat": "Leave you slumped near the pump, near the bar place",
+      "delay": 44380
+    },
+    {
+      "chat": "This red light put your ass in a dark place",
+      "delay": 46364
+    },
+    {
+      "chat": "You a trill *****, get your ***********' hands up",
+      "delay": 47919
+    },
+    {
+      "chat": "You a real *****, get your ***********' hands up",
+      "delay": 51638
+    },
+    {
+      "chat": "Get your ***********' hands up",
+      "delay": 60200
+    },
+    {
+      "chat": "Celebration, coronation",
+      "delay": 92080
+    },
+    {
+      "chat": "No debatin', crown me king, I'm tired of waitin' (Yeah)",
+      "delay": 93460
+    },
+    {
+      "chat": "People's champ, I gotta face it",
+      "delay": 95919
+    },
+    {
+      "chat": "You disgracin', people sensin' that you're fakin'",
+      "delay": 97280
+    },
+    {
+      "chat": "I'm the Lord, I might go Satan",
+      "delay": 99600
+    },
+    {
+      "chat": "With the flow and take 'em out, annihilate 'em (Yeah)",
+      "delay": 100940
+    },
+    {
+      "chat": "No mistakin', new sensation",
+      "delay": 103380
+    },
+    {
+      "chat": "Hood Pope pullin' up to rule the nation (Alright)",
+      "delay": 104620
+    },
+    {
+      "chat": "And I came a long way from the stash house (Yeah)",
+      "delay": 107280
+    },
+    {
+      "chat": "Now I switch spots like a Dalmatian (Right)",
+      "delay": 109261
+    },
+    {
+      "chat": "Little kid played by the crack house (Yeah)",
+      "delay": 111080
+    },
+    {
+      "chat": "And I got my moms out when my *** paid (Alright)",
+      "delay": 112726
+    },
+    {
+      "chat": "Gotta understand when I black out (Yeah)",
+      "delay": 114940
+    },
+    {
+      "chat": "I don't give a **** 'bout a wack hater",
+      "delay": 116740
+    },
+    {
+      "chat": "I don't give a **** 'bout no rap favor",
+      "delay": 118541
+    },
+    {
+      "chat": "Need to bow to the Lord and say all your prayers",
+      "delay": 120141
+    },
+    {
+      "chat": "You a trill *****, get your ***********' hands up",
+      "delay": 121861
+    },
+    {
+      "chat": "You a real *****, get your ***********' hands up",
+      "delay": 125503
+    },
+    {
+      "chat": "Get your ***********' hands up",
+      "delay": 133963
+    }
+  ],
+  "37": [
+    {
+      "chat": "At first I was afraid",
+      "delay": 21620
+    },
+    {
+      "chat": "I was afraid",
+      "delay": 23180
+    },
+    {
+      "chat": "Down in the darkness",
+      "delay": 26484
+    },
+    {
+      "chat": "I was crawling",
+      "delay": 28550
+    },
+    {
+      "chat": "through the human race",
+      "delay": 30126
+    },
+    {
+      "chat": "I heard the voices",
+      "delay": 32766
+    },
+    {
+      "chat": "through the dark",
+      "delay": 34148
+    },
+    {
+      "chat": "(Oh oh oh oh oh oh oh)",
+      "delay": 36802
+    },
+    {
+      "chat": "So I beat my fist",
+      "delay": 38464
+    },
+    {
+      "chat": "against my chest",
+      "delay": 39736
+    },
+    {
+      "chat": "against my heart",
+      "delay": 41026
+    },
+    {
+      "chat": "Hey-ho!",
+      "delay": 43086
+    },
+    {
+      "chat": "Hear the sound",
+      "delay": 45120
+    },
+    {
+      "chat": "We are the underground",
+      "delay": 46484
+    },
+    {
+      "chat": "Hey-ho!",
+      "delay": 47852
+    },
+    {
+      "chat": "Rising up",
+      "delay": 49384
+    },
+    {
+      "chat": "We're not afraid of fighting",
+      "delay": 50930
+    },
+    {
+      "chat": "I've finally found my place",
+      "delay": 52758
+    },
+    {
+      "chat": "I put the war paint on my face",
+      "delay": 55898
+    },
+    {
+      "chat": "And I'm ready to give (Hey!)",
+      "delay": 59074
+    },
+    {
+      "chat": "Whatever it takes",
+      "delay": 61298
+    },
+    {
+      "chat": "Standing at the edge",
+      "delay": 63434
+    },
+    {
+      "chat": "of the fire, Fighting",
+      "delay": 67200
+    },
+    {
+      "chat": "for the will to survive",
+      "delay": 71580
+    },
+    {
+      "chat": "I feel it burnin under my skin",
+      "delay": 76276
+    },
+    {
+      "chat": "And I'm back on my feet again",
+      "delay": 79990
+    },
+    {
+      "chat": "This is the feeling",
+      "delay": 84506
+    },
+    {
+      "chat": "I can't believe it",
+      "delay": 87558
+    },
+    {
+      "chat": "My heart is bleeding out",
+      "delay": 90284
+    },
+    {
+      "chat": "Now I'm dangerous",
+      "delay": 92924
+    },
+    {
+      "chat": "Feeding the fire",
+      "delay": 95178
+    },
+    {
+      "chat": "Higher and higher",
+      "delay": 97796
+    },
+    {
+      "chat": "Rising up, rising up",
+      "delay": 100736
+    },
+    {
+      "chat": "Now I'm dangerous",
+      "delay": 101800
+    },
+    {
+      "chat": "Silence the voices in my head",
+      "delay": 105924
+    },
+    {
+      "chat": "I picked my poison now",
+      "delay": 110616
+    },
+    {
+      "chat": "Ill drink it to the bitter end",
+      "delay": 113302
+    },
+    {
+      "chat": "Hey-ho! Hear me now!",
+      "delay": 116734
+    },
+    {
+      "chat": "I take on the darkness",
+      "delay": 119366
+    },
+    {
+      "chat": "by myself",
+      "delay": 121098
+    },
+    {
+      "chat": "Cause I'm ready to give (Hey!)",
+      "delay": 122582
+    },
+    {
+      "chat": "Whatever it takes",
+      "delay": 125068
+    },
+    {
+      "chat": "Standing at the edge",
+      "delay": 128638
+    },
+    {
+      "chat": "of the fire",
+      "delay": 130002
+    },
+    {
+      "chat": "I don't know",
+      "delay": 133736
+    },
+    {
+      "chat": "how I ever survived",
+      "delay": 134976
+    },
+    {
+      "chat": "I feel it burnin under my skin",
+      "delay": 139000
+    },
+    {
+      "chat": "And now I'm back",
+      "delay": 142830
+    },
+    {
+      "chat": "on my feet again",
+      "delay": 144582
+    },
+    {
+      "chat": "This is the feeling",
+      "delay": 146734
+    },
+    {
+      "chat": "I can't believe it",
+      "delay": 149838
+    },
+    {
+      "chat": "My heart is bleeding out",
+      "delay": 152402
+    },
+    {
+      "chat": "Now I'm dangerous",
+      "delay": 154924
+    },
+    {
+      "chat": "Feeding the fire",
+      "delay": 157650
+    },
+    {
+      "chat": "Higher and higher",
+      "delay": 160312
+    },
+    {
+      "chat": "Rising up, rising up",
+      "delay": 163066
+    },
+    {
+      "chat": "Now I'm dangerous",
+      "delay": 164392
+    },
+    {
+      "chat": "This is the feeling",
+      "delay": 189160
+    },
+    {
+      "chat": "I can't believe it",
+      "delay": 191608
+    },
+    {
+      "chat": "My heart is bleeding out",
+      "delay": 194464
+    },
+    {
+      "chat": "Now I'm dangerous",
+      "delay": 196790
+    },
+    {
+      "chat": "Feeding the fire",
+      "delay": 201394
+    },
+    {
+      "chat": "Higher and higher",
+      "delay": 204882
+    },
+    {
+      "chat": "Rising up, rising up",
+      "delay": 206704
+    },
+    {
+      "chat": "Now I'm dangerous",
+      "delay": 207190
+    },
+    {
+      "chat": "I'm dangerous!",
+      "delay": 221664
+    },
+    {
+      "chat": "Rising up, rising up",
+      "delay": 223172
+    },
+    {
+      "chat": "Now I'm dangerous",
+      "delay": 227990
+    }
+  ],
+  "40": [
+    {
+      "chat": "I am a registered s*x offender",
+      "delay": 16000
+    },
+    {
+      "chat": "I stuck my d*ck into a blender",
+      "delay": 18000
+    },
+    {
+      "chat": "Your mom is a transgender",
+      "delay": 20000
+    },
+    {
+      "chat": "I am a professional",
+      "delay": 22000
+    },
+    {
+      "chat": "nude sender",
+      "delay": 23000
+    },
+    {
+      "chat": "You know that I be dominating",
+      "delay": 24000
+    },
+    {
+      "chat": "My c*ck and balls are rotating",
+      "delay": 26000
+    },
+    {
+      "chat": "Ice on my wrist,",
+      "delay": 28000
+    },
+    {
+      "chat": "I could go skating",
+      "delay": 29000
+    },
+    {
+      "chat": "Between thick thighs,",
+      "delay": 30000
+    },
+    {
+      "chat": "I'm suffocating",
+      "delay": 31000
+    },
+    {
+      "chat": "I have a huge f*cking c*ck",
+      "delay": 32000
+    },
+    {
+      "chat": "I nut inside of my sock",
+      "delay": 34000
+    },
+    {
+      "chat": "I walk around in crocks",
+      "delay": 36000
+    },
+    {
+      "chat": "While my d*ck is harder",
+      "delay": 38000
+    },
+    {
+      "chat": "than a rock",
+      "delay": 39000
+    },
+    {
+      "chat": "I f*ck b*tches in school",
+      "delay": 40000
+    },
+    {
+      "chat": "Cause you know",
+      "delay": 42000
+    },
+    {
+      "chat": "I'm fucking cool",
+      "delay": 43000
+    },
+    {
+      "chat": "I jump inside of my pool",
+      "delay": 44000
+    },
+    {
+      "chat": "I take a hit from juul",
+      "delay": 46000
+    },
+    {
+      "chat": "I don't actually smoke",
+      "delay": 48000
+    },
+    {
+      "chat": "But it'd make your b*tch choke",
+      "delay": 50000
+    },
+    {
+      "chat": "Once I give someone a stroke",
+      "delay": 52000
+    },
+    {
+      "chat": "My c*ck is hard like oak",
+      "delay": 54000
+    },
+    {
+      "chat": "You know I'm dropping fire",
+      "delay": 56000
+    },
+    {
+      "chat": "You could sing my songs",
+      "delay": 58000
+    },
+    {
+      "chat": "the the choir",
+      "delay": 59000
+    },
+    {
+      "chat": "They call me Quagmire",
+      "delay": 60000
+    },
+    {
+      "chat": "No they don't but",
+      "delay": 62000
+    },
+    {
+      "chat": "at least it rhymes",
+      "delay": 63000
+    },
+    {
+      "chat": "Ay!",
+      "delay": 64000
+    },
+    {
+      "chat": "Alright everyone,",
+      "delay": 66000
+    },
+    {
+      "chat": "sing along for this next part!",
+      "delay": 67000
+    },
+    {
+      "chat": "I nutted inside you mooo-ooom",
+      "delay": 72000
+    },
+    {
+      "chat": "Yeah!",
+      "delay": 76000
+    },
+    {
+      "chat": "Ay!",
+      "delay": 78000
+    },
+    {
+      "chat": "I nutted inside you mooo-ooom",
+      "delay": 80000
+    },
+    {
+      "chat": "Woooh!",
+      "delay": 84000
+    },
+    {
+      "chat": "Alright, here we go!",
+      "delay": 86000
+    },
+    {
+      "chat": "AY AY AY AY!",
+      "delay": 94000
+    },
+    {
+      "chat": "You know I love being a s*xist",
+      "delay": 96000
+    },
+    {
+      "chat": "I eat p*ssy for breakfast",
+      "delay": 98000
+    },
+    {
+      "chat": "Ice on my necklace",
+      "delay": 100000
+    },
+    {
+      "chat": "I had s*x with my dentist",
+      "delay": 102000
+    },
+    {
+      "chat": "My fanbase is getting bigger",
+      "delay": 104000
+    },
+    {
+      "chat": "Your hoe is a gold digger",
+      "delay": 106000
+    },
+    {
+      "chat": "I wear Tommy Hilfiger",
+      "delay": 108000
+    },
+    {
+      "chat": "While I pull on the trigger",
+      "delay": 110000
+    },
+    {
+      "chat": "Woah, woah, woah",
+      "delay": 112000
+    },
+    {
+      "chat": "that was risky",
+      "delay": 113000
+    },
+    {
+      "chat": "My b*tch just turned 60",
+      "delay": 114000
+    },
+    {
+      "chat": "She knows my c*m is sticky",
+      "delay": 116000
+    },
+    {
+      "chat": "But her p*ssy is squeaky",
+      "delay": 118000
+    },
+    {
+      "chat": "like Mickey",
+      "delay": 119000
+    },
+    {
+      "chat": "My lines are hotter",
+      "delay": 120000
+    },
+    {
+      "chat": "than the stars",
+      "delay": 121000
+    },
+    {
+      "chat": "When I'm dropping",
+      "delay": 122000
+    },
+    {
+      "chat": "these crazy bars",
+      "delay": 123000
+    },
+    {
+      "chat": "My c*m has filled jars",
+      "delay": 124000
+    },
+    {
+      "chat": "And stained so many cars",
+      "delay": 126000
+    },
+    {
+      "chat": "Ay",
+      "delay": 129000
+    }
+  ],
+  "50": [
+    {
+      "chat": "Manera wanna fly",
+      "delay": 8000
+    },
+    {
+      "chat": "Let me do it right",
+      "delay": 10000
+    },
+    {
+      "chat": "Im NFS in BMW~",
+      "delay": 10920
+    },
+    {
+      "chat": "`You are take L, Pussy down",
+      "delay": 12760
+    },
+    {
+      "chat": "She be screaming well",
+      "delay": 13790
+    },
+    {
+      "chat": "Instead I quit as hell",
+      "delay": 15510
+    },
+    {
+      "chat": "Grow speed on a dash",
+      "delay": 16830
+    },
+    {
+      "chat": "Slidin' when I pass",
+      "delay": 18110
+    },
+    {
+      "chat": "Foenem just off the Xans",
+      "delay": 19810
+    },
+    {
+      "chat": "Ayy Bitch, we do not friends",
+      "delay": 21120
+    },
+    {
+      "chat": "Bitch I smoke on private jet",
+      "delay": 22770
+    },
+    {
+      "chat": "Pilot just took a bean",
+      "delay": 23860
+    },
+    {
+      "chat": "Hop inside a phantom",
+      "delay": 25470
+    },
+    {
+      "chat": "I smoke another green",
+      "delay": 26540
+    },
+    {
+      "chat": "Smoking from windows tint",
+      "delay": 28750
+    },
+    {
+      "chat": "Team is Fucking fiends",
+      "delay": 29570
+    },
+    {
+      "chat": "Life is realest dream",
+      "delay": 31150
+    },
+    {
+      "chat": "Let me do my Shit",
+      "delay": 32370
+    },
+    {
+      "chat": "Let me do my Shit.",
+      "delay": 33320
+    },
+    {
+      "chat": "With this sounds slaps",
+      "delay": 34450
+    },
+    {
+      "chat": "With this heads bop",
+      "delay": 35290
+    },
+    {
+      "chat": "Whachu' mean?",
+      "delay": 36460
+    },
+    {
+      "chat": "Watch me going far",
+      "delay": 37270
+    },
+    {
+      "chat": "And I going fast",
+      "delay": 38220
+    },
+    {
+      "chat": "Watch your dream",
+      "delay": 39330
+    },
+    {
+      "chat": "Where I'm going hard",
+      "delay": 40270
+    },
+    {
+      "chat": "Bitch I'm so far",
+      "delay": 41010
+    },
+    {
+      "chat": "And I feel like a one of stars",
+      "delay": 42200
+    },
+    {
+      "chat": "Bitch I getting hot",
+      "delay": 43940
+    },
+    {
+      "chat": "Im NFS in BMW~",
+      "delay": 44850
+    },
+    {
+      "chat": "`You are take L, Pussy down",
+      "delay": 46650
+    },
+    {
+      "chat": "She be screaming well",
+      "delay": 47870
+    },
+    {
+      "chat": "Instead I quit as hell",
+      "delay": 49500
+    },
+    {
+      "chat": "Grow speed on a dash",
+      "delay": 50780
+    },
+    {
+      "chat": "Slidin' when I pass",
+      "delay": 52100
+    },
+    {
+      "chat": "Foenem just off the Xans",
+      "delay": 53640
+    },
+    {
+      "chat": "Ayy Bitch, we do not friends",
+      "delay": 55030
+    },
+    {
+      "chat": "Bitch I smoke on private jet",
+      "delay": 56710
+    },
+    {
+      "chat": "Pilot just took a bean",
+      "delay": 57780
+    },
+    {
+      "chat": "Hop inside a phantom",
+      "delay": 58630
+    },
+    {
+      "chat": "And I smoke a green",
+      "delay": 59910
+    },
+    {
+      "chat": "Smoking from windows tint",
+      "delay": 60550
+    },
+    {
+      "chat": "Team is Fucking fiends",
+      "delay": 61830
+    },
+    {
+      "chat": "Life is realest dream",
+      "delay": 62930
+    },
+    {
+      "chat": "Let me do my Shit",
+      "delay": 63880
+    },
+    {
+      "chat": "Let me do my Shit.",
+      "delay": 65050
+    },
+    {
+      "chat": "With this sounds slaps",
+      "delay": 67930
+    },
+    {
+      "chat": "With this heads bop",
+      "delay": 68890
+    },
+    {
+      "chat": "Whachu' mean?",
+      "delay": 69880
+    },
+    {
+      "chat": "Watch me going far",
+      "delay": 71120
+    },
+    {
+      "chat": "And I going fast",
+      "delay": 72070
+    },
+    {
+      "chat": "Watch your dream",
+      "delay": 73150
+    },
+    {
+      "chat": "Where I'm going hard",
+      "delay": 74300
+    },
+    {
+      "chat": "Bitch I'm so far",
+      "delay": 75040
+    },
+    {
+      "chat": "And I feel like a one of stars",
+      "delay": 75930
+    },
+    {
+      "chat": "Bitch I getting hot",
+      "delay": 78570
+    }
+  ],
+  "51": [
+    {
+      "chat": "CrackGod made it",
+      "delay": 3500
+    },
+    {
+      "chat": "Treat me like white tees",
+      "delay": 15000
+    },
+    {
+      "chat": "Don't get me dirty",
+      "delay": 17000
+    },
+    {
+      "chat": "Love-love-love on me",
+      "delay": 19000
+    },
+    {
+      "chat": "Love-love-love on me,",
+      "delay": 21000
+    },
+    {
+      "chat": "She cannot come with",
+      "delay": 23000
+    },
+    {
+      "chat": "I just gotta dip",
+      "delay": 25000
+    },
+    {
+      "chat": "Level up with me",
+      "delay": 27000
+    },
+    {
+      "chat": "If you Fuck wit' me",
+      "delay": 29000
+    },
+    {
+      "chat": "Oh",
+      "delay": 31000
+    },
+    {
+      "chat": "Yeah Im that Nigga from the O",
+      "delay": 33000
+    },
+    {
+      "chat": "I'm the one that they ain't",
+      "delay": 36000
+    },
+    {
+      "chat": "never told",
+      "delay": 38000
+    },
+    {
+      "chat": "You could catch the breeze,",
+      "delay": 40000
+    },
+    {
+      "chat": "but it's cold",
+      "delay": 42000
+    },
+    {
+      "chat": "You could come with me but",
+      "delay": 44000
+    },
+    {
+      "chat": "I don't know",
+      "delay": 45000
+    },
+    {
+      "chat": "Big capping, if you say",
+      "delay": 46000
+    },
+    {
+      "chat": "that you didn't love me",
+      "delay": 48000
+    },
+    {
+      "chat": "Little Bitch,",
+      "delay": 49000
+    },
+    {
+      "chat": "you know I'm lovely,",
+      "delay": 50000
+    },
+    {
+      "chat": "Im that Nigga from the O-2",
+      "delay": 51000
+    },
+    {
+      "chat": "I know that you Fucking",
+      "delay": 55000
+    },
+    {
+      "chat": "saying that you hate me",
+      "delay": 56000
+    },
+    {
+      "chat": "But you really do not hate me,",
+      "delay": 57000
+    },
+    {
+      "chat": "in reality, they love you",
+      "delay": 59000
+    },
+    {
+      "chat": "Treat me like white tees",
+      "delay": 63000
+    },
+    {
+      "chat": "Don't get me dirty",
+      "delay": 65000
+    },
+    {
+      "chat": "Love on, love on me",
+      "delay": 67000
+    },
+    {
+      "chat": "When we in the 'V'",
+      "delay": 71000
+    },
+    {
+      "chat": "Jump on, jump on me",
+      "delay": 72000
+    },
+    {
+      "chat": "Fuck on, Fuck on me, yeah",
+      "delay": 74000
+    },
+    {
+      "chat": "Mess up your white tee",
+      "delay": 78000
+    },
+    {
+      "chat": "I'll do you dirty, yeah",
+      "delay": 82000
+    },
+    {
+      "chat": "Wish you could Fuck on me",
+      "delay": 86000
+    },
+    {
+      "chat": "Love on, love on me,",
+      "delay": 88000
+    },
+    {
+      "chat": "But Ill take your money (Oh)",
+      "delay": 91000
+    },
+    {
+      "chat": "I bet you wanna come with me",
+      "delay": 93000
+    },
+    {
+      "chat": "I bet you wanna Cum on me, oh",
+      "delay": 97000
+    },
+    {
+      "chat": "I got you feeling so funny",
+      "delay": 101000
+    },
+    {
+      "chat": "Feeling, feeling free",
+      "delay": 103000
+    },
+    {
+      "chat": "Throw it all on me, yeah",
+      "delay": 105000
+    },
+    {
+      "chat": "Treat me like white tees",
+      "delay": 109000
+    },
+    {
+      "chat": "Don't get me dirty",
+      "delay": 111000
+    },
+    {
+      "chat": "Love on, love on me",
+      "delay": 113000
+    },
+    {
+      "chat": "When we in the 'V'",
+      "delay": 117000
+    },
+    {
+      "chat": "Jump on, jump on me",
+      "delay": 118000
+    },
+    {
+      "chat": "Fuck on, Fuck on me, yeah",
+      "delay": 121000
+    },
+    {
+      "chat": "Nigga you know that I'm mental",
+      "delay": 124000
+    },
+    {
+      "chat": "lil Bitch from the A",
+      "delay": 125000
+    },
+    {
+      "chat": "You know that you love",
+      "delay": 128000
+    },
+    {
+      "chat": "how I move, you love my lil ways",
+      "delay": 129000
+    },
+    {
+      "chat": "Love all that Shit that I say",
+      "delay": 130000
+    },
+    {
+      "chat": "Love it when I call you 'Bae'",
+      "delay": 132000
+    },
+    {
+      "chat": "I throw my lil fist,",
+      "delay": 134000
+    },
+    {
+      "chat": "I talk my lil Shit",
+      "delay": 135000
+    },
+    {
+      "chat": "And I always be getting",
+      "delay": 136000
+    },
+    {
+      "chat": "my way, hey, hey",
+      "delay": 138000
+    },
+    {
+      "chat": "You know what it is and you",
+      "delay": 140000
+    },
+    {
+      "chat": "know what it ain't, hey, hey",
+      "delay": 142000
+    },
+    {
+      "chat": "Them Ugly-Ass hoes that",
+      "delay": 143000
+    },
+    {
+      "chat": "be calling your phone,",
+      "delay": 144000
+    },
+    {
+      "chat": "can get out my way, aye",
+      "delay": 145000
+    },
+    {
+      "chat": "Doing the things that",
+      "delay": 148000
+    },
+    {
+      "chat": "I never would know",
+      "delay": 149000
+    },
+    {
+      "chat": "Middle of summer,",
+      "delay": 150000
+    },
+    {
+      "chat": "my Nigga is cold",
+      "delay": 151000
+    },
+    {
+      "chat": "We don't, we don't break the code",
+      "delay": 152000
+    },
+    {
+      "chat": "We, we just make the code",
+      "delay": 153000
+    },
+    {
+      "chat": "Fuck 'em we don't bait the hoes",
+      "delay": 155000
+    },
+    {
+      "chat": "Fuck it, I'ma take a dose",
+      "delay": 157000
+    },
+    {
+      "chat": "Taking dose",
+      "delay": 159000
+    },
+    {
+      "chat": "Taking dose,",
+      "delay": 161000
+    },
+    {
+      "chat": "Treat me like white tees",
+      "delay": 163000
+    },
+    {
+      "chat": "Don't get me dirty",
+      "delay": 165000
+    },
+    {
+      "chat": "Love-love-love on me",
+      "delay": 166000
+    },
+    {
+      "chat": "I just gotta dip",
+      "delay": 171000
+    },
+    {
+      "chat": "Level up with me",
+      "delay": 172000
+    },
+    {
+      "chat": "If you Fuck wit me",
+      "delay": 174000
+    },
+    {
+      "chat": "Oh,",
+      "delay": 177000
+    },
+    {
+      "chat": "Yeah, I'm that Nigga from the O",
+      "delay": 178000
+    },
+    {
+      "chat": "I'm the one that they",
+      "delay": 183000
+    },
+    {
+      "chat": "ain't never told",
+      "delay": 184000
+    },
+    {
+      "chat": "You could catch the breeze,",
+      "delay": 187000
+    },
+    {
+      "chat": "but it's cold",
+      "delay": 188000
+    },
+    {
+      "chat": "You could come with me,",
+      "delay": 191000
+    },
+    {
+      "chat": "but I don't know",
+      "delay": 192000
+    },
+    {
+      "chat": "Loving on me baby, yeah",
+      "delay": 195000
+    }
+  ],
+  "67": [
+    {
+      "chat": "Our empty hearts",
+      "delay": 13610
+    },
+    {
+      "chat": "and neon lights",
+      "delay": 15500
+    },
+    {
+      "chat": "They're playing with my mind",
+      "delay": 17660
+    },
+    {
+      "chat": "Gotta get out of it tonight",
+      "delay": 20090
+    },
+    {
+      "chat": "OhwhenI run,",
+      "delay": 23950
+    },
+    {
+      "chat": "I'llfight through",
+      "delay": 25350
+    },
+    {
+      "chat": "And I'll tell myself ",
+      "delay": 28520
+    },
+    {
+      "chat": "It'sfine to be alone",
+      "delay": 30440
+    },
+    {
+      "chat": "Just to find somewhere that",
+      "delay": 34940
+    },
+    {
+      "chat": "finally feels like home",
+      "delay": 36880
+    },
+    {
+      "chat": "I hate all this",
+      "delay": 41740
+    },
+    {
+      "chat": "overthinking (Oh-oh-oh-oh)",
+      "delay": 43440
+    },
+    {
+      "chat": "The more I swim,",
+      "delay": 47950
+    },
+    {
+      "chat": "the more i'm sinking",
+      "delay": 49410
+    },
+    {
+      "chat": "Take me to a world of silver",
+      "delay": 51430
+    },
+    {
+      "chat": "No more heartbreaks",
+      "delay": 54590
+    },
+    {
+      "chat": "is painkillers",
+      "delay": 56210
+    },
+    {
+      "chat": "Take me somewhere unfamiliar",
+      "delay": 57760
+    },
+    {
+      "chat": "Bring me back to",
+      "delay": 60890
+    },
+    {
+      "chat": "Where We Started",
+      "delay": 62290
+    },
+    {
+      "chat": "Get me out of now",
+      "delay": 68990
+    },
+    {
+      "chat": "To Where We Started",
+      "delay": 75290
+    },
+    {
+      "chat": "Get me out of now",
+      "delay": 81880
+    },
+    {
+      "chat": "To Where We Started",
+      "delay": 87860
+    },
+    {
+      "chat": "Get me out of now",
+      "delay": 100870
+    },
+    {
+      "chat": "Broken hearts and",
+      "delay": 103350
+    },
+    {
+      "chat": "starting fights",
+      "delay": 104660
+    },
+    {
+      "chat": "Turning truths to lies",
+      "delay": 107200
+    },
+    {
+      "chat": "Gotta get out,",
+      "delay": 109840
+    },
+    {
+      "chat": "stop wasting time",
+      "delay": 111000
+    },
+    {
+      "chat": "Oh when I run,",
+      "delay": 113510
+    },
+    {
+      "chat": "I'll fight through",
+      "delay": 114970
+    },
+    {
+      "chat": "And I'll tell myself",
+      "delay": 118100
+    },
+    {
+      "chat": "It'sfine to be alone",
+      "delay": 119930
+    },
+    {
+      "chat": "Just to find somewhere that",
+      "delay": 124530
+    },
+    {
+      "chat": "finally feels like home",
+      "delay": 126500
+    },
+    {
+      "chat": "I hate all this",
+      "delay": 131300
+    },
+    {
+      "chat": "overthinking (Oh-oh-oh-oh)",
+      "delay": 132950
+    },
+    {
+      "chat": "The more I swim,",
+      "delay": 137460
+    },
+    {
+      "chat": "the more i'm sinking",
+      "delay": 139120
+    },
+    {
+      "chat": "Take me to a world of silver",
+      "delay": 140900
+    },
+    {
+      "chat": "No more heartbreaks",
+      "delay": 144150
+    },
+    {
+      "chat": "is painkillers",
+      "delay": 145750
+    },
+    {
+      "chat": "Take me somewhere unfamiliar",
+      "delay": 147290
+    },
+    {
+      "chat": "Bring me back to",
+      "delay": 150530
+    },
+    {
+      "chat": "Where We Started",
+      "delay": 152210
+    },
+    {
+      "chat": "Get me out of now",
+      "delay": 158690
+    },
+    {
+      "chat": "To Where We Started",
+      "delay": 164940
+    },
+    {
+      "chat": "Get me out of now",
+      "delay": 171360
+    },
+    {
+      "chat": "To where we started",
+      "delay": 177480
+    },
+    {
+      "chat": "Lyrics Made By Wolfi-chan",
+      "delay": 179999
+    }
+  ],
+  "108": [
+    {
+      "chat": "The year is 1991",
+      "delay": 2248
+    },
+    {
+      "chat": "Birds and people are",
+      "delay": 4133
+    },
+    {
+      "chat": "living together in",
+      "delay": 5452
+    },
+    {
+      "chat": "seemingly perfect harmony",
+      "delay": 6331
+    },
+    {
+      "chat": "Until one day a young",
+      "delay": 8095
+    },
+    {
+      "chat": "man catches fire",
+      "delay": 9409
+    },
+    {
+      "chat": "This is \"Phoenix\"",
+      "delay": 11237
+    },
+    {
+      "chat": "You - you've been knocked",
+      "delay": 18605
+    },
+    {
+      "chat": "down and got up again",
+      "delay": 21349
+    },
+    {
+      "chat": "In the corner, you're",
+      "delay": 23938
+    },
+    {
+      "chat": "surrounded, no defenders",
+      "delay": 25414
+    },
+    {
+      "chat": "Woah, you - you've hid",
+      "delay": 29856
+    },
+    {
+      "chat": "your fury and kept it in",
+      "delay": 32740
+    },
+    {
+      "chat": "But it's time now you",
+      "delay": 35609
+    },
+    {
+      "chat": "ignite and turn to embers",
+      "delay": 37156
+    },
+    {
+      "chat": "Like a phoenix you",
+      "delay": 41475
+    },
+    {
+      "chat": "burst into fire",
+      "delay": 43146
+    },
+    {
+      "chat": "Burn, a thirst and desire",
+      "delay": 44829
+    },
+    {
+      "chat": "You transform, light up",
+      "delay": 47694
+    },
+    {
+      "chat": "in a flash",
+      "delay": 49640
+    },
+    {
+      "chat": "You spread your wings",
+      "delay": 50378
+    },
+    {
+      "chat": "and rise from the ashes",
+      "delay": 51674
+    },
+    {
+      "chat": "Phoenix - you burst",
+      "delay": 53568
+    },
+    {
+      "chat": "into fire",
+      "delay": 55240
+    },
+    {
+      "chat": "Burn, a thirst and desire",
+      "delay": 56504
+    },
+    {
+      "chat": "You transform, light up",
+      "delay": 59373
+    },
+    {
+      "chat": "in a flash",
+      "delay": 60974
+    },
+    {
+      "chat": "You spread your wings",
+      "delay": 61929
+    },
+    {
+      "chat": "and rise from the ashes",
+      "delay": 63290
+    },
+    {
+      "chat": "They get you down,",
+      "delay": 77247
+    },
+    {
+      "chat": "but you get up",
+      "delay": 78569
+    },
+    {
+      "chat": "They let you drown,",
+      "delay": 80194
+    },
+    {
+      "chat": "but you don't stop",
+      "delay": 81439
+    },
+    {
+      "chat": "You show them you're",
+      "delay": 84272
+    },
+    {
+      "chat": "a phoenix",
+      "delay": 85054
+    },
+    {
+      "chat": "Woah",
+      "delay": 86493
+    },
+    {
+      "chat": "Get ready for Verse 2:",
+      "delay": 88745
+    },
+    {
+      "chat": "Electric Boogaloo",
+      "delay": 90145
+    },
+    {
+      "chat": "You - you've seen the",
+      "delay": 91399
+    },
+    {
+      "chat": "truth behind the veil",
+      "delay": 94052
+    },
+    {
+      "chat": "And you know that they're",
+      "delay": 96673
+    },
+    {
+      "chat": "just looking for attention",
+      "delay": 98046
+    },
+    {
+      "chat": "Woah - you, don't let",
+      "delay": 102353
+    },
+    {
+      "chat": "their ruthlessness prevail",
+      "delay": 105413
+    },
+    {
+      "chat": "Oh, it's time now, light",
+      "delay": 108392
+    },
+    {
+      "chat": "your fire for ascension",
+      "delay": 109908
+    },
+    {
+      "chat": "Like a phoenix you",
+      "delay": 114324
+    },
+    {
+      "chat": "burst into fire",
+      "delay": 115941
+    },
+    {
+      "chat": "Burn, a thirst and desire",
+      "delay": 117531
+    },
+    {
+      "chat": "You transform, light up",
+      "delay": 120558
+    },
+    {
+      "chat": "in a flash",
+      "delay": 122184
+    },
+    {
+      "chat": "You spread your wings",
+      "delay": 123047
+    },
+    {
+      "chat": "and rise from the ashes",
+      "delay": 124404
+    },
+    {
+      "chat": "Phoenix - you burst",
+      "delay": 126185
+    },
+    {
+      "chat": "into fire",
+      "delay": 127814
+    },
+    {
+      "chat": "Burn, a thirst and desire",
+      "delay": 129127
+    },
+    {
+      "chat": "You transform, light up",
+      "delay": 132167
+    },
+    {
+      "chat": "in a flash",
+      "delay": 133943
+    },
+    {
+      "chat": "You spread your wings",
+      "delay": 134773
+    },
+    {
+      "chat": "to rise from the ashes",
+      "delay": 136060
+    },
+    {
+      "chat": "They get you down,",
+      "delay": 150006
+    },
+    {
+      "chat": "but you get up",
+      "delay": 151266
+    },
+    {
+      "chat": "They let you drown,",
+      "delay": 152804
+    },
+    {
+      "chat": "but you don't stop",
+      "delay": 154139
+    },
+    {
+      "chat": "You show them you're",
+      "delay": 157005
+    },
+    {
+      "chat": "a phoenix",
+      "delay": 157899
+    },
+    {
+      "chat": "Phoenix - you burst",
+      "delay": 184611
+    },
+    {
+      "chat": "into fire",
+      "delay": 186097
+    },
+    {
+      "chat": "Burn, a thirst and desire",
+      "delay": 187419
+    },
+    {
+      "chat": "You transform, light up",
+      "delay": 190260
+    },
+    {
+      "chat": "in a flash",
+      "delay": 191957
+    },
+    {
+      "chat": "You spread your wings",
+      "delay": 192891
+    },
+    {
+      "chat": "and rise from the ashes",
+      "delay": 194252
+    },
+    {
+      "chat": "Phoenix - you burst",
+      "delay": 196096
+    },
+    {
+      "chat": "into fire",
+      "delay": 197703
+    },
+    {
+      "chat": "Burn, a thirst and desire",
+      "delay": 199030
+    },
+    {
+      "chat": "You transform, light up",
+      "delay": 201926
+    },
+    {
+      "chat": "in a flash",
+      "delay": 203630
+    },
+    {
+      "chat": "You spread your wings",
+      "delay": 204516
+    },
+    {
+      "chat": "and rise from the ashes",
+      "delay": 205951
+    }
+  ],
+  "110": [
+    {
+      "chat": "Walk in the shadowland",
+      "delay": 1967
+    },
+    {
+      "chat": "Nobody's innocent",
+      "delay": 3414
+    },
+    {
+      "chat": "Hand to mouth we lived",
+      "delay": 4630
+    },
+    {
+      "chat": "like demons",
+      "delay": 6195
+    },
+    {
+      "chat": "Stuck in the phantom zone",
+      "delay": 7263
+    },
+    {
+      "chat": "Lost in a thunder dome",
+      "delay": 8737
+    },
+    {
+      "chat": "Twilight ruled the day",
+      "delay": 9915
+    },
+    {
+      "chat": "We found the impossible",
+      "delay": 12351
+    },
+    {
+      "chat": "Now we're unstoppable",
+      "delay": 13829
+    },
+    {
+      "chat": "Taking off, the world",
+      "delay": 15178
+    },
+    {
+      "chat": "beneath us",
+      "delay": 16935
+    },
+    {
+      "chat": "Strong under pressure",
+      "delay": 17807
+    },
+    {
+      "chat": "We'll make it together",
+      "delay": 18898
+    },
+    {
+      "chat": "Our universe will change",
+      "delay": 20214
+    },
+    {
+      "chat": "Freedom looking down",
+      "delay": 23001
+    },
+    {
+      "chat": "a telescope",
+      "delay": 24295
+    },
+    {
+      "chat": "Starlight never been",
+      "delay": 25700
+    },
+    {
+      "chat": "so beautiful",
+      "delay": 26915
+    },
+    {
+      "chat": "Whole world waiting for",
+      "delay": 28345
+    },
+    {
+      "chat": "us, time to go",
+      "delay": 29556
+    },
+    {
+      "chat": "Escaping gravity",
+      "delay": 30752
+    },
+    {
+      "chat": "We'll be rising high",
+      "delay": 33693
+    },
+    {
+      "chat": "above the rain",
+      "delay": 34806
+    },
+    {
+      "chat": "Sunset never gonna",
+      "delay": 36248
+    },
+    {
+      "chat": "be the same",
+      "delay": 37637
+    },
+    {
+      "chat": "Thunder calling us",
+      "delay": 38902
+    },
+    {
+      "chat": "to outer space",
+      "delay": 40166
+    },
+    {
+      "chat": "Escaping gravity",
+      "delay": 41305
+    },
+    {
+      "chat": "Escaping gravity",
+      "delay": 51802
+    },
+    {
+      "chat": "Escaping gravity",
+      "delay": 62375
+    },
+    {
+      "chat": "Straight to the galaxy",
+      "delay": 65242
+    },
+    {
+      "chat": "Faster than sanity",
+      "delay": 66643
+    },
+    {
+      "chat": "Left behind a land forsaken",
+      "delay": 67919
+    },
+    {
+      "chat": "Black holes and meteors",
+      "delay": 70556
+    },
+    {
+      "chat": "Riding on shooting stars",
+      "delay": 71911
+    },
+    {
+      "chat": "Fearless like our dreams",
+      "delay": 73176
+    },
+    {
+      "chat": "We shoot down a satellite",
+      "delay": 75682
+    },
+    {
+      "chat": "Wings of a butterfly",
+      "delay": 77109
+    },
+    {
+      "chat": "Constellations recreating",
+      "delay": 78495
+    },
+    {
+      "chat": "Fighting for liberty",
+      "delay": 81068
+    },
+    {
+      "chat": "Raising the energy",
+      "delay": 82483
+    },
+    {
+      "chat": "Bursting at the seams",
+      "delay": 83721
+    },
+    {
+      "chat": "Freedom looking down",
+      "delay": 86328
+    },
+    {
+      "chat": "a telescope",
+      "delay": 87688
+    },
+    {
+      "chat": "Starlight never been",
+      "delay": 89034
+    },
+    {
+      "chat": "so beautiful",
+      "delay": 90295
+    },
+    {
+      "chat": "Whole world waiting for",
+      "delay": 91628
+    },
+    {
+      "chat": "us, time to go",
+      "delay": 92948
+    },
+    {
+      "chat": "Escaping gravity",
+      "delay": 93981
+    },
+    {
+      "chat": "We'll be rising high",
+      "delay": 96926
+    },
+    {
+      "chat": "above the rain",
+      "delay": 98048
+    },
+    {
+      "chat": "Sunset never gonna",
+      "delay": 99587
+    },
+    {
+      "chat": "be the same",
+      "delay": 100949
+    },
+    {
+      "chat": "Thunder calling us",
+      "delay": 102248
+    },
+    {
+      "chat": "to outer space",
+      "delay": 103414
+    },
+    {
+      "chat": "Escaping gravity",
+      "delay": 104560
+    },
+    {
+      "chat": "Escaping gravity",
+      "delay": 115054
+    },
+    {
+      "chat": "Escaping gravity",
+      "delay": 125620
+    },
+    {
+      "chat": "Starlight dances in the",
+      "delay": 128659
+    },
+    {
+      "chat": "silver of the night sky",
+      "delay": 132414
+    },
+    {
+      "chat": "Way above the clouds",
+      "delay": 136520
+    },
+    {
+      "chat": "We will be sailing high",
+      "delay": 138252
+    },
+    {
+      "chat": "Sailing high",
+      "delay": 141660
+    },
+    {
+      "chat": "Sailing high x2",
+      "delay": 144533
+    },
+    {
+      "chat": "(Ouh)",
+      "delay": 147141
+    },
+    {
+      "chat": "You and me we're",
+      "delay": 149779
+    },
+    {
+      "chat": "gonna touch the stars",
+      "delay": 150808
+    },
+    {
+      "chat": "Find the center of",
+      "delay": 152446
+    },
+    {
+      "chat": "the universe",
+      "delay": 153612
+    },
+    {
+      "chat": "New reality in",
+      "delay": 154970
+    },
+    {
+      "chat": "front of us",
+      "delay": 156374
+    },
+    {
+      "chat": "Escaping gravity",
+      "delay": 157345
+    },
+    {
+      "chat": "We'll be rising high",
+      "delay": 160235
+    },
+    {
+      "chat": "above the rain",
+      "delay": 161539
+    },
+    {
+      "chat": "Sunset never gonna",
+      "delay": 162865
+    },
+    {
+      "chat": "be the same",
+      "delay": 164267
+    },
+    {
+      "chat": "Thunder calling us",
+      "delay": 165553
+    },
+    {
+      "chat": "to outer space",
+      "delay": 166725
+    },
+    {
+      "chat": "Escaping gravity",
+      "delay": 167852
+    },
+    {
+      "chat": "Escaping gravity",
+      "delay": 178402
+    },
+    {
+      "chat": "Escaping gravity",
+      "delay": 188961
+    }
+  ],
+  "111": [
+    {
+      "chat": "Won't you take me home?",
+      "delay": 0
+    },
+    {
+      "chat": "Give me wings to fly",
+      "delay": 4406
+    },
+    {
+      "chat": "We could run away",
+      "delay": 8800
+    },
+    {
+      "chat": "Castle in the sky",
+      "delay": 13206
+    },
+    {
+      "chat": "Won't you take me home",
+      "delay": 17546
+    },
+    {
+      "chat": "and give me wings to fly",
+      "delay": 19593
+    },
+    {
+      "chat": "We can be alone in",
+      "delay": 21876
+    },
+    {
+      "chat": "the castle in the sky",
+      "delay": 23793
+    },
+    {
+      "chat": "We can run away and",
+      "delay": 26272
+    },
+    {
+      "chat": "leave this world behind",
+      "delay": 28424
+    },
+    {
+      "chat": "Please just take me",
+      "delay": 30745
+    },
+    {
+      "chat": "home to a castle",
+      "delay": 31741
+    },
+    {
+      "chat": "in the sky",
+      "delay": 33352
+    },
+    {
+      "chat": "Castle in the sky",
+      "delay": 34946
+    },
+    {
+      "chat": "Castle in the sky",
+      "delay": 43777
+    },
+    {
+      "chat": "Won't you take me home?",
+      "delay": 52522
+    },
+    {
+      "chat": "I can't wait",
+      "delay": 71824
+    },
+    {
+      "chat": "another minute",
+      "delay": 72146
+    },
+    {
+      "chat": "I can't wait",
+      "delay": 74061
+    },
+    {
+      "chat": "another second to be",
+      "delay": 74485
+    },
+    {
+      "chat": "With you for an eternity",
+      "delay": 77550
+    },
+    {
+      "chat": "I feel like I am",
+      "delay": 79752
+    },
+    {
+      "chat": "in a daydream",
+      "delay": 81051
+    },
+    {
+      "chat": "Every moment that I",
+      "delay": 82766
+    },
+    {
+      "chat": "spend with you, with you",
+      "delay": 83713
+    },
+    {
+      "chat": "Won't you take me home",
+      "delay": 87340
+    },
+    {
+      "chat": "and give me wings to fly",
+      "delay": 89340
+    },
+    {
+      "chat": "We can be alone in",
+      "delay": 91786
+    },
+    {
+      "chat": "the castle in the sky",
+      "delay": 93365
+    },
+    {
+      "chat": "We can run away and",
+      "delay": 96110
+    },
+    {
+      "chat": "leave this world behind",
+      "delay": 98251
+    },
+    {
+      "chat": "Please just take me",
+      "delay": 100577
+    },
+    {
+      "chat": "home to a castle",
+      "delay": 101445
+    },
+    {
+      "chat": "in the sky",
+      "delay": 103215
+    },
+    {
+      "chat": "Castle in the sky",
+      "delay": 104743
+    },
+    {
+      "chat": "Castle in the sky",
+      "delay": 113811
+    },
+    {
+      "chat": "Won't you take me home?",
+      "delay": 122262
+    },
+    {
+      "chat": "Won't you take me home?",
+      "delay": 139753
+    },
+    {
+      "chat": "Give me wings to fly",
+      "delay": 144058
+    },
+    {
+      "chat": "We could run away",
+      "delay": 148491
+    },
+    {
+      "chat": "Castle in the sky",
+      "delay": 152812
+    }
+  ],
+  "168": [
+    {
+      "chat": "Auf Rueckfahrt von Berlin",
+      "delay": 16323
+    },
+    {
+      "chat": "nach Hauptbahnhof Frankfurt",
+      "delay": 17526
+    },
+    {
+      "chat": "Schlauchschal zur Aktion",
+      "delay": 19067
+    },
+    {
+      "chat": "schlag ausnahmslos Faschos",
+      "delay": 20139
+    },
+    {
+      "chat": "Ich werd' zum Taeter",
+      "delay": 21757
+    },
+    {
+      "chat": "6 Milimeter",
+      "delay": 23105
+    },
+    {
+      "chat": "Paragraph 129 statt Gesa",
+      "delay": 24430
+    },
+    {
+      "chat": "Bewaffneter Terrorist",
+      "delay": 27317
+    },
+    {
+      "chat": "Schwarzkopf der Pedos sticht",
+      "delay": 28557
+    },
+    {
+      "chat": "Bullen fucken ab mit",
+      "delay": 30065
+    },
+    {
+      "chat": "Schlagstock und Xenonlicht",
+      "delay": 31087
+    },
+    {
+      "chat": "Welcher Nazi will testen",
+      "delay": 33738
+    },
+    {
+      "chat": "Ich werd' zum Staatsfeind",
+      "delay": 35480
+    },
+    {
+      "chat": "wie Stalin im Westen",
+      "delay": 36731
+    },
+    {
+      "chat": "Kandil und Dersim",
+      "delay": 38099
+    },
+    {
+      "chat": "Habibi beste",
+      "delay": 39488
+    },
+    {
+      "chat": "Was Peace lass Nazis mal",
+      "delay": 40914
+    },
+    {
+      "chat": "aktiv bekaempfen",
+      "delay": 42326
+    },
+    {
+      "chat": "Dahabflex PTK TKP PKK",
+      "delay": 43655
+    },
+    {
+      "chat": "Aha und du nur ein Besheraf",
+      "delay": 46680
+    },
+    {
+      "chat": "Wir kommen von schwarze",
+      "delay": 49786
+    },
+    {
+      "chat": "Block erste Reihe",
+      "delay": 50953
+    },
+    {
+      "chat": "Und von Magen weh",
+      "delay": 52805
+    },
+    {
+      "chat": "schwere Zeiten",
+      "delay": 53811
+    },
+    {
+      "chat": "Was fuer Wahlen geh'",
+      "delay": 55624
+    },
+    {
+      "chat": "lieber fighten",
+      "delay": 56532
+    },
+    {
+      "chat": "Erster Mai gegen Leid",
+      "delay": 57682
+    },
+    {
+      "chat": "bring den Krieg den Reichen",
+      "delay": 58874
+    },
+    {
+      "chat": "Friedrich Merz hab' ich",
+      "delay": 60479
+    },
+    {
+      "chat": "net gewaehlt",
+      "delay": 61803
+    },
+    {
+      "chat": "We listen and we judge",
+      "delay": 62613
+    },
+    {
+      "chat": "alles was ihr uns erzaehlt",
+      "delay": 63660
+    },
+    {
+      "chat": "AfD CDU fick das",
+      "delay": 65159
+    },
+    {
+      "chat": "ganze ABC",
+      "delay": 66732
+    },
+    {
+      "chat": "Can we please normalize",
+      "delay": 68107
+    },
+    {
+      "chat": "Radikalitaet",
+      "delay": 69425
+    },
+    {
+      "chat": "Diss Friedrich Merz",
+      "delay": 70851
+    },
+    {
+      "chat": "hab ich net gewaehlt",
+      "delay": 72147
+    },
+    {
+      "chat": "We listen and we judge",
+      "delay": 73500
+    },
+    {
+      "chat": "alles was ihr uns erzaehlt",
+      "delay": 74586
+    },
+    {
+      "chat": "AfD CDU fick das",
+      "delay": 76186
+    },
+    {
+      "chat": "ganze ABC",
+      "delay": 77639
+    },
+    {
+      "chat": "Can we please normalize",
+      "delay": 78928
+    },
+    {
+      "chat": "Radikalitaet",
+      "delay": 80329
+    },
+    {
+      "chat": "In meiner Gegend wird man",
+      "delay": 82008
+    },
+    {
+      "chat": "hoechstwahrscheinlich",
+      "delay": 83151
+    },
+    {
+      "chat": "jung zum Taeter",
+      "delay": 83853
+    },
+    {
+      "chat": "Staat war immer Feindbild",
+      "delay": 85060
+    },
+    {
+      "chat": "diese Wut hat jeder",
+      "delay": 86146
+    },
+    {
+      "chat": "Jeder 10 von 10 so",
+      "delay": 87947
+    },
+    {
+      "chat": "wie Muca Kebap",
+      "delay": 89071
+    },
+    {
+      "chat": "Verwendung fuer ein Nazi",
+      "delay": 90388
+    },
+    {
+      "chat": "nur als Fussabtreter",
+      "delay": 91669
+    },
+    {
+      "chat": "Hoecke liegt am Boden bald",
+      "delay": 92757
+    },
+    {
+      "chat": "dann ziehen wir weiße",
+      "delay": 94001
+    },
+    {
+      "chat": "Linien drum",
+      "delay": 94797
+    },
+    {
+      "chat": "Deine all inclusive",
+      "delay": 95428
+    },
+    {
+      "chat": "meine reisen ohne Visum rum",
+      "delay": 96418
+    },
+    {
+      "chat": "Stimmung bleibt am",
+      "delay": 98223
+    },
+    {
+      "chat": "Siedepunkt heiß wie",
+      "delay": 99003
+    },
+    {
+      "chat": "Aluminium",
+      "delay": 99833
+    },
+    {
+      "chat": "Verfassungsschutzbericht",
+      "delay": 100791
+    },
+    {
+      "chat": "hat bald 'ne eigene",
+      "delay": 101782
+    },
+    {
+      "chat": "Rubrik fuer uns",
+      "delay": 102537
+    },
+    {
+      "chat": "Fresh wie ich nach",
+      "delay": 103572
+    },
+    {
+      "chat": "Hermannplatz Arabesque",
+      "delay": 104671
+    },
+    {
+      "chat": "61 Bluecherstraße",
+      "delay": 106036
+    },
+    {
+      "chat": "PTK Dahabflex",
+      "delay": 107343
+    },
+    {
+      "chat": "Klingt fast wie NS eure",
+      "delay": 108696
+    },
+    {
+      "chat": "Stadtbilddebatte",
+      "delay": 110505
+    },
+    {
+      "chat": "Fickt euch alle denn ihr",
+      "delay": 111459
+    },
+    {
+      "chat": "hattet nie den Hass ich hatte",
+      "delay": 112612
+    },
+    {
+      "chat": "Und selbst with 6 in Mathe",
+      "delay": 114013
+    },
+    {
+      "chat": "wissen alle bisschen ist",
+      "delay": 115148
+    },
+    {
+      "chat": "nicht viel",
+      "delay": 116203
+    },
+    {
+      "chat": "Ist kein Automat aber",
+      "delay": 117206
+    },
+    {
+      "chat": "wir druecken dieses Spiel",
+      "delay": 118364
+    },
+    {
+      "chat": "Wenn ich mit Friedrich reden",
+      "delay": 119721
+    },
+    {
+      "chat": "muesste wuesste ich schon wie",
+      "delay": 121027
+    },
+    {
+      "chat": "Denn alle 17 Stunden",
+      "delay": 122504
+    },
+    {
+      "chat": "fallen Schuesse in Berlin",
+      "delay": 123574
+    },
+    {
+      "chat": "Friedrich Merz hab ich",
+      "delay": 126013
+    },
+    {
+      "chat": "net gewaehlt",
+      "delay": 127205
+    },
+    {
+      "chat": "We listen and we judge",
+      "delay": 127995
+    },
+    {
+      "chat": "alles was ihr uns erzaehlt",
+      "delay": 129069
+    },
+    {
+      "chat": "AfD CDU fick das",
+      "delay": 130719
+    },
+    {
+      "chat": "ganze ABC",
+      "delay": 132256
+    },
+    {
+      "chat": "Can we please normalize",
+      "delay": 133530
+    },
+    {
+      "chat": "Radikalitaet",
+      "delay": 134928
+    },
+    {
+      "chat": "Diss Friedrich Merz",
+      "delay": 136297
+    },
+    {
+      "chat": "hab ich net gewaehlt",
+      "delay": 137855
+    },
+    {
+      "chat": "We listen and we judge",
+      "delay": 138933
+    },
+    {
+      "chat": "alles was ihr uns erzaehlt",
+      "delay": 140069
+    },
+    {
+      "chat": "AfD CDU fick das",
+      "delay": 141561
+    },
+    {
+      "chat": "ganze ABC",
+      "delay": 143034
+    },
+    {
+      "chat": "Can we please normalize",
+      "delay": 144422
+    },
+    {
+      "chat": "Radikalitaet",
+      "delay": 145751
+    }
+  ],
+  "169": [
+    {
+      "chat": "Krieg dem Krieg",
+      "delay": 3602
+    },
+    {
+      "chat": "Krieg dem Krieg x2",
+      "delay": 4978
+    },
+    {
+      "chat": "Dahabflex gib ihm",
+      "delay": 6781
+    },
+    {
+      "chat": "Ich kann nicht singn aller",
+      "delay": 9773
+    },
+    {
+      "chat": "Dat geht schon",
+      "delay": 11406
+    },
+    {
+      "chat": "Haeng am Schlesi in",
+      "delay": 12813
+    },
+    {
+      "chat": "irgendeinem Spaeti Ja",
+      "delay": 13888
+    },
+    {
+      "chat": "Trink das zehnte Bier im Polo",
+      "delay": 15753
+    },
+    {
+      "chat": "von Perry Fred Perry",
+      "delay": 17452
+    },
+    {
+      "chat": "Mein Hinge-Date weiss nicht",
+      "delay": 18921
+    },
+    {
+      "chat": "dass ich rappe Nein",
+      "delay": 20364
+    },
+    {
+      "chat": "Bin verliebt weil sie einn",
+      "delay": 21384
+    },
+    {
+      "chat": "Pony traegt typisch linke",
+      "delay": 22430
+    },
+    {
+      "chat": "Zecke Mwah",
+      "delay": 23775
+    },
+    {
+      "chat": "Ich sehe rechte Parolen auf",
+      "delay": 25144
+    },
+    {
+      "chat": "Abishirts This",
+      "delay": 26963
+    },
+    {
+      "chat": "Warum reimt sich Charlie Kirk",
+      "delay": 28616
+    },
+    {
+      "chat": "auf Nazi stirb (Rest in hell)",
+      "delay": 29880
+    },
+    {
+      "chat": "Ganze Kneipe",
+      "delay": 31187
+    },
+    {
+      "chat": "voller Antifa-Sticker",
+      "delay": 31866
+    },
+    {
+      "chat": "Durch Berlin Ost mit einem",
+      "delay": 33306
+    },
+    {
+      "chat": "Messer du mit Kandi-Malz-Sixer",
+      "delay": 34542
+    },
+    {
+      "chat": "Fuer alle Zecken in",
+      "delay": 37883
+    },
+    {
+      "chat": "ner Nazi-Stadt",
+      "delay": 39019
+    },
+    {
+      "chat": "Und alle Unterstuetzten",
+      "delay": 40878
+    },
+    {
+      "chat": "von Caritas",
+      "delay": 42078
+    },
+    {
+      "chat": "Kommunist seit",
+      "delay": 43504
+    },
+    {
+      "chat": "Chile-Jacken Adidas",
+      "delay": 44778
+    },
+    {
+      "chat": "Der hier geht von Frankfurt",
+      "delay": 46129
+    },
+    {
+      "chat": "bis Stalingrad",
+      "delay": 47541
+    },
+    {
+      "chat": "Komm wir gehen auf",
+      "delay": 50001
+    },
+    {
+      "chat": "die Barrikaden",
+      "delay": 50915
+    },
+    {
+      "chat": "Leistet Widerstand wir wehren",
+      "delay": 52720
+    },
+    {
+      "chat": "uns im Krisenstaat",
+      "delay": 54280
+    },
+    {
+      "chat": "Stehn zusammen und zeigen",
+      "delay": 55534
+    },
+    {
+      "chat": "unsre Fahnen",
+      "delay": 57302
+    },
+    {
+      "chat": "Krieg dem Krieg auf dass wir",
+      "delay": 58817
+    },
+    {
+      "chat": "endlich Frieden haben",
+      "delay": 60350
+    },
+    {
+      "chat": "Komm wir gehen auf",
+      "delay": 62309
+    },
+    {
+      "chat": "die Barrikaden",
+      "delay": 63361
+    },
+    {
+      "chat": "Leistet Widerstand wir wehren",
+      "delay": 64990
+    },
+    {
+      "chat": "uns im Krisenstaat",
+      "delay": 66515
+    },
+    {
+      "chat": "Stehn zusammen und zeigen",
+      "delay": 67942
+    },
+    {
+      "chat": "unsre Fahnen",
+      "delay": 69702
+    },
+    {
+      "chat": "Krieg dem Krieg auf dass wir",
+      "delay": 71164
+    },
+    {
+      "chat": "endlich Frieden haben",
+      "delay": 72748
+    },
+    {
+      "chat": "Trink ein Bier mit Tim rauch",
+      "delay": 74180
+    },
+    {
+      "chat": "einn Joint mit Sashko",
+      "delay": 75634
+    },
+    {
+      "chat": "Tag die Wand mit Jason ruf",
+      "delay": 76953
+    },
+    {
+      "chat": "Erzin und wir fahrn los",
+      "delay": 78540
+    },
+    {
+      "chat": "Du hast keinn Bock auf Politik",
+      "delay": 80635
+    },
+    {
+      "chat": "Dann fick dich Fick dich",
+      "delay": 82257
+    },
+    {
+      "chat": "Denn apolitisch heisst",
+      "delay": 83213
+    },
+    {
+      "chat": "egoistisch Ja",
+      "delay": 84993
+    },
+    {
+      "chat": "Bluecherstrasse haeng ab mit",
+      "delay": 86353
+    },
+    {
+      "chat": "Deutsche und Kanaks Mit allen",
+      "delay": 87781
+    },
+    {
+      "chat": "Voll besoffen ripp einn Zwanni",
+      "delay": 89386
+    },
+    {
+      "chat": "Ot und geb es meinen Bratan",
+      "delay": 90518
+    },
+    {
+      "chat": "Jetzt kommt Dahabflex",
+      "delay": 93616
+    },
+    {
+      "chat": "der Geldlose",
+      "delay": 94515
+    },
+    {
+      "chat": "Alles ist zu teuer also muss",
+      "delay": 95366
+    },
+    {
+      "chat": "ich mir meinn Fame holen",
+      "delay": 97218
+    },
+    {
+      "chat": "Fuer alle Zecken in",
+      "delay": 99469
+    },
+    {
+      "chat": "ner Nazi-Stadt",
+      "delay": 100598
+    },
+    {
+      "chat": "Und alle Unterstuetzten",
+      "delay": 102439
+    },
+    {
+      "chat": "von Caritas",
+      "delay": 103802
+    },
+    {
+      "chat": "Kommunist seit",
+      "delay": 105078
+    },
+    {
+      "chat": "Chile-Jacken Adidas",
+      "delay": 106139
+    },
+    {
+      "chat": "Der hier geht von Frankfurt",
+      "delay": 107692
+    },
+    {
+      "chat": "bis Stalingrad",
+      "delay": 109051
+    },
+    {
+      "chat": "Komm wir gehen auf",
+      "delay": 111585
+    },
+    {
+      "chat": "die Barrikaden",
+      "delay": 112545
+    },
+    {
+      "chat": "Leistet Widerstand wir wehren",
+      "delay": 114167
+    },
+    {
+      "chat": "uns im Krisenstaat",
+      "delay": 115738
+    },
+    {
+      "chat": "Stehn zusammen und zeigen",
+      "delay": 117210
+    },
+    {
+      "chat": "unsre Fahnen",
+      "delay": 118910
+    },
+    {
+      "chat": "Krieg dem Krieg auf dass wir",
+      "delay": 120397
+    },
+    {
+      "chat": "endlich Frieden haben",
+      "delay": 121884
+    },
+    {
+      "chat": "Komm wir gehen auf",
+      "delay": 123940
+    },
+    {
+      "chat": "die Barrikaden",
+      "delay": 124936
+    },
+    {
+      "chat": "Leistet Widerstand wir wehren",
+      "delay": 126477
+    },
+    {
+      "chat": "uns im Krisenstaat",
+      "delay": 128125
+    },
+    {
+      "chat": "Stehn zusammen und zeigen",
+      "delay": 129584
+    },
+    {
+      "chat": "unsre Fahnen",
+      "delay": 131190
+    },
+    {
+      "chat": "Krieg dem Krieg",
+      "delay": 132763
+    },
+    {
+      "chat": "Krieg dem Krieg x2",
+      "delay": 134191
+    }
+  ],
+  "172": [
+    {
+      "chat": "Hear the voices ringing out",
+      "delay": 15306
+    },
+    {
+      "chat": "our battlecry",
+      "delay": 16918
+    },
+    {
+      "chat": "Soon well be touched by",
+      "delay": 18961
+    },
+    {
+      "chat": "the sky",
+      "delay": 20495
+    },
+    {
+      "chat": "Rising from the ashes we",
+      "delay": 22465
+    },
+    {
+      "chat": "will never die",
+      "delay": 24078
+    },
+    {
+      "chat": "Can you feel the power of",
+      "delay": 26047
+    },
+    {
+      "chat": "our battlecry Hey",
+      "delay": 27759
+    },
+    {
+      "chat": "Far in the distance I see",
+      "delay": 58832
+    },
+    {
+      "chat": "a light",
+      "delay": 60819
+    },
+    {
+      "chat": "Wondering if its the",
+      "delay": 62040
+    },
+    {
+      "chat": "enemy line",
+      "delay": 63693
+    },
+    {
+      "chat": "We stand united our heads",
+      "delay": 65753
+    },
+    {
+      "chat": "held high",
+      "delay": 68216
+    },
+    {
+      "chat": "Got no other choice but to",
+      "delay": 69186
+    },
+    {
+      "chat": "hold on survive",
+      "delay": 70973
+    },
+    {
+      "chat": "Once the demons show we",
+      "delay": 72265
+    },
+    {
+      "chat": "take control",
+      "delay": 74510
+    },
+    {
+      "chat": "Conquering the wild fire",
+      "delay": 76384
+    },
+    {
+      "chat": "My heart of courage is",
+      "delay": 80313
+    },
+    {
+      "chat": "leading the way",
+      "delay": 81735
+    },
+    {
+      "chat": "Fight till the end of the day",
+      "delay": 83504
+    },
+    {
+      "chat": "Hear the voices ringing out",
+      "delay": 87011
+    },
+    {
+      "chat": "our battlecry",
+      "delay": 88724
+    },
+    {
+      "chat": "Soon well be touched by",
+      "delay": 90618
+    },
+    {
+      "chat": "the sky",
+      "delay": 92278
+    },
+    {
+      "chat": "Rising from the ashes we",
+      "delay": 94184
+    },
+    {
+      "chat": "will never die",
+      "delay": 95775
+    },
+    {
+      "chat": "Can you feel the power of",
+      "delay": 97797
+    },
+    {
+      "chat": "our battlecry Hey",
+      "delay": 99464
+    },
+    {
+      "chat": "Hear the voices ringing out",
+      "delay": 130132
+    },
+    {
+      "chat": "our battlecry",
+      "delay": 131656
+    },
+    {
+      "chat": "Soon well be touched by",
+      "delay": 133681
+    },
+    {
+      "chat": "the sky",
+      "delay": 135249
+    },
+    {
+      "chat": "Rising from the ashes we",
+      "delay": 137211
+    },
+    {
+      "chat": "will never die",
+      "delay": 138746
+    },
+    {
+      "chat": "Can you feel the power of",
+      "delay": 140790
+    },
+    {
+      "chat": "our battlecry Hey",
+      "delay": 142305
+    }
+  ],
+  "174": [
+    {
+      "chat": "Fallen one too many times",
+      "delay": 3435
+    },
+    {
+      "chat": "Feeling like it never ends",
+      "delay": 7512
+    },
+    {
+      "chat": "back again square one",
+      "delay": 9249
+    },
+    {
+      "chat": "Tried to leave myself behind",
+      "delay": 14347
+    },
+    {
+      "chat": "Looking for a better place",
+      "delay": 18335
+    },
+    {
+      "chat": "not to stay alone",
+      "delay": 20068
+    },
+    {
+      "chat": "Gained my trust and you chose",
+      "delay": 24172
+    },
+    {
+      "chat": "to break it",
+      "delay": 25502
+    },
+    {
+      "chat": "You asked for truth but you",
+      "delay": 26912
+    },
+    {
+      "chat": "only fake it",
+      "delay": 27897
+    },
+    {
+      "chat": "I thought you said what we",
+      "delay": 29672
+    },
+    {
+      "chat": "had was sacred",
+      "delay": 30568
+    },
+    {
+      "chat": "Its all lies all lies",
+      "delay": 32068
+    },
+    {
+      "chat": "I was broken and isolated",
+      "delay": 35207
+    },
+    {
+      "chat": "But outside held the",
+      "delay": 37803
+    },
+    {
+      "chat": "fire waiting",
+      "delay": 38929
+    },
+    {
+      "chat": "Not a word that you say can",
+      "delay": 40707
+    },
+    {
+      "chat": "save this",
+      "delay": 42022
+    },
+    {
+      "chat": "So dont try",
+      "delay": 43083
+    },
+    {
+      "chat": "Cause this time you crossed",
+      "delay": 44709
+    },
+    {
+      "chat": "the line",
+      "delay": 46073
+    },
+    {
+      "chat": "Cause this time you crossed",
+      "delay": 55801
+    },
+    {
+      "chat": "the line",
+      "delay": 57008
+    },
+    {
+      "chat": "Funny how the tables turned",
+      "delay": 68868
+    },
+    {
+      "chat": "Didnt think Id go this far",
+      "delay": 73050
+    },
+    {
+      "chat": "but here we are the end",
+      "delay": 74578
+    },
+    {
+      "chat": "Now youre just a",
+      "delay": 79706
+    },
+    {
+      "chat": "lesson learned",
+      "delay": 81074
+    },
+    {
+      "chat": "A slowly fading memory so",
+      "delay": 83787
+    },
+    {
+      "chat": "I can breathe again",
+      "delay": 85668
+    },
+    {
+      "chat": "Gained my trust and you chose",
+      "delay": 89635
+    },
+    {
+      "chat": "to break it",
+      "delay": 91030
+    },
+    {
+      "chat": "You asked for truth but you",
+      "delay": 92312
+    },
+    {
+      "chat": "only fake it",
+      "delay": 93358
+    },
+    {
+      "chat": "I thought you said what we",
+      "delay": 95153
+    },
+    {
+      "chat": "had was sacred",
+      "delay": 96072
+    },
+    {
+      "chat": "Its all lies all lies",
+      "delay": 97564
+    },
+    {
+      "chat": "I was broken and isolated",
+      "delay": 100640
+    },
+    {
+      "chat": "But outside held the",
+      "delay": 103241
+    },
+    {
+      "chat": "fire waiting",
+      "delay": 104573
+    },
+    {
+      "chat": "Not a word that you say can",
+      "delay": 106020
+    },
+    {
+      "chat": "save this",
+      "delay": 107511
+    },
+    {
+      "chat": "So dont try",
+      "delay": 108523
+    },
+    {
+      "chat": "Cause this time you crossed",
+      "delay": 110111
+    },
+    {
+      "chat": "the line",
+      "delay": 111567
+    },
+    {
+      "chat": "Cause this time you crossed",
+      "delay": 121007
+    },
+    {
+      "chat": "the line",
+      "delay": 122458
+    },
+    {
+      "chat": "This time you crossed the line",
+      "delay": 132293
+    },
+    {
+      "chat": "You crossed the line",
+      "delay": 134206
+    },
+    {
+      "chat": "You crossed the line x2",
+      "delay": 136944
+    },
+    {
+      "chat": "This time you crossed the line",
+      "delay": 137781
+    },
+    {
+      "chat": "You crossed the line",
+      "delay": 139680
+    },
+    {
+      "chat": "This time you crossed the line",
+      "delay": 143400
+    }
+  ],
   "191": [
     {
       "chat": "Hi My name is Vlad",
