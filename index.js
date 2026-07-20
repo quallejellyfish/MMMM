@@ -1094,7 +1094,7 @@ app.put("/songs/:id", requireApiKey, (req, res) => {
     broadcastEvent("song-changed", { action: "edit", songId: id });
     syncPublicFiles();
 
-    if (changes.name || changes.url || changes.category) {
+    if (changes.name || changes.url || changes.category || changes.public) {
       const newSong = { ...songs.find((s) => s.id === id) };
       if (changes.category) {
         let newCategoryName = "Uncategorized";
