@@ -436,11 +436,15 @@ app.get("/", (req, res) => {
   `);
 });
 
+app.get("/session-expired", (req, res) => {
+  res.sendFile(__dirname + "/session-expired.html");
+});
+
 app.get("/manager.html", (req, res) => {
   if (req.signedCookies.auth === "true") {
     res.sendFile(__dirname + "/manager.html");
   } else {
-    res.redirect("/");
+    res.redirect("/session-expired");
   }
 });
 
@@ -632,11 +636,12 @@ app.post("/sync/heartbeat", express.json(), (req, res) => {
   if (!room.memberLastSeen) room.memberLastSeen = {};
   if (room.members.includes(name)) {
     room.memberLastSeen[name] = Date.now();
+    console.log(`[Heartbeat] ${name} in ${roomCode} updated`);
   } else {
     room.members.push(name);
     room.memberLastSeen[name] = Date.now();
     broadcastSyncUpdate(roomCode);
-    console.log(`[Heartbeat] ${name} re‑joined ${roomCode}`);
+    console.log(`[Heartbeat] ${name} re-joined ${roomCode}`);
   }
   res.json({ ok: true });
 });
@@ -649,7 +654,7 @@ setInterval(() => {
       continue;
     }
     const stale = room.members.filter(
-      (name) => now - (room.memberLastSeen[name] || 0) > 60000,
+      (name) => now - (room.memberLastSeen[name] || 0) > 120000,
     );
     if (stale.length) {
       console.log(`[Cleanup] Removing stale members from ${roomCode}:`, stale);
