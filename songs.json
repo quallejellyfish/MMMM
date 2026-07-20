@@ -1013,43 +1013,50 @@
     "id": 192,
     "name": "Sigma Boy",
     "url": "https://audio.jukehost.co.uk/019f6531-1e4d-720a-8f09-869f3f489257",
-    "lyricsCount": 64
+    "lyricsCount": 64,
+    "public": true
   },
   {
     "id": 2,
     "name": "ez4ence",
     "url": "https://audio.jukehost.co.uk/Ryc9fFKSVSNh5NXd6AOyAlFLKxwLSaZK",
-    "lyricsCount": 55
+    "lyricsCount": 55,
+    "public": true
   },
   {
     "id": 16,
     "name": "flasco!",
     "url": "https://audio.jukehost.co.uk/rvNYlSgq0dw5CB39AwxbInbvBmRN9G7o",
-    "lyricsCount": 106
+    "lyricsCount": 106,
+    "public": true
   },
   {
     "id": 17,
     "name": "some vietnamease song",
     "url": "https://audio.jukehost.co.uk/MGPgWfgeYN1HhElhe2PNWSa4B79cG9H5",
-    "lyricsCount": 50
+    "lyricsCount": 50,
+    "public": true
   },
   {
     "id": 72,
     "name": "usseewa russian cover",
     "url": "https://audio.jukehost.co.uk/AtWXKKTSpivTBC9h42hV8SyD8lGpRYpS",
-    "lyricsCount": 83
+    "lyricsCount": 83,
+    "public": true
   },
   {
     "id": 79,
     "name": "Wachtmuziek",
     "url": "https://audio.jukehost.co.uk/xbqVwCLuumoFBYihXSkSFOR1eNXucf6M",
-    "lyricsCount": 106
+    "lyricsCount": 106,
+    "public": true
   },
   {
     "id": 107,
     "name": "Hafo Hafo",
     "url": "https://audio.jukehost.co.uk/trmSWt5rUW5Eor4XFZPf4Id1liyQQjpK",
-    "lyricsCount": 86
+    "lyricsCount": 86,
+    "public": true
   },
   {
     "id": 121,
@@ -1061,19 +1068,22 @@
     "id": 131,
     "name": "upír dex",
     "url": "https://audio.jukehost.co.uk/o1I12X2K5Ptj9LGWDeMXQazWzeubbXnP",
-    "lyricsCount": 54
+    "lyricsCount": 54,
+    "public": true
   },
   {
     "id": 132,
     "name": "bunny hop",
     "url": "https://audio.jukehost.co.uk/4OnCIinrE2EY1Lhg8MHbeez4h1L4GaMF",
-    "lyricsCount": 78
+    "lyricsCount": 78,
+    "public": true
   },
   {
     "id": 147,
     "name": "Ai đưa em về",
     "url": "https://audio.jukehost.co.uk/019dfde8-d50d-73e8-9ea6-59feb08997f1",
-    "lyricsCount": 82
+    "lyricsCount": 82,
+    "public": true
   },
   {
     "id": 999,
