@@ -74645,6 +74645,416 @@
       "delay": 169413
     }
   ],
+  "201": [
+    {
+      "chat": "Shikaku shingou, hassha!",
+      "delay": 1468
+    },
+    {
+      "chat": "Mata au hi made..",
+      "delay": 3392
+    },
+    {
+      "chat": "Me, jikan mou,",
+      "delay": 6513
+    },
+    {
+      "chat": "fuankan,",
+      "delay": 7724
+    },
+    {
+      "chat": "akiakisuru",
+      "delay": 8458
+    },
+    {
+      "chat": "To, terebi,",
+      "delay": 9678
+    },
+    {
+      "chat": "ruupu suru jikan",
+      "delay": 10904
+    },
+    {
+      "chat": "Hi, tsuki mo,",
+      "delay": 12845
+    },
+    {
+      "chat": "sora mo,",
+      "delay": 14075
+    },
+    {
+      "chat": "dare mo inai",
+      "delay": 14963
+    },
+    {
+      "chat": "A, jikuu no,",
+      "delay": 16002
+    },
+    {
+      "chat": "sukima ni hamatta!",
+      "delay": 17351
+    },
+    {
+      "chat": "Baribari kako",
+      "delay": 19275
+    },
+    {
+      "chat": "Baribari kako",
+      "delay": 20553
+    },
+    {
+      "chat": "Baribari kako ga kowareta",
+      "delay": 22442
+    },
+    {
+      "chat": "Baribari kako ga kowareta",
+      "delay": 24078
+    },
+    {
+      "chat": "Omoi dake o",
+      "delay": 25554
+    },
+    {
+      "chat": "Omoi dake o",
+      "delay": 26920
+    },
+    {
+      "chat": "Omoi dake o shingou ni komete",
+      "delay": 28583
+    },
+    {
+      "chat": "Omoi dake o shingou ni komete",
+      "delay": 30602
+    },
+    {
+      "chat": "Shikaku shingou, hassha! Dance",
+      "delay": 31523
+    },
+    {
+      "chat": "Henji o kureru made, taenu",
+      "delay": 35068
+    },
+    {
+      "chat": "mugen no ruupu",
+      "delay": 37547
+    },
+    {
+      "chat": "KokXX ni hibiku aizu,",
+      "delay": 38522
+    },
+    {
+      "chat": "ate monai",
+      "delay": 40888
+    },
+    {
+      "chat": "Itsumo ofurain, henshin wa",
+      "delay": 41871
+    },
+    {
+      "chat": "isshou konai",
+      "delay": 43997
+    },
+    {
+      "chat": "Kodama no nai sakebi, for you",
+      "delay": 44797
+    },
+    {
+      "chat": "Heikousen ka, hitori ka?",
+      "delay": 47986
+    },
+    {
+      "chat": "Owari nai taiki",
+      "delay": 49870
+    },
+    {
+      "chat": "Oi (Hello?), ima dokoda tte o",
+      "delay": 51326
+    },
+    {
+      "chat": "futte mite yo",
+      "delay": 53530
+    },
+    {
+      "chat": "Ano, ikiteru yo ne? mou ichi",
+      "delay": 54577
+    },
+    {
+      "chat": "do dake",
+      "delay": 56688
+    },
+    {
+      "chat": "A, mimi de hirotta",
+      "delay": 57408
+    },
+    {
+      "chat": "denpa no hibiki",
+      "delay": 59739
+    },
+    {
+      "chat": "E,",
+      "delay": 60818
+    },
+    {
+      "chat": "E, masaka,",
+      "delay": 61490
+    },
+    {
+      "chat": "E, masaka, henshin no",
+      "delay": 62246
+    },
+    {
+      "chat": "E, masaka, henshin no oto ka?",
+      "delay": 62861
+    },
+    {
+      "chat": "Saa, tsuyoku, hade ni,",
+      "delay": 63737
+    },
+    {
+      "chat": "shininsei saidai ka",
+      "delay": 65956
+    },
+    {
+      "chat": "A,",
+      "delay": 67301
+    },
+    {
+      "chat": "A, hontou ni,",
+      "delay": 67944
+    },
+    {
+      "chat": "A, hontou ni, aeta no kana?",
+      "delay": 68663
+    },
+    {
+      "chat": "Baribari kako",
+      "delay": 70544
+    },
+    {
+      "chat": "Baribari kako",
+      "delay": 72060
+    },
+    {
+      "chat": "Baribari kako ga kowareta",
+      "delay": 73676
+    },
+    {
+      "chat": "Baribari kako ga kowareta",
+      "delay": 74981
+    },
+    {
+      "chat": "Omoi dake o",
+      "delay": 76729
+    },
+    {
+      "chat": "Omoi dake o",
+      "delay": 78488
+    },
+    {
+      "chat": "Omoi dake o shingou ni komete",
+      "delay": 79875
+    },
+    {
+      "chat": "Omoi dake o shingou ni komete",
+      "delay": 81417
+    },
+    {
+      "chat": "Shikaku shingou, hassha! Dance",
+      "delay": 82973
+    },
+    {
+      "chat": "Henji o kureru made,",
+      "delay": 86380
+    },
+    {
+      "chat": "taenu mugen no ru--",
+      "delay": 88289
+    },
+    {
+      "chat": "KokXX ni hibiku aizu,",
+      "delay": 89713
+    },
+    {
+      "chat": "ate monai",
+      "delay": 91866
+    },
+    {
+      "chat": "Itsumo ofurain, henshin wa",
+      "delay": 92905
+    },
+    {
+      "chat": "isshou kona-na-na-na-",
+      "delay": 95251
+    },
+    {
+      "chat": "Kodama no nai sakebi, for you",
+      "delay": 96131
+    },
+    {
+      "chat": "Heikousen ka-ka, hitori ka?",
+      "delay": 99213
+    },
+    {
+      "chat": "Owari nai-nai-na--",
+      "delay": 101113
+    },
+    {
+      "chat": "Oi (Hello?), ima dokoda tte o",
+      "delay": 102535
+    },
+    {
+      "chat": "futte mite yo",
+      "delay": 104515
+    },
+    {
+      "chat": "Ano, ikiteru yo ne?",
+      "delay": 105714
+    },
+    {
+      "chat": "shinderu nara kotae--",
+      "delay": 107341
+    },
+    {
+      "chat": ".... .. / .-- --- .-.. ..-. ..",
+      "delay": 108907
+    },
+    {
+      "chat": "- .... .. ... / .. ...",
+      "delay": 109580
+    },
+    {
+      "chat": "...- . .-. -.--",
+      "delay": 110354
+    },
+    {
+      "chat": ".. -. - . .-. . ... -.. -. --.",
+      "delay": 111056
+    },
+    {
+      "chat": "Kodoku ni tsubusare,",
+      "delay": 111799
+    },
+    {
+      "chat": "nou ga tokedasu",
+      "delay": 113672
+    },
+    {
+      "chat": "Medama ga zukizuki,",
+      "delay": 115144
+    },
+    {
+      "chat": "senkou ga me o utsu",
+      "delay": 117208
+    },
+    {
+      "chat": "Muimina hassei kikan,",
+      "delay": 118485
+    },
+    {
+      "chat": "kikite ga inai",
+      "delay": 120214
+    },
+    {
+      "chat": "Kuchi mo oi mo sezu,",
+      "delay": 121503
+    },
+    {
+      "chat": "toubou mo fuka",
+      "delay": 123389
+    },
+    {
+      "chat": "Namida ni chitta bojou,",
+      "delay": 124641
+    },
+    {
+      "chat": "tounoku seishin",
+      "delay": 126773
+    },
+    {
+      "chat": "Kimi o kuratta TV,",
+      "delay": 128014
+    },
+    {
+      "chat": "urami to kibou",
+      "delay": 129752
+    },
+    {
+      "chat": "Suimin chishiryou chouka,",
+      "delay": 131053
+    },
+    {
+      "chat": "doushite mienai?",
+      "delay": 133149
+    },
+    {
+      "chat": "Modore nai nara,",
+      "delay": 134409
+    },
+    {
+      "chat": "ichi do dake demo",
+      "delay": 135915
+    },
+    {
+      "chat": "Shikaku shingou, hassha! Dance",
+      "delay": 139055
+    },
+    {
+      "chat": "Henji o kureru made,",
+      "delay": 142452
+    },
+    {
+      "chat": "taenu mugen no ruupu",
+      "delay": 144181
+    },
+    {
+      "chat": "KokXX ni hibiku aizu,",
+      "delay": 145645
+    },
+    {
+      "chat": "ate monai",
+      "delay": 148013
+    },
+    {
+      "chat": "Itsumo ofurain, henshin wa",
+      "delay": 149041
+    },
+    {
+      "chat": "isshou konai",
+      "delay": 151023
+    },
+    {
+      "chat": "Kodama no nai sakebi, for you",
+      "delay": 152109
+    },
+    {
+      "chat": "Heikousen ka, hitori ka?",
+      "delay": 155218
+    },
+    {
+      "chat": "Owari nai taiki",
+      "delay": 157036
+    },
+    {
+      "chat": "Oi (Hello?), ima dokoda tte o",
+      "delay": 158448
+    },
+    {
+      "chat": "futte mite yo",
+      "delay": 160624
+    },
+    {
+      "chat": "Ano, ikiteru yo ne?",
+      "delay": 161735
+    },
+    {
+      "chat": "shinderu nara kotaete",
+      "delay": 163236
+    },
+    {
+      "chat": "(Hello?)",
+      "delay": 171583
+    }
+  ],
   "999": [
     {
       "chat": "",
