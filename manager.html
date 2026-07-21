@@ -245,6 +245,31 @@
         document.getElementById("guestBanner").style.display = "block";
         document.getElementById("addEditCard").style.display = "none";
         document.getElementById("syncGitBtn").style.display = "none";
+
+        const eventSource = new EventSource(`/guest-events/${guestToken}`);
+        eventSource.addEventListener("revoked", (e) => {
+          window.location.href = "/session-expired";
+        });
+        eventSource.onerror = () => {
+          eventSource.close();
+        };
+
+        // fallback
+        function checkGuestToken() {
+          fetch("/songs", {
+            method: "HEAD",
+            headers: { "X-Guest-Token": guestToken },
+            credentials: "include",
+          })
+            .then((res) => {
+              if (res.status === 401) {
+                window.location.href = "/session-expired";
+              }
+            })
+            .catch(() => {});
+        }
+        checkGuestToken();
+        setInterval(checkGuestToken, 30000);
       }
 
       function getApiUrl() {
