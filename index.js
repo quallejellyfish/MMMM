@@ -403,6 +403,29 @@ app.get("/", (req, res) => {
           margin-top: 12px;
         }
         .logout-btn:hover { background: #c0392b; }
+        .guest-row {
+          display: flex;
+          gap: 8px;
+          flex-wrap: wrap;
+          margin: 10px 0;
+        }
+        .guest-row input {
+          flex: 1;
+          padding: 10px;
+          margin: 0;
+          background: #3a3a4a;
+          border: 1px solid #555;
+          border-radius: 8px;
+          color: #fff;
+          min-width: 120px;
+        }
+        .guest-row button {
+          flex: 0 0 auto;
+          background: #ffb347;
+          padding: 10px 20px;
+          width: auto;
+        }
+        .guest-row button:hover { background: #e6a030; }
       </style>
     </head>
     <body>
@@ -413,30 +436,31 @@ app.get("/", (req, res) => {
           ${isAuthenticated ? "You are authenticated." : "Enter your API key to access private manager."}
         </div>
 
-        ${
-          !isAuthenticated
-            ? `
+        ${!isAuthenticated ? `
           <input type="password" id="apiKeyInput" placeholder="API Key">
           <button id="saveKeyBtn">Save Key &amp; Unlock Private</button>
-        `
-            : `
+        ` : `
           <div style="margin: 12px 0;">
             <span style="color: #8be9fd;">Private manager is unlocked.</span>
           </div>
           <a href="/logout" class="logout-btn">Logout</a>
-        `
-        }
+        `}
 
         <div class="links">
           <a href="/public.html" class="link-btn public">Public Songs</a>
+
+          <!-- Guest token input -->
+          <div class="guest-row">
+            <input type="text" id="guestTokenInput" placeholder="Paste guest token">
+            <button id="guestAccessBtn">Guest Access</button>
+          </div>
+
           ${isAuthenticated ? `<a href="/manager.html" class="link-btn private">Private Manager</a>` : ""}
         </div>
       </div>
 
       <script>
-        ${
-          !isAuthenticated
-            ? `
+        ${!isAuthenticated ? `
           document.getElementById('saveKeyBtn').addEventListener('click', async () => {
             const key = document.getElementById('apiKeyInput').value.trim();
             const statusMsg = document.getElementById('statusMsg');
@@ -461,9 +485,17 @@ app.get("/", (req, res) => {
               statusMsg.textContent = 'Error connecting to server.';
             }
           });
-        `
-            : ""
-        }
+        ` : ""}
+
+        // Guest token access
+        document.getElementById('guestAccessBtn').addEventListener('click', () => {
+          const token = document.getElementById('guestTokenInput').value.trim();
+          if (!token) {
+            document.getElementById('statusMsg').textContent = 'Please enter a guest token.';
+            return;
+          }
+          window.location.href = "/manager.html?guest_token=${encodeURIComponent(token)}";
+        });
       </script>
     </body>
     </html>
@@ -476,10 +508,15 @@ app.get("/session-expired", (req, res) => {
 
 app.get("/manager.html", (req, res) => {
   if (req.signedCookies.auth === "true") {
-    res.sendFile(__dirname + "/manager.html");
-  } else {
-    res.redirect("/session-expired");
+    return res.sendFile(__dirname + "/manager.html");
   }
+
+  const guestToken = req.query.guest_token;
+  if (guestToken && verifyGuestKey(guestToken)) {
+    return res.sendFile(__dirname + "/manager.html");
+  }
+
+  res.redirect("/session-expired");
 });
 
 const PUBLIC_SONGS_FILE = "./public_songs.json";
