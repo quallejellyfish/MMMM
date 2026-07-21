@@ -1071,29 +1071,26 @@ app.post("/sync/make_leader", express.json(), (req, res) => {
 
 // PROTECTED
 app.get("/songs", verifyGuestToken, (req, res) => {
-  try {
-    const isAdmin = req.signedCookies.auth === "true";
-    const isGuest = req.isGuest === true;
-    if (!isAdmin && !isGuest) {
-      return res.status(401).json({ error: "Unauthorized" });
-    }
-    const songs = readSongs();
-    const lyrics = readLyrics();
-    const enhanced = songs.map((song) => {
-      const count = lyrics[song.id] ? lyrics[song.id].length : 0;
-      return { ...song, lyricsCount: count };
-    });
-    res.json(enhanced);
-  } catch (err) {
-    console.error("Error in /songs:", err);
-    res.status(500).json({ error: err.message });
+  const isAdmin = req.signedCookies.auth === "true";
+  const isGuest = req.isGuest === true;
+  const isApiKey = req.headers["x-api-key"] === API_KEY;
+  if (!isAdmin && !isGuest && !isApiKey) {
+    return res.status(401).json({ error: "Unauthorized" });
   }
+  const songs = readSongs();
+  const lyrics = readLyrics();
+  const enhanced = songs.map((song) => {
+    const count = lyrics[song.id] ? lyrics[song.id].length : 0;
+    return { ...song, lyricsCount: count };
+  });
+  res.json(enhanced);
 });
 
 app.get("/songs/:id/lyrics", verifyGuestToken, (req, res) => {
   const isAdmin = req.signedCookies.auth === "true";
   const isGuest = req.isGuest === true;
-  if (!isAdmin && !isGuest) {
+  const isApiKey = req.headers["x-api-key"] === API_KEY;
+  if (!isAdmin && !isGuest && !isApiKey) {
     return res.status(401).json({ error: "Unauthorized" });
   }
   const id = parseInt(req.params.id);
