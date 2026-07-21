@@ -160,7 +160,7 @@
         </div>
         <div class="status" id="statusMsg"></div>
       </div>
-      <div class="card">
+      <div class="card" id="addEditCard">
         <h2>Add / Edit Songs</h2>
         <input type="hidden" id="editId" />
         <label>Song Name</label>
@@ -243,7 +243,7 @@
       if (guestToken) {
         isGuest = true;
         document.getElementById("guestBanner").style.display = "block";
-        document.querySelector(".card:nth-of-type(2)").style.display = "none";
+        document.getElementById("addEditCard").style.display = "none";
         document.getElementById("syncGitBtn").style.display = "none";
       }
 
@@ -331,7 +331,7 @@
               categoryIndex,
               public: document.getElementById("publicCheckbox").checked,
             });
-            statusMsg.innerHTML = `✅ Added "${name}" (ID: ${newSong.id})`;
+            statusMsg.innerHTML = `Added "${name}" (ID: ${newSong.id})`;
           } else {
             const idNum = parseInt(editId, 10);
             await apiRequest(`/songs/${idNum}`, "PUT", {
@@ -346,7 +346,7 @@
             });
 
             delete lyricCache[idNum];
-            statusMsg.innerHTML = `✅ Updated song ID ${idNum}`;
+            statusMsg.innerHTML = `Updated song ID ${idNum}`;
           }
           clearForm();
           await loadSongs();
