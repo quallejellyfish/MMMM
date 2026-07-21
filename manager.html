@@ -540,18 +540,6 @@
                 dragInsertLine = null;
               }
 
-              if (!isGuest) {
-                const editBtn = document.createElement("button");
-                editBtn.textContent = "Edit";
-                editBtn.onclick = () => editSong(song.id);
-                const delBtn = document.createElement("button");
-                delBtn.textContent = "Delete";
-                delBtn.className = "danger";
-                delBtn.onclick = () => deleteSong(song.id);
-                actions.appendChild(editBtn);
-                actions.appendChild(delBtn);
-              }
-
               document.addEventListener("mousemove", onDragMove);
               document.addEventListener("mouseup", onDragEnd);
             });
@@ -688,17 +676,17 @@
           cellLyrics.textContent = `${song.lyricsCount ?? 0} lines`;
 
           const actions = row.insertCell(5);
-          const editBtn = document.createElement("button");
-          editBtn.textContent = "Edit";
-          editBtn.onclick = () => editSong(song.id);
-
-          const delBtn = document.createElement("button");
-          delBtn.textContent = "Delete";
-          delBtn.className = "danger";
-          delBtn.onclick = () => deleteSong(song.id);
-
-          actions.appendChild(editBtn);
-          actions.appendChild(delBtn);
+          if (!isGuest) {
+            const editBtn = document.createElement("button");
+            editBtn.textContent = "Edit";
+            editBtn.onclick = () => editSong(song.id);
+            const delBtn = document.createElement("button");
+            delBtn.textContent = "Delete";
+            delBtn.className = "danger";
+            delBtn.onclick = () => deleteSong(song.id);
+            actions.appendChild(editBtn);
+            actions.appendChild(delBtn);
+          }
         }
         updateSongCount();
       }
