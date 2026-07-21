@@ -3,16 +3,25 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Generate Guest Key - MMMM</title>
+    <title>MMMM - Music Menu Mod Manager</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Hammersmith+One&family=Nunito:ital,wght@0,200..1000;1,200..1000&family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&family=Source+Sans+3:ital,wght@0,200..900;1,200..900&display=swap"
+      rel="stylesheet"
+    />
     <style>
+      * {
+        box-sizing: border-box;
+        font-family: "Hammersmith One", sans-serif;
+      }
       body {
         background: #1e1e2f;
         color: #eee;
-        font-family: system-ui;
         padding: 20px;
       }
       .container {
-        max-width: 700px;
+        max-width: 1400px;
         margin: 0 auto;
       }
       .card {
@@ -21,197 +30,785 @@
         padding: 20px;
         margin: 20px 0;
       }
-      button {
+      button,
+      .button {
         background: #ff79c6;
         border: none;
-        padding: 10px 20px;
+        padding: 8px 16px;
         border-radius: 8px;
         cursor: pointer;
-        font-weight: bold;
+        margin: 4px;
+        transition: background 0.3s ease-in-out;
       }
       button:hover {
         background: #ba4085;
       }
-      .link-box {
-        margin-top: 10px;
+      button.danger:hover {
+        background: #990f0f;
       }
-      .link-box input {
+      .danger {
+        background: #ff5555;
+      }
+      a:hover {
+        color: #ba4085;
+      }
+      input,
+      textarea {
         width: 100%;
-        padding: 8px;
+        padding: 10px;
+        margin: 8px 0;
         background: #3a3a4a;
         border: 1px solid #555;
-        border-radius: 6px;
+        border-radius: 8px;
         color: #fff;
-      }
-      .copy-btn {
-        background: #3498db;
-        margin-top: 6px;
-      }
-      .revoke-btn {
-        background: #e74c3c;
-        padding: 4px 12px;
-        font-size: 0.9rem;
-      }
-      .revoke-btn:hover {
-        background: #c0392b;
       }
       table {
         width: 100%;
         border-collapse: collapse;
-        margin-top: 12px;
       }
       th,
       td {
         text-align: left;
-        padding: 8px;
+        padding: 10px;
         border-bottom: 1px solid #444;
       }
-      th {
-        background: #3a3a4a;
-      }
-      .expiry {
-        font-size: 0.8rem;
-        color: #aaa;
+      .flex {
+        display: flex;
+        gap: 12px;
+        flex-wrap: wrap;
+        align-items: center;
       }
       .status {
-        font-weight: bold;
+        background: #3a3a4a;
+        padding: 8px 16px;
+        border-radius: 12px;
       }
-      .status.active {
-        color: #2ecc71;
+      .small {
+        font-size: 12px;
+        color: #aaa;
       }
-      .status.expired {
-        color: #e74c3c;
+      pre {
+        background: #0f0f17;
+        padding: 12px;
+        border-radius: 12px;
+        overflow-x: auto;
+      }
+      .drag-handle:hover svg path {
+        fill: #fff !important;
+      }
+      tr.drag-over {
+        border-top: 3px solid #ff79c6;
+        background: rgba(255, 121, 198, 0.08);
+      }
+      .drag-ghost {
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+        border: 2px solid #ff79c6 !important;
+      }
+      #songsTableBody tr {
+        transition: opacity 0.15s ease;
+      }
+
+      .container h1 a {
+        transition:
+          color 0.4s ease-in-out,
+          text-decoration-style 0.9s ease-in-out;
+        color: #fff;
+        font-size: 1.7rem;
+        text-decoration: underline;
+      }
+      .container h1 a:hover {
+        color: #a4a4a4 !important;
+        text-decoration-style: wavy !important;
+        text-decoration-color: #fff;
+      }
+      a {
+        color: #ff79c6;
       }
     </style>
   </head>
   <body>
     <div class="container">
-      <h1>Guest Key Manager</h1>
-      <div class="card">
-        <p>
-          Generate a <strong>read-only</strong> link to the private manager that
-          expires in <strong>5 minutes</strong>.
-        </p>
-        <button id="generateBtn">Generate Guest Link</button>
-        <div class="link-box" id="linkBox" style="display: none">
-          <p>Share this link:</p>
-          <input type="text" id="guestLink" readonly />
-          <button class="copy-btn" id="copyBtn">Copy</button>
-          <div class="expiry">Expires in 5 minutes</div>
-        </div>
-        <div id="message"></div>
+      <h1>
+        <span>MMMM - Music Menu Mod Manager</span>
+        <span>|</span>
+        <a href="/stats.html">Go to Stats Leaderboard</a>
+      </h1>
+      <div
+        id="guestBanner"
+        style="
+          display: none;
+          background: #ffb347;
+          color: #1e1e2f;
+          padding: 10px 20px;
+          border-radius: 8px;
+          margin-bottom: 20px;
+          text-align: center;
+          font-weight: bold;
+        "
+      >
+        Guest Mode - Read Only
       </div>
-
+      <a href="/">Back to Home</a>
       <div class="card">
-        <h2>Active Guest Keys</h2>
-        <button id="refreshKeysBtn" style="background: #8e44ad">
-          Refresh List
-        </button>
-        <div id="keysList">
-          <p>Loading...</p>
+        <div class="flex">
+          <label
+            >API URL:
+            <input type="text" id="apiUrl" value="" style="width: 300px"
+          /></label>
+          <button id="refreshBtn">Refresh</button>
+          <button id="syncGitBtn">Sync to GitHub</button>
         </div>
+        <div class="status" id="statusMsg"></div>
+      </div>
+      <div class="card" id="addEditCard">
+        <h2>Add / Edit Songs</h2>
+        <input type="hidden" id="editId" />
+        <label>Song Name</label>
+        <input
+          type="text"
+          id="songName"
+          placeholder="however you call your song"
+        />
+        <label>Audio URL</label>
+        <input
+          type="url"
+          id="audioUrl"
+          placeholder="jukehost or whatever ends with .mp3"
+        />
+        <label>Category (only for new songs)</label><br />
+        <select id="categorySelect" style="font-size: 1rem">
+          <option value="0">🇺🇸 English</option>
+          <option value="1">🇩🇪 German</option>
+          <option value="2">🇨🇳 Chinese</option>
+          <option value="3">💥 Pulary</option>
+          <option value="4">🌍 Other Languages</option>
+          <option value="5">🦊 Krimsonthefox</option>
+          <option value="6">❓ Not My Songs</option>
+        </select>
+        <br /><br />
+        <label>Lyrics</label>
+        <textarea
+          id="lyrics"
+          rows="6"
+          placeholder="[{chat: 'boob' ,delay:0}]"
+        ></textarea>
+        <div
+          style="display: flex; align-items: center; gap: 8px; margin: 8px 0"
+        >
+          <label style="margin: 0">Public?</label>
+          <input
+            type="checkbox"
+            id="publicCheckbox"
+            style="width: auto; margin: 0"
+          />
+        </div>
+        <div class="flex">
+          <button id="convertBtn">Convert to JSON</button>
+          <button id="saveBtn">Save</button>
+          <button id="clearBtn">Clear</button>
+          <button id="deleteBtn" class="danger" style="display: none">
+            Delete this song
+          </button>
+        </div>
+      </div>
+      <div class="card">
+        <h2>Songs on Server <span id="songCount"></span></h2>
+        <table id="songsTable">
+          <thead>
+            <tr>
+              <th style="width: 30px"></th>
+              <th>ID</th>
+              <th>Name</th>
+              <th>URL</th>
+              <th>Lyrics</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="songsTableBody">
+            <tr>
+              <td colspan="5">Loading...</td>
+            </tr>
+          </tbody>
+        </table>
       </div>
     </div>
-
     <script>
-      document
-        .getElementById("generateBtn")
-        .addEventListener("click", async () => {
-          const btn = document.getElementById("generateBtn");
-          const msg = document.getElementById("message");
-          btn.disabled = true;
-          btn.textContent = "Generating...";
-          try {
-            const res = await fetch("/generate-guest", {
-              method: "POST",
-              credentials: "include",
-            });
-            const data = await res.json();
-            if (!res.ok) throw new Error(data.error || "Failed to generate");
-            const url = `${window.location.origin}/manager.html?guest_token=${data.token}`;
-            document.getElementById("guestLink").value = url;
-            document.getElementById("linkBox").style.display = "block";
-            msg.textContent = "Generated successfully!";
-            loadKeys();
-          } catch (err) {
-            msg.textContent = err.message;
-          } finally {
-            btn.disabled = false;
-            btn.textContent = "Generate Guest Link";
-          }
-        });
+      let songList = [];
+      let lyricCache = {};
+      let songsHash = "";
 
-      document.getElementById("copyBtn").addEventListener("click", () => {
-        const input = document.getElementById("guestLink");
-        input.select();
-        navigator.clipboard.writeText(input.value).then(() => {
-          alert("Copied to clipboard!");
-        });
-      });
+      const urlParams = new URLSearchParams(window.location.search);
+      const guestToken = urlParams.get("guest_token");
+      let isGuest = false;
+      if (guestToken) {
+        isGuest = true;
+        document.getElementById("guestBanner").style.display = "block";
+        document.getElementById("addEditCard").style.display = "none";
+        document.getElementById("syncGitBtn").style.display = "none";
 
-      async function loadKeys() {
+        const eventSource = new EventSource(`/guest-events/${guestToken}`);
+        eventSource.addEventListener("revoked", (e) => {
+          window.location.href = "/session-expired";
+        });
+        eventSource.onerror = () => {
+          eventSource.close();
+        };
+
+        // fallback
+        function checkGuestToken() {
+          fetch("/songs", {
+            method: "HEAD",
+            headers: { "X-Guest-Token": guestToken },
+            credentials: "include",
+          })
+            .then((res) => {
+              if (res.status === 401) {
+                window.location.href = "/session-expired";
+              }
+            })
+            .catch(() => {});
+        }
+        checkGuestToken();
+        setInterval(checkGuestToken, 30000);
+      }
+
+      function getApiUrl() {
+        return document.getElementById("apiUrl").value.replace(/\$/, "");
+      }
+
+      async function apiRequest(endpoint, method, body = null) {
+        const url = `${getApiUrl()}${endpoint}`;
+        const headers = { "Content-Type": "application/json" };
+        if (guestToken) {
+          headers["X-Guest-Token"] = guestToken;
+        }
+        const options = { method, headers, credentials: "include" };
+        if (body) options.body = JSON.stringify(body);
+        const res = await fetch(url, options);
+        if (!res.ok) {
+          const error = await res.text();
+          throw new Error(`API error ${res.status}: ${error}`);
+        }
+        return res.json();
+      }
+
+      function updateSongCount() {
+        const count = songList.filter((s) => s.id !== 999).length;
+        document.getElementById("songCount").textContent = `- ${count} songs`;
+      }
+
+      async function loadSongs() {
         try {
-          const res = await fetch("/guest-keys", { credentials: "include" });
-          const keys = await res.json();
-          const container = document.getElementById("keysList");
-          if (!keys.length) {
-            container.innerHTML = "<p>No active guest keys.</p>";
+          songList = await apiRequest("/songs", "GET");
+          songsHash = JSON.stringify(songList);
+          renderTable();
+          document.getElementById("statusMsg").innerHTML =
+            `Loaded ${songList.length} songs`;
+        } catch (err) {
+          document.getElementById("statusMsg").innerHTML =
+            `Error: ${err.message}`;
+        }
+      }
+
+      async function loadLyrics(songId) {
+        try {
+          return await apiRequest(`/songs/${songId}/lyrics`, "GET");
+        } catch {
+          return [];
+        }
+      }
+
+      async function saveSong() {
+        const editId = document.getElementById("editId").value;
+        const name = document.getElementById("songName").value.trim();
+        const url = document.getElementById("audioUrl").value.trim();
+        const lyricsText = document.getElementById("lyrics").value.trim();
+        const categoryIndex = parseInt(
+          document.getElementById("categorySelect").value,
+        );
+
+        if (!name || !url) return alert("Name and URL are required");
+
+        let lyricsArray = [];
+        if (lyricsText) {
+          try {
+            lyricsArray = JSON.parse(lyricsText);
+            if (!Array.isArray(lyricsArray)) throw new Error();
+            for (let item of lyricsArray) {
+              if (
+                typeof item.chat !== "string" ||
+                typeof item.delay !== "number"
+              )
+                throw new Error();
+            }
+          } catch (e) {
+            alert("Lyrics are not correct");
             return;
           }
-          let html = `
-        <table>
-          <thead><tr><th>Token</th><th>Created</th><th>Expires</th><th>Status</th><th>Action</th></tr></thead>
-          <tbody>
-      `;
-          const now = Date.now();
-          keys.forEach((key) => {
-            const expired = key.expiresAt < now;
-            const statusClass = expired ? "expired" : "active";
-            const statusText = expired ? "Expired" : "Active";
-            html += `
-          <tr>
-            <td><code>${key.token}</code></td>
-            <td>${new Date(key.createdAt).toLocaleTimeString()}</td>
-            <td>${new Date(key.expiresAt).toLocaleTimeString()}</td>
-            <td><span class="status ${statusClass}">${statusText}</span></td>
-            <td>
-              <button class="revoke-btn" data-token="${key.token}">Revoke</button>
-            </td>
-          </tr>
-        `;
-          });
-          html += `</tbody></table>`;
-          container.innerHTML = html;
+        }
 
-          document.querySelectorAll(".revoke-btn").forEach((btn) => {
-            btn.addEventListener("click", async (e) => {
-              const token = btn.dataset.token;
-              if (!confirm(`Revoke key ${token}?`)) return;
-              try {
-                const res = await fetch("/revoke-guest", {
-                  method: "POST",
-                  headers: { "Content-Type": "application/json" },
-                  body: JSON.stringify({ token }),
-                  credentials: "include",
-                });
-                if (!res.ok) throw new Error(await res.text());
-                loadKeys();
-              } catch (err) {
-                alert("Revoke failed: " + err.message);
-              }
+        try {
+          if (editId === "") {
+            const newSong = await apiRequest("/songs", "POST", {
+              name,
+              url,
+              lyrics: lyricsArray,
+              categoryIndex,
+              public: document.getElementById("publicCheckbox").checked,
             });
-          });
+            statusMsg.innerHTML = `Added "${name}" (ID: ${newSong.id})`;
+          } else {
+            const idNum = parseInt(editId, 10);
+            await apiRequest(`/songs/${idNum}`, "PUT", {
+              name,
+              url,
+              categoryIndex,
+              public: document.getElementById("publicCheckbox").checked,
+            });
+            await apiRequest(`/songs/${idNum}/lyrics`, "PUT", {
+              lyrics: lyricsArray,
+              // skipDiscord: true,
+            });
+
+            delete lyricCache[idNum];
+            statusMsg.innerHTML = `Updated song ID ${idNum}`;
+          }
+          clearForm();
+          await loadSongs();
         } catch (err) {
-          document.getElementById("keysList").innerHTML =
-            `<p>Error loading keys: ${err.message}</p>`;
+          console.error(err);
+        }
+      }
+
+      function getCategoryIndexForSong(songId) {
+        let currentCategory = "Uncategorized";
+        for (const song of songList) {
+          if (song.id === 999) {
+            currentCategory = song.name;
+          }
+          if (song.id === songId) {
+            break;
+          }
+        }
+
+        const categoryMap = {
+          "🇺🇸-----English Songs-----": 0,
+          "🇩🇪-----German Songs-----": 1,
+          "🇨🇳-----Chinese Songs-----": 2,
+          "💥-----Pulary Songs-----": 3,
+          "🌍-----other language Songs-----": 4,
+          "🦊----- Krimsonthefox Music-----": 5,
+          "-----Not My Songs-----": 6,
+        };
+        return categoryMap[currentCategory] ?? 0;
+      }
+
+      async function editSong(id) {
+        id;
+        const numericId = parseInt(id, 10);
+        console.log("Edit song with id:", numericId);
+        if (isNaN(numericId)) {
+          alert("Invalid song id");
+          return;
+        }
+        const song = songList.find((s) => s.id === numericId);
+        if (!song) {
+          alert("Song not found in list");
+          return;
+        }
+        document.getElementById("editId").value = numericId;
+        document.getElementById("songName").value = song.name;
+        document.getElementById("audioUrl").value = song.url;
+        document.getElementById("publicCheckbox").checked =
+          song.public === true;
+
+        try {
+          const lyrics = await loadLyrics(numericId);
+          document.getElementById("lyrics").value = JSON.stringify(
+            lyrics,
+            null,
+            2,
+          );
+        } catch (err) {
+          console.error("Failed to load lyrics:", err);
+          document.getElementById("lyrics").value = "[]";
+        }
+
+        const categoryIndex = getCategoryIndexForSong(numericId);
+        document.getElementById("categorySelect").value = categoryIndex;
+
+        document.getElementById("deleteBtn").style.display = "inline-block";
+        document.getElementById("deleteBtn").onclick = () =>
+          deleteSong(numericId);
+
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      }
+
+      async function deleteSong(id) {
+        const song = songList.find((s) => s.id === id);
+        if (!confirm(`Delete "${song?.name}" permantly?`)) return;
+        try {
+          await apiRequest(`/songs/${id}`, "DELETE");
+          document.getElementById("statusMsg").innerHTML =
+            `Deleted ${song.name}`;
+          await loadSongs();
+          if (document.getElementById("editId").value == id) clearForm();
+        } catch (err) {
+          alert("Deletion failed: " + err.message);
+        }
+      }
+
+      function clearForm() {
+        document.getElementById("editId").value = "";
+        document.getElementById("songName").value = "";
+        document.getElementById("audioUrl").value = "";
+        document.getElementById("lyrics").value = "";
+        document.getElementById("categorySelect").value = 0;
+        document.getElementById("deleteBtn").style.display = "none";
+        document.getElementById("publicCheckbox").checked = false;
+      }
+
+      let draggedRow = null;
+      let dragGhost = null;
+      let dragInsertLine = null;
+      let dragInitialIndex = -1;
+      let isDragging = false;
+      let ghostOffsetX = 0;
+      let ghostOffsetY = 0;
+
+      async function renderTable() {
+        const tbody = document.getElementById("songsTableBody");
+        if (!songList.length) {
+          tbody.innerHTML = '<tr><td colspan="6">No songs yet.</td></tr>';
+          updateSongCount();
+          return;
+        }
+        tbody.innerHTML = "";
+
+        for (let i = 0; i < songList.length; i++) {
+          const song = songList[i];
+          const row = tbody.insertRow();
+          row.dataset.index = i;
+          row.dataset.id = song.id;
+
+          const isCategory = song.id === 999;
+
+          const handleCell = row.insertCell(0);
+          handleCell.style.cursor = isCategory ? "default" : "grab";
+          handleCell.style.textAlign = "center";
+          handleCell.style.userSelect = "none";
+          handleCell.style.width = "30px";
+          handleCell.style.verticalAlign = "middle";
+
+          const svg = document.createElementNS(
+            "http://www.w3.org/2000/svg",
+            "svg",
+          );
+          svg.setAttribute("xmlns", "http://www.w3.org/2000/svg");
+          svg.setAttribute("height", "24");
+          svg.setAttribute("viewBox", "0 0 24 24");
+          svg.setAttribute("width", "24");
+          svg.setAttribute("focusable", "false");
+          svg.setAttribute("aria-hidden", "true");
+          svg.style.pointerEvents = "none";
+          svg.style.display = "block";
+          svg.style.width = "20px";
+          svg.style.height = "20px";
+          svg.style.margin = "0 auto";
+          if (isCategory) svg.style.opacity = "0.3";
+
+          const path1 = document.createElementNS(
+            "http://www.w3.org/2000/svg",
+            "path",
+          );
+          path1.setAttribute(
+            "d",
+            "M20 7H4a1 1 0 000 2h16a1 1 0 100-2Zm0 8H4a1 1 0 000 2h16a1 1 0 100-2Z",
+          );
+          path1.style.fill = isCategory ? "#666" : "#888";
+          svg.appendChild(path1);
+          handleCell.appendChild(svg);
+
+          if (!isCategory && !isGuest) {
+            handleCell.addEventListener("mousedown", (e) => {
+              if (e.button !== 0) return;
+              e.preventDefault();
+
+              draggedRow = row;
+              dragInitialIndex = parseInt(row.dataset.index);
+              isDragging = true;
+
+              const rect = row.getBoundingClientRect();
+              ghostOffsetX = e.clientX - rect.left;
+              ghostOffsetY = e.clientY - rect.top;
+
+              const ghost = row.cloneNode(true);
+              ghost.style.position = "fixed";
+              ghost.style.pointerEvents = "none";
+              ghost.style.opacity = "0.7";
+              ghost.style.transform = "scale(0.95)";
+              ghost.style.width = row.offsetWidth + "px";
+              ghost.style.background = "#2d2d3a";
+              ghost.style.border = "2px solid #ff79c6";
+              ghost.style.borderRadius = "8px";
+              ghost.style.zIndex = "9999";
+              ghost.style.boxShadow = "0 8px 32px rgba(0,0,0,0.4)";
+              ghost.style.top = e.clientY - ghostOffsetY + "px";
+              ghost.style.left = e.clientX - ghostOffsetX + "px";
+              document.body.appendChild(ghost);
+              dragGhost = ghost;
+
+              row.style.opacity = "0.3";
+
+              if (dragInsertLine) {
+                dragInsertLine.remove();
+                dragInsertLine = null;
+              }
+
+              document.addEventListener("mousemove", onDragMove);
+              document.addEventListener("mouseup", onDragEnd);
+            });
+          }
+
+          function onDragMove(e) {
+            if (!isDragging || !dragGhost) return;
+
+            dragGhost.style.top = e.clientY - ghostOffsetY + "px";
+            dragGhost.style.left = e.clientX - ghostOffsetX + "px";
+
+            const dropTarget = document.elementFromPoint(e.clientX, e.clientY);
+            if (!dropTarget) {
+              if (dragInsertLine) {
+                dragInsertLine.remove();
+                dragInsertLine = null;
+              }
+              return;
+            }
+
+            let targetRow = dropTarget.closest("tr");
+            if (!targetRow || targetRow === draggedRow) {
+              if (dragInsertLine) {
+                dragInsertLine.remove();
+                dragInsertLine = null;
+              }
+              return;
+            }
+
+            const rect = targetRow.getBoundingClientRect();
+            const mid = rect.top + rect.height / 2;
+            const insertAbove = e.clientY < mid;
+
+            if (dragInsertLine) {
+              dragInsertLine.remove();
+              dragInsertLine = null;
+            }
+            const line = document.createElement("div");
+            line.style.position = "fixed";
+            line.style.height = "2px";
+            line.style.backgroundColor = "#ff79c6";
+            line.style.left = rect.left + "px";
+            line.style.width = rect.width + "px";
+            line.style.zIndex = "9998";
+            line.style.pointerEvents = "none";
+            if (insertAbove) {
+              line.style.top = rect.top - 1 + "px";
+            } else {
+              line.style.top = rect.bottom - 1 + "px";
+            }
+            document.body.appendChild(line);
+            dragInsertLine = line;
+
+            targetRow.dataset.insertAbove = insertAbove ? "true" : "false";
+          }
+
+          async function onDragEnd(e) {
+            if (!isDragging) return;
+            isDragging = false;
+            document.removeEventListener("mousemove", onDragMove);
+            document.removeEventListener("mouseup", onDragEnd);
+            if (dragGhost) {
+              document.body.removeChild(dragGhost);
+              dragGhost = null;
+            }
+            let targetRow = null;
+            if (dragInsertLine) {
+              const dropTarget = document.elementFromPoint(
+                e.clientX,
+                e.clientY,
+              );
+              if (dropTarget) targetRow = dropTarget.closest("tr");
+              dragInsertLine.remove();
+              dragInsertLine = null;
+            }
+            document
+              .querySelectorAll("tr")
+              .forEach((tr) => (tr.style.opacity = "1"));
+            if (draggedRow) draggedRow.style.opacity = "1";
+
+            if (targetRow && targetRow !== draggedRow) {
+              const fromIndex = parseInt(draggedRow.dataset.index);
+              const toIndex = parseInt(targetRow.dataset.index);
+              if (fromIndex !== toIndex) {
+                const insertAbove = targetRow.dataset.insertAbove === "true";
+                let targetIndex = toIndex;
+                if (!insertAbove) targetIndex = toIndex + 1;
+                let newIndex = targetIndex;
+                if (fromIndex < newIndex) newIndex = targetIndex - 1;
+
+                if (newIndex < fromIndex) {
+                  targetRow.parentNode.insertBefore(draggedRow, targetRow);
+                } else {
+                  const nextRow = targetRow.nextSibling;
+                  if (nextRow) {
+                    targetRow.parentNode.insertBefore(draggedRow, nextRow);
+                  } else {
+                    targetRow.parentNode.appendChild(draggedRow);
+                  }
+                }
+
+                const [movedSong] = songList.splice(fromIndex, 1);
+                songList.splice(newIndex, 0, movedSong);
+
+                document
+                  .querySelectorAll("#songsTableBody tr")
+                  .forEach((row, idx) => {
+                    row.dataset.index = idx;
+                  });
+
+                try {
+                  await apiRequest("/songs/reorder", "PUT", {
+                    songs: songList,
+                  });
+                  songsHash = JSON.stringify(songList);
+                  document.getElementById("statusMsg").innerHTML =
+                    "Reordered songs";
+                } catch (err) {
+                  alert("Reorder failed: " + err.message);
+                  await loadSongs();
+                }
+              }
+            }
+            draggedRow = null;
+            dragInsertLine = null;
+          }
+
+          row.insertCell(1).textContent = song.id;
+          row.insertCell(2).textContent = song.name;
+          row.insertCell(3).innerHTML =
+            `<a href="${song.url}" target="_blank" style="color:#ff79c6;">link</a>`;
+
+          const cellLyrics = row.insertCell(4);
+          cellLyrics.textContent = `${song.lyricsCount ?? 0} lines`;
+
+          const actions = row.insertCell(5);
+          if (!isGuest) {
+            const editBtn = document.createElement("button");
+            editBtn.textContent = "Edit";
+            editBtn.onclick = () => editSong(song.id);
+            const delBtn = document.createElement("button");
+            delBtn.textContent = "Delete";
+            delBtn.className = "danger";
+            delBtn.onclick = () => deleteSong(song.id);
+            actions.appendChild(editBtn);
+            actions.appendChild(delBtn);
+          }
+        }
+        updateSongCount();
+      }
+
+      function convertLyrics(text) {
+        let cleaned = text.trim();
+        if (cleaned.startsWith("return")) {
+          cleaned = cleaned.replace(/^\s*return\s*/, "").trim();
+        }
+        if (cleaned.startsWith("(") && cleaned.startsWith(")")) {
+          cleaned = cleaned.slice(1, -1);
+        }
+        let result;
+
+        try {
+          const parse = new Function("return " + cleaned);
+          result = parse();
+        } catch (e) {
+          console.warn("Failed, falling back to eval:", e);
+          try {
+            result = eval("(" + cleaned + ")");
+          } catch (e2) {
+            throw new Error("Failed to parse lyrics: " + e2.message);
+          }
+        }
+
+        if (!Array.isArray(result)) throw new Error("Got: " + typeof reuslt);
+        for (let i = 0; i < result.length; i++) {
+          const item = result[i];
+          if (typeof item.chat !== "string" || typeof item.delay !== "number") {
+            throw new Error(
+              `item at index ${i} is invalid: missing "chat" (string) or "delay" (number).`,
+            );
+          }
+        }
+
+        return result;
+      }
+
+      function onConvert() {
+        const raw = document.getElementById("lyrics").value.trim();
+        if (!raw) {
+          alert("paste lyrics first");
+          return;
+        }
+        try {
+          const converted = convertLyrics(raw);
+          const jsonStr = JSON.stringify(converted, null, 2);
+          document.getElementById("lyrics").value = jsonStr;
+          document.getElementById("statusMsg").innerHTML =
+            `Converted ${converted.length} lines to JSON`;
+        } catch (err) {
+          alert("Conversation failed: " + err.message);
+          console.error(err);
         }
       }
 
       document
-        .getElementById("refreshKeysBtn")
-        .addEventListener("click", loadKeys);
+        .getElementById("syncGitBtn")
+        .addEventListener("click", async () => {
+          const btn = document.getElementById("syncGitBtn");
+          const originalText = btn.textContent;
+          const statusMsg = document.getElementById("statusMsg");
 
-      loadKeys();
+          btn.textContent = "Syncing...";
+          btn.disabled = true;
+          statusMsg.innerHTML = "Syncing to GitHub...";
+
+          try {
+            await apiRequest("/sync-github", "POST");
+            statusMsg.innerHTML = "Synced to GitHub successfully!";
+          } catch (err) {
+            statusMsg.innerHTML = `Sync failed: ${err.message}`;
+            if (err.message.includes("GitHub credentials not configured")) {
+              alert(
+                "GITHUB_TOKEN and GITHUB_REPO environment variables missing",
+              );
+            } else {
+              alert("Sync failed: " + err.message);
+            }
+          } finally {
+            btn.textContent = originalText;
+            btn.disabled = false;
+          }
+        });
+
+      document
+        .getElementById("refreshBtn")
+        .addEventListener("click", loadSongs);
+      document.getElementById("saveBtn").addEventListener("click", saveSong);
+      document.getElementById("clearBtn").addEventListener("click", clearForm);
+      document
+        .getElementById("convertBtn")
+        .addEventListener("click", onConvert);
+      document.getElementById("apiUrl").value = window.location.origin;
+
+      loadSongs();
     </script>
   </body>
 </html>
