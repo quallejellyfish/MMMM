@@ -1,0 +1,217 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Generate Guest Key - MMMM</title>
+    <style>
+      body {
+        background: #1e1e2f;
+        color: #eee;
+        font-family: system-ui;
+        padding: 20px;
+      }
+      .container {
+        max-width: 700px;
+        margin: 0 auto;
+      }
+      .card {
+        background: #2d2d3a;
+        border-radius: 16px;
+        padding: 20px;
+        margin: 20px 0;
+      }
+      button {
+        background: #ff79c6;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 8px;
+        cursor: pointer;
+        font-weight: bold;
+      }
+      button:hover {
+        background: #ba4085;
+      }
+      .link-box {
+        margin-top: 10px;
+      }
+      .link-box input {
+        width: 100%;
+        padding: 8px;
+        background: #3a3a4a;
+        border: 1px solid #555;
+        border-radius: 6px;
+        color: #fff;
+      }
+      .copy-btn {
+        background: #3498db;
+        margin-top: 6px;
+      }
+      .revoke-btn {
+        background: #e74c3c;
+        padding: 4px 12px;
+        font-size: 0.9rem;
+      }
+      .revoke-btn:hover {
+        background: #c0392b;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 12px;
+      }
+      th,
+      td {
+        text-align: left;
+        padding: 8px;
+        border-bottom: 1px solid #444;
+      }
+      th {
+        background: #3a3a4a;
+      }
+      .expiry {
+        font-size: 0.8rem;
+        color: #aaa;
+      }
+      .status {
+        font-weight: bold;
+      }
+      .status.active {
+        color: #2ecc71;
+      }
+      .status.expired {
+        color: #e74c3c;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1>Guest Key Manager</h1>
+      <div class="card">
+        <p>
+          Generate a <strong>read-only</strong> link to the private manager that
+          expires in <strong>5 minutes</strong>.
+        </p>
+        <button id="generateBtn">Generate Guest Link</button>
+        <div class="link-box" id="linkBox" style="display: none">
+          <p>Share this link:</p>
+          <input type="text" id="guestLink" readonly />
+          <button class="copy-btn" id="copyBtn">Copy</button>
+          <div class="expiry">Expires in 5 minutes</div>
+        </div>
+        <div id="message"></div>
+      </div>
+
+      <div class="card">
+        <h2>Active Guest Keys</h2>
+        <button id="refreshKeysBtn" style="background: #8e44ad">
+          Refresh List
+        </button>
+        <div id="keysList">
+          <p>Loading...</p>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      document
+        .getElementById("generateBtn")
+        .addEventListener("click", async () => {
+          const btn = document.getElementById("generateBtn");
+          const msg = document.getElementById("message");
+          btn.disabled = true;
+          btn.textContent = "Generating...";
+          try {
+            const res = await fetch("/generate-guest", {
+              method: "POST",
+              credentials: "include",
+            });
+            const data = await res.json();
+            if (!res.ok) throw new Error(data.error || "Failed to generate");
+            const url = `${window.location.origin}/manager.html?guest_token=${data.token}`;
+            document.getElementById("guestLink").value = url;
+            document.getElementById("linkBox").style.display = "block";
+            msg.textContent = "Generated successfully!";
+            loadKeys();
+          } catch (err) {
+            msg.textContent = err.message;
+          } finally {
+            btn.disabled = false;
+            btn.textContent = "Generate Guest Link";
+          }
+        });
+
+      document.getElementById("copyBtn").addEventListener("click", () => {
+        const input = document.getElementById("guestLink");
+        input.select();
+        navigator.clipboard.writeText(input.value).then(() => {
+          alert("Copied to clipboard!");
+        });
+      });
+
+      async function loadKeys() {
+        try {
+          const res = await fetch("/guest-keys", { credentials: "include" });
+          const keys = await res.json();
+          const container = document.getElementById("keysList");
+          if (!keys.length) {
+            container.innerHTML = "<p>No active guest keys.</p>";
+            return;
+          }
+          let html = `
+        <table>
+          <thead><tr><th>Token</th><th>Created</th><th>Expires</th><th>Status</th><th>Action</th></tr></thead>
+          <tbody>
+      `;
+          const now = Date.now();
+          keys.forEach((key) => {
+            const expired = key.expiresAt < now;
+            const statusClass = expired ? "expired" : "active";
+            const statusText = expired ? "Expired" : "Active";
+            html += `
+          <tr>
+            <td><code>${key.token}</code></td>
+            <td>${new Date(key.createdAt).toLocaleTimeString()}</td>
+            <td>${new Date(key.expiresAt).toLocaleTimeString()}</td>
+            <td><span class="status ${statusClass}">${statusText}</span></td>
+            <td>
+              <button class="revoke-btn" data-token="${key.token}">Revoke</button>
+            </td>
+          </tr>
+        `;
+          });
+          html += `</tbody></table>`;
+          container.innerHTML = html;
+
+          document.querySelectorAll(".revoke-btn").forEach((btn) => {
+            btn.addEventListener("click", async (e) => {
+              const token = btn.dataset.token;
+              if (!confirm(`Revoke key ${token}?`)) return;
+              try {
+                const res = await fetch("/revoke-guest", {
+                  method: "POST",
+                  headers: { "Content-Type": "application/json" },
+                  body: JSON.stringify({ token }),
+                  credentials: "include",
+                });
+                if (!res.ok) throw new Error(await res.text());
+                loadKeys();
+              } catch (err) {
+                alert("Revoke failed: " + err.message);
+              }
+            });
+          });
+        } catch (err) {
+          document.getElementById("keysList").innerHTML =
+            `<p>Error loading keys: ${err.message}</p>`;
+        }
+      }
+
+      document
+        .getElementById("refreshKeysBtn")
+        .addEventListener("click", loadKeys);
+
+      loadKeys();
+    </script>
+  </body>
+</html>
