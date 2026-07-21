@@ -829,6 +829,7 @@ function broadcastSyncUpdate(roomCode) {
     currentSong: room.currentSong,
     paused: room.paused || false,
     currentTime: room.currentTime || 0,
+    timestamp: room.playTimestamp || Date.now(),
     loop: room.loop || false,
   });
   for (const client of clients) {
