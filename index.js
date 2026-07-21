@@ -829,6 +829,7 @@ function broadcastSyncUpdate(roomCode) {
     currentSong: room.currentSong,
     paused: room.paused || false,
     currentTime: room.currentTime || 0,
+    loop: room.loop || false,
   });
   for (const client of clients) {
     try {
@@ -897,6 +898,7 @@ app.post("/sync/join", express.json(), (req, res) => {
       currentSong: null,
       paused: false,
       currentTime: 0,
+      loop: false,
       lastUpdate: Date.now(),
     };
     syncRooms.set(roomCode, room);
@@ -1023,6 +1025,22 @@ app.post("/sync/pause", express.json(), (req, res) => {
   room.lastUpdate = Date.now();
   broadcastSyncUpdate(roomCode);
   res.json({ message: "Pause state updated" });
+});
+
+app.post("/sync/set_loop", express.json(), (req, res) => {
+  const { roomCode, name, loop } = req.body;
+  if (!roomCode || !name) {
+    return res.status(400).json({ error: "Missing roomCode or name" });
+  }
+  const room = syncRooms.get(roomCode);
+  if (!room) return res.status(404).json({ error: "Room not found" });
+  if (room.leader !== name) {
+    return res.status(403).json({ error: "Only the leader can change loop" });
+  }
+  room.loop = loop;
+  room.lastUpdate = Date.now();
+  broadcastSyncUpdate(roomCode);
+  res.json({ message: "Loop state updated" });
 });
 
 app.post("/sync/stop", express.json(), (req, res) => {
