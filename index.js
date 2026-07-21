@@ -6,6 +6,9 @@ const jwt = require("jsonwebtoken");
 const http = require("http");
 const { WebSocketServer } = require("ws");
 const cookieParser = require("cookie-parser");
+const crypto = require("crypto");
+const guestKeys = {};
+const GUEST_KEY_EXPIRY = 5 * 60 * 1000; // 5 minutes
 
 const app = express();
 const server = http.createServer(app);
@@ -224,6 +227,26 @@ function requireApiKey(req, res, next) {
   }
   console.log("Unauthorized access attempt");
   return res.status(401).json({ error: "Unauthorized" });
+}
+
+function generateGuestKey() {
+  const token = crypto.randomBytes(16).toString("hex");
+  const now = Date.now();
+  guestKeys[token] = {
+    createdAt: now,
+    expiresAt: now + GUEST_KEY_EXPIRY,
+  };
+  return token;
+}
+
+function verifyGuestKey(token) {
+  const entry = guestKeys[token];
+  if (!entry) return false;
+  if (Date.now() > entry.expiresAt) {
+    delete guestKeys[token];
+    return false;
+  }
+  return true;
 }
 
 app.use(cors());
@@ -772,12 +795,16 @@ app.post("/sync/join", express.json(), (req, res) => {
     };
     syncRooms.set(roomCode, room);
     isNewRoom = true;
-    console.log(`[Join] New room ${roomCode} created by ${name} with leader ${leader}`);
+    console.log(
+      `[Join] New room ${roomCode} created by ${name} with leader ${leader}`,
+    );
   } else {
     if (room.members.length === 0) {
       if (syncSSEClients[roomCode]) {
         for (const client of syncSSEClients[roomCode]) {
-          try { client.end(); } catch (e) {}
+          try {
+            client.end();
+          } catch (e) {}
         }
         delete syncSSEClients[roomCode];
       }
@@ -794,9 +821,13 @@ app.post("/sync/join", express.json(), (req, res) => {
       };
       syncRooms.set(roomCode, room);
       isNewRoom = true;
-      console.log(`[Join] Recreated empty room ${roomCode} with leader ${leader}`);
+      console.log(
+        `[Join] Recreated empty room ${roomCode} with leader ${leader}`,
+      );
     } else {
-      console.log(`[Join] ${name} joining existing room ${roomCode} with ${room.members.length} members`);
+      console.log(
+        `[Join] ${name} joining existing room ${roomCode} with ${room.members.length} members`,
+      );
     }
   }
 
@@ -933,7 +964,12 @@ app.post("/sync/make_leader", express.json(), (req, res) => {
 });
 
 // PROTECTED
-app.get("/songs", requireApiKey, (req, res) => {
+app.get("/songs", verifyGuestToken, (req, res) => {
+  const isAdmin = req.signedCookies.auth === "true";
+  const isGuest = req.isGuest === true;
+  if (!isAdmin && !isGuest) {
+    return res.status(401).json({ error: "Unauthorized" });
+  }
   const songs = readSongs();
   const lyrics = readLyrics();
   const enhanced = songs.map((song) => {
@@ -943,7 +979,12 @@ app.get("/songs", requireApiKey, (req, res) => {
   res.json(enhanced);
 });
 
-app.get("/songs/:id/lyrics", requireApiKey, (req, res) => {
+app.get("/songs/:id/lyrics", verifyGuestToken, (req, res) => {
+  const isAdmin = req.signedCookies.auth === "true";
+  const isGuest = req.isGuest === true;
+  if (!isAdmin && !isGuest) {
+    return res.status(401).json({ error: "Unauthorized" });
+  }
   const id = parseInt(req.params.id);
   const lyrics = readLyrics();
   res.json(lyrics[id] || []);
@@ -1388,6 +1429,53 @@ function broadcastEvent(event, data) {
     } catch (e) {}
   });
 }
+
+function verifyGuestToken(req, res, next) {
+  let token = req.headers["x-guest-token"] || req.query.guest_token;
+  if (!token) return next();
+  if (verifyGuestKey(token)) {
+    req.isGuest = true;
+    req.guestToken = token;
+  }
+  next();
+}
+
+app.get("/generate", (req, res) => {
+  if (req.signedCookies.auth === "true") {
+    res.sendFile(__dirname + "/generate.html");
+  } else {
+    res.redirect("/");
+  }
+});
+
+app.post("/generate-guest", requireApiKey, (req, res) => {
+  const token = generateGuestKey();
+  res.json({ token });
+});
+
+app.get("/guest-keys", requireApiKey, (req, res) => {
+  const now = Date.now();
+  for (const key in guestKeys) {
+    if (guestKeys[key].expiresAt < now) {
+      delete guestKeys[key];
+    }
+  }
+  const list = Object.keys(guestKeys).map((key) => ({
+    token: key,
+    createdAt: guestKeys[key].createdAt,
+    expiresAt: guestKeys[key].expiresAt,
+  }));
+  res.json(list);
+});
+
+app.post("/revoke-guest", requireApiKey, (req, res) => {
+  const { token } = req.body;
+  if (!token || !guestKeys[token]) {
+    return res.status(404).json({ error: "Key not found" });
+  }
+  delete guestKeys[token];
+  res.json({ message: "Key revoked" });
+});
 
 app.get("/health", (req, res) => res.send("OK"));
 
