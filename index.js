@@ -993,7 +993,7 @@ app.post("/sync/leave", express.json(), (req, res) => {
 });
 
 app.post("/sync/play", express.json(), (req, res) => {
-  const { roomCode, name, songId, currentTime } = req.body;
+  const { roomCode, name, songId, currentTime, timestamp } = req.body;
   if (!roomCode || !name || songId === undefined) {
     return res.status(400).json({ error: "Missing roomCode, name, or songId" });
   }
@@ -1005,6 +1005,7 @@ app.post("/sync/play", express.json(), (req, res) => {
   room.currentSong = songId;
   room.paused = false;
   room.currentTime = currentTime || 0;
+  room.playTimestamp = timestamp || Date.now();
   room.lastUpdate = Date.now();
   broadcastSyncUpdate(roomCode);
   res.json({ message: "Song set" });
