@@ -402,6 +402,10 @@ app.get("/", (req, res) => {
           color: #ffb347;
           border-color: #ffb347;
         }
+        .link-btn.generate {
+          color: #2ecc71;
+          border-color: #2ecc71;
+        }
         .logout-btn {
           background: #e74c3c;
           border: none;
@@ -446,74 +450,69 @@ app.get("/", (req, res) => {
           ${isAuthenticated ? "You are authenticated." : "Enter your API key to access private manager."}
         </div>
 
-        ${
-          !isAuthenticated
-            ? `
+        ${!isAuthenticated ? `
           <input type="password" id="apiKeyInput" placeholder="API Key">
           <button id="saveKeyBtn">Save Key &amp; Unlock Private</button>
-        `
-            : `
+        ` : `
           <div style="margin: 12px 0;">
             <span style="color: #8be9fd;">Private manager is unlocked.</span>
           </div>
           <a href="/logout" class="logout-btn">Logout</a>
-        `
-        }
+        `}
 
         <div class="links">
           <a href="/public.html" class="link-btn public">Public Songs</a>
 
-          <!-- Guest token input -->
-          <div class="guest-row">
-            <input type="text" id="guestTokenInput" placeholder="Paste guest token">
-            <button id="guestAccessBtn">Guest Access</button>
-          </div>
+          ${!isAuthenticated ? `
+            <div class="guest-row">
+              <input type="text" id="guestTokenInput" placeholder="Paste guest token">
+              <button id="guestAccessBtn">Guest Access</button>
+            </div>
+          ` : `
+            <a href="/generate" class="link-btn generate">Generate Guest Keys</a>
+          `}
 
           ${isAuthenticated ? `<a href="/manager.html" class="link-btn private">Private Manager</a>` : ""}
         </div>
       </div>
 
       <script>
-      ${
-        !isAuthenticated
-          ? `
-        document.getElementById('saveKeyBtn').addEventListener('click', async () => {
-          const key = document.getElementById('apiKeyInput').value.trim();
-          const statusMsg = document.getElementById('statusMsg');
-          if (!key) {
-            statusMsg.textContent = 'Please enter a key.';
-            return;
-          }
-          try {
-            const res = await fetch('/login', {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ apiKey: key })
-            });
-            const data = await res.json();
-            if (data.success) {
-              statusMsg.textContent = 'Key accepted. Refreshing...';
-              setTimeout(() => location.reload(), 500);
-            } else {
-              statusMsg.textContent = 'Invalid API key.';
+        ${!isAuthenticated ? `
+          document.getElementById('saveKeyBtn').addEventListener('click', async () => {
+            const key = document.getElementById('apiKeyInput').value.trim();
+            const statusMsg = document.getElementById('statusMsg');
+            if (!key) {
+              statusMsg.textContent = 'Please enter a key.';
+              return;
             }
-          } catch (e) {
-            statusMsg.textContent = 'Error connecting to server.';
-          }
-        });
-      `
-          : ""
-      }
-    
-      document.getElementById('guestAccessBtn').addEventListener('click', () => {
-        const token = document.getElementById('guestTokenInput').value.trim();
-        if (!token) {
-          document.getElementById('statusMsg').textContent = 'Please enter a guest token.';
-          return;
-        }
-        window.location.href = "/manager.html?guest_token=" + encodeURIComponent(token);
-      });
-    </script>
+            try {
+              const res = await fetch('/login', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ apiKey: key })
+              });
+              const data = await res.json();
+              if (data.success) {
+                statusMsg.textContent = 'Key accepted. Refreshing...';
+                setTimeout(() => location.reload(), 500);
+              } else {
+                statusMsg.textContent = 'Invalid API key.';
+              }
+            } catch (e) {
+              statusMsg.textContent = 'Error connecting to server.';
+            }
+          });
+
+          document.getElementById('guestAccessBtn').addEventListener('click', () => {
+            const token = document.getElementById('guestTokenInput').value.trim();
+            if (!token) {
+              document.getElementById('statusMsg').textContent = 'Please enter a guest token.';
+              return;
+            }
+            window.location.href = "/manager.html?guest_token=" + encodeURIComponent(token);
+          });
+        ` : ""}
+      </script>
     </body>
     </html>
   `);
