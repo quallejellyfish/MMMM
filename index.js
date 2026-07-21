@@ -8,6 +8,7 @@ const { WebSocketServer } = require("ws");
 const cookieParser = require("cookie-parser");
 const crypto = require("crypto");
 const guestKeys = {};
+const guestSSEClients = {};
 const GUEST_KEY_EXPIRY = 5 * 60 * 1000; // 5 minutes
 
 const app = express();
@@ -295,6 +296,47 @@ app.post("/verify-key", express.json(), (req, res) => {
   res.json({ valid: isValid });
 });
 
+app.get("/guest-events/:token", (req, res) => {
+  const token = req.params.token;
+  if (!verifyGuestKey(token)) {
+    return res.status(401).send("Invalid token");
+  }
+  res.writeHead(200, {
+    "Content-Type": "text/event-stream",
+    "Cache-Control": "no-cache",
+    Connection: "keep-alive",
+    "Access-Control-Allow-Origin": "*",
+  });
+  res.write("retry: 10000\n\n");
+
+  guestSSEClients[token] = res;
+
+  req.on("close", () => {
+    delete guestSSEClients[token];
+  });
+});
+
+app.post("/revoke-guest", requireApiKey, (req, res) => {
+  const { token } = req.body;
+  if (!token || !guestKeys[token]) {
+    return res.status(404).json({ error: "Key not found" });
+  }
+  delete guestKeys[token];
+
+  const clientRes = guestSSEClients[token];
+  if (clientRes) {
+    try {
+      clientRes.write(`event: revoked\ndata: {"message":"Key revoked"}\n\n`);
+      clientRes.end();
+    } catch (e) {
+      // ignore
+    }
+    delete guestSSEClients[token];
+  }
+
+  res.json({ message: "Key revoked" });
+});
+
 app.post("/login", express.json(), (req, res) => {
   const { apiKey } = req.body;
   if (!apiKey) {
@@ -451,34 +493,44 @@ app.get("/", (req, res) => {
           ${isAuthenticated ? "You are authenticated." : "Enter your API key to access private manager."}
         </div>
 
-        ${!isAuthenticated ? `
+        ${
+          !isAuthenticated
+            ? `
           <input type="password" id="apiKeyInput" placeholder="API Key">
           <button id="saveKeyBtn">Save Key &amp; Unlock Private</button>
-        ` : `
+        `
+            : `
           <div style="margin: 12px 0;">
             <span style="color: #8be9fd;">Private manager is unlocked.</span>
           </div>
           <a href="/logout" class="logout-btn">Logout</a>
-        `}
+        `
+        }
 
         <div class="links">
           <a href="/public.html" class="link-btn public">Public Songs</a>
 
-          ${!isAuthenticated ? `
+          ${
+            !isAuthenticated
+              ? `
             <div class="guest-row">
               <input type="text" id="guestTokenInput" placeholder="Paste guest token">
               <button id="guestAccessBtn">Guest Access</button>
             </div>
-          ` : `
+          `
+              : `
             <a href="/generate" class="link-btn generate">Generate Guest Keys</a>
-          `}
+          `
+          }
 
           ${isAuthenticated ? `<a href="/manager.html" class="link-btn private">Private Manager</a>` : ""}
         </div>
       </div>
 
       <script>
-        ${!isAuthenticated ? `
+        ${
+          !isAuthenticated
+            ? `
           document.getElementById('saveKeyBtn').addEventListener('click', async () => {
             const key = document.getElementById('apiKeyInput').value.trim();
             const statusMsg = document.getElementById('statusMsg');
@@ -512,7 +564,9 @@ app.get("/", (req, res) => {
             }
             window.location.href = "/manager.html?guest_token=" + encodeURIComponent(token);
           });
-        ` : ""}
+        `
+            : ""
+        }
       </script>
     </body>
     </html>
