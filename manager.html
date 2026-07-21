@@ -107,7 +107,7 @@
       #songsTableBody tr {
         transition: opacity 0.15s ease;
       }
-      
+
       .container h1 a {
         transition:
           color 0.4s ease-in-out,
@@ -133,6 +133,21 @@
         <span>|</span>
         <a href="/stats.html">Go to Stats Leaderboard</a>
       </h1>
+      <div
+        id="guestBanner"
+        style="
+          display: none;
+          background: #ffb347;
+          color: #1e1e2f;
+          padding: 10px 20px;
+          border-radius: 8px;
+          margin-bottom: 20px;
+          text-align: center;
+          font-weight: bold;
+        "
+      >
+        Guest Mode - Read Only
+      </div>
       <a href="/">Back to Home</a>
       <div class="card">
         <div class="flex">
@@ -222,6 +237,16 @@
       let lyricCache = {};
       let songsHash = "";
 
+      const urlParams = new URLSearchParams(window.location.search);
+      const guestToken = urlParams.get("guest_token");
+      let isGuest = false;
+      if (guestToken) {
+        isGuest = true;
+        document.getElementById("guestBanner").style.display = "block";
+        document.querySelector(".card:nth-of-type(2)").style.display = "none";
+        document.getElementById("syncGitBtn").style.display = "none";
+      }
+
       function getApiUrl() {
         return document.getElementById("apiUrl").value.replace(/\$/, "");
       }
@@ -229,6 +254,9 @@
       async function apiRequest(endpoint, method, body = null) {
         const url = `${getApiUrl()}${endpoint}`;
         const headers = { "Content-Type": "application/json" };
+        if (guestToken) {
+          headers["X-Guest-Token"] = guestToken;
+        }
         const options = { method, headers, credentials: "include" };
         if (body) options.body = JSON.stringify(body);
         const res = await fetch(url, options);
@@ -476,7 +504,7 @@
           svg.appendChild(path1);
           handleCell.appendChild(svg);
 
-          if (!isCategory) {
+          if (!isCategory && !isGuest) {
             handleCell.addEventListener("mousedown", (e) => {
               if (e.button !== 0) return;
               e.preventDefault();
@@ -510,6 +538,18 @@
               if (dragInsertLine) {
                 dragInsertLine.remove();
                 dragInsertLine = null;
+              }
+
+              if (!isGuest) {
+                const editBtn = document.createElement("button");
+                editBtn.textContent = "Edit";
+                editBtn.onclick = () => editSong(song.id);
+                const delBtn = document.createElement("button");
+                delBtn.textContent = "Delete";
+                delBtn.className = "danger";
+                delBtn.onclick = () => deleteSong(song.id);
+                actions.appendChild(editBtn);
+                actions.appendChild(delBtn);
               }
 
               document.addEventListener("mousemove", onDragMove);
