@@ -249,6 +249,16 @@ function verifyGuestKey(token) {
   return true;
 }
 
+function verifyGuestToken(req, res, next) {
+  let token = req.headers["x-guest-token"] || req.query.guest_token;
+  if (!token) return next();
+  if (verifyGuestKey(token)) {
+    req.isGuest = true;
+    req.guestToken = token;
+  }
+  next();
+}
+
 app.use(cors());
 app.use(express.json({ limit: "10mb" }));
 app.use(cookieParser(COOKIE_SECRET));
@@ -436,15 +446,19 @@ app.get("/", (req, res) => {
           ${isAuthenticated ? "You are authenticated." : "Enter your API key to access private manager."}
         </div>
 
-        ${!isAuthenticated ? `
+        ${
+          !isAuthenticated
+            ? `
           <input type="password" id="apiKeyInput" placeholder="API Key">
           <button id="saveKeyBtn">Save Key &amp; Unlock Private</button>
-        ` : `
+        `
+            : `
           <div style="margin: 12px 0;">
             <span style="color: #8be9fd;">Private manager is unlocked.</span>
           </div>
           <a href="/logout" class="logout-btn">Logout</a>
-        `}
+        `
+        }
 
         <div class="links">
           <a href="/public.html" class="link-btn public">Public Songs</a>
@@ -460,7 +474,9 @@ app.get("/", (req, res) => {
       </div>
 
       <script>
-        ${!isAuthenticated ? `
+        ${
+          !isAuthenticated
+            ? `
           document.getElementById('saveKeyBtn').addEventListener('click', async () => {
             const key = document.getElementById('apiKeyInput').value.trim();
             const statusMsg = document.getElementById('statusMsg');
@@ -485,9 +501,10 @@ app.get("/", (req, res) => {
               statusMsg.textContent = 'Error connecting to server.';
             }
           });
-        ` : ""}
+        `
+            : ""
+        }
 
-        // Guest token access
         document.getElementById('guestAccessBtn').addEventListener('click', () => {
           const token = document.getElementById('guestTokenInput').value.trim();
           if (!token) {
@@ -1002,18 +1019,23 @@ app.post("/sync/make_leader", express.json(), (req, res) => {
 
 // PROTECTED
 app.get("/songs", verifyGuestToken, (req, res) => {
-  const isAdmin = req.signedCookies.auth === "true";
-  const isGuest = req.isGuest === true;
-  if (!isAdmin && !isGuest) {
-    return res.status(401).json({ error: "Unauthorized" });
+  try {
+    const isAdmin = req.signedCookies.auth === "true";
+    const isGuest = req.isGuest === true;
+    if (!isAdmin && !isGuest) {
+      return res.status(401).json({ error: "Unauthorized" });
+    }
+    const songs = readSongs();
+    const lyrics = readLyrics();
+    const enhanced = songs.map((song) => {
+      const count = lyrics[song.id] ? lyrics[song.id].length : 0;
+      return { ...song, lyricsCount: count };
+    });
+    res.json(enhanced);
+  } catch (err) {
+    console.error("Error in /songs:", err);
+    res.status(500).json({ error: err.message });
   }
-  const songs = readSongs();
-  const lyrics = readLyrics();
-  const enhanced = songs.map((song) => {
-    const count = lyrics[song.id] ? lyrics[song.id].length : 0;
-    return { ...song, lyricsCount: count };
-  });
-  res.json(enhanced);
 });
 
 app.get("/songs/:id/lyrics", verifyGuestToken, (req, res) => {
@@ -1465,16 +1487,6 @@ function broadcastEvent(event, data) {
       client.write(payload);
     } catch (e) {}
   });
-}
-
-function verifyGuestToken(req, res, next) {
-  let token = req.headers["x-guest-token"] || req.query.guest_token;
-  if (!token) return next();
-  if (verifyGuestKey(token)) {
-    req.isGuest = true;
-    req.guestToken = token;
-  }
-  next();
 }
 
 app.get("/generate", (req, res) => {
