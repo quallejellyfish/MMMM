@@ -474,46 +474,46 @@ app.get("/", (req, res) => {
       </div>
 
       <script>
-        ${
-          !isAuthenticated
-            ? `
-          document.getElementById('saveKeyBtn').addEventListener('click', async () => {
-            const key = document.getElementById('apiKeyInput').value.trim();
-            const statusMsg = document.getElementById('statusMsg');
-            if (!key) {
-              statusMsg.textContent = 'Please enter a key.';
-              return;
-            }
-            try {
-              const res = await fetch('/login', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ apiKey: key })
-              });
-              const data = await res.json();
-              if (data.success) {
-                statusMsg.textContent = 'Key accepted. Refreshing...';
-                setTimeout(() => location.reload(), 500);
-              } else {
-                statusMsg.textContent = 'Invalid API key.';
-              }
-            } catch (e) {
-              statusMsg.textContent = 'Error connecting to server.';
-            }
-          });
-        `
-            : ""
-        }
-
-        document.getElementById('guestAccessBtn').addEventListener('click', () => {
-          const token = document.getElementById('guestTokenInput').value.trim();
-          if (!token) {
-            document.getElementById('statusMsg').textContent = 'Please enter a guest token.';
+      ${
+        !isAuthenticated
+          ? `
+        document.getElementById('saveKeyBtn').addEventListener('click', async () => {
+          const key = document.getElementById('apiKeyInput').value.trim();
+          const statusMsg = document.getElementById('statusMsg');
+          if (!key) {
+            statusMsg.textContent = 'Please enter a key.';
             return;
           }
-          window.location.href = "/manager.html?guest_token=${encodeURIComponent(token)}";
+          try {
+            const res = await fetch('/login', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ apiKey: key })
+            });
+            const data = await res.json();
+            if (data.success) {
+              statusMsg.textContent = 'Key accepted. Refreshing...';
+              setTimeout(() => location.reload(), 500);
+            } else {
+              statusMsg.textContent = 'Invalid API key.';
+            }
+          } catch (e) {
+            statusMsg.textContent = 'Error connecting to server.';
+          }
         });
-      </script>
+      `
+          : ""
+      }
+    
+      document.getElementById('guestAccessBtn').addEventListener('click', () => {
+        const token = document.getElementById('guestTokenInput').value.trim();
+        if (!token) {
+          document.getElementById('statusMsg').textContent = 'Please enter a guest token.';
+          return;
+        }
+        window.location.href = "/manager.html?guest_token=" + encodeURIComponent(token);
+      });
+    </script>
     </body>
     </html>
   `);
