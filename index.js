@@ -266,10 +266,11 @@ app.use(cookieParser(COOKIE_SECRET));
 app.use((req, res, next) => {
   if (req.path === "/manager.html") {
     const auth = req.signedCookies.auth;
-    if (auth === "true") {
+    const guestToken = req.query.guest_token;
+    if (auth === "true" || (guestToken && verifyGuestKey(guestToken))) {
       next();
     } else {
-      res.redirect("/");
+      res.redirect("/session-expired");
     }
   } else {
     next();
@@ -526,12 +527,10 @@ app.get("/manager.html", (req, res) => {
   if (req.signedCookies.auth === "true") {
     return res.sendFile(__dirname + "/manager.html");
   }
-
   const guestToken = req.query.guest_token;
   if (guestToken && verifyGuestKey(guestToken)) {
     return res.sendFile(__dirname + "/manager.html");
   }
-
   res.redirect("/session-expired");
 });
 
