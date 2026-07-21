@@ -751,7 +751,7 @@ app.get("/sync/events/:roomCode", (req, res) => {
 });
 
 app.post("/sync/join", express.json(), (req, res) => {
-  const { roomCode, name } = req.body;
+  const { roomCode, name, originalLeader } = req.body;
   if (!roomCode || !name) {
     return res.status(400).json({ error: "Missing roomCode or name" });
   }
@@ -760,8 +760,9 @@ app.post("/sync/join", express.json(), (req, res) => {
   let isNewRoom = false;
 
   if (!room) {
+    const leader = originalLeader || name;
     room = {
-      leader: name,
+      leader: leader,
       members: [],
       memberLastSeen: {},
       currentSong: null,
@@ -771,20 +772,19 @@ app.post("/sync/join", express.json(), (req, res) => {
     };
     syncRooms.set(roomCode, room);
     isNewRoom = true;
-    console.log(`[Join] New room ${roomCode} created by ${name}`);
+    console.log(`[Join] New room ${roomCode} created by ${name} with leader ${leader}`);
   } else {
     if (room.members.length === 0) {
       if (syncSSEClients[roomCode]) {
         for (const client of syncSSEClients[roomCode]) {
-          try {
-            client.end();
-          } catch (e) {}
+          try { client.end(); } catch (e) {}
         }
         delete syncSSEClients[roomCode];
       }
       syncRooms.delete(roomCode);
+      const leader = originalLeader || name;
       room = {
-        leader: name,
+        leader: leader,
         members: [],
         memberLastSeen: {},
         currentSong: null,
@@ -794,11 +794,9 @@ app.post("/sync/join", express.json(), (req, res) => {
       };
       syncRooms.set(roomCode, room);
       isNewRoom = true;
-      console.log(`[Join] Recreated empty room ${roomCode}`);
+      console.log(`[Join] Recreated empty room ${roomCode} with leader ${leader}`);
     } else {
-      console.log(
-        `[Join] ${name} joining existing room ${roomCode} with ${room.members.length} members`,
-      );
+      console.log(`[Join] ${name} joining existing room ${roomCode} with ${room.members.length} members`);
     }
   }
 
