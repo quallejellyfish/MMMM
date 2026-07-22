@@ -127,9 +127,9 @@
           <table id="statsTable">
             <thead>
               <tr>
-                <th>ID</th>
-                <th>Song Name</th>
-                <th>Plays</th>
+                <th scope="col">ID</th>
+                <th scope="col">Song Name</th>
+                <th scope="col">Plays</th>
               </tr>
             </thead>
             <tbody id="statsTableBody">
@@ -239,7 +239,7 @@
           .map(
             (row) => `
       <tr>
-        <td>${row.id}</td>
+        <td scope="row">${row.id}</td>
         <td>${row.name}</td>
         <td>${row.count}</td>
       </tr>
