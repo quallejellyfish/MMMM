@@ -234,11 +234,11 @@
           <thead>
             <tr>
               <th style="width: 30px" aria-label="Reorder"></th>
-              <th>ID</th>
-              <th>Name</th>
-              <th>URL</th>
-              <th>Lyrics</th>
-              <th>Actions</th>
+              <th scope="col">ID</th>
+              <th scope="col">Name</th>
+              <th scope="col">URL</th>
+              <th scope="col">Lyrics</th>
+              <th scope="col">Actions</th>
             </tr>
           </thead>
           <tbody id="songsTableBody">
@@ -709,7 +709,9 @@
             dragInsertLine = null;
           }
 
-          row.insertCell(1).textContent = song.id;
+          const idCell = row.insertCell(1);
+          idCell.textContent = song.id;
+          idCell.scope = "row";
           row.insertCell(2).textContent = song.name;
           row.insertCell(3).innerHTML =
             `<a href="${song.url}" target="_blank" style="color:#ff79c6;">link</a>`;
