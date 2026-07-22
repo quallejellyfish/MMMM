@@ -183,7 +183,7 @@
           }
           let html = `
         <table>
-          <thead><tr><th>Token</th><th>Created</th><th>Expires</th><th>Status</th><th>Action</th></tr></thead>
+          <thead><tr><th scope="col">Token</th><th scope="col">Created</th><th scope="col">Expires</th><th scope="col">Status</th><th scope="col">Action</th></tr></thead>
           <tbody>
       `;
           const now = Date.now();
@@ -193,7 +193,7 @@
             const statusText = expired ? "Expired" : "Active";
             html += `
           <tr>
-            <td><code>${key.token}</code></td>
+            <td scope="row"><code>${key.token}</code></td>
             <td>${new Date(key.createdAt).toLocaleTimeString()}</td>
             <td>${new Date(key.expiresAt).toLocaleTimeString()}</td>
             <td><span class="status ${statusClass}">${statusText}</span></td>
