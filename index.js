@@ -367,210 +367,222 @@ app.get("/", (req, res) => {
 
   res.send(`
     <!DOCTYPE html>
-    <html>
-    <head>
-      <title>MMMM - Music Menu Mod Manager</title>
-      <style>
-        * { box-sizing: border-box; }
-        body {
-          background: #1e1e2f;
-          color: #eee;
-          font-family: system-ui, -apple-system, sans-serif;
-          display: flex;
-          justify-content: center;
-          align-items: center;
-          height: 100vh;
-          margin: 0;
-          padding: 20px;
-        }
-        .container {
-          background: #2d2d3a;
-          padding: 40px;
-          border-radius: 16px;
-          text-align: center;
-          max-width: 500px;
-          width: 100%;
-          box-shadow: 0 8px 32px rgba(0,0,0,0.4);
-        }
-        h1 { margin-top: 0; font-size: 2.2rem; }
-        input {
-          width: 100%;
-          padding: 14px;
-          margin: 12px 0;
-          background: #3a3a4a;
-          border: 1px solid #555;
-          border-radius: 8px;
-          color: #fff;
-          font-size: 1rem;
-        }
-        button {
-          background: #ff79c6;
-          border: none;
-          padding: 14px 24px;
-          border-radius: 8px;
-          cursor: pointer;
-          font-weight: bold;
-          font-size: 1.1rem;
-          transition: background 0.2s;
-          width: 100%;
-        }
-        button:hover { background: #ba4085; }
-        .message { margin: 12px 0; font-size: 0.95rem; color: #aaa; }
-        .links {
-          margin-top: 24px;
-          display: flex;
-          flex-direction: column;
-          gap: 14px;
-        }
-        .link-btn {
-          display: block;
-          background: #3a3a4a;
-          padding: 16px;
-          border-radius: 12px;
-          text-decoration: none;
-          color: #ff79c6;
-          font-weight: bold;
-          font-size: 1.3rem;
-          transition: background 0.2s, transform 0.1s;
-          border: 1px solid #555;
-        }
-        .link-btn:hover {
-          background: #4a4a5a;
-          transform: scale(1.02);
-        }
-        .link-btn.public {
-          color: #8be9fd;
-          border-color: #8be9fd;
-        }
-        .link-btn.private {
-          color: #ffb347;
-          border-color: #ffb347;
-        }
-        .link-btn.generate {
-          color: #2ecc71;
-          border-color: #2ecc71;
-        }
-        .logout-btn {
-          background: #e74c3c;
-          border: none;
-          padding: 8px 16px;
-          border-radius: 6px;
-          cursor: pointer;
-          color: white;
-          font-weight: bold;
-          margin-top: 12px;
-        }
-        .logout-btn:hover { background: #c0392b; }
-        .guest-row {
-          display: flex;
-          gap: 8px;
-          flex-wrap: wrap;
-          margin: 10px 0;
-        }
-        .guest-row input {
-          flex: 1;
-          padding: 10px;
-          margin: 0;
-          background: #3a3a4a;
-          border: 1px solid #555;
-          border-radius: 8px;
-          color: #fff;
-          min-width: 120px;
-        }
-        .guest-row button {
-          flex: 0 0 auto;
-          background: #ffb347;
-          padding: 10px 20px;
-          width: auto;
-        }
-        .guest-row button:hover { background: #e6a030; }
-      </style>
-    </head>
-    <body>
-      <div class="container">
-        <h1>MMMM</h1>
-        <p>Music Menu Mod Manager</p>
-        <div class="message" id="statusMsg">
-          ${isAuthenticated ? "You are authenticated." : "Enter your API key to access private manager."}
-        </div>
-
-        ${
-          !isAuthenticated
-            ? `
-          <input type="password" id="apiKeyInput" placeholder="API Key">
-          <button id="saveKeyBtn">Save Key &amp; Unlock Private</button>
-        `
-            : `
-          <div style="margin: 12px 0;">
-            <span style="color: #8be9fd;">Private manager is unlocked.</span>
+    <html lang="en">
+      <html>
+      <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta
+          name="description"
+          content="MMMM is a multi-page site created by wolfi and made for the userscript part MMM to have a easier way to manage and store songs and their lyrics"
+        />
+        <meta
+          name="keywords"
+          content="MMMM, MMM, MusicMenuModManager, MusicModMenu"
+        />
+        <meta name="author" content="wolfi" />
+        <title>MMMM - Music Menu Mod Manager</title>
+        <style>
+          * { box-sizing: border-box; }
+          body {
+            background: #1e1e2f;
+            color: #eee;
+            font-family: system-ui, -apple-system, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            padding: 20px;
+          }
+          .container {
+            background: #2d2d3a;
+            padding: 40px;
+            border-radius: 16px;
+            text-align: center;
+            max-width: 500px;
+            width: 100%;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+          }
+          h1 { margin-top: 0; font-size: 2.2rem; }
+          input {
+            width: 100%;
+            padding: 14px;
+            margin: 12px 0;
+            background: #3a3a4a;
+            border: 1px solid #555;
+            border-radius: 8px;
+            color: #fff;
+            font-size: 1rem;
+          }
+          button {
+            background: #ff79c6;
+            border: none;
+            padding: 14px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 1.1rem;
+            transition: background 0.2s;
+            width: 100%;
+          }
+          button:hover { background: #ba4085; }
+          .message { margin: 12px 0; font-size: 0.95rem; color: #aaa; }
+          .links {
+            margin-top: 24px;
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+          }
+          .link-btn {
+            display: block;
+            background: #3a3a4a;
+            padding: 16px;
+            border-radius: 12px;
+            text-decoration: none;
+            color: #ff79c6;
+            font-weight: bold;
+            font-size: 1.3rem;
+            transition: background 0.2s, transform 0.1s;
+            border: 1px solid #555;
+          }
+          .link-btn:hover {
+            background: #4a4a5a;
+            transform: scale(1.02);
+          }
+          .link-btn.public {
+            color: #8be9fd;
+            border-color: #8be9fd;
+          }
+          .link-btn.private {
+            color: #ffb347;
+            border-color: #ffb347;
+          }
+          .link-btn.generate {
+            color: #2ecc71;
+            border-color: #2ecc71;
+          }
+          .logout-btn {
+            background: #e74c3c;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            color: white;
+            font-weight: bold;
+            margin-top: 12px;
+          }
+          .logout-btn:hover { background: #c0392b; }
+          .guest-row {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            margin: 10px 0;
+          }
+          .guest-row input {
+            flex: 1;
+            padding: 10px;
+            margin: 0;
+            background: #3a3a4a;
+            border: 1px solid #555;
+            border-radius: 8px;
+            color: #fff;
+            min-width: 120px;
+          }
+          .guest-row button {
+            flex: 0 0 auto;
+            background: #ffb347;
+            padding: 10px 20px;
+            width: auto;
+          }
+          .guest-row button:hover { background: #e6a030; }
+        </style>
+      </head>
+      <body>
+        <div class="container">
+          <h1>MMMM</h1>
+          <p>Music Menu Mod Manager</p>
+          <div class="message" id="statusMsg">
+            ${isAuthenticated ? "You are authenticated." : "Enter your API key to access private manager."}
           </div>
-          <a href="/logout" class="logout-btn">Logout</a>
-        `
-        }
-
-        <div class="links">
-          <a href="/public.html" class="link-btn public">Public Songs</a>
-
+    
           ${
             !isAuthenticated
               ? `
-            <div class="guest-row">
-              <input type="text" id="guestTokenInput" placeholder="Paste guest token">
-              <button id="guestAccessBtn">Guest Access</button>
-            </div>
+            <input type="password" id="apiKeyInput" placeholder="API Key">
+            <button id="saveKeyBtn">Save Key &amp; Unlock Private</button>
           `
               : `
-            <a href="/generate" class="link-btn generate">Generate Guest Keys</a>
+            <div style="margin: 12px 0;">
+              <span style="color: #8be9fd;">Private manager is unlocked.</span>
+            </div>
+            <a href="/logout" class="logout-btn">Logout</a>
           `
           }
-
-          ${isAuthenticated ? `<a href="/manager.html" class="link-btn private">Private Manager</a>` : ""}
+        
+          <div class="links">
+            <a href="/public.html" class="link-btn public">Public Songs</a>
+        
+            ${
+              !isAuthenticated
+                ? `
+              <div class="guest-row">
+                <input type="text" id="guestTokenInput" placeholder="Paste guest token">
+                <button id="guestAccessBtn">Guest Access</button>
+              </div>
+            `
+                : `
+              <a href="/generate" class="link-btn generate">Generate Guest Keys</a>
+            `
+            }
+          
+            ${isAuthenticated ? `<a href="/manager.html" class="link-btn private">Private Manager</a>` : ""}
+          </div>
         </div>
-      </div>
-
-      <script>
-        ${
-          !isAuthenticated
-            ? `
-          document.getElementById('saveKeyBtn').addEventListener('click', async () => {
-            const key = document.getElementById('apiKeyInput').value.trim();
-            const statusMsg = document.getElementById('statusMsg');
-            if (!key) {
-              statusMsg.textContent = 'Please enter a key.';
-              return;
-            }
-            try {
-              const res = await fetch('/login', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ apiKey: key })
-              });
-              const data = await res.json();
-              if (data.success) {
-                statusMsg.textContent = 'Key accepted. Refreshing...';
-                setTimeout(() => location.reload(), 500);
-              } else {
-                statusMsg.textContent = 'Invalid API key.';
+          
+        <script>
+          ${
+            !isAuthenticated
+              ? `
+            document.getElementById('saveKeyBtn').addEventListener('click', async () => {
+              const key = document.getElementById('apiKeyInput').value.trim();
+              const statusMsg = document.getElementById('statusMsg');
+              if (!key) {
+                statusMsg.textContent = 'Please enter a key.';
+                return;
               }
-            } catch (e) {
-              statusMsg.textContent = 'Error connecting to server.';
-            }
-          });
-
-          document.getElementById('guestAccessBtn').addEventListener('click', () => {
-            const token = document.getElementById('guestTokenInput').value.trim();
-            if (!token) {
-              document.getElementById('statusMsg').textContent = 'Please enter a guest token.';
-              return;
-            }
-            window.location.href = "/manager.html?guest_token=" + encodeURIComponent(token);
-          });
-        `
-            : ""
-        }
-      </script>
-    </body>
-    </html>
+              try {
+                const res = await fetch('/login', {
+                  method: 'POST',
+                  headers: { 'Content-Type': 'application/json' },
+                  body: JSON.stringify({ apiKey: key })
+                });
+                const data = await res.json();
+                if (data.success) {
+                  statusMsg.textContent = 'Key accepted. Refreshing...';
+                  setTimeout(() => location.reload(), 500);
+                } else {
+                  statusMsg.textContent = 'Invalid API key.';
+                }
+              } catch (e) {
+                statusMsg.textContent = 'Error connecting to server.';
+              }
+            });
+  
+            document.getElementById('guestAccessBtn').addEventListener('click', () => {
+              const token = document.getElementById('guestTokenInput').value.trim();
+              if (!token) {
+                document.getElementById('statusMsg').textContent = 'Please enter a guest token.';
+                return;
+              }
+              window.location.href = "/manager.html?guest_token=" + encodeURIComponent(token);
+            });
+          `
+              : ""
+          }
+        </script>
+      </body>
+      </html>
   `);
 });
 
