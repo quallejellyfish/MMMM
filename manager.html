@@ -718,32 +718,39 @@
 
       function convertLyrics(text) {
         let cleaned = text.trim();
+
         if (cleaned.startsWith("return")) {
           cleaned = cleaned.replace(/^\s*return\s*/, "").trim();
         }
-        if (cleaned.startsWith("(") && cleaned.startsWith(")")) {
-          cleaned = cleaned.slice(1, -1);
+        if (cleaned.startsWith("(") && cleaned.endsWith(")")) {
+          cleaned = cleaned.slice(1, -1).trim();
         }
-        let result;
 
+        let result;
         try {
-          const parse = new Function("return " + cleaned);
-          result = parse();
+          result = JSON.parse(cleaned);
         } catch (e) {
-          console.warn("Failed, falling back to eval:", e);
           try {
-            result = eval("(" + cleaned + ")");
+            const quoted = cleaned.replace(
+              /([{,]\s*)([a-zA-Z_$][a-zA-Z0-9_$]*)\s*:/g,
+              '$1"$2":',
+            );
+            result = JSON.parse(quoted);
           } catch (e2) {
-            throw new Error("Failed to parse lyrics: " + e2.message);
+            throw new Error(
+              "Invalid lyrics format. Must be a JSON array of {chat, delay}.",
+            );
           }
         }
 
-        if (!Array.isArray(result)) throw new Error("Got: " + typeof reuslt);
+        if (!Array.isArray(result)) {
+          throw new Error("Lyrics must be an array.");
+        }
         for (let i = 0; i < result.length; i++) {
           const item = result[i];
           if (typeof item.chat !== "string" || typeof item.delay !== "number") {
             throw new Error(
-              `item at index ${i} is invalid: missing "chat" (string) or "delay" (number).`,
+              `Item at index ${i} is invalid: each entry must have "chat" (string) and "delay" (number).`,
             );
           }
         }
