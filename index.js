@@ -7,6 +7,7 @@ const http = require("http");
 const { WebSocketServer } = require("ws");
 const cookieParser = require("cookie-parser");
 const crypto = require("crypto");
+const { resolveSoa } = require("dns");
 const guestKeys = {};
 const guestSSEClients = {};
 const GUEST_KEY_EXPIRY = 5 * 60 * 1000; // 5 minutes
@@ -588,70 +589,75 @@ app.get("/manager.html", (req, res) => {
   res.redirect("/session-expired");
 });
 
-const PUBLIC_SONGS_FILE = "./public_songs.json";
-const PUBLIC_LYRICS_FILE = "./public_lyrics.json";
+const fsPromises = fs.promises;
 
-function syncPublicFiles() {
-  const songs = readSongs();
-  const lyrics = readLyrics();
-  console.log("Total songs:", songs.length);
-  const publicSongs = songs.filter((s) => s.public === true && s.id !== 999);
-  console.log("Public songs found:", publicSongs.length);
-  const publicLyrics = {};
-  const publicSongsWithCount = publicSongs.map((s) => {
-    const count = lyrics[s.id] ? lyrics[s.id].length : 0;
-    publicLyrics[s.id] = lyrics[s.id] || [];
-    return { ...s, lyricsCount: count };
+// in-memory caches
+let songsCache = null;
+let lyricsCache = null;
+let publicSongsCache = null;
+let publicLyricsCache = null;
+
+let isWriting = false;
+const writeQueue = [];
+
+async function writeFileAtomic(filePath, data) {
+  return new Promise((resolve, reject) => {
+    writeQueue.push({ filePath, data, resolve, reject });
+    processWriteQueue();
   });
-  fs.writeFileSync(
-    PUBLIC_SONGS_FILE,
-    JSON.stringify(publicSongsWithCount, null, 2),
-  );
-  fs.writeFileSync(PUBLIC_LYRICS_FILE, JSON.stringify(publicLyrics, null, 2));
 }
 
-app.get("/public/songs", (req, res) => {
-  if (!fs.existsSync(PUBLIC_SONGS_FILE)) return res.json([]);
-  const data = fs.readFileSync(PUBLIC_SONGS_FILE, "utf8");
-  res.json(JSON.parse(data));
-});
+async function processWriteQueue() {
+  if (isWriting || writeQueue.length === 0) return;
+  isWriting = true;
 
-app.get("/public/lyrics/:id", (req, res) => {
-  const id = parseInt(req.params.id);
-  if (!fs.existsSync(PUBLIC_LYRICS_FILE)) return res.json({});
-  const data = JSON.parse(fs.readFileSync(PUBLIC_LYRICS_FILE, "utf8"));
-  res.json(data[id] || []);
-});
+  const { filePath, data, resolve, reject } = writeQueue.shift();
+  const tempPath = filePath + ".tmp";
 
-app.post("/public/stats/upload", express.json(), async (req, res) => {
-  const { key, stats } = req.body;
-  if (!key || typeof key !== "string") {
-    return res.status(400).json({ error: "key is required" });
-  }
-  if (!stats || typeof stats !== "object") {
-    return res.status(400).json({ error: "stats must be an object" });
-  }
-  if (!GITHUB_TOKEN || !GITHUB_REPO) {
-    return res
-      .status(500)
-      .json({ error: "GitHub credentials not configured." });
-  }
   try {
-    await writeStatsFile(key, stats);
-    res.json({ message: `Stats for "${key}" saved successfully` });
+    const json = JSON.stringify(data, null, 2);
+    await fsPromises.writeFile(tempPath, json, "utf8");
+    await fsPromises.rename(tempPath, filePath);
+    resolve();
   } catch (err) {
-    console.error("Public stats upload error:", err);
-    res.status(500).json({ error: err.message });
+    try {
+      await fsPromises.unlink(tempPath);
+    } catch (_) {}
+    reject(err);
+  } finally {
+    isWriting = false;
+    processWriteQueue();
   }
-});
+}
 
-app.get("/public.html", (req, res) => res.sendFile(__dirname + "/public.html"));
+const PUBLIC_SONGS_FILE = "./public_songs.json";
+const PUBLIC_LYRICS_FILE = "./public_lyrics.json";
 
 const SONGS_FILE = "./songs.json";
 const LYRICS_FILE = "./lyrics.json";
 const STATS_FOLDER = "stats";
 
+async function syncPublicFiles() {
+  const songs = readSongs();
+  const lyrics = readLyrics();
+  const publicSongs = songs
+    .filter((s) => s.public === true && s.id !== 999)
+    .map((s) => ({ ...s, lyricsCount: (lyrics[s.id] || []).length }));
+  const publicLyrics = {};
+  publicSongs.forEach((s) => {
+    publicLyrics[s.id] = lyrics[s.id] || [];
+  });
+
+  publicSongsCache = publicSongs;
+  publicLyricsCache = publicLyrics;
+
+  await Promise.all([
+    writeFileAtomic(PUBLIC_SONGS_FILE, publicSongs),
+    writeFileAtomic(PUBLIC_LYRICS_FILE, publicLyrics),
+  ]);
+}
 function readSongs() {
+  if (songsCache !== null) return songsCache;
   if (!fs.existsSync(SONGS_FILE)) {
     const init = CATEGORIES.map((c) => ({
       id: c.id,
@@ -659,20 +665,31 @@ function readSongs() {
       url: "",
       public: false,
     }));
-    writeSongs(init);
+    songsCache = init;
+    writeFileAtomic(SONGS_FILE, init).catch(console.error);
     return init;
   }
-  return JSON.parse(fs.readFileSync(SONGS_FILE, "utf8"));
-}
-function writeSongs(songs) {
-  fs.writeFileSync(SONGS_FILE, JSON.stringify(songs, null, 2));
+  const data = fs.readFileSync(SONGS_FILE, "utf8");
+  songsCache = JSON.parse(data);
+  return songsCache;
 }
 function readLyrics() {
-  if (!fs.existsSync(LYRICS_FILE)) return {};
-  return JSON.parse(fs.readFileSync(LYRICS_FILE, "utf8"));
+  if (lyricsCache !== null) return lyricsCache;
+  if (!fs.existsSync(LYRICS_FILE)) {
+    lyricsCache = {};
+    return lyricsCache;
+  }
+  const data = fs.readFileSync(LYRICS_FILE, "utf8");
+  lyricsCache = JSON.parse(data);
+  return lyricsCache;
 }
-function writeLyrics(lyrics) {
-  fs.writeFileSync(LYRICS_FILE, JSON.stringify(lyrics, null, 2));
+async function writeSongs(songs) {
+  songsCache = songs;
+  await writeFileAtomic(SONGS_FILE, songs);
+}
+async function writeLyrics(lyrics) {
+  lyricsCache = lyrics;
+  await writeFileAtomic(LYRICS_FILE, lyrics);
 }
 async function getStatsFile(key) {
   const url = `https://api.github.com/repos/${GITHUB_REPO}/contents/${STATS_FOLDER}/${key}.json`;
@@ -689,8 +706,8 @@ async function getStatsFile(key) {
     const content = Buffer.from(data.content, "base64").toString("utf8");
     return JSON.parse(content);
   } catch (err) {
-    if (e.message.includes("404")) return null;
-    throw e;
+    if (err.message.includes("404")) return null;
+    throw err;
   }
 }
 async function writeStatsFile(key, stats) {
@@ -758,6 +775,43 @@ async function writeStatsFile(key, stats) {
   }
   return putRes.json();
 }
+
+app.get("/public/songs", (req, res) => {
+  if (!fs.existsSync(PUBLIC_SONGS_FILE)) return res.json([]);
+  const data = fs.readFileSync(PUBLIC_SONGS_FILE, "utf8");
+  res.json(JSON.parse(data));
+});
+
+app.get("/public/lyrics/:id", (req, res) => {
+  const id = parseInt(req.params.id);
+  if (!fs.existsSync(PUBLIC_LYRICS_FILE)) return res.json({});
+  const data = JSON.parse(fs.readFileSync(PUBLIC_LYRICS_FILE, "utf8"));
+  res.json(data[id] || []);
+});
+
+app.post("/public/stats/upload", express.json(), async (req, res) => {
+  const { key, stats } = req.body;
+  if (!key || typeof key !== "string") {
+    return res.status(400).json({ error: "key is required" });
+  }
+  if (!stats || typeof stats !== "object") {
+    return res.status(400).json({ error: "stats must be an object" });
+  }
+  if (!GITHUB_TOKEN || !GITHUB_REPO) {
+    return res
+      .status(500)
+      .json({ error: "GitHub credentials not configured." });
+  }
+  try {
+    await writeStatsFile(key, stats);
+    res.json({ message: `Stats for "${key}" saved successfully` });
+  } catch (err) {
+    console.error("Public stats upload error:", err);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+app.get("/public.html", (req, res) => res.sendFile(__dirname + "/public.html"));
 
 // SYNC
 let syncSSEClients = {};
@@ -1118,7 +1172,7 @@ app.get("/songs/:id/lyrics", verifyGuestToken, (req, res) => {
   res.json(lyrics[id] || []);
 });
 
-app.put("/songs/reorder", requireApiKey, (req, res) => {
+app.put("/songs/reorder", requireApiKey, async (req, res) => {
   try {
     const { songs: newSongs } = req.body;
     if (!Array.isArray(newSongs)) {
@@ -1140,7 +1194,7 @@ app.put("/songs/reorder", requireApiKey, (req, res) => {
   }
 });
 
-app.post("/songs", requireApiKey, (req, res) => {
+app.post("/songs", requireApiKey, async (req, res) => {
   const {
     name,
     url,
@@ -1176,24 +1230,24 @@ app.post("/songs", requireApiKey, (req, res) => {
 
   const newSong = { id: newId, name, url, public: isPublic || false };
   songs.splice(insertIndex, 0, newSong);
-  writeSongs(songs);
+  await writeSongs(songs);
 
   const lyricCount =
     lyricArray && Array.isArray(lyricArray) ? lyricArray.length : 0;
   if (lyricArray && Array.isArray(lyricArray)) {
     const lyrics = readLyrics();
     lyrics[newId] = lyricArray;
-    writeLyrics(lyrics);
+    await writeLyrics(lyrics);
   }
 
   sendDiscordAddition(newSong, categoryName, lyricCount);
   broadcastEvent("song-changed", { action: "add", songId: newId });
-  syncPublicFiles();
+  await syncPublicFiles();
 
   res.status(201).json(newSong);
 });
 
-app.put("/songs/:id", requireApiKey, (req, res) => {
+app.put("/songs/:id", requireApiKey, async (req, res) => {
   const id = parseInt(req.params.id);
   const { name, url, categoryIndex, public: isPublic } = req.body;
   try {
@@ -1257,9 +1311,9 @@ app.put("/songs/:id", requireApiKey, (req, res) => {
       }
     }
 
-    writeSongs(songs);
+    await writeSongs(songs);
     broadcastEvent("song-changed", { action: "edit", songId: id });
-    syncPublicFiles();
+    await syncPublicFiles();
 
     if (changes.name || changes.url || changes.category || changes.public) {
       const newSong = { ...songs.find((s) => s.id === id) };
@@ -1291,7 +1345,7 @@ app.put("/songs/:id", requireApiKey, (req, res) => {
   }
 });
 
-app.delete("/songs/:id", requireApiKey, (req, res) => {
+app.delete("/songs/:id", requireApiKey, async (req, res) => {
   const id = parseInt(req.params.id);
   const songs = readSongs();
   const songToDelete = songs.find((s) => s.id === id);
@@ -1300,23 +1354,23 @@ app.delete("/songs/:id", requireApiKey, (req, res) => {
   }
 
   const newSongs = songs.filter((s) => s.id !== id);
-  writeSongs(newSongs);
+  await writeSongs(newSongs);
   const lyrics = readLyrics();
   delete lyrics[id];
-  writeLyrics(lyrics);
+  await writeLyrics(lyrics);
 
   sendDiscordDeletion(songToDelete).catch((err) => {
     console.error(err);
   });
   broadcastEvent("song-changed", { action: "delete", songId: id });
-  syncPublicFiles();
+  await syncPublicFiles();
 
   res.json({ message: "Deleted" });
 });
 
 syncPublicFiles();
 
-app.put("/songs/:id/lyrics", requireApiKey, (req, res) => {
+app.put("/songs/:id/lyrics", requireApiKey, async (req, res) => {
   const id = parseInt(req.params.id);
   const { lyrics: lyricArray, skipDiscord } = req.body;
   try {
@@ -1341,7 +1395,7 @@ app.put("/songs/:id/lyrics", requireApiKey, (req, res) => {
     const newCount = lyricArray.length;
 
     lyrics[id] = lyricArray;
-    writeLyrics(lyrics);
+    await writeLyrics(lyrics);
     broadcastEvent("song-changed", { action: "edit", songId: id });
 
     const shouldNotify = skipDiscord !== true;
