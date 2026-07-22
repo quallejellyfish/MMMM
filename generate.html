@@ -13,7 +13,17 @@
     />
     <meta name="author" content="wolfi" />
     <title>Generate Guest Key - MMMM</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Hammersmith+One&display=swap"
+      rel="stylesheet"
+    />
     <style>
+      * {
+        box-sizing: border-box;
+        font-family: "Hammersmith One", sans-serif;
+      }
       body {
         background: #1e1e2f;
         color: #eee;
@@ -91,11 +101,15 @@
       .status.expired {
         color: #e74c3c;
       }
+      a {
+        color: #ff79c6;
+      }
     </style>
   </head>
   <body>
     <div class="container">
       <h1>Guest Key Manager</h1>
+      <a href="/">Back to Home</a>
       <div class="card">
         <p>
           Generate a <strong>read-only</strong> link to the private manager that
