@@ -172,20 +172,26 @@
       <div class="card" id="addEditCard">
         <h2>Add / Edit Songs</h2>
         <input type="hidden" id="editId" />
-        <label>Song Name</label>
+        <label for="songName">Song Name</label>
         <input
           type="text"
           id="songName"
           placeholder="however you call your song"
+          aria-label="Song name"
         />
-        <label>Audio URL</label>
+        <label for="audioUrl">Audio URL</label>
         <input
           type="url"
           id="audioUrl"
           placeholder="jukehost or whatever ends with .mp3"
+          aria-label="Audio URL"
         />
-        <label>Category (only for new songs)</label><br />
-        <select id="categorySelect" style="font-size: 1rem">
+        <label for="categorySelect">Category (only for new songs)</label>
+        <select
+          id="categorySelect"
+          style="font-size: 1rem"
+          aria-label="Category"
+        >
           <option value="0">🇺🇸 English</option>
           <option value="1">🇩🇪 German</option>
           <option value="2">🇨🇳 Chinese</option>
@@ -195,20 +201,22 @@
           <option value="6">❓ Not My Songs</option>
         </select>
         <br /><br />
-        <label>Lyrics</label>
+        <label for="lyrics">Lyrics</label>
         <textarea
           id="lyrics"
           rows="6"
           placeholder="[{chat: 'boob' ,delay:0}]"
+          aria-label="Lyrics"
         ></textarea>
         <div
           style="display: flex; align-items: center; gap: 8px; margin: 8px 0"
         >
-          <label style="margin: 0">Public?</label>
+          <label for="publicCheckbox" style="margin: 0">Public?</label>
           <input
             type="checkbox"
             id="publicCheckbox"
             style="width: auto; margin: 0"
+            aria-label="Public"
           />
         </div>
         <div class="flex">
@@ -225,7 +233,7 @@
         <table id="songsTable">
           <thead>
             <tr>
-              <th style="width: 30px"></th>
+              <th style="width: 30px" aria-label="Reorder"></th>
               <th>ID</th>
               <th>Name</th>
               <th>URL</th>
