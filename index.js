@@ -139,7 +139,7 @@ async function sendDiscordEditNotification(
     }
 
     // Public change
-    if (changes.public !== undefined) {
+    if (changes.public === true) {
       const oldPublic = oldSong.public ? "Public" : "Private";
       const newPublic = newSong.public ? "Public" : "Private";
       fields.push({
