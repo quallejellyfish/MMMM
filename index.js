@@ -1300,8 +1300,10 @@ app.put("/songs/:id", requireApiKey, async (req, res) => {
       changes.url = true;
     }
 
-    if (isPublic !== undefined && isPublic !== oldSong.public) {
-      songs[index].public = isPublic;
+    const newPublic = isPublic !== undefined ? isPublic : false;
+    const oldPublic = oldSong.public !== undefined ? oldSong.public : false;
+    if (newPublic !== oldPublic) {
+      songs[index].public = newPublic;
       changes.public = true;
     }
 
