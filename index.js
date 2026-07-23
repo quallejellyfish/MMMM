@@ -266,17 +266,25 @@ app.use(express.json({ limit: "10mb" }));
 app.use(cookieParser(COOKIE_SECRET));
 
 app.use((req, res, next) => {
-  if (req.path === "/manager.html") {
-    const auth = req.signedCookies.auth;
+  const path = req.path;
+  const auth = req.signedCookies.auth;
+
+  if (path === "/manager.html") {
     const guestToken = req.query.guest_token;
     if (auth === "true" || (guestToken && verifyGuestKey(guestToken))) {
-      next();
-    } else {
-      res.redirect("/session-expired");
+      return next();
     }
-  } else {
-    next();
+    return res.redirect("/session-expired");
   }
+
+  if (path === "/generate.html") {
+    if (auth === "true") {
+      return next();
+    }
+    return res.redirect("/");
+  }
+
+  next();
 });
 
 app.post("/auth", (req, res) => {
@@ -505,11 +513,11 @@ app.get("/", (req, res) => {
           <div class="message" id="statusMsg">
             ${isAuthenticated ? "You are authenticated." : "Enter your API key to access private manager."}
           </div>
-    
+
           ${
             !isAuthenticated
               ? `
-            <input type="password" id="apiKeyInput" placeholder="API Key">
+            <input type="password" id="apiKeyInput" placeholder="API Key" aria-label="API Key">
             <button id="saveKeyBtn">Save Key &amp; Unlock Private</button>
           `
               : `
@@ -519,15 +527,15 @@ app.get("/", (req, res) => {
             <a href="/logout" class="logout-btn">Logout</a>
           `
           }
-        
+
           <div class="links">
             <a href="/public.html" class="link-btn public">Public Songs</a>
-        
+
             ${
               !isAuthenticated
                 ? `
               <div class="guest-row">
-                <input type="text" id="guestTokenInput" placeholder="Paste guest token">
+                <input type="text" id="guestTokenInput" placeholder="Paste guest token" aria-label="Guest token">
                 <button id="guestAccessBtn">Guest Access</button>
               </div>
             `
@@ -535,11 +543,11 @@ app.get("/", (req, res) => {
               <a href="/generate" class="link-btn generate">Generate Guest Keys</a>
             `
             }
-          
+
             ${isAuthenticated ? `<a href="/manager.html" class="link-btn private">Private Manager</a>` : ""}
           </div>
         </div>
-          
+
         <script>
           ${
             !isAuthenticated
@@ -568,7 +576,7 @@ app.get("/", (req, res) => {
                 statusMsg.textContent = 'Error connecting to server.';
               }
             });
-  
+
             document.getElementById('guestAccessBtn').addEventListener('click', () => {
               const token = document.getElementById('guestTokenInput').value.trim();
               if (!token) {
