@@ -741,9 +741,12 @@
         if (cleaned.startsWith("return")) {
           cleaned = cleaned.replace(/^\s*return\s*/, "").trim();
         }
+
         if (cleaned.startsWith("(") && cleaned.endsWith(")")) {
           cleaned = cleaned.slice(1, -1).trim();
         }
+
+        cleaned = cleaned.replace(/;\s*$/, "");
 
         let result;
         try {
