@@ -259,8 +259,7 @@
       const STATS_KEY_STORAGE = "statsKey";
 
       function setStatsCookie(key) {
-        const maxAge = 30 * 24 * 60 * 60; // 30 days
-        document.cookie = `statsKey=${encodeURIComponent(key)}; path=/; max-age=${maxAge}; SameSite=None; Secure`;
+        document.cookie = `statsKey=${encodeURIComponent(key)}; path=/; max-age=2592000; SameSite=None; Secure`;
       }
 
       function getStatsCookie() {
