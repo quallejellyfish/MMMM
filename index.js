@@ -261,7 +261,17 @@ function verifyGuestToken(req, res, next) {
   next();
 }
 
-app.use(cors());
+app.use(
+  cors({
+    origin: function (origin, callback) {
+      // Allow requests with no origin (like mobile apps or curl requests)
+      if (!origin) return callback(null, true);
+      // Allow any origin (for now)
+      callback(null, origin);
+    },
+    credentials: true,
+  }),
+);
 app.use(express.json({ limit: "10mb" }));
 app.use(cookieParser(COOKIE_SECRET));
 
