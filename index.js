@@ -1487,6 +1487,14 @@ app.get("/stats/:key", async (req, res) => {
   }
 });
 
+app.get("/stats-key", (req, res) => {
+  const key = req.cookies.statsKey;
+  if (!key) {
+    return res.status(404).json({ error: "No stats key stored" });
+  }
+  res.json({ key });
+});
+
 // GITHUB
 app.post("/sync-github", requireApiKey, async (req, res) => {
   if (!GITHUB_TOKEN || !GITHUB_REPO) {
