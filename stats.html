@@ -114,6 +114,10 @@
               placeholder="Enter your stats key"
               style="width: 180px"
           /></label>
+          <label style="display: flex; align-items: center; gap: 6px">
+            <input type="checkbox" id="rememberStatsKey" checked />
+            Remember my key
+          </label>
           <button id="fetchBtn">Load Stats</button>
           <button id="refreshSongsBtn">Refresh Songs</button>
         </div>
@@ -190,14 +194,14 @@
           return;
         }
         const status = document.getElementById("statusMsg");
-        status.textContent = "⏳ Fetching stats...";
+        status.textContent = "Fetching stats...";
 
         try {
           await loadSongs();
 
           const res = await fetch(`${url}/stats/${key}`);
           if (res.status === 404) {
-            status.textContent = "❌ No stats found for this key.";
+            status.textContent = "No stats found for this key.";
             playData = {};
             renderTable();
             return;
@@ -205,10 +209,14 @@
           if (!res.ok) throw new Error(await res.text());
           const data = await res.json();
           playData = data;
-          status.textContent = `✅ Loaded ${Object.keys(playData).length} entries.`;
+          localStorage.setItem("statsKey", key);
+          status.textContent = `Loaded ${Object.keys(playData).length} entries.`;
+          if (document.getElementById("rememberStatsKey").checked) {
+            setStatsCookie(key);
+          }
           renderTable();
         } catch (err) {
-          status.textContent = `❌ Error: ${err.message}`;
+          status.textContent = `Error: ${err.message}`;
           alert("Failed to load stats: " + err.message);
         }
       }
@@ -247,6 +255,26 @@
           )
           .join("");
       }
+
+      const STATS_KEY_STORAGE = "statsKey";
+
+      function setStatsCookie(key) {
+        const maxAge = 30 * 24 * 60 * 60; // 30 days
+        document.cookie = `statsKey=${encodeURIComponent(key)}; path=/; max-age=${maxAge}; SameSite=None; Secure`;
+      }
+
+      function getStatsCookie() {
+        const match = document.cookie.match(/statsKey=([^;]+)/);
+        return match ? decodeURIComponent(match[1]) : null;
+      }
+
+      window.addEventListener("DOMContentLoaded", () => {
+        const savedKey = getStatsCookie();
+        if (savedKey) {
+          document.getElementById("statsKey").value = savedKey;
+          setTimeout(fetchStatsFromServer, 300);
+        }
+      });
 
       document
         .getElementById("fetchBtn")
