@@ -911,6 +911,7 @@ function broadcastSyncUpdate(roomCode) {
     leader: room.leader,
     members: room.members,
     currentSong: room.currentSong,
+    partnerSongId: room.partnerSongId,
     paused: room.paused || false,
     currentTime: room.currentTime || 0,
     timestamp: room.playTimestamp || Date.now(),
@@ -984,6 +985,7 @@ app.post("/sync/join", express.json(), (req, res) => {
       paused: false,
       currentTime: 0,
       loop: false,
+      partnerSongId: null,
       lastUpdate: Date.now(),
     };
     syncRooms.set(roomCode, room);
@@ -1078,7 +1080,7 @@ app.post("/sync/leave", express.json(), (req, res) => {
 });
 
 app.post("/sync/play", express.json(), (req, res) => {
-  const { roomCode, name, songId, currentTime, timestamp } = req.body;
+  const { roomCode, name, songId, currentTime, timestamp, partnerSongId } = req.body;
   if (!roomCode || !name || songId === undefined) {
     return res.status(400).json({ error: "Missing roomCode, name, or songId" });
   }
@@ -1088,6 +1090,7 @@ app.post("/sync/play", express.json(), (req, res) => {
     return res.status(403).json({ error: "Only the leader can play a song" });
   }
   room.currentSong = songId;
+  room.partnerSongId = partnerSongId || null;
   room.paused = false;
   room.currentTime = currentTime || 0;
   room.playTimestamp = timestamp || Date.now();
@@ -1140,6 +1143,7 @@ app.post("/sync/stop", express.json(), (req, res) => {
     return res.status(403).json({ error: "Only the leader can stop" });
   }
   room.currentSong = null;
+  room.partnerSongId = null; 
   room.paused = true;
   room.currentTime = 0;
   room.lastUpdate = Date.now();
