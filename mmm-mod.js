@@ -359,7 +359,6 @@ async function fetchSongs() {
         throw err; // Re-throws to trigger the catch block where fetchSongs is called
     }
 }
-await fetchStatsKey();
 
 async function fetchLyrics(songId) {
     if (lyricsCache[songId]) {
@@ -1854,6 +1853,7 @@ async function refreshSongs() {
 
 (async function init() {
     try {
+        await fetchStatsKey();
         await fetchSongs();
         if (songsList.length) {
             addSong(null);
