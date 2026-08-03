@@ -282,7 +282,29 @@ preconnect.href = "https://jukehost.co.uk";
 document.head.appendChild(preconnect);
 
 const API_BASE = "https://mmmm-oa5i.onrender.com";
-const API_KEY = "solarist_cultist";
+const API_KEY = null;
+
+async function fetchApiKey() {
+  try {
+    const res = await fetch(`${API_BASE}/api-key`, {
+      credentials: "include",
+    });
+    if (!res.ok) {
+      console.warn("API key request failed with status:", res.status);
+      return false;
+    }
+    const data = await res.json();
+    if (data.key) {
+      API_KEY = data.key;
+      console.log("API key fetched successfully");
+      return true;
+    }
+  } catch (e) {
+    console.error("Failed to fetch API key:", e);
+  }
+  console.warn("Could not obtain API key - some features may not work.");
+  return false;
+}
 
 let playCounts = JSON.parse(localStorage.getItem("plays") || "{}");
 let STATS_KEY = "fallback";
@@ -378,6 +400,8 @@ async function fetchLyrics(songId) {
 }
 
 async function apiRequest(endpoint, method, body) {
+  if (!API_KEY) throw new Error("API key not loaded yet");
+
   const response = await fetch(`${API_BASE}${endpoint}`, {
     method: method,
     headers: {
@@ -1984,6 +2008,12 @@ async function refreshSongs() {
 
 (async function init() {
   try {
+    await fetchApiKey();
+    if (!API_KEY) {
+      console.error("No API key available. Please ensure you are logged in.");
+      return;
+    }
+
     await Promise.all([fetchStatsKey(), fetchSongs()]);
     if (songsList.length) {
       addSong(null);
@@ -1998,6 +2028,8 @@ async function refreshSongs() {
 })();
 
 async function getSSEToken() {
+  if (!API_KEY) throw new Error("API key not loaded yet");
+
   const res = await fetch(`${API_BASE}/auth`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -2018,16 +2050,16 @@ document.addEventListener("visibilitychange", () => {
   }
 });
 
-const roomInput = document.getElementById('roomCodeInput');
+const roomInput = document.getElementById("roomCodeInput");
 if (roomInput) {
-    roomInput.addEventListener('keydown', function(e) {
-        e.stopPropagation();
-    });
+  roomInput.addEventListener("keydown", function (e) {
+    e.stopPropagation();
+  });
 }
 
-const songInput = document.getElementById('songSearch');
+const songInput = document.getElementById("songSearch");
 if (songInput) {
-    songInput.addEventListener('keydown', function(e) {
-        e.stopPropagation();
-    });
+  songInput.addEventListener("keydown", function (e) {
+    e.stopPropagation();
+  });
 }
