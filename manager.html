@@ -220,7 +220,7 @@
           />
         </div>
         <div class="flex">
-          <button id="convertBtn">Convert to JSON</button>
+          <button id="toggleFormatBtn">Switch to JS Format</button>
           <button id="saveBtn">Save</button>
           <button id="clearBtn">Clear</button>
           <button id="deleteBtn" class="danger" style="display: none">
@@ -253,6 +253,7 @@
       let songList = [];
       let lyricCache = {};
       let songsHash = "";
+      const statusMsg = document.getElementById("statusMsg");
 
       const urlParams = new URLSearchParams(window.location.search);
       const guestToken = urlParams.get("guest_token");
@@ -319,11 +320,9 @@
           songList = await apiRequest("/songs", "GET");
           songsHash = JSON.stringify(songList);
           renderTable();
-          document.getElementById("statusMsg").innerHTML =
-            `Loaded ${songList.length} songs`;
+          statusMsg.innerHTML = `Loaded ${songList.length} songs`;
         } catch (err) {
-          document.getElementById("statusMsg").innerHTML =
-            `Error: ${err.message}`;
+          statusMsg.innerHTML = `Error: ${err.message}`;
         }
       }
 
@@ -446,6 +445,7 @@
             null,
             2,
           );
+          updateToggleButton();
         } catch (err) {
           console.error("Failed to load lyrics:", err);
           document.getElementById("lyrics").value = "[]";
@@ -466,8 +466,7 @@
         if (!confirm(`Delete "${song?.name}" permantly?`)) return;
         try {
           await apiRequest(`/songs/${id}`, "DELETE");
-          document.getElementById("statusMsg").innerHTML =
-            `Deleted ${song.name}`;
+          statusMsg.innerHTML = `Deleted ${song.name}`;
           await loadSongs();
           if (document.getElementById("editId").value == id) clearForm();
         } catch (err) {
@@ -697,8 +696,7 @@
                     songs: songList,
                   });
                   songsHash = JSON.stringify(songList);
-                  document.getElementById("statusMsg").innerHTML =
-                    "Reordered songs";
+                  statusMsg.innerHTML = "Reordered songs";
                 } catch (err) {
                   alert("Reorder failed: " + err.message);
                   await loadSongs();
@@ -780,22 +778,31 @@
         return result;
       }
 
-      function onConvert() {
+      function toJsFormat(lyricsArray) {
+        const parts = lyricsArray.map((item) => {
+          const chat = String(item.chat)
+            .replace(/\\/g, "\\\\")
+            .replace(/"/g, '\\"');
+          return `{chat:"${chat}",delay:${item.delay}}`;
+        });
+        return `return [${parts.join(",")}];`;
+      }
+
+      function updateToggleButton() {
         const raw = document.getElementById("lyrics").value.trim();
         if (!raw) {
-          alert("paste lyrics first");
+          document.getElementById("toggleFormatBtn").textContent =
+            "Switch to JS Format";
           return;
         }
+        let isJson = false;
         try {
-          const converted = convertLyrics(raw);
-          const jsonStr = JSON.stringify(converted, null, 2);
-          document.getElementById("lyrics").value = jsonStr;
-          document.getElementById("statusMsg").innerHTML =
-            `Converted ${converted.length} lines to JSON`;
-        } catch (err) {
-          alert("Conversation failed: " + err.message);
-          console.error(err);
-        }
+          JSON.parse(raw);
+          isJson = true;
+        } catch (e) {}
+        document.getElementById("toggleFormatBtn").textContent = isJson
+          ? "Switch to JS Format"
+          : "Switch to JSON Format";
       }
 
       document
@@ -803,7 +810,6 @@
         .addEventListener("click", async () => {
           const btn = document.getElementById("syncGitBtn");
           const originalText = btn.textContent;
-          const statusMsg = document.getElementById("statusMsg");
 
           btn.textContent = "Syncing...";
           btn.disabled = true;
@@ -833,8 +839,41 @@
       document.getElementById("saveBtn").addEventListener("click", saveSong);
       document.getElementById("clearBtn").addEventListener("click", clearForm);
       document
-        .getElementById("convertBtn")
-        .addEventListener("click", onConvert);
+        .getElementById("toggleFormatBtn")
+        .addEventListener("click", function () {
+          const raw = document.getElementById("lyrics").value.trim();
+          if (!raw) {
+            alert("Paste lyrics first.");
+            return;
+          }
+          let lyricsArray;
+          try {
+            lyricsArray = convertLyrics(raw);
+          } catch (e) {
+            alert(
+              "Cannot parse lyrics. Make sure it is valid JSON or JS return format.",
+            );
+            return;
+          }
+          let isJson = false;
+          try {
+            JSON.parse(raw);
+            isJson = true;
+          } catch (e) {}
+
+          if (isJson) {
+            const jsStr = toJsFormat(lyricsArray);
+            document.getElementById("lyrics").value = jsStr;
+            this.textContent = "Switch to JSON Format";
+            statusMsg.innerHTML = `Converted to JS format (${lyricsArray.length} lines)`;
+          } else {
+            const jsonStr = JSON.stringify(lyricsArray, null, 2);
+            document.getElementById("lyrics").value = jsonStr;
+            this.textContent = "Switch to JS Format";
+            statusMsg.innerHTML = `Converted to JSON (${lyricsArray.length} lines)`;
+          }
+          updateToggleButton();
+        });
       document.getElementById("apiUrl").value = window.location.origin;
 
       loadSongs();
