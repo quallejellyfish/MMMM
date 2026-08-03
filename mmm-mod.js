@@ -282,7 +282,7 @@ preconnect.href = "https://jukehost.co.uk";
 document.head.appendChild(preconnect);
 
 const API_BASE = "https://mmmm-oa5i.onrender.com";
-const API_KEY = null;
+let API_KEY = null;
 
 async function fetchApiKey() {
   try {
