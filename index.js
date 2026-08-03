@@ -366,7 +366,8 @@ app.post("/login", express.json(), (req, res) => {
       httpOnly: true,
       signed: true,
       maxAge: 3600000, // 1 hour
-      sameSite: "lax",
+      sameSite: "none",
+      secure: true,
     });
     return res.json({ success: true });
   } else {
@@ -379,6 +380,19 @@ app.get("/logout", (req, res) => {
   res.redirect("/");
 });
 
+app.get("/mod-script", (req, res) => {
+  if (req.signedCookies.auth !== "true") {
+    return res.status(401).send("Unauthorized");
+  }
+  try {
+    const script = fs.readFileSync("./mmm-mod.js", "utf8");
+    res.set("Content-Type", "application/javascript");
+    res.send(script);
+  } catch (err) {
+    console.error("Error serving mod script:", err);
+    res.status(500).send("Internal server error");
+  }
+});
 // ROOT
 app.get("/", (req, res) => {
   const isAuthenticated = req.signedCookies.auth === "true";
@@ -1080,7 +1094,8 @@ app.post("/sync/leave", express.json(), (req, res) => {
 });
 
 app.post("/sync/play", express.json(), (req, res) => {
-  const { roomCode, name, songId, currentTime, timestamp, partnerSongId } = req.body;
+  const { roomCode, name, songId, currentTime, timestamp, partnerSongId } =
+    req.body;
   if (!roomCode || !name || songId === undefined) {
     return res.status(400).json({ error: "Missing roomCode, name, or songId" });
   }
@@ -1143,7 +1158,7 @@ app.post("/sync/stop", express.json(), (req, res) => {
     return res.status(403).json({ error: "Only the leader can stop" });
   }
   room.currentSong = null;
-  room.partnerSongId = null; 
+  room.partnerSongId = null;
   room.paused = true;
   room.currentTime = 0;
   room.lastUpdate = Date.now();
