@@ -18,20 +18,18 @@ mm.innerHTML = `
 `;
 
 mm.addEventListener("click", (e) => {
-    e.preventDefault();
-    e.stopPropagation();
-    $(".modmenu").toggle('fade-out');
+  e.preventDefault();
+  e.stopPropagation();
+  $(".modmenu").toggle("fade-out");
 });
 
 document.getElementById("gameUI").appendChild(mm);
 
-
 // import MMM v4.2 style.css from website
-var stylesheet = document.createElement('link');
-stylesheet.rel = 'stylesheet';
-stylesheet.href = 'https://mmm-ernr.onrender.com/stylee.css';
+var stylesheet = document.createElement("link");
+stylesheet.rel = "stylesheet";
+stylesheet.href = "https://mmm-ernr.onrender.com/stylee.css";
 document.head.appendChild(stylesheet);
-
 
 const currentAudio = new Audio();
 currentAudio.crossOrigin = "anonymous";
@@ -41,17 +39,17 @@ currentAudio.preload = "none";
 let MusicMenuMod = document.createElement("div");
 document.getElementById("gameUI").append(MusicMenuMod);
 Object.assign(MusicMenuMod.style, {
-    display: 'block',
-    position: 'absolute',
-    transition: 'transform 0.5s ease',
-    width: 'var(--modmenu-width)',
-    transform: 'translate(-50%, -50%) scale(1)',
-    backgroundColor: 'rgba(0, 0, 0, 0.25)',
-    borderRadius: '45px',
-    top: '50%',
-    left: '50%',
-    zIndex: '2',
-    pointerEvents: "all"
+  display: "block",
+  position: "absolute",
+  transition: "transform 0.5s ease",
+  width: "var(--modmenu-width)",
+  transform: "translate(-50%, -50%) scale(1)",
+  backgroundColor: "rgba(0, 0, 0, 0.25)",
+  borderRadius: "45px",
+  top: "50%",
+  left: "50%",
+  zIndex: "2",
+  pointerEvents: "all",
 });
 
 MusicMenuMod.innerHTML = `
@@ -183,157 +181,155 @@ let notificationTimeout = null;
 let notificationShowTime = 0;
 const activeNotifications = [];
 
-const notificationContainer = document.createElement('div');
-notificationContainer.className = 'uiElement resourceDisplay';
+const notificationContainer = document.createElement("div");
+notificationContainer.className = "uiElement resourceDisplay";
 Object.assign(notificationContainer.style, {
-    position: 'absolute',
-    bottom: '200px',
-    right: '10px',
-    display: 'flex',
-    flexDirection: 'column',
-    justifyContent: 'flex-end',
-    alignItems: 'flex-end',
-    gap: '8px',
-    pointerEvents: 'none',
-    zIndex: 100,
-    background: "none",
+  position: "absolute",
+  bottom: "200px",
+  right: "10px",
+  display: "flex",
+  flexDirection: "column",
+  justifyContent: "flex-end",
+  alignItems: "flex-end",
+  gap: "8px",
+  pointerEvents: "none",
+  zIndex: 100,
+  background: "none",
 });
-document.getElementById('resDisplay').appendChild(notificationContainer);
+document.getElementById("resDisplay").appendChild(notificationContainer);
 
-function showNotification(message, type = 'song') {
-    const el = document.createElement('div');
-    const prefix = type === 'song' ? 'Now Playing:' : 'System:';
-    el.textContent = `${prefix} ${message}`;
+function showNotification(message, type = "song") {
+  const el = document.createElement("div");
+  const prefix = type === "song" ? "Now Playing:" : "System:";
+  el.textContent = `${prefix} ${message}`;
 
-    Object.assign(el.style, {
-        color: '#fff',
-        backgroundColor: 'rgba(0, 0, 0, 0.25)',
-        borderRadius: '12px',
-        padding: '12px 24px',
-        fontSize: '18px',
-        transition: 'right 0.5s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.4s ease',
-        opacity: 0,
-        right: '-350px',
-        position: 'relative',
-        boxShadow: '0 4px 16px rgba(0,0,0,0.4)',
-        letterSpacing: '0.5px',
-        whiteSpace: 'pre-line',
-        wordWrap: 'break-word',
-        overflow: 'visible',
-        lineHeight: 'normal',
-        height: 'auto',
-        pointerEvents: 'none',
-    });
+  Object.assign(el.style, {
+    color: "#fff",
+    backgroundColor: "rgba(0, 0, 0, 0.25)",
+    borderRadius: "12px",
+    padding: "12px 24px",
+    fontSize: "18px",
+    transition:
+      "right 0.5s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.4s ease",
+    opacity: 0,
+    right: "-350px",
+    position: "relative",
+    boxShadow: "0 4px 16px rgba(0,0,0,0.4)",
+    letterSpacing: "0.5px",
+    whiteSpace: "pre-line",
+    wordWrap: "break-word",
+    overflow: "visible",
+    lineHeight: "normal",
+    height: "auto",
+    pointerEvents: "none",
+  });
 
+  notificationContainer.appendChild(el);
+  requestAnimationFrame(() => {
+    el.style.right = "0";
+    el.style.opacity = 1;
+  });
 
-    notificationContainer.appendChild(el);
-    requestAnimationFrame(() => {
-        el.style.right = '0';
-        el.style.opacity = 1;
-    });
+  const duration = type === "song" ? 3000 : 1500;
+  const startTime = Date.now();
+  const entry = { el, startTime, duration };
+  activeNotifications.push(entry);
 
-    const duration = type === 'song' ? 3000 : 1500;
-    const startTime = Date.now();
-    const entry = { el, startTime, duration };
-    activeNotifications.push(entry);
-
-    const timeout = setTimeout(() => {
-        hideNotification(entry);
-    }, duration);
-    entry.timeout = timeout;
+  const timeout = setTimeout(() => {
+    hideNotification(entry);
+  }, duration);
+  entry.timeout = timeout;
 }
 
 function hideNotification(entry) {
-    if (!entry) return;
-    const { el, timeout } = entry;
-    if (timeout) clearTimeout(timeout);
-    el.style.opacity = 0;
-    el.style.right = '-350px';
-    setTimeout(() => {
-        if (el.parentNode) el.parentNode.removeChild(el);
-    }, 500);
-    const idx = activeNotifications.indexOf(entry);
-    if (idx !== -1) activeNotifications.splice(idx, 1);
+  if (!entry) return;
+  const { el, timeout } = entry;
+  if (timeout) clearTimeout(timeout);
+  el.style.opacity = 0;
+  el.style.right = "-350px";
+  setTimeout(() => {
+    if (el.parentNode) el.parentNode.removeChild(el);
+  }, 500);
+  const idx = activeNotifications.indexOf(entry);
+  if (idx !== -1) activeNotifications.splice(idx, 1);
 }
 
 function hideNotification(entry) {
-    if (!entry) return;
-    const { el, timeout } = entry;
-    if (timeout) clearTimeout(timeout);
-    el.style.opacity = 0;
-    el.style.right = '-350px';
-    setTimeout(() => {
-        if (el.parentNode) el.parentNode.removeChild(el);
-    }, 500);
-    const idx = activeNotifications.indexOf(entry);
-    if (idx !== -1) activeNotifications.splice(idx, 1);
+  if (!entry) return;
+  const { el, timeout } = entry;
+  if (timeout) clearTimeout(timeout);
+  el.style.opacity = 0;
+  el.style.right = "-350px";
+  setTimeout(() => {
+    if (el.parentNode) el.parentNode.removeChild(el);
+  }, 500);
+  const idx = activeNotifications.indexOf(entry);
+  if (idx !== -1) activeNotifications.splice(idx, 1);
 }
 
 setupAutoplayEvents();
 updateAutoplayStatus();
 
 const wrapper = document.querySelector(".wrapper"),
-      selectBtn = wrapper.querySelector(".select-btn"),
-      searchInp = wrapper.querySelector("input"),
-      durations1 = wrapper.querySelector(".durations"),
-      optionsDiv = wrapper.querySelector(".options1");
+  selectBtn = wrapper.querySelector(".select-btn"),
+  searchInp = wrapper.querySelector("input"),
+  durations1 = wrapper.querySelector(".durations"),
+  optionsDiv = wrapper.querySelector(".options1");
 
-const preconnect = document.createElement('link');
-preconnect.rel = 'preconnect';
-preconnect.href = 'https://jukehost.co.uk';
+const preconnect = document.createElement("link");
+preconnect.rel = "preconnect";
+preconnect.href = "https://jukehost.co.uk";
 document.head.appendChild(preconnect);
 
-
-const API_BASE = 'https://mmmm-oa5i.onrender.com';
+const API_BASE = "https://mmmm-oa5i.onrender.com";
 const API_KEY = "solarist_cultist";
 
 let playCounts = JSON.parse(localStorage.getItem("plays") || "{}");
-let STATS_KEY = "fallback"
+let STATS_KEY = "fallback";
 let statsUploadTimer = null;
 
 async function fetchStatsKey() {
-    try {
-        const res = await fetch(`${API_BASE}/stats-key`, {
-            credentials: 'include'
-        });
-        if (!res.ok) {
-            console.warn('Stats key request failed with status:', res.status);
-            return false;
-        }
-        const data = await res.json();
-        if (data.key) {
-            STATS_KEY = data.key;
-            console.log(`Stats key loaded: ${STATS_KEY}`);
-            return true;
-        }
-    } catch (e) {
-        console.error('Failed to fetch or parse stats key:', e);
+  try {
+    const res = await fetch(`${API_BASE}/stats-key`, {
+      credentials: "include",
+    });
+    if (!res.ok) {
+      console.warn("Stats key request failed with status:", res.status);
+      return false;
     }
-    console.log('No stats key cookie found, using fallback.');
-    return false;
+    const data = await res.json();
+    if (data.key) {
+      STATS_KEY = data.key;
+      console.log(`Stats key loaded: ${STATS_KEY}`);
+      return true;
+    }
+  } catch (e) {
+    console.error("Failed to fetch or parse stats key:", e);
+  }
+  console.log("No stats key cookie found, using fallback.");
+  return false;
 }
 
 async function uploadStats() {
-    const stats = { ...playCounts };
-    if (Object.keys(stats).length === 0) return;
-    try {
-        await apiRequest('/stats/upload', 'POST', { key: STATS_KEY, stats });
-        console.log(`Stats uploaded (${Object.keys(stats).length} entries)`);
-        return true;
-    } catch (err) {
-        console.warn('Stats upload failed:', err.message);
-        throw err;
-    }
+  const stats = { ...playCounts };
+  if (Object.keys(stats).length === 0) return;
+  try {
+    await apiRequest("/stats/upload", "POST", { key: STATS_KEY, stats });
+    console.log(`Stats uploaded (${Object.keys(stats).length} entries)`);
+    return true;
+  } catch (err) {
+    console.warn("Stats upload failed:", err.message);
+    throw err;
+  }
 }
 
 function scheduleStatsUpload() {
-    if (statsUploadTimer) clearTimeout(statsUploadTimer);
-    statsUploadTimer = setTimeout(async () => {
-        await uploadStats();
-        statsUploadTimer = null;
-    }, 30000);
+  if (statsUploadTimer) clearTimeout(statsUploadTimer);
+  statsUploadTimer = setTimeout(async () => {
+    await uploadStats();
+    statsUploadTimer = null;
+  }, 30000);
 }
-
 
 let songsList = [];
 let lyricsCache = {};
@@ -341,149 +337,160 @@ let lyricsCache = {};
 // changed it to use fetch instead since
 // tampermonkey was ggez'ing unpatcher's websocket proxy
 async function fetchSongs() {
-    try {
-        const response = await fetch(`${API_BASE}/songs`, {
-            method: 'GET',
-            headers: { 'X-API-Key': API_KEY }
-        });
+  try {
+    const response = await fetch(`${API_BASE}/songs`, {
+      method: "GET",
+      headers: { "X-API-Key": API_KEY },
+    });
 
-        if (!response.ok) {
-            const errorText = await response.text();
-            throw new Error(`Status ${response.status}: ${errorText}`);
-        }
-
-        songsList = await response.json();
-        return songsList;
-    } catch (err) {
-        console.error('fetchSongs error:', err);
-        throw err; // Re-throws to trigger the catch block where fetchSongs is called
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(`Status ${response.status}: ${errorText}`);
     }
+
+    songsList = await response.json();
+    return songsList;
+  } catch (err) {
+    console.error("fetchSongs error:", err);
+    throw err; // Re-throws to trigger the catch block where fetchSongs is called
+  }
 }
 
 async function fetchLyrics(songId) {
-    if (lyricsCache[songId]) {
-        return lyricsCache[songId];
-    }
-    const response = await fetch(`${API_BASE}/songs/${songId}/lyrics`, {
-        method: 'GET',
-        headers: { 'X-API-Key': API_KEY }
-    });
-    if (!response.ok) {
-        throw new Error(response.statusText || `HTTP ${response.status}`);
-    }
-    const data = await response.json();
-    lyricsCache[songId] = data;
+  if (lyricsCache[songId]) {
+    return lyricsCache[songId];
+  }
+  const response = await fetch(`${API_BASE}/songs/${songId}/lyrics`, {
+    method: "GET",
+    headers: { "X-API-Key": API_KEY },
+  });
+  if (!response.ok) {
+    throw new Error(response.statusText || `HTTP ${response.status}`);
+  }
+  const data = await response.json();
+  lyricsCache[songId] = data;
 
-    const keys = Object.keys(lyricsCache);
-    if (keys.length > 100) {
-        delete lyricsCache[keys[0]];
-    }
-    return data;
+  const keys = Object.keys(lyricsCache);
+  if (keys.length > 100) {
+    delete lyricsCache[keys[0]];
+  }
+  return data;
 }
 
 async function apiRequest(endpoint, method, body) {
-    const response = await fetch(`${API_BASE}${endpoint}`, {
-        method: method,
-        headers: {
-            'Content-Type': 'application/json',
-            'X-API-Key': API_KEY
-        },
-        body: body ? JSON.stringify(body) : undefined
-    });
+  const response = await fetch(`${API_BASE}${endpoint}`, {
+    method: method,
+    headers: {
+      "Content-Type": "application/json",
+      "X-API-Key": API_KEY,
+    },
+    body: body ? JSON.stringify(body) : undefined,
+  });
 
-    const responseText = await response.text();
+  const responseText = await response.text();
 
-    if (!response.ok) {
-        throw new Error(responseText || `HTTP ${response.status}`);
-    }
+  if (!response.ok) {
+    throw new Error(responseText || `HTTP ${response.status}`);
+  }
 
-    try {
-        return JSON.parse(responseText);
-    } catch(e) {
-        return responseText;
-    }
+  try {
+    return JSON.parse(responseText);
+  } catch (e) {
+    return responseText;
+  }
 }
-
 
 var selectedSongName, selectedSongId, selectedSongAudio;
 
 function addSong(selectedSong) {
-    optionsDiv.innerHTML = "";
-    songsList.forEach(song => {
-        let isSelected = (selectedSong !== null && song.name === selectedSong) ? "selected" : "";
-        let li = document.createElement("li");
-        li.textContent = song.name;
-        li.className = isSelected;
+  optionsDiv.innerHTML = "";
+  songsList.forEach((song) => {
+    let isSelected =
+      selectedSong !== null && song.name === selectedSong ? "selected" : "";
+    let li = document.createElement("li");
+    li.textContent = song.name;
+    li.className = isSelected;
 
-        li.addEventListener("click", () => {
-            updateName(li, song.id, song.name, song.url);
-        });
-
-        optionsDiv.appendChild(li);
+    li.addEventListener("click", () => {
+      updateName(li, song.id, song.name, song.url);
     });
+
+    optionsDiv.appendChild(li);
+  });
 }
 
 function updateName(selectedLi, songId, songName, songAudio) {
-    if (!songAudio) return;
+  if (!songAudio) return;
 
-    selectedSongId = songId;
-    selectedSongName = songName;
-    selectedSongAudio = songAudio;
+  selectedSongId = songId;
+  selectedSongName = songName;
+  selectedSongAudio = songAudio;
 
-    searchInp.value = "";
-    addSong(selectedLi.innerText);
-    wrapper.classList.remove("active");
-    selectBtn.firstElementChild.innerText = selectedLi.innerText;
+  searchInp.value = "";
+  addSong(selectedLi.innerText);
+  wrapper.classList.remove("active");
+  selectBtn.firstElementChild.innerText = selectedLi.innerText;
 }
 
 window.updateName = updateName;
 
 searchInp.addEventListener("keyup", () => {
-    let searchWord = searchInp.value.toLowerCase();
-    let arr = songsList.filter(data => data.name.toLowerCase().includes(searchWord))
-    .map(data => {
-        let isSelected = data.name == selectBtn.firstElementChild.innerText ? "selected" : "";
-        return `<li class="${isSelected}" data-id="${data.id}">${data.name}</li>`;
-    }).join("");
-    optionsDiv.innerHTML = arr ? arr : `<p style="font-size: 24px; margin-top: 5px; padding-left:25px;">the song you searched hasn't been found.</p><h4>DM .wolfi_dolfi. to make it :D</h4>`;
-    optionsDiv.querySelectorAll("li").forEach(li => {
-        let id = parseInt(li.dataset.id);
-        let song = songsList.find(s => s.id === id);
+  let searchWord = searchInp.value.toLowerCase();
+  let arr = songsList
+    .filter((data) => data.name.toLowerCase().includes(searchWord))
+    .map((data) => {
+      let isSelected =
+        data.name == selectBtn.firstElementChild.innerText ? "selected" : "";
+      return `<li class="${isSelected}" data-id="${data.id}">${data.name}</li>`;
+    })
+    .join("");
+  optionsDiv.innerHTML = arr
+    ? arr
+    : `<p style="font-size: 24px; margin-top: 5px; padding-left:25px;">the song you searched hasn't been found.</p><h4>DM .wolfi_dolfi. to make it :D</h4>`;
+  optionsDiv.querySelectorAll("li").forEach((li) => {
+    let id = parseInt(li.dataset.id);
+    let song = songsList.find((s) => s.id === id);
 
-        li.addEventListener("click", () => {
-            updateName(li, song.id, song.name, song.url);
-        });
+    li.addEventListener("click", () => {
+      updateName(li, song.id, song.name, song.url);
     });
+  });
 });
 
-document.querySelector(".wrapper").querySelector(".select-btn").addEventListener("click", () => { document.querySelector(".wrapper").classList.toggle("active"); console.log("open")});
+document
+  .querySelector(".wrapper")
+  .querySelector(".select-btn")
+  .addEventListener("click", () => {
+    document.querySelector(".wrapper").classList.toggle("active");
+    console.log("open");
+  });
 
 function getSongsByCategory(categoryName) {
-    const songs = [];
-    let inCategory = false;
-    for (const song of songsList) {
-        if (song.id === 999) {
-            if (song.name === categoryName) {
-                inCategory = true;
-            } else if (inCategory) {
-                break;
-            }
-            continue;
-        }
-        if (inCategory && song.url) {
-            songs.push(song);
-        }
+  const songs = [];
+  let inCategory = false;
+  for (const song of songsList) {
+    if (song.id === 999) {
+      if (song.name === categoryName) {
+        inCategory = true;
+      } else if (inCategory) {
+        break;
+      }
+      continue;
     }
-    return songs;
+    if (inCategory && song.url) {
+      songs.push(song);
+    }
+  }
+  return songs;
 }
 
 function getAllSongs() {
-    return songsList.filter(s => s.id !== 999 && s.url);
+  return songsList.filter((s) => s.id !== 999 && s.url);
 }
 
 let spamModeActive = false,
-    messageTimeouts = [],
-    chatMessages = [];
+  messageTimeouts = [],
+  chatMessages = [];
 
 let currentlyPlaying = document.getElementById("currentlyPlaying");
 
@@ -494,41 +501,41 @@ let audioStarting = false;
 let schedulingActive = false;
 
 function scheduleMessages(messages, startIndex = 0) {
-    schedulingActive = false;
-    if (window._lyricsInterval) {
+  schedulingActive = false;
+  if (window._lyricsInterval) {
+    clearInterval(window._lyricsInterval);
+    window._lyricsInterval = null;
+  }
+
+  setTimeout(() => {
+    schedulingActive = true;
+    let i = startIndex;
+    window._lyricsInterval = setInterval(() => {
+      if (!schedulingActive || !currentAudio || currentAudio.paused) {
+        return;
+      }
+      let currentMs = currentAudio.currentTime * 1000;
+      while (i < messages.length && messages[i].delay <= currentMs) {
+        if (!chatMuted) packet("6", messages[i].chat);
+        i++;
+      }
+      if (i >= messages.length) {
         clearInterval(window._lyricsInterval);
         window._lyricsInterval = null;
-    }
-
-    setTimeout(() => {
-        schedulingActive = true;
-        let i = startIndex;
-        window._lyricsInterval = setInterval(() => {
-            if (!schedulingActive || !currentAudio || currentAudio.paused) {
-                return;
-            }
-            let currentMs = currentAudio.currentTime * 1000;
-            while (i < messages.length && messages[i].delay <= currentMs) {
-                if (!chatMuted) packet("6", messages[i].chat);
-                i++;
-            }
-            if (i >= messages.length) {
-                clearInterval(window._lyricsInterval);
-                window._lyricsInterval = null;
-            }
-        }, 50);
+      }
     }, 50);
+  }, 50);
 }
 
 const DUET_PAIRS = {
-    194: 195,
+  194: 195,
 };
 function getPartnerSongId(songId) {
-    if (DUET_PAIRS[songId]) return DUET_PAIRS[songId];
-    for (const [key, value] of Object.entries(DUET_PAIRS)) {
-        if (value === songId) return parseInt(key);
-    }
-    return null;
+  if (DUET_PAIRS[songId]) return DUET_PAIRS[songId];
+  for (const [key, value] of Object.entries(DUET_PAIRS)) {
+    if (value === songId) return parseInt(key);
+  }
+  return null;
 }
 
 let audioCtx = null;
@@ -537,28 +544,28 @@ let volumeSlider = null;
 let volumeValueEl = null;
 
 function initAudioContext() {
-    if (!audioCtx) {
-        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-        gainNode = audioCtx.createGain();
-        const source = audioCtx.createMediaElementSource(currentAudio);
-        source.connect(gainNode);
-        gainNode.connect(audioCtx.destination);
-    }
-    if (audioCtx.state === "suspended") {
-        audioCtx.resume();
-    }
-    return gainNode;
+  if (!audioCtx) {
+    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    gainNode = audioCtx.createGain();
+    const source = audioCtx.createMediaElementSource(currentAudio);
+    source.connect(gainNode);
+    gainNode.connect(audioCtx.destination);
+  }
+  if (audioCtx.state === "suspended") {
+    audioCtx.resume();
+  }
+  return gainNode;
 }
 
 function setBoostedVolume(value) {
-    const gain = initAudioContext();
-    if (!gain) return;
-    const clamped = Math.min(Math.max(value, 0), 3);
-    gain.gain.value = clamped;
-    if (volumeValueEl) {
-        volumeValueEl.textContent = `${Math.round(clamped * 100)}%`;
-    }
-    localStorage.setItem("musicVolumeBoost", clamped);
+  const gain = initAudioContext();
+  if (!gain) return;
+  const clamped = Math.min(Math.max(value, 0), 3);
+  gain.gain.value = clamped;
+  if (volumeValueEl) {
+    volumeValueEl.textContent = `${Math.round(clamped * 100)}%`;
+  }
+  localStorage.setItem("musicVolumeBoost", clamped);
 }
 
 let savedVolume = parseFloat(localStorage.getItem("musicVolumeBoost"));
@@ -567,12 +574,12 @@ if (isNaN(savedVolume)) savedVolume = 1;
 volumeSlider = document.getElementById("volumeSlider");
 volumeValueEl = document.getElementById("volumeValue");
 if (volumeSlider) {
-    volumeSlider.value = savedVolume;
-    setBoostedVolume(savedVolume);
-    volumeSlider.addEventListener("input", (e) => {
-        const val = parseFloat(e.target.value);
-        setBoostedVolume(val);
-    });
+  volumeSlider.value = savedVolume;
+  setBoostedVolume(savedVolume);
+  volumeSlider.addEventListener("input", (e) => {
+    const val = parseFloat(e.target.value);
+    setBoostedVolume(val);
+  });
 }
 
 let countedThisPlay = false;
@@ -583,505 +590,522 @@ let isPaused = false;
 let syncStartTime = null;
 
 async function toggleChatSpamMode() {
+  if (spamModeActive) {
+    if (syncRoom && !syncIsLeader) {
+      showNotification("Only the leader can play songs", "system");
+      return;
+    }
+    resetLyricsState();
+    schedulingActive = false;
+    hideNotification();
+    spamModeActive = false;
+    messageTimeouts.forEach(clearTimeout);
+    messageTimeouts = [];
+    currentlyPlaying.innerHTML = "Currently Playing: none";
+    musicStatus.innerHTML = `Music Status: OFF`;
+    document.getElementById("pauseAutoplayBtn").textContent = "Pause";
+    isPaused = false;
+    if (onTimeUpdateHandler) {
+      currentAudio.removeEventListener("timeupdate", onTimeUpdateHandler);
+      onTimeUpdateHandler = null;
+    }
+    currentAudio.pause();
+    currentAudio.currentTime = 0;
+    currentAudio.loop = false;
+    currentAudio.removeEventListener("ended", onSongEnded);
+    if (syncRoom && syncIsLeader) {
+      syncStop();
+    }
+    return;
+  }
 
-    if (spamModeActive) {
-        if (syncRoom && !syncIsLeader) {
-            showNotification('Only the leader can play songs', "system");
-            return;
-        }
-        resetLyricsState();
-        schedulingActive = false;
-        hideNotification();
-        spamModeActive = false;
-        messageTimeouts.forEach(clearTimeout);
-        messageTimeouts = [];
-        currentlyPlaying.innerHTML = "Currently Playing: none";
-        musicStatus.innerHTML = `Music Status: OFF`;
-        document.getElementById('pauseAutoplayBtn').textContent = 'Pause';
-        isPaused = false;
-        if (onTimeUpdateHandler) {
-            currentAudio.removeEventListener("timeupdate", onTimeUpdateHandler);
-            onTimeUpdateHandler = null;
-        }
-        currentAudio.pause();
-        currentAudio.currentTime = 0;
-        currentAudio.loop = false;
-        currentAudio.removeEventListener("ended", onSongEnded);
-        if (syncRoom && syncIsLeader) {
-            syncStop();
-        }
-        return;
+  if (autoplayMode) {
+    skipSong();
+    return;
+  }
+
+  if (selectedSongId === undefined || selectedSongId === null) {
+    console.log("No song selected. Select one from the dropdown.");
+    return;
+  }
+
+  try {
+    chatMessages = await fetchLyrics(selectedSongId);
+    spamModeActive = true;
+    currentlyPlaying.innerHTML = `Currently Playing: ${selectedSongName}`;
+    musicStatus.innerHTML = `Music Status: ON`;
+
+    if (onTimeUpdateHandler) {
+      currentAudio.removeEventListener("timeupdate", onTimeUpdateHandler);
+      onTimeUpdateHandler = null;
     }
 
-    if (autoplayMode) {
-        skipSong();
-        return;
-    }
+    currentAudio.pause();
+    currentAudio.currentTime = syncStartTime !== null ? syncStartTime : 0;
+    currentAudio.src = selectedSongAudio;
+    currentAudio.loop = false;
+    syncStartTime = null;
+    countedThisPlay = false;
 
-    if (selectedSongId === undefined || selectedSongId === null) {
-        console.log('No song selected. Select one from the dropdown.');
-        return;
-    }
-
-    try {
-        chatMessages = await fetchLyrics(selectedSongId);
-        spamModeActive = true;
-        currentlyPlaying.innerHTML = `Currently Playing: ${selectedSongName}`;
-        musicStatus.innerHTML = `Music Status: ON`;
-
-        if (onTimeUpdateHandler) {
-            currentAudio.removeEventListener("timeupdate", onTimeUpdateHandler);
-            onTimeUpdateHandler = null;
+    onTimeUpdateHandler = function () {
+      if (!currentAudio.duration) return;
+      let progress = currentAudio.currentTime / currentAudio.duration;
+      if (!countedThisPlay && progress >= 0.25) {
+        countedThisPlay = true;
+        if (!playCounts[selectedSongId]) {
+          playCounts[selectedSongId] = 0;
         }
+        playCounts[selectedSongId]++;
+        localStorage.setItem("plays", JSON.stringify(playCounts));
+        scheduleStatsUpload();
+        currentAudio.removeEventListener("timeupdate", onTimeUpdateHandler);
+        onTimeUpdateHandler = null;
+      }
+    };
+    currentAudio.addEventListener("timeupdate", onTimeUpdateHandler);
 
-        currentAudio.pause();
-        currentAudio.currentTime = syncStartTime !== null ? syncStartTime : 0;
-        currentAudio.src = selectedSongAudio;
-        currentAudio.loop = false;
-        syncStartTime = null;
-        countedThisPlay = false;
+    currentAudio.removeEventListener("ended", onSongEnded);
+    currentAudio.addEventListener("ended", onSongEnded);
 
-        onTimeUpdateHandler = function () {
-            if (!currentAudio.duration) return;
-            let progress = currentAudio.currentTime / currentAudio.duration;
-            if (!countedThisPlay && progress >= 0.25) {
-                countedThisPlay = true;
-                if (!playCounts[selectedSongId]) {
-                    playCounts[selectedSongId] = 0;
-                }
-                playCounts[selectedSongId]++;
-                localStorage.setItem("plays", JSON.stringify(playCounts));
-                scheduleStatsUpload();
-                currentAudio.removeEventListener("timeupdate", onTimeUpdateHandler);
-                onTimeUpdateHandler = null;
-            }
-        };
-        currentAudio.addEventListener("timeupdate", onTimeUpdateHandler);
+    initAudioContext();
 
-        currentAudio.removeEventListener("ended", onSongEnded);
-        currentAudio.addEventListener("ended", onSongEnded);
-
-        initAudioContext();
-
-        await currentAudio.play();
-        const now = Date.now();
-        if (syncRoom && syncIsLeader) {
-            syncPlay(selectedSongId, currentAudio.currentTime, now);
-        }
-        showNotification(selectedSongName, 'song');
-        scheduleMessages(chatMessages);
-        document.getElementById('pauseAutoplayBtn').textContent = 'Pause';
-        isPaused = false;
-    } catch (err) {
-        if (err.name === 'AbortError' || err.name === 'NotAllowedError') {
-            console.debug('Playback interrupted gracefully:', err.message);
-            return;
-        }
-        console.warn(`play() rejected for "${selectedSongName}":`, err.name, err.message);
+    await currentAudio.play();
+    const now = Date.now();
+    if (syncRoom && syncIsLeader) {
+      syncPlay(selectedSongId, currentAudio.currentTime, now);
     }
+    showNotification(selectedSongName, "song");
+    scheduleMessages(chatMessages);
+    document.getElementById("pauseAutoplayBtn").textContent = "Pause";
+    isPaused = false;
+  } catch (err) {
+    if (err.name === "AbortError" || err.name === "NotAllowedError") {
+      console.debug("Playback interrupted gracefully:", err.message);
+      return;
+    }
+    console.warn(
+      `play() rejected for "${selectedSongName}":`,
+      err.name,
+      err.message,
+    );
+  }
 }
 
 async function playSong(song) {
-    if (!song) return;
+  if (!song) return;
 
-    selectedSongId = song.id;
-    selectedSongName = song.name;
-    selectedSongAudio = song.url;
+  selectedSongId = song.id;
+  selectedSongName = song.name;
+  selectedSongAudio = song.url;
 
-    if (spamModeActive) {
-        currentAudio.pause();
-        currentAudio.currentTime = 0;
-        spamModeActive = false;
-        currentAudio.removeEventListener("ended", onSongEnded);
-        messageTimeouts.forEach(clearTimeout);
-        messageTimeouts = [];
+  if (spamModeActive) {
+    currentAudio.pause();
+    currentAudio.currentTime = 0;
+    spamModeActive = false;
+    currentAudio.removeEventListener("ended", onSongEnded);
+    messageTimeouts.forEach(clearTimeout);
+    messageTimeouts = [];
+  }
+
+  try {
+    chatMessages = await fetchLyrics(selectedSongId);
+    spamModeActive = true;
+    currentlyPlaying.innerHTML = `Currently Playing: ${selectedSongName}`;
+    musicStatus.innerHTML = `Music Status: ON (Autoplay: ${autoplayMode})`;
+    updateAutoplayStatus();
+
+    if (onTimeUpdateHandler) {
+      currentAudio.removeEventListener("timeupdate", onTimeUpdateHandler);
+      onTimeUpdateHandler = null;
     }
 
-    try {
-        chatMessages = await fetchLyrics(selectedSongId);
-        spamModeActive = true;
-        currentlyPlaying.innerHTML = `Currently Playing: ${selectedSongName}`;
-        musicStatus.innerHTML = `Music Status: ON (Autoplay: ${autoplayMode})`;
-        updateAutoplayStatus();
+    currentAudio.pause();
+    currentAudio.currentTime = 0;
+    currentAudio.src = selectedSongAudio;
+    currentAudio.loop = false;
 
-        if (onTimeUpdateHandler) {
-            currentAudio.removeEventListener("timeupdate", onTimeUpdateHandler);
-            onTimeUpdateHandler = null;
+    countedThisPlay = false;
+
+    onTimeUpdateHandler = function () {
+      if (!currentAudio.duration) return;
+      let progress = currentAudio.currentTime / currentAudio.duration;
+      if (!countedThisPlay && progress >= 0.25) {
+        countedThisPlay = true;
+        if (!playCounts[selectedSongId]) {
+          playCounts[selectedSongId] = 0;
         }
+        playCounts[selectedSongId]++;
+        localStorage.setItem("plays", JSON.stringify(playCounts));
+        scheduleStatsUpload();
+        currentAudio.removeEventListener("timeupdate", onTimeUpdateHandler);
+        onTimeUpdateHandler = null;
+      }
+    };
+    currentAudio.addEventListener("timeupdate", onTimeUpdateHandler);
 
-        currentAudio.pause();
-        currentAudio.currentTime = 0;
-        currentAudio.src = selectedSongAudio;
-        currentAudio.loop = false;
+    currentAudio.removeEventListener("ended", onSongEnded);
+    currentAudio.addEventListener("ended", onSongEnded);
 
-        countedThisPlay = false;
+    initAudioContext();
 
-        onTimeUpdateHandler = function () {
-            if (!currentAudio.duration) return;
-            let progress = currentAudio.currentTime / currentAudio.duration;
-            if (!countedThisPlay && progress >= 0.25) {
-                countedThisPlay = true;
-                if (!playCounts[selectedSongId]) {
-                    playCounts[selectedSongId] = 0;
-                }
-                playCounts[selectedSongId]++;
-                localStorage.setItem("plays", JSON.stringify(playCounts));
-                scheduleStatsUpload();
-                currentAudio.removeEventListener("timeupdate", onTimeUpdateHandler);
-                onTimeUpdateHandler = null;
-            }
-        };
-        currentAudio.addEventListener("timeupdate", onTimeUpdateHandler);
-
-        currentAudio.removeEventListener("ended", onSongEnded);
-        currentAudio.addEventListener("ended", onSongEnded);
-
-        initAudioContext();
-
-        await currentAudio.play();
-        const currentTime = currentAudio.currentTime;
-        const now = Date.now();
-        if (syncRoom && syncIsLeader) {
-            syncPlay(selectedSongId, currentAudio.currentTime, now);
-        }
-
-        scheduleMessages(chatMessages);
-        showNotification(selectedSongName, 'song');
-        document.getElementById('pauseAutoplayBtn').textContent = 'Pause';
-        isPaused = false;
-    } catch (err) {
-        if (err.name === 'AbortError' || err.name === 'NotAllowedError') {
-            console.debug('Playback interrupted gracefully:', err.message);
-            return;
-        }
-        console.warn(`play() rejected for "${selectedSongName}":`, err.name, err.message);
-        setTimeout(() => { playSong(song); }, 1000);
+    await currentAudio.play();
+    const currentTime = currentAudio.currentTime;
+    const now = Date.now();
+    if (syncRoom && syncIsLeader) {
+      syncPlay(selectedSongId, currentAudio.currentTime, now);
     }
+
+    scheduleMessages(chatMessages);
+    showNotification(selectedSongName, "song");
+    document.getElementById("pauseAutoplayBtn").textContent = "Pause";
+    isPaused = false;
+  } catch (err) {
+    if (err.name === "AbortError" || err.name === "NotAllowedError") {
+      console.debug("Playback interrupted gracefully:", err.message);
+      return;
+    }
+    console.warn(
+      `play() rejected for "${selectedSongName}":`,
+      err.name,
+      err.message,
+    );
+    setTimeout(() => {
+      playSong(song);
+    }, 1000);
+  }
 }
 
 async function playNextAuto() {
-    if (!autoplayMode) return;
+  if (!autoplayMode) return;
 
-    let nextSong = null;
-    if (autoplayMode === 'category') {
-        if (autoplaySongs.length === 0) return;
-        if (autoplayIndex >= autoplaySongs.length) autoplayIndex = 0;
-        nextSong = autoplaySongs[autoplayIndex];
-        autoplayIndex++;
-    } else if (autoplayMode === 'random') {
-        if (randomPool.length === 0) {
-            const all = getAllSongs();
-            if (all.length === 0) return;
-            randomPool = all;
-            randomCategoryName = null;
-        }
-        const randomIndex = Math.floor(Math.random() * randomPool.length);
-        nextSong = randomPool[randomIndex];
+  let nextSong = null;
+  if (autoplayMode === "category") {
+    if (autoplaySongs.length === 0) return;
+    if (autoplayIndex >= autoplaySongs.length) autoplayIndex = 0;
+    nextSong = autoplaySongs[autoplayIndex];
+    autoplayIndex++;
+  } else if (autoplayMode === "random") {
+    if (randomPool.length === 0) {
+      const all = getAllSongs();
+      if (all.length === 0) return;
+      randomPool = all;
+      randomCategoryName = null;
     }
-    if (!nextSong) {
-        console.log('No next song available in autoplay mode');
-        return;
-    }
+    const randomIndex = Math.floor(Math.random() * randomPool.length);
+    nextSong = randomPool[randomIndex];
+  }
+  if (!nextSong) {
+    console.log("No next song available in autoplay mode");
+    return;
+  }
 
-    if (!isGoingBack) {
-        songHistory.push(nextSong);
-        songHistoryIndex = songHistory.length - 1;
-    } else {
-        isGoingBack = false;
-    }
+  if (!isGoingBack) {
+    songHistory.push(nextSong);
+    songHistoryIndex = songHistory.length - 1;
+  } else {
+    isGoingBack = false;
+  }
 
-    if (songHistory.length > 100) {
-        songHistory.shift();
-        songHistoryIndex--;
-    }
+  if (songHistory.length > 100) {
+    songHistory.shift();
+    songHistoryIndex--;
+  }
 
-    await playSong(nextSong);
+  await playSong(nextSong);
 }
 
 function skipSong() {
-    schedulingActive = false;
-    if (spamModeActive) {
-        hideNotification();
-        currentAudio.pause();
-        currentAudio.currentTime = 0;
-        currentAudio.removeEventListener("ended", onSongEnded);
-        messageTimeouts.forEach(clearTimeout);
-        messageTimeouts = [];
-        spamModeActive = false;
-        document.getElementById('pauseAutoplayBtn').textContent = 'Pause';
-        isPaused = false;
-    }
-    if (autoplayMode) {
-        playNextAuto();
-    } else {
-        currentlyPlaying.innerHTML = "Currently Playing: none";
-        musicStatus.innerHTML = `Music Status: OFF`;
-        updateAutoplayStatus();
-    }
+  schedulingActive = false;
+  if (spamModeActive) {
+    hideNotification();
+    currentAudio.pause();
+    currentAudio.currentTime = 0;
+    currentAudio.removeEventListener("ended", onSongEnded);
+    messageTimeouts.forEach(clearTimeout);
+    messageTimeouts = [];
+    spamModeActive = false;
+    document.getElementById("pauseAutoplayBtn").textContent = "Pause";
+    isPaused = false;
+  }
+  if (autoplayMode) {
+    playNextAuto();
+  } else {
+    currentlyPlaying.innerHTML = "Currently Playing: none";
+    musicStatus.innerHTML = `Music Status: OFF`;
+    updateAutoplayStatus();
+  }
 }
 
 function skipBackSong() {
-    if (!autoplayMode) {
-        console.log('Not in autoplay mode. Press C to start manual play.');
-        return;
+  if (!autoplayMode) {
+    console.log("Not in autoplay mode. Press C to start manual play.");
+    return;
+  }
+  if (songHistoryIndex <= 0) {
+    console.log("Already at the first song in history");
+    return;
+  }
+
+  songHistoryIndex--;
+  const prevSong = songHistory[songHistoryIndex];
+  if (!prevSong) return;
+
+  if (autoplayMode === "category") {
+    const idx = autoplaySongs.findIndex((s) => s.id === prevSong.id);
+    if (idx !== -1) {
+      autoplayIndex = idx;
+      console.log(`Adjusted autoplayIndex to ${autoplayIndex}`);
     }
-    if (songHistoryIndex <= 0) {
-        console.log('Already at the first song in history');
-        return;
-    }
+  }
 
-    songHistoryIndex--;
-    const prevSong = songHistory[songHistoryIndex];
-    if (!prevSong) return;
+  if (spamModeActive) {
+    currentAudio.pause();
+    currentAudio.currentTime = 0;
+    currentAudio.removeEventListener("ended", onSongEnded);
+    messageTimeouts.forEach(clearTimeout);
+    messageTimeouts = [];
+    spamModeActive = false;
+  }
 
-    if (autoplayMode === 'category') {
-        const idx = autoplaySongs.findIndex(s => s.id === prevSong.id);
-        if (idx !== -1) {
-            autoplayIndex = idx;
-            console.log(`Adjusted autoplayIndex to ${autoplayIndex}`);
-        }
-    }
+  isGoingBack = true;
 
-    if (spamModeActive) {
-        currentAudio.pause();
-        currentAudio.currentTime = 0;
-        currentAudio.removeEventListener("ended", onSongEnded);
-        messageTimeouts.forEach(clearTimeout);
-        messageTimeouts = [];
-        spamModeActive = false;
-    }
-
-    isGoingBack = true;
-
-    playSong(prevSong);
+  playSong(prevSong);
 }
 
 function onSongEnded() {
-    setTimeout(() => {
-        if (loopSong && !autoplayMode) {
-            currentAudio.currentTime = 0;
-            currentAudio.play().then(() => {
-                scheduleMessages(chatMessages);
-            }).catch(err => console.warn('Loop restart failed:', err));
-            return;
-        }
-        resetLyricsState();
-        if (autoplayMode) {
-            playNextAuto();
-        } else {
-            spamModeActive = false;
-            currentlyPlaying.innerHTML = "Currently Playing: none";
-            musicStatus.innerHTML = `Music Status: OFF`;
-            updateAutoplayStatus();
-            document.getElementById('pauseAutoplayBtn').textContent = 'Pause';
-            isPaused = false;
-        }
-    }, 200);
+  setTimeout(() => {
+    if (loopSong && !autoplayMode) {
+      currentAudio.currentTime = 0;
+      currentAudio
+        .play()
+        .then(() => {
+          scheduleMessages(chatMessages);
+        })
+        .catch((err) => console.warn("Loop restart failed:", err));
+      return;
+    }
+    resetLyricsState();
+    if (autoplayMode) {
+      playNextAuto();
+    } else {
+      spamModeActive = false;
+      currentlyPlaying.innerHTML = "Currently Playing: none";
+      musicStatus.innerHTML = `Music Status: OFF`;
+      updateAutoplayStatus();
+      document.getElementById("pauseAutoplayBtn").textContent = "Pause";
+      isPaused = false;
+    }
+  }, 200);
 }
 
 function startCategoryAutoplay(categoryName) {
-    if (syncRoom && !syncIsLeader) {
-        showNotification('Only the leader can start autoplay', "system");
-        return;
-    }
+  if (syncRoom && !syncIsLeader) {
+    showNotification("Only the leader can start autoplay", "system");
+    return;
+  }
 
-    if (spamModeActive) {
-        currentAudio.pause();
-        currentAudio.currentTime = 0;
-        spamModeActive = false;
-        currentAudio.removeEventListener("ended", onSongEnded);
-        messageTimeouts.forEach(clearTimeout);
-        messageTimeouts = [];
-    }
+  if (spamModeActive) {
+    currentAudio.pause();
+    currentAudio.currentTime = 0;
+    spamModeActive = false;
+    currentAudio.removeEventListener("ended", onSongEnded);
+    messageTimeouts.forEach(clearTimeout);
+    messageTimeouts = [];
+  }
 
-    autoplayMode = 'category';
-    autoplayCategory = categoryName;
-    autoplaySongs = getSongsByCategory(categoryName);
-    autoplayIndex = 0;
-    songHistory = [];
-    songHistoryIndex = -1;
-    isGoingBack = false;
-    randomPool = [];
-    randomCategoryName = null;
+  autoplayMode = "category";
+  autoplayCategory = categoryName;
+  autoplaySongs = getSongsByCategory(categoryName);
+  autoplayIndex = 0;
+  songHistory = [];
+  songHistoryIndex = -1;
+  isGoingBack = false;
+  randomPool = [];
+  randomCategoryName = null;
 
-    if (autoplaySongs.length === 0) {
-        alert(`No songs found in category: ${categoryName}`);
-        autoplayMode = null;
-        updateAutoplayStatus();
-        return;
-    }
-
-    console.log(`Autoplay category "${categoryName}" (${autoplaySongs.length} songs)`);
-    showNotification(`Autoplay: ${categoryName || 'Random'}`, 'system');
+  if (autoplaySongs.length === 0) {
+    alert(`No songs found in category: ${categoryName}`);
+    autoplayMode = null;
     updateAutoplayStatus();
-    playNextAuto();
+    return;
+  }
+
+  console.log(
+    `Autoplay category "${categoryName}" (${autoplaySongs.length} songs)`,
+  );
+  showNotification(`Autoplay: ${categoryName || "Random"}`, "system");
+  updateAutoplayStatus();
+  playNextAuto();
 }
 
 function startRandomAutoplay() {
-    let pool = [];
-    let categoryName = null;
+  let pool = [];
+  let categoryName = null;
 
-    if (syncRoom && !syncIsLeader) {
-        showNotification('Only the leader can start autoplay', "system");
-        return;
-    }
+  if (syncRoom && !syncIsLeader) {
+    showNotification("Only the leader can start autoplay", "system");
+    return;
+  }
 
-    if (autoplayMode === 'category' && autoplaySongs.length > 0) {
-        pool = autoplaySongs;
-        categoryName = autoplayCategory;
-    } else {
-        pool = getAllSongs();
-        categoryName = null;
-    }
+  if (autoplayMode === "category" && autoplaySongs.length > 0) {
+    pool = autoplaySongs;
+    categoryName = autoplayCategory;
+  } else {
+    pool = getAllSongs();
+    categoryName = null;
+  }
 
-    if (pool.length === 0) {
-        alert('No songs available.');
-        return;
-    }
+  if (pool.length === 0) {
+    alert("No songs available.");
+    return;
+  }
 
-    if (spamModeActive) {
-        currentAudio.pause();
-        currentAudio.currentTime = 0;
-        spamModeActive = false;
-        currentAudio.removeEventListener("ended", onSongEnded);
-        messageTimeouts.forEach(clearTimeout);
-        messageTimeouts = [];
-    }
+  if (spamModeActive) {
+    currentAudio.pause();
+    currentAudio.currentTime = 0;
+    spamModeActive = false;
+    currentAudio.removeEventListener("ended", onSongEnded);
+    messageTimeouts.forEach(clearTimeout);
+    messageTimeouts = [];
+  }
 
-    autoplayMode = 'random';
-    autoplayCategory = null;
-    autoplaySongs = [];
-    autoplayIndex = 0;
-    songHistory = [];
-    songHistoryIndex = -1;
-    isGoingBack = false;
-    randomPool = pool;
-    randomCategoryName = categoryName;
+  autoplayMode = "random";
+  autoplayCategory = null;
+  autoplaySongs = [];
+  autoplayIndex = 0;
+  songHistory = [];
+  songHistoryIndex = -1;
+  isGoingBack = false;
+  randomPool = pool;
+  randomCategoryName = categoryName;
 
-    console.log(`Autoplay random from ${pool.length} songs`);
-    showNotification(`Autoplay: ${categoryName || 'Random'}`, 'system');
-    updateAutoplayStatus();
-    playNextAuto();
+  console.log(`Autoplay random from ${pool.length} songs`);
+  showNotification(`Autoplay: ${categoryName || "Random"}`, "system");
+  updateAutoplayStatus();
+  playNextAuto();
 }
 
 function stopAutoplay() {
-    schedulingActive = false;
-    autoplayMode = null;
-    autoplayCategory = null;
-    autoplaySongs = [];
-    autoplayIndex = 0;
-    hideNotification();
-    songHistory = [];
-    songHistoryIndex = -1;
-    isGoingBack = false;
-    randomPool = [];
-    randomCategoryName = null;
-    document.getElementById('pauseAutoplayBtn').textContent = 'Pause';
+  schedulingActive = false;
+  autoplayMode = null;
+  autoplayCategory = null;
+  autoplaySongs = [];
+  autoplayIndex = 0;
+  hideNotification();
+  songHistory = [];
+  songHistoryIndex = -1;
+  isGoingBack = false;
+  randomPool = [];
+  randomCategoryName = null;
+  document.getElementById("pauseAutoplayBtn").textContent = "Pause";
+  isPaused = false;
+
+  if (spamModeActive) {
+    currentAudio.pause();
+    currentAudio.currentTime = 0;
+    spamModeActive = false;
+    currentAudio.removeEventListener("ended", onSongEnded);
+    messageTimeouts.forEach(clearTimeout);
+    messageTimeouts = [];
+    currentlyPlaying.innerHTML = "Currently Playing: none";
+    musicStatus.innerHTML = `Music Status: OFF`;
+    document.getElementById("pauseAutoplayBtn").textContent = "Pause";
     isPaused = false;
+  }
 
-    if (spamModeActive) {
-        currentAudio.pause();
-        currentAudio.currentTime = 0;
-        spamModeActive = false;
-        currentAudio.removeEventListener("ended", onSongEnded);
-        messageTimeouts.forEach(clearTimeout);
-        messageTimeouts = [];
-        currentlyPlaying.innerHTML = "Currently Playing: none";
-        musicStatus.innerHTML = `Music Status: OFF`;
-        document.getElementById('pauseAutoplayBtn').textContent = 'Pause';
-        isPaused = false;
-    }
-
-    updateAutoplayStatus();
-    showNotification('Autoplay stopped', 'system');
-    console.log('Autoplay stopped');
+  updateAutoplayStatus();
+  showNotification("Autoplay stopped", "system");
+  console.log("Autoplay stopped");
 }
 
 function updateAutoplayStatus() {
-    const statusEl = document.getElementById("autoplayStatus");
-    if (!statusEl) return;
+  const statusEl = document.getElementById("autoplayStatus");
+  if (!statusEl) return;
 
-    if (autoplayMode === "category" && autoplayCategory) {
-        const cleanName = autoplayCategory.replace(/-----.*$/, '').trim();
-        statusEl.innerHTML = `${cleanName} (${autoplayIndex}/${autoplaySongs.length})`;
-    } else if (autoplayMode === "random") {
-        const count = randomPool.length || getAllSongs().length;
-        let label = "Random";
-        if (randomCategoryName) {
-            const cleanName = randomCategoryName.replace(/-----.*$/, '').trim();
-            label = `Random (${cleanName})`;
-        }
-        statusEl.innerHTML = `${label} (${count} songs)`;
-    } else {
-        statusEl.innerHTML = `Off`;
+  if (autoplayMode === "category" && autoplayCategory) {
+    const cleanName = autoplayCategory.replace(/-----.*$/, "").trim();
+    statusEl.innerHTML = `${cleanName} (${autoplayIndex}/${autoplaySongs.length})`;
+  } else if (autoplayMode === "random") {
+    const count = randomPool.length || getAllSongs().length;
+    let label = "Random";
+    if (randomCategoryName) {
+      const cleanName = randomCategoryName.replace(/-----.*$/, "").trim();
+      label = `Random (${cleanName})`;
     }
+    statusEl.innerHTML = `${label} (${count} songs)`;
+  } else {
+    statusEl.innerHTML = `Off`;
+  }
 }
 
 function togglePause() {
-    const pauseBtn = document.getElementById('pauseAutoplayBtn');
-    if (!pauseBtn) return;
+  const pauseBtn = document.getElementById("pauseAutoplayBtn");
+  if (!pauseBtn) return;
 
-    if (!currentAudio) return;
+  if (!currentAudio) return;
 
-    if (!spamModeActive && !autoplayMode) {
-        showNotification('No song is playing', "system");
-        return;
-    }
+  if (!spamModeActive && !autoplayMode) {
+    showNotification("No song is playing", "system");
+    return;
+  }
 
-    if (syncRoom && !syncIsLeader) {
-        showNotification('Only the leader can pause', 'system');
-        return;
-    }
+  if (syncRoom && !syncIsLeader) {
+    showNotification("Only the leader can pause", "system");
+    return;
+  }
 
-    if (currentAudio.paused) {
-        // Resume
-        currentAudio.play().then(() => {
-            isPaused = false;
-            pauseBtn.textContent = 'Pause';
-            musicStatus.innerHTML = `Music Status: ON (${autoplayMode || 'Manual'})`;
-            schedulingActive = true;
+  if (currentAudio.paused) {
+    // Resume
+    currentAudio
+      .play()
+      .then(() => {
+        isPaused = false;
+        pauseBtn.textContent = "Pause";
+        musicStatus.innerHTML = `Music Status: ON (${autoplayMode || "Manual"})`;
+        schedulingActive = true;
 
-            let startIndex = 0;
-            const currentMs = currentAudio.currentTime * 1000;
-            for (let j = 0; j < chatMessages.length; j++) {
-                if (chatMessages[j].delay > currentMs) {
-                    startIndex = j;
-                    break;
-                }
-            }
-            scheduleMessages(chatMessages, startIndex);
-            if (syncRoom && syncIsLeader) {
-                syncPause(false, currentAudio.currentTime);
-            }
-        }).catch(err => console.warn('Resume failed:', err));
-    } else {
-        // Pause
-        currentAudio.pause();
-        isPaused = true;
-        schedulingActive = false;
-        pauseBtn.textContent = 'Play';
-        musicStatus.innerHTML = `Music Status: Paused`;
-        if (syncRoom && syncIsLeader) {
-            syncPause(true, currentAudio.currentTime);
+        let startIndex = 0;
+        const currentMs = currentAudio.currentTime * 1000;
+        for (let j = 0; j < chatMessages.length; j++) {
+          if (chatMessages[j].delay > currentMs) {
+            startIndex = j;
+            break;
+          }
         }
+        scheduleMessages(chatMessages, startIndex);
+        if (syncRoom && syncIsLeader) {
+          syncPause(false, currentAudio.currentTime);
+        }
+      })
+      .catch((err) => console.warn("Resume failed:", err));
+  } else {
+    // Pause
+    currentAudio.pause();
+    isPaused = true;
+    schedulingActive = false;
+    pauseBtn.textContent = "Play";
+    musicStatus.innerHTML = `Music Status: Paused`;
+    if (syncRoom && syncIsLeader) {
+      syncPause(true, currentAudio.currentTime);
     }
+  }
 }
 
 function setupAutoplayEvents() {
-    document.querySelectorAll('.autoplay-btn[data-category]').forEach(btn => {
-        btn.addEventListener('click', () => {
-            startCategoryAutoplay(btn.dataset.category);
-        });
+  document.querySelectorAll(".autoplay-btn[data-category]").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      startCategoryAutoplay(btn.dataset.category);
     });
+  });
 
-    const randomBtn = document.getElementById('randomAutoplayBtn');
-    if (randomBtn) randomBtn.addEventListener('click', startRandomAutoplay);
+  const randomBtn = document.getElementById("randomAutoplayBtn");
+  if (randomBtn) randomBtn.addEventListener("click", startRandomAutoplay);
 
-    const stopBtn = document.getElementById('stopAutoplayBtn');
-    if (stopBtn) stopBtn.addEventListener('click', stopAutoplay);
+  const stopBtn = document.getElementById("stopAutoplayBtn");
+  if (stopBtn) stopBtn.addEventListener("click", stopAutoplay);
 
-    const pauseBtn = document.getElementById('pauseAutoplayBtn');
-    if (pauseBtn) pauseBtn.addEventListener('click', togglePause);
+  const pauseBtn = document.getElementById("pauseAutoplayBtn");
+  if (pauseBtn) pauseBtn.addEventListener("click", togglePause);
 }
 
 let syncRoom = null;
@@ -1100,690 +1124,152 @@ let syncCurrentTime = 0;
 let duetMode = false;
 
 function resetLyricsState() {
-    if (window._lyricsInterval) {
-        clearInterval(window._lyricsInterval);
-        window._lyricsInterval = null;
-    }
-    schedulingActive = false;
-    chatMessages = [];
-    syncStartTime = null;
+  if (window._lyricsInterval) {
+    clearInterval(window._lyricsInterval);
+    window._lyricsInterval = null;
+  }
+  schedulingActive = false;
+  chatMessages = [];
+  syncStartTime = null;
 }
 
 function hardResetLyrics() {
-    if (window._lyricsInterval) {
-        clearInterval(window._lyricsInterval);
-        window._lyricsInterval = null;
-    }
-    schedulingActive = false;
+  if (window._lyricsInterval) {
+    clearInterval(window._lyricsInterval);
+    window._lyricsInterval = null;
+  }
+  schedulingActive = false;
 
-    if (!spamModeActive || !selectedSongId) {
-        console.log('No active song – resetting lyrics state (cleared interval)');
-        showNotification('Lyrics reset (no song playing)', 'system');
+  if (!spamModeActive || !selectedSongId) {
+    console.log("No active song – resetting lyrics state (cleared interval)");
+    showNotification("Lyrics reset (no song playing)", "system");
+    return;
+  }
+
+  const songId = selectedSongId;
+  const currentTime = currentAudio.currentTime || 0;
+  console.log(`Hard resetting lyrics for song ${songId} at ${currentTime}s`);
+
+  delete lyricsCache[songId];
+
+  fetchLyrics(songId)
+    .then((lyrics) => {
+      if (!lyrics || lyrics.length === 0) {
+        console.warn("No lyrics returned for hard reset.");
+        showNotification("No lyrics available for this song", "system");
         return;
-    }
+      }
+      chatMessages = lyrics;
 
-    const songId = selectedSongId;
-    const currentTime = currentAudio.currentTime || 0;
-    console.log(`Hard resetting lyrics for song ${songId} at ${currentTime}s`);
-
-    delete lyricsCache[songId];
-
-    fetchLyrics(songId)
-        .then(lyrics => {
-        if (!lyrics || lyrics.length === 0) {
-            console.warn('No lyrics returned for hard reset.');
-            showNotification('No lyrics available for this song', 'system');
-            return;
+      const currentMs = currentTime * 1000;
+      let startIndex = 0;
+      for (let j = 0; j < lyrics.length; j++) {
+        if (lyrics[j].delay > currentMs) {
+          startIndex = j;
+          break;
         }
-        chatMessages = lyrics;
+      }
 
-        const currentMs = currentTime * 1000;
-        let startIndex = 0;
-        for (let j = 0; j < lyrics.length; j++) {
-            if (lyrics[j].delay > currentMs) {
-                startIndex = j;
-                break;
-            }
-        }
-
-        scheduleMessages(lyrics, startIndex);
-        console.log(`Lyrics hard reset: scheduled from index ${startIndex} (${lyrics.length} lines)`);
-        showNotification('Lyrics reset and rescheduled', 'system');
+      scheduleMessages(lyrics, startIndex);
+      console.log(
+        `Lyrics hard reset: scheduled from index ${startIndex} (${lyrics.length} lines)`,
+      );
+      showNotification("Lyrics reset and rescheduled", "system");
     })
-        .catch(err => {
-        console.error('Hard reset lyrics fetch error:', err);
-        showNotification('Lyrics reset failed – fetch error', 'system');
+    .catch((err) => {
+      console.error("Hard reset lyrics fetch error:", err);
+      showNotification("Lyrics reset failed – fetch error", "system");
     });
 }
 
 function startHeartbeat(roomCode) {
-    if (syncHeartbeatInterval) clearInterval(syncHeartbeatInterval);
-    syncHeartbeatInterval = setInterval(() => {
-        if (!syncRoom) {
-            clearInterval(syncHeartbeatInterval);
-            syncHeartbeatInterval = null;
-            return;
-        }
-        fetch(`${API_BASE}/sync/heartbeat`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ roomCode: syncRoom, name: syncName })
-        }).catch(err => console.warn('Heartbeat failed:', err));
-    }, 10000);
+  if (syncHeartbeatInterval) clearInterval(syncHeartbeatInterval);
+  syncHeartbeatInterval = setInterval(() => {
+    if (!syncRoom) {
+      clearInterval(syncHeartbeatInterval);
+      syncHeartbeatInterval = null;
+      return;
+    }
+    fetch(`${API_BASE}/sync/heartbeat`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ roomCode: syncRoom, name: syncName }),
+    }).catch((err) => console.warn("Heartbeat failed:", err));
+  }, 10000);
 }
 
 function connectSyncSSE(roomCode) {
-    if (syncEventSource) {
-        syncEventSource.close();
-        syncEventSource = null;
+  if (syncEventSource) {
+    syncEventSource.close();
+    syncEventSource = null;
+  }
+  const currentRoom = roomCode;
+  syncEventSource = new EventSource(`${API_BASE}/sync/events/${currentRoom}`);
+
+  syncEventSource.onmessage = (event) => {
+    try {
+      const msg = JSON.parse(event.data);
+      console.log("SSE update:", msg);
+      handleSyncMessage(msg);
+    } catch (e) {
+      console.warn("SSE parse error:", e);
     }
+  };
+
+  syncEventSource.onerror = (err) => {
+    console.warn("SSE error, checking room...", err);
+    if (isRejoining || isLeaving) return;
     const currentRoom = roomCode;
-    syncEventSource = new EventSource(`${API_BASE}/sync/events/${currentRoom}`);
-
-    syncEventSource.onmessage = (event) => {
-        try {
-            const msg = JSON.parse(event.data);
-            console.log('SSE update:', msg);
-            handleSyncMessage(msg);
-        } catch (e) {
-            console.warn('SSE parse error:', e);
+    const originalLeader = syncLeader;
+    fetch(`${API_BASE}/sync/${currentRoom}`)
+      .then((res) => {
+        if (!res.ok) {
+          console.warn(
+            "Room no longer exists. Rejoining with original leader:",
+            originalLeader,
+          );
+          showNotification("Room was deleted, rejoining...", "system");
+          syncJoin(currentRoom, originalLeader);
+        } else {
+          console.log("Room exists, SSE will reconnect automatically.");
         }
-    };
-
-    syncEventSource.onerror = (err) => {
-        console.warn('SSE error, checking room...', err);
-        if (isRejoining || isLeaving) return;
-        const currentRoom = roomCode;
-        const originalLeader = syncLeader;
-        fetch(`${API_BASE}/sync/${currentRoom}`)
-            .then(res => {
-            if (!res.ok) {
-                console.warn('Room no longer exists. Rejoining with original leader:', originalLeader);
-                showNotification('Room was deleted, rejoining...', "system");
-                syncJoin(currentRoom, originalLeader);
-            } else {
-                console.log('Room exists, SSE will reconnect automatically.');
-            }
-        })
-            .catch(() => {
-            console.log('Network error checking room, will retry on next SSE error.');
-        });
-    };
+      })
+      .catch(() => {
+        console.log(
+          "Network error checking room, will retry on next SSE error.",
+        );
+      });
+  };
 }
 
 function handleSyncMessage(msg) {
-    if (msg.type !== 'room_state') return;
-    let needUIUpdate = false;
+  if (msg.type !== "room_state") return;
+  let needUIUpdate = false;
 
-    if (msg.leader !== syncLeader) {
-        syncLeader = msg.leader;
-        syncIsLeader = (syncLeader === syncName);
-        showNotification(`Leader changed to "${syncLeader}"`, "system");
-        document.getElementById('syncStatus').textContent = `Connected (Leader: ${syncLeader})`;
-        needUIUpdate = true;
-    }
+  if (msg.leader !== syncLeader) {
+    syncLeader = msg.leader;
+    syncIsLeader = syncLeader === syncName;
+    showNotification(`Leader changed to "${syncLeader}"`, "system");
+    document.getElementById("syncStatus").textContent =
+      `Connected (Leader: ${syncLeader})`;
+    needUIUpdate = true;
+  }
 
-    if (JSON.stringify(msg.members) !== JSON.stringify(syncMembers)) {
-        syncMembers = msg.members || [];
-        updateSyncUI();
-        needUIUpdate = true;
-    }
-
-    if (msg.currentTime !== undefined) {
-        syncCurrentTime = msg.currentTime;
-    }
-
-    if (msg.currentSong !== undefined && msg.currentSong !== syncCurrentSongId) {
-        syncCurrentSongId = msg.currentSong;
-
-        if (syncCurrentSongId === null) {
-            if (spamModeActive) {
-                currentAudio.pause();
-                currentAudio.currentTime = 0;
-                spamModeActive = false;
-                currentAudio.removeEventListener("ended", onSongEnded);
-                messageTimeouts.forEach(clearTimeout);
-                messageTimeouts = [];
-                currentlyPlaying.innerHTML = "Currently Playing: none";
-                musicStatus.innerHTML = `Music Status: OFF (synced)`;
-                document.getElementById('pauseAutoplayBtn').textContent = 'Pause';
-                isPaused = false;
-                schedulingActive = false;
-                hideNotification();
-            }
-            syncPaused = false;
-            syncCurrentTime = 0;
-            needUIUpdate = true;
-        } else if (!syncIsLeader && syncCurrentSongId !== null) {
-            const timestamp = msg.timestamp || Date.now();
-            let targetSongId = syncCurrentSongId;
-            if (duetMode && msg.partnerSongId) {
-                targetSongId = msg.partnerSongId;
-                console.log(`Duet mode: playing partner song ${targetSongId} instead of ${syncCurrentSongId}`);
-            }
-            playSyncSong(targetSongId, msg.currentTime || 0, timestamp);
-        }
-        needUIUpdate = true;
-    }
-
-    if (msg.paused !== undefined && syncCurrentSongId !== null) {
-        const newPaused = msg.paused;
-        if (newPaused !== syncPaused) {
-            syncPaused = newPaused;
-
-            if (syncPaused) {
-                if (spamModeActive && !currentAudio.paused) {
-                    if (syncCurrentTime !== undefined) {
-                        currentAudio.currentTime = syncCurrentTime;
-                    }
-                    currentAudio.pause();
-                    isPaused = true;
-                    document.getElementById('pauseAutoplayBtn').textContent = 'Play';
-                    musicStatus.innerHTML = 'Music Status: Paused (synced)';
-                    schedulingActive = false;
-                    hideNotification();
-                }
-            } else {
-                if (spamModeActive && currentAudio.paused) {
-                    if (syncCurrentTime !== undefined) {
-                        currentAudio.currentTime = syncCurrentTime;
-                        console.log(`Resume: aligned to ${syncCurrentTime}s`);
-                    }
-                    currentAudio.play()
-                        .then(() => {
-                        isPaused = false;
-                        document.getElementById('pauseAutoplayBtn').textContent = 'Pause';
-                        musicStatus.innerHTML = `Music Status: ON (Sync)`;
-                        schedulingActive = true;
-                        let startIndex = 0;
-                        const currentMs = currentAudio.currentTime * 1000;
-                        for (let j = 0; j < chatMessages.length; j++) {
-                            if (chatMessages[j].delay > currentMs) {
-                                startIndex = j;
-                                break;
-                            }
-                        }
-                        scheduleMessages(chatMessages, startIndex);
-                    })
-                        .catch(err => console.warn('Resume failed:', err));
-                }
-            }
-            needUIUpdate = true;
-        }
-    }
-
-    if (msg.loop !== undefined && msg.loop !== syncLoop) {
-        syncLoop = msg.loop;
-        const loopCheckbox = document.getElementById('loopsong');
-        if (loopCheckbox) {
-            loopCheckbox.checked = syncLoop;
-            loopSong = syncLoop;
-            if (currentAudio) currentAudio.loop = syncLoop;
-        }
-        needUIUpdate = true;
-    }
-
-    if (needUIUpdate) updateSyncUI();
-}
-
-async function syncJoin(roomCode, originalLeader = null) {
-    stopMusic();
-    syncIsLeader = false;
-    syncLeader = null;
-
-    if (isRejoining) return;
-    isRejoining = true;
-    isLeaving = false;
-    try {
-        const body = { roomCode, name: syncName };
-        if (originalLeader) body.originalLeader = originalLeader;
-        const res = await fetch(`${API_BASE}/sync/join`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(body)
-        });
-        const data = await res.json();
-        syncRoom = roomCode;
-        syncLeader = data.leader;
-        syncMembers = data.members || [];
-        syncCurrentSongId = data.currentSong || null;
-        syncCurrentTime = data.currentTime || 0;
-        syncPaused = data.paused || false;
-        syncIsLeader = (syncLeader === syncName);
-        if (!syncLeader) { syncLeader = syncName; syncIsLeader = true; }
-        syncLoop = data.loop || false;
-        const loopCheckbox = document.getElementById('loopsong');
-        if (loopCheckbox) {
-            loopCheckbox.checked = syncLoop;
-            loopSong = syncLoop;
-            if (currentAudio) currentAudio.loop = syncLoop;
-        }
-        updateSyncUI();
-
-        if (data.isNewRoom) {
-            showNotification(`Created new room: ${roomCode}`, "system");
-        } else {
-            showNotification(`Joined existing room: ${roomCode}`, "system");
-        }
-
-        startHeartbeat(roomCode);
-        connectSyncSSE(roomCode);
-        updateSyncUI();
-        document.getElementById('syncStatus').textContent = `Connected (Leader: ${syncLeader})`;
-        if (syncCurrentSongId !== null && !syncPaused && !syncIsLeader) {
-            const timestamp = data.timestamp || Date.now();
-            playSyncSong(syncCurrentSongId, syncCurrentTime, timestamp);
-        }
-    } catch (err) {
-        console.error('Sync join error:', err);
-        showNotification('Failed to join sync room', "system");
-        alert('Failed to join sync room');
-    } finally {
-        isRejoining = false;
-        isLeaving = false;
-    }
-}
-
-async function syncLeave() {
-    isLeaving = true;
-    resetLyricsState();
-    isRejoining = false;
-    if (syncRoom) {
-        try {
-            await fetch(`${API_BASE}/sync/leave`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ roomCode: syncRoom, name: syncName })
-            });
-        } catch (e) { /* ignore */ }
-    }
-    if (syncEventSource) {
-        syncEventSource.close();
-        syncEventSource = null;
-    }
-    if (syncHeartbeatInterval) {
-        clearInterval(syncHeartbeatInterval);
-        syncHeartbeatInterval = null;
-    }
-    syncRoom = null;
-    syncLeader = null;
-    syncMembers = [];
-    syncCurrentSongId = null;
-    syncCurrentTime = 0;
-    syncPaused = false;
-    syncIsLeader = false;
-    syncLoop = false;
-    syncStartTime = null;
+  if (JSON.stringify(msg.members) !== JSON.stringify(syncMembers)) {
+    syncMembers = msg.members || [];
     updateSyncUI();
-    document.getElementById('syncStatus').textContent = 'Off';
-    setTimeout(() => { isLeaving = false; }, 1000);
-}
+    needUIUpdate = true;
+  }
 
+  if (msg.currentTime !== undefined) {
+    syncCurrentTime = msg.currentTime;
+  }
 
-async function syncPlay(songId, currentTime = 0, timestamp = Date.now()) {
-    if (!syncRoom || !syncIsLeader) return;
-    let partnerSongId = null;
-    if (duetMode) {
-        partnerSongId = getPartnerSongId(songId);
-        if (partnerSongId) {
-            console.log(`Duet mode: sending partner song ID ${partnerSongId} for ${songId}`);
-        }
-    }
-    try {
-        await fetch(`${API_BASE}/sync/play`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ roomCode: syncRoom, name: syncName, songId, currentTime, timestamp, partnerSongId })
-        });
-        syncCurrentSongId = songId;
-        syncPaused = false;
-    } catch (err) {
-        console.error('Sync play error:', err);
-    }
-}
+  if (msg.currentSong !== undefined && msg.currentSong !== syncCurrentSongId) {
+    syncCurrentSongId = msg.currentSong;
 
-async function syncPause(paused, currentTime = 0) {
-    if (!syncRoom || !syncIsLeader) return;
-    try {
-        await fetch(`${API_BASE}/sync/pause`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ roomCode: syncRoom, name: syncName, paused, currentTime })
-        });
-        syncPaused = paused;
-    } catch (err) {
-        console.error('Sync pause error:', err);
-    }
-}
-
-async function syncSetLoop(loop) {
-    if (!syncRoom || !syncIsLeader) return;
-    try {
-        await fetch(`${API_BASE}/sync/set_loop`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ roomCode: syncRoom, name: syncName, loop })
-        });
-        syncLoop = loop;
-    } catch (err) {
-        console.error('Sync set loop error:', err);
-    }
-}
-
-async function syncStop() {
-    if (!syncRoom || !syncIsLeader) return;
-    try {
-        await fetch(`${API_BASE}/sync/stop`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ roomCode: syncRoom, name: syncName })
-        });
-        syncCurrentSongId = null;
-        syncPaused = true;
-    } catch (err) {
-        console.error('Sync stop error:', err);
-    }
-}
-
-async function syncMakeLeader(targetName) {
-    if (!syncRoom || !syncIsLeader) return;
-    try {
-        const res = await fetch(`${API_BASE}/sync/make_leader`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ roomCode: syncRoom, name: syncName, targetName: targetName.trim() })
-        });
-        if (!res.ok) {
-            const err = await res.json();
-            showNotification(`${err.error || 'Failed to change leader'}`, "system");
-            return;
-        }
-    } catch (err) {
-        console.error('Make leader error:', err);
-        showNotification('ould not change leader', "system");
-    }
-}
-
-function updateSyncUI() {
-    const membersEl = document.getElementById('syncMembers');
-    if (!membersEl) return;
-    const count = syncMembers.length;
-    if (count === 0) {
-        membersEl.textContent = 'Members: none';
-        return;
-    }
-    const list = syncMembers.map(m => `${m}${m === syncLeader ? ' 👑' : ''}`).join(', ');
-    membersEl.textContent = `Members (${count}): ${list}`;
-}
-
-function playSyncSong(songId, startTime = 0, serverTimestamp = Date.now()) {
-    resetLyricsState();
-    const song = songsList.find(s => s.id === songId);
-    if (!song) {
-        console.warn('Sync song not found:', songId);
-        return;
-    }
-
-    const now = Date.now();
-    const elapsed = (now - serverTimestamp) / 1000;
-    let adjustedStart = Math.max(0, startTime + elapsed);
-
-    console.log(`Sync playing: ${song.name}, target start ${adjustedStart}s (offset ${elapsed}s)`);
-
-    selectedSongId = song.id;
-    selectedSongName = song.name;
-    selectedSongAudio = song.url;
-
-    if (spamModeActive) {
-        currentAudio.pause();
-        currentAudio.currentTime = 0;
-        spamModeActive = false;
-        currentAudio.removeEventListener("ended", onSongEnded);
-        messageTimeouts.forEach(clearTimeout);
-        messageTimeouts = [];
-    }
-
-    currentAudio.src = selectedSongAudio;
-    currentAudio.preload = "auto";
-
-    const loadPromise = new Promise((resolve) => {
-        if (currentAudio.readyState >= 2) {
-            resolve();
-        } else {
-            const onLoad = () => {
-                currentAudio.removeEventListener("loadedmetadata", onLoad);
-                resolve();
-            };
-            currentAudio.addEventListener("loadedmetadata", onLoad);
-            setTimeout(resolve, 2000);
-        }
-    });
-
-    loadPromise.then(() => {
-        const loadTime = (Date.now() - now) / 1000;
-        adjustedStart = Math.max(0, adjustedStart + loadTime);
-        console.log(`Audio loaded in ${loadTime}s, adjusted start ${adjustedStart}s`);
-
-        currentAudio.currentTime = adjustedStart;
-        currentAudio.loop = false;
-        syncStartTime = adjustedStart;
-        syncCurrentTime = adjustedStart;
-
-        initAudioContext();
-
-        currentAudio.play()
-            .then(() => {
-            spamModeActive = true;
-            currentlyPlaying.innerHTML = `Currently Playing: ${selectedSongName}`;
-            musicStatus.innerHTML = `Music Status: ON (Sync)`;
-            document.getElementById('pauseAutoplayBtn').textContent = 'Pause';
-            isPaused = false;
-
-            const scheduleLyrics = (lyrics) => {
-                chatMessages = lyrics;
-                const currentMs = currentAudio.currentTime * 1000;
-                let startIndex = 0;
-                for (let j = 0; j < chatMessages.length; j++) {
-                    if (chatMessages[j].delay > currentMs) {
-                        startIndex = j;
-                        break;
-                    }
-                }
-                scheduleMessages(chatMessages, startIndex);
-                console.log(`Scheduled lyrics from index ${startIndex} (time: ${currentMs}ms)`);
-            };
-
-            if (lyricsCache[selectedSongId]) {
-                scheduleLyrics(lyricsCache[selectedSongId]);
-            } else {
-                fetchLyrics(selectedSongId)
-                    .then(lyrics => {
-                    scheduleLyrics(lyrics);
-                })
-                    .catch(err => {
-                    console.error('Failed to fetch lyrics for sync:', err);
-                    chatMessages = [];
-                    showNotification('Sync lyrics unavailable', 'system');
-                });
-            }
-
-            currentAudio.removeEventListener("ended", onSongEnded);
-            currentAudio.addEventListener("ended", onSongEnded);
-
-            const actualTime = currentAudio.currentTime;
-            if (Math.abs(actualTime - adjustedStart) > 0.5) {
-                console.warn(`Position discrepancy: actual ${actualTime}s, intended ${adjustedStart}s, correcting...`);
-                currentAudio.currentTime = adjustedStart;
-            }
-        })
-            .catch(err => {
-            console.warn('Sync play error:', err);
-            spamModeActive = false;
-            showNotification('Sync playback failed', 'system');
-        });
-    });
-}
-
-document.getElementById('joinSyncBtn').addEventListener('click', () => {
-    const room = document.getElementById('roomCodeInput').value.trim();
-    if (!room) {
-        alert('Please enter a room code.');
-        return;
-    }
-    if (syncRoom) syncLeave();
-    syncJoin(room);
-});
-
-document.getElementById('leaveSyncBtn').addEventListener('click', () => {
-    syncLeave();
-});
-
-document.getElementById('makeLeaderBtn').addEventListener('click', () => {
-    if (!syncRoom || !syncIsLeader) {
-        showNotification('You are not the leader', "system");
-        return;
-    }
-    if (syncMembers.length <= 1) {
-        showNotification('No other members to make leader', "system");
-        return;
-    }
-    const memberList = syncMembers.filter(m => m !== syncName).join(', ');
-    const target = prompt(`Enter the name of the new leader:\nAvailable: ${memberList}`);
-    if (!target) return;
-    if (!syncMembers.includes(target) || target === syncName) {
-        showNotification('Invalid member name', "system");
-        return;
-    }
-    syncMakeLeader(target);
-});
-
-document.getElementById('autoplayToggle').addEventListener('click', () => {
-    document.querySelector('.autoplay-section').classList.toggle('open');
-});
-
-document.getElementById('syncToggle').addEventListener('click', () => {
-    document.querySelector('.syncsongs-section').classList.toggle('open');
-});
-
-document.getElementById('duetModeToggle').addEventListener('change', function() {
-    duetMode = this.checked;
-    document.getElementById('duetStatus').textContent = duetMode ? 'ON' : 'Off';
-    if (duetMode && syncRoom && !syncIsLeader) {
-        showNotification('Duet mode enabled – you will receive partner lyrics', 'system');
-    }
-});
-
-document.getElementById('mutechat').addEventListener('change', function() {
-    chatMuted = this.checked;
-    if (chatMuted) packet("6", "")
-});
-
-document.getElementById('loopsong').addEventListener('change', function () {
-    if (syncRoom && !syncIsLeader) {
-        this.checked = syncLoop;
-        showNotification('Only the leader can change loop', 'system');
-        return;
-    }
-    loopSong = this.checked;
-    if (currentAudio) currentAudio.loop = loopSong;
-    if (syncRoom && syncIsLeader) {
-        syncSetLoop(loopSong);
-    }
-});
-
-let pingpong1 = false, interval;
-function pingpong () {
-    packet("6", window.pingTime + "'pingpong");
-}
-
-function togglepingpong() {
-    if (pingpong1) {
-        clearInterval(interval);
-    }else{
-        interval = setInterval(pingpong, 1000)
-    }
-    pingpong1 = !pingpong1;
-}
-
-let inputs = ["chatBox", "nameInput", "allianceInput", "mChBox", "songSearch", "roomCodeInput"]
-window.addEventListener("keydown", (e) => {
-    if (e.key === "C" && !inputs.includes(document.activeElement.id)) {
-        e.preventDefault();
-        e.stopPropagation();
-        skipBackSong();
-        showNotification('Back', 'system');
-    } else if (e.key.toLowerCase() === "c" && !inputs.includes(document.activeElement.id)) {
-        e.preventDefault();
-        e.stopPropagation();
-        if (autoplayMode) {
-            skipSong();
-            showNotification('Skipped', 'system');
-        } else {
-            toggleChatSpamMode();
-        }
-    }
-    if (e.key.toLowerCase() === "p" && !inputs.includes(document.activeElement.id) && document.getElementById("mainMenu").style.display === "none") {
-        e.preventDefault();
-        e.stopPropagation();
-        $(".modmenu").toggle('fade-out');
-    }
-    if (e.key.toLowerCase() === "u" && !inputs.includes(document.activeElement.id) && document.getElementById("mainMenu").style.display === "none") {
-        togglepingpong();
-    }
-    if (e.key.toLowerCase() === "b" && !inputs.includes(document.activeElement.id) && document.getElementById("mainMenu").style.display === "none") {
-        const muteChat = document.getElementById("mutechat");
-        muteChat.checked = !muteChat.checked;
-        muteChat.dispatchEvent(new Event("change"));
-        showNotification(`Mute ${muteChat.checked ? 'ON' : 'OFF'}`, 'system');
-    }
-    if (e.key.toLowerCase() === "k" && !inputs.includes(document.activeElement.id) && document.getElementById("mainMenu").style.display === "none") {
-        const songLoop = document.getElementById("loopsong");
-        songLoop.checked = !songLoop.checked;
-        songLoop.dispatchEvent(new Event("change"));
-        showNotification(`Loop ${songLoop.checked ? 'ON' : 'OFF'}`, 'system');
-    }
-    if (e.shiftKey && e.which === 57 /* shift + nine */ && !inputs.includes(document.activeElement.id) && document.getElementById("mainMenu").style.display === "none") {
-        e.preventDefault();
-        if (typeof refreshSongs === 'function') {
-            refreshSongs().then(() => {
-                showNotification("Refreshed", "system");
-            }).catch(() => {
-                showNotification("Refreshed failed", "system");
-            });
-        } else {
-            console.warn('refreshSongs function not defined');
-        }
-    }
-    if (e.shiftKey && e.which === 48 /* shift + zero */ && !inputs.includes(document.activeElement.id) && document.getElementById("mainMenu").style.display === "none") {
-        e.preventDefault();
-        if (typeof uploadStats === 'function') {
-            uploadStats().then(() => {
-                showNotification("Stats uploaded", "system");
-            }).catch(() => {
-                showNotification("Stats upload failed", "system");
-            });
-        } else {
-            console.warn('uploadStats function not defined');
-        }
-    }
-    if (e.key.toLowerCase() === "j" /* j */ && !inputs.includes(document.activeElement.id)) {
-        e.preventDefault();
-        togglePause();
-        showNotification(currentAudio.paused ? 'Paused' : 'Resumed', 'system');
-    }
-    if (e.shiftKey && e.which === 56 /* shift + eight */ && !inputs.includes(document.activeElement.id) && document.getElementById("mainMenu").style.display === "none") {
-        e.preventDefault();
-        if (typeof hardResetLyrics === 'function') {
-            hardResetLyrics()
-            showNotification("Lyrics reset", "system");
-        } else {
-            console.warn('hardResetLyrics function not defined');
-        }
-    }
-}, true);
-
-function stopMusic() {
-    if (spamModeActive) {
+    if (syncCurrentSongId === null) {
+      if (spamModeActive) {
         currentAudio.pause();
         currentAudio.currentTime = 0;
         spamModeActive = false;
@@ -1791,99 +1277,757 @@ function stopMusic() {
         messageTimeouts.forEach(clearTimeout);
         messageTimeouts = [];
         currentlyPlaying.innerHTML = "Currently Playing: none";
-        musicStatus.innerHTML = `Music Status: OFF`;
-        document.getElementById('pauseAutoplayBtn').textContent = 'Pause';
+        musicStatus.innerHTML = `Music Status: OFF (synced)`;
+        document.getElementById("pauseAutoplayBtn").textContent = "Pause";
         isPaused = false;
         schedulingActive = false;
         hideNotification();
+      }
+      syncPaused = false;
+      syncCurrentTime = 0;
+      needUIUpdate = true;
+    } else if (!syncIsLeader && syncCurrentSongId !== null) {
+      const timestamp = msg.timestamp || Date.now();
+      let targetSongId = syncCurrentSongId;
+      if (duetMode && msg.partnerSongId) {
+        targetSongId = msg.partnerSongId;
+        console.log(
+          `Duet mode: playing partner song ${targetSongId} instead of ${syncCurrentSongId}`,
+        );
+      }
+      playSyncSong(targetSongId, msg.currentTime || 0, timestamp);
     }
+    needUIUpdate = true;
+  }
+
+  if (msg.paused !== undefined && syncCurrentSongId !== null) {
+    const newPaused = msg.paused;
+    if (newPaused !== syncPaused) {
+      syncPaused = newPaused;
+
+      if (syncPaused) {
+        if (spamModeActive && !currentAudio.paused) {
+          if (syncCurrentTime !== undefined) {
+            currentAudio.currentTime = syncCurrentTime;
+          }
+          currentAudio.pause();
+          isPaused = true;
+          document.getElementById("pauseAutoplayBtn").textContent = "Play";
+          musicStatus.innerHTML = "Music Status: Paused (synced)";
+          schedulingActive = false;
+          hideNotification();
+        }
+      } else {
+        if (spamModeActive && currentAudio.paused) {
+          if (syncCurrentTime !== undefined) {
+            currentAudio.currentTime = syncCurrentTime;
+            console.log(`Resume: aligned to ${syncCurrentTime}s`);
+          }
+          currentAudio
+            .play()
+            .then(() => {
+              isPaused = false;
+              document.getElementById("pauseAutoplayBtn").textContent = "Pause";
+              musicStatus.innerHTML = `Music Status: ON (Sync)`;
+              schedulingActive = true;
+              let startIndex = 0;
+              const currentMs = currentAudio.currentTime * 1000;
+              for (let j = 0; j < chatMessages.length; j++) {
+                if (chatMessages[j].delay > currentMs) {
+                  startIndex = j;
+                  break;
+                }
+              }
+              scheduleMessages(chatMessages, startIndex);
+            })
+            .catch((err) => console.warn("Resume failed:", err));
+        }
+      }
+      needUIUpdate = true;
+    }
+  }
+
+  if (msg.loop !== undefined && msg.loop !== syncLoop) {
+    syncLoop = msg.loop;
+    const loopCheckbox = document.getElementById("loopsong");
+    if (loopCheckbox) {
+      loopCheckbox.checked = syncLoop;
+      loopSong = syncLoop;
+      if (currentAudio) currentAudio.loop = syncLoop;
+    }
+    needUIUpdate = true;
+  }
+
+  if (needUIUpdate) updateSyncUI();
+}
+
+async function syncJoin(roomCode, originalLeader = null) {
+  stopMusic();
+  syncIsLeader = false;
+  syncLeader = null;
+
+  if (isRejoining) return;
+  isRejoining = true;
+  isLeaving = false;
+  try {
+    const body = { roomCode, name: syncName };
+    if (originalLeader) body.originalLeader = originalLeader;
+    const res = await fetch(`${API_BASE}/sync/join`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(body),
+    });
+    const data = await res.json();
+    syncRoom = roomCode;
+    syncLeader = data.leader;
+    syncMembers = data.members || [];
+    syncCurrentSongId = data.currentSong || null;
+    syncCurrentTime = data.currentTime || 0;
+    syncPaused = data.paused || false;
+    syncIsLeader = syncLeader === syncName;
+    if (!syncLeader) {
+      syncLeader = syncName;
+      syncIsLeader = true;
+    }
+    syncLoop = data.loop || false;
+    const loopCheckbox = document.getElementById("loopsong");
+    if (loopCheckbox) {
+      loopCheckbox.checked = syncLoop;
+      loopSong = syncLoop;
+      if (currentAudio) currentAudio.loop = syncLoop;
+    }
+    updateSyncUI();
+
+    if (data.isNewRoom) {
+      showNotification(`Created new room: ${roomCode}`, "system");
+    } else {
+      showNotification(`Joined existing room: ${roomCode}`, "system");
+    }
+
+    startHeartbeat(roomCode);
+    connectSyncSSE(roomCode);
+    updateSyncUI();
+    document.getElementById("syncStatus").textContent =
+      `Connected (Leader: ${syncLeader})`;
+    if (syncCurrentSongId !== null && !syncPaused && !syncIsLeader) {
+      const timestamp = data.timestamp || Date.now();
+      playSyncSong(syncCurrentSongId, syncCurrentTime, timestamp);
+    }
+  } catch (err) {
+    console.error("Sync join error:", err);
+    showNotification("Failed to join sync room", "system");
+    alert("Failed to join sync room");
+  } finally {
+    isRejoining = false;
+    isLeaving = false;
+  }
+}
+
+async function syncLeave() {
+  isLeaving = true;
+  resetLyricsState();
+  isRejoining = false;
+  if (syncRoom) {
+    try {
+      await fetch(`${API_BASE}/sync/leave`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ roomCode: syncRoom, name: syncName }),
+      });
+    } catch (e) {
+      /* ignore */
+    }
+  }
+  if (syncEventSource) {
+    syncEventSource.close();
+    syncEventSource = null;
+  }
+  if (syncHeartbeatInterval) {
+    clearInterval(syncHeartbeatInterval);
+    syncHeartbeatInterval = null;
+  }
+  syncRoom = null;
+  syncLeader = null;
+  syncMembers = [];
+  syncCurrentSongId = null;
+  syncCurrentTime = 0;
+  syncPaused = false;
+  syncIsLeader = false;
+  syncLoop = false;
+  syncStartTime = null;
+  updateSyncUI();
+  document.getElementById("syncStatus").textContent = "Off";
+  setTimeout(() => {
+    isLeaving = false;
+  }, 1000);
+}
+
+async function syncPlay(songId, currentTime = 0, timestamp = Date.now()) {
+  if (!syncRoom || !syncIsLeader) return;
+  let partnerSongId = null;
+  if (duetMode) {
+    partnerSongId = getPartnerSongId(songId);
+    if (partnerSongId) {
+      console.log(
+        `Duet mode: sending partner song ID ${partnerSongId} for ${songId}`,
+      );
+    }
+  }
+  try {
+    await fetch(`${API_BASE}/sync/play`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        roomCode: syncRoom,
+        name: syncName,
+        songId,
+        currentTime,
+        timestamp,
+        partnerSongId,
+      }),
+    });
+    syncCurrentSongId = songId;
+    syncPaused = false;
+  } catch (err) {
+    console.error("Sync play error:", err);
+  }
+}
+
+async function syncPause(paused, currentTime = 0) {
+  if (!syncRoom || !syncIsLeader) return;
+  try {
+    await fetch(`${API_BASE}/sync/pause`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        roomCode: syncRoom,
+        name: syncName,
+        paused,
+        currentTime,
+      }),
+    });
+    syncPaused = paused;
+  } catch (err) {
+    console.error("Sync pause error:", err);
+  }
+}
+
+async function syncSetLoop(loop) {
+  if (!syncRoom || !syncIsLeader) return;
+  try {
+    await fetch(`${API_BASE}/sync/set_loop`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ roomCode: syncRoom, name: syncName, loop }),
+    });
+    syncLoop = loop;
+  } catch (err) {
+    console.error("Sync set loop error:", err);
+  }
+}
+
+async function syncStop() {
+  if (!syncRoom || !syncIsLeader) return;
+  try {
+    await fetch(`${API_BASE}/sync/stop`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ roomCode: syncRoom, name: syncName }),
+    });
+    syncCurrentSongId = null;
+    syncPaused = true;
+  } catch (err) {
+    console.error("Sync stop error:", err);
+  }
+}
+
+async function syncMakeLeader(targetName) {
+  if (!syncRoom || !syncIsLeader) return;
+  try {
+    const res = await fetch(`${API_BASE}/sync/make_leader`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        roomCode: syncRoom,
+        name: syncName,
+        targetName: targetName.trim(),
+      }),
+    });
+    if (!res.ok) {
+      const err = await res.json();
+      showNotification(`${err.error || "Failed to change leader"}`, "system");
+      return;
+    }
+  } catch (err) {
+    console.error("Make leader error:", err);
+    showNotification("ould not change leader", "system");
+  }
+}
+
+function updateSyncUI() {
+  const membersEl = document.getElementById("syncMembers");
+  if (!membersEl) return;
+  const count = syncMembers.length;
+  if (count === 0) {
+    membersEl.textContent = "Members: none";
+    return;
+  }
+  const list = syncMembers
+    .map((m) => `${m}${m === syncLeader ? " 👑" : ""}`)
+    .join(", ");
+  membersEl.textContent = `Members (${count}): ${list}`;
+}
+
+function playSyncSong(songId, startTime = 0, serverTimestamp = Date.now()) {
+  resetLyricsState();
+  const song = songsList.find((s) => s.id === songId);
+  if (!song) {
+    console.warn("Sync song not found:", songId);
+    return;
+  }
+
+  const now = Date.now();
+  const elapsed = (now - serverTimestamp) / 1000;
+  let adjustedStart = Math.max(0, startTime + elapsed);
+
+  console.log(
+    `Sync playing: ${song.name}, target start ${adjustedStart}s (offset ${elapsed}s)`,
+  );
+
+  selectedSongId = song.id;
+  selectedSongName = song.name;
+  selectedSongAudio = song.url;
+
+  if (spamModeActive) {
+    currentAudio.pause();
+    currentAudio.currentTime = 0;
+    spamModeActive = false;
+    currentAudio.removeEventListener("ended", onSongEnded);
+    messageTimeouts.forEach(clearTimeout);
+    messageTimeouts = [];
+  }
+
+  currentAudio.src = selectedSongAudio;
+  currentAudio.preload = "auto";
+
+  const loadPromise = new Promise((resolve) => {
+    if (currentAudio.readyState >= 2) {
+      resolve();
+    } else {
+      const onLoad = () => {
+        currentAudio.removeEventListener("loadedmetadata", onLoad);
+        resolve();
+      };
+      currentAudio.addEventListener("loadedmetadata", onLoad);
+      setTimeout(resolve, 2000);
+    }
+  });
+
+  loadPromise.then(() => {
+    const loadTime = (Date.now() - now) / 1000;
+    adjustedStart = Math.max(0, adjustedStart + loadTime);
+    console.log(
+      `Audio loaded in ${loadTime}s, adjusted start ${adjustedStart}s`,
+    );
+
+    currentAudio.currentTime = adjustedStart;
+    currentAudio.loop = false;
+    syncStartTime = adjustedStart;
+    syncCurrentTime = adjustedStart;
+
+    initAudioContext();
+
+    currentAudio
+      .play()
+      .then(() => {
+        spamModeActive = true;
+        currentlyPlaying.innerHTML = `Currently Playing: ${selectedSongName}`;
+        musicStatus.innerHTML = `Music Status: ON (Sync)`;
+        document.getElementById("pauseAutoplayBtn").textContent = "Pause";
+        isPaused = false;
+
+        const scheduleLyrics = (lyrics) => {
+          chatMessages = lyrics;
+          const currentMs = currentAudio.currentTime * 1000;
+          let startIndex = 0;
+          for (let j = 0; j < chatMessages.length; j++) {
+            if (chatMessages[j].delay > currentMs) {
+              startIndex = j;
+              break;
+            }
+          }
+          scheduleMessages(chatMessages, startIndex);
+          console.log(
+            `Scheduled lyrics from index ${startIndex} (time: ${currentMs}ms)`,
+          );
+        };
+
+        if (lyricsCache[selectedSongId]) {
+          scheduleLyrics(lyricsCache[selectedSongId]);
+        } else {
+          fetchLyrics(selectedSongId)
+            .then((lyrics) => {
+              scheduleLyrics(lyrics);
+            })
+            .catch((err) => {
+              console.error("Failed to fetch lyrics for sync:", err);
+              chatMessages = [];
+              showNotification("Sync lyrics unavailable", "system");
+            });
+        }
+
+        currentAudio.removeEventListener("ended", onSongEnded);
+        currentAudio.addEventListener("ended", onSongEnded);
+
+        const actualTime = currentAudio.currentTime;
+        if (Math.abs(actualTime - adjustedStart) > 0.5) {
+          console.warn(
+            `Position discrepancy: actual ${actualTime}s, intended ${adjustedStart}s, correcting...`,
+          );
+          currentAudio.currentTime = adjustedStart;
+        }
+      })
+      .catch((err) => {
+        console.warn("Sync play error:", err);
+        spamModeActive = false;
+        showNotification("Sync playback failed", "system");
+      });
+  });
+}
+
+document.getElementById("joinSyncBtn").addEventListener("click", () => {
+  const room = document.getElementById("roomCodeInput").value.trim();
+  if (!room) {
+    alert("Please enter a room code.");
+    return;
+  }
+  if (syncRoom) syncLeave();
+  syncJoin(room);
+});
+
+document.getElementById("leaveSyncBtn").addEventListener("click", () => {
+  syncLeave();
+});
+
+document.getElementById("makeLeaderBtn").addEventListener("click", () => {
+  if (!syncRoom || !syncIsLeader) {
+    showNotification("You are not the leader", "system");
+    return;
+  }
+  if (syncMembers.length <= 1) {
+    showNotification("No other members to make leader", "system");
+    return;
+  }
+  const memberList = syncMembers.filter((m) => m !== syncName).join(", ");
+  const target = prompt(
+    `Enter the name of the new leader:\nAvailable: ${memberList}`,
+  );
+  if (!target) return;
+  if (!syncMembers.includes(target) || target === syncName) {
+    showNotification("Invalid member name", "system");
+    return;
+  }
+  syncMakeLeader(target);
+});
+
+document.getElementById("autoplayToggle").addEventListener("click", () => {
+  document.querySelector(".autoplay-section").classList.toggle("open");
+});
+
+document.getElementById("syncToggle").addEventListener("click", () => {
+  document.querySelector(".syncsongs-section").classList.toggle("open");
+});
+
+document
+  .getElementById("duetModeToggle")
+  .addEventListener("change", function () {
+    duetMode = this.checked;
+    document.getElementById("duetStatus").textContent = duetMode ? "ON" : "Off";
+    if (duetMode && syncRoom && !syncIsLeader) {
+      showNotification(
+        "Duet mode enabled – you will receive partner lyrics",
+        "system",
+      );
+    }
+  });
+
+document.getElementById("mutechat").addEventListener("change", function () {
+  chatMuted = this.checked;
+  if (chatMuted) packet("6", "");
+});
+
+document.getElementById("loopsong").addEventListener("change", function () {
+  if (syncRoom && !syncIsLeader) {
+    this.checked = syncLoop;
+    showNotification("Only the leader can change loop", "system");
+    return;
+  }
+  loopSong = this.checked;
+  if (currentAudio) currentAudio.loop = loopSong;
+  if (syncRoom && syncIsLeader) {
+    syncSetLoop(loopSong);
+  }
+});
+
+let pingpong1 = false,
+  interval;
+function pingpong() {
+  packet("6", window.pingTime + "'pingpong");
+}
+
+function togglepingpong() {
+  if (pingpong1) {
+    clearInterval(interval);
+  } else {
+    interval = setInterval(pingpong, 1000);
+  }
+  pingpong1 = !pingpong1;
+}
+
+let inputs = [
+  "chatBox",
+  "nameInput",
+  "allianceInput",
+  "mChBox",
+  "songSearch",
+  "roomCodeInput",
+];
+window.addEventListener(
+  "keydown",
+  (e) => {
+    if (e.key === "C" && !inputs.includes(document.activeElement.id)) {
+      e.preventDefault();
+      e.stopPropagation();
+      skipBackSong();
+      showNotification("Back", "system");
+    } else if (
+      e.key.toLowerCase() === "c" &&
+      !inputs.includes(document.activeElement.id)
+    ) {
+      e.preventDefault();
+      e.stopPropagation();
+      if (autoplayMode) {
+        skipSong();
+        showNotification("Skipped", "system");
+      } else {
+        toggleChatSpamMode();
+      }
+    }
+    if (
+      e.key.toLowerCase() === "p" &&
+      !inputs.includes(document.activeElement.id) &&
+      document.getElementById("mainMenu").style.display === "none"
+    ) {
+      e.preventDefault();
+      e.stopPropagation();
+      $(".modmenu").toggle("fade-out");
+    }
+    if (
+      e.key.toLowerCase() === "u" &&
+      !inputs.includes(document.activeElement.id) &&
+      document.getElementById("mainMenu").style.display === "none"
+    ) {
+      togglepingpong();
+    }
+    if (
+      e.key.toLowerCase() === "b" &&
+      !inputs.includes(document.activeElement.id) &&
+      document.getElementById("mainMenu").style.display === "none"
+    ) {
+      const muteChat = document.getElementById("mutechat");
+      muteChat.checked = !muteChat.checked;
+      muteChat.dispatchEvent(new Event("change"));
+      showNotification(`Mute ${muteChat.checked ? "ON" : "OFF"}`, "system");
+    }
+    if (
+      e.key.toLowerCase() === "k" &&
+      !inputs.includes(document.activeElement.id) &&
+      document.getElementById("mainMenu").style.display === "none"
+    ) {
+      const songLoop = document.getElementById("loopsong");
+      songLoop.checked = !songLoop.checked;
+      songLoop.dispatchEvent(new Event("change"));
+      showNotification(`Loop ${songLoop.checked ? "ON" : "OFF"}`, "system");
+    }
+    if (
+      e.shiftKey &&
+      e.which === 57 /* shift + nine */ &&
+      !inputs.includes(document.activeElement.id) &&
+      document.getElementById("mainMenu").style.display === "none"
+    ) {
+      e.preventDefault();
+      if (typeof refreshSongs === "function") {
+        refreshSongs()
+          .then(() => {
+            showNotification("Refreshed", "system");
+          })
+          .catch(() => {
+            showNotification("Refreshed failed", "system");
+          });
+      } else {
+        console.warn("refreshSongs function not defined");
+      }
+    }
+    if (
+      e.shiftKey &&
+      e.which === 48 /* shift + zero */ &&
+      !inputs.includes(document.activeElement.id) &&
+      document.getElementById("mainMenu").style.display === "none"
+    ) {
+      e.preventDefault();
+      if (typeof uploadStats === "function") {
+        uploadStats()
+          .then(() => {
+            showNotification("Stats uploaded", "system");
+          })
+          .catch(() => {
+            showNotification("Stats upload failed", "system");
+          });
+      } else {
+        console.warn("uploadStats function not defined");
+      }
+    }
+    if (
+      e.key.toLowerCase() === "j" /* j */ &&
+      !inputs.includes(document.activeElement.id)
+    ) {
+      e.preventDefault();
+      togglePause();
+      showNotification(currentAudio.paused ? "Paused" : "Resumed", "system");
+    }
+    if (
+      e.shiftKey &&
+      e.which === 56 /* shift + eight */ &&
+      !inputs.includes(document.activeElement.id) &&
+      document.getElementById("mainMenu").style.display === "none"
+    ) {
+      e.preventDefault();
+      if (typeof hardResetLyrics === "function") {
+        hardResetLyrics();
+        showNotification("Lyrics reset", "system");
+      } else {
+        console.warn("hardResetLyrics function not defined");
+      }
+    }
+  },
+  true,
+);
+
+function stopMusic() {
+  if (spamModeActive) {
+    currentAudio.pause();
+    currentAudio.currentTime = 0;
+    spamModeActive = false;
+    currentAudio.removeEventListener("ended", onSongEnded);
+    messageTimeouts.forEach(clearTimeout);
+    messageTimeouts = [];
+    currentlyPlaying.innerHTML = "Currently Playing: none";
+    musicStatus.innerHTML = `Music Status: OFF`;
+    document.getElementById("pauseAutoplayBtn").textContent = "Pause";
+    isPaused = false;
+    schedulingActive = false;
+    hideNotification();
+  }
 }
 
 window.stopMusic = function () {
-    stopMusic();
+  stopMusic();
 };
 
 window.addEventListener("beforeunload", () => {
-    currentAudio.pause();
-    currentAudio.currentTime = 0;
-    currentAudio.loop = false;
-    messageTimeouts.forEach(clearTimeout);
-    messageTimeouts = [];
+  currentAudio.pause();
+  currentAudio.currentTime = 0;
+  currentAudio.loop = false;
+  messageTimeouts.forEach(clearTimeout);
+  messageTimeouts = [];
 });
 
-let songsHash = '';
+let songsHash = "";
 async function refreshSongs() {
-    try {
-        const newList = await fetchSongs();
-        const newHash = JSON.stringify(newList);
-        if (newHash === songsHash) return;
-        songsList = newList;
-        songsHash = newHash;
+  try {
+    const newList = await fetchSongs();
+    const newHash = JSON.stringify(newList);
+    if (newHash === songsHash) return;
+    songsList = newList;
+    songsHash = newHash;
 
-        if (selectedSongId === undefined || selectedSongId === null) {
-            addSong(null);
-            console.log(`Songs updated (${songsList.length})`);
-            return;
-        }
-
-        let exists = songsList.some(s => s.id === selectedSongId);
-        let newSelection = null;
-        if (exists) {
-            newSelection = songsList.find(s => s.id === selectedSongId);
-        } else {
-            const firstReal = songsList.find(s => s.id !== 999 && s.url);
-            if (firstReal) newSelection = firstReal;
-        }
-
-        if (newSelection) {
-            selectBtn.firstElementChild.innerText = newSelection.name;
-            selectedSongId = newSelection.id;
-            selectedSongName = newSelection.name;
-            selectedSongAudio = newSelection.url;
-            addSong(newSelection.name);
-        } else {
-            addSong(null);
-        }
-
-        console.log(`Songs updated (${songsList.length})`);
-    } catch (err) {
-        console.warn('Refresh failed:', err);
+    if (selectedSongId === undefined || selectedSongId === null) {
+      addSong(null);
+      console.log(`Songs updated (${songsList.length})`);
+      return;
     }
+
+    let exists = songsList.some((s) => s.id === selectedSongId);
+    let newSelection = null;
+    if (exists) {
+      newSelection = songsList.find((s) => s.id === selectedSongId);
+    } else {
+      const firstReal = songsList.find((s) => s.id !== 999 && s.url);
+      if (firstReal) newSelection = firstReal;
+    }
+
+    if (newSelection) {
+      selectBtn.firstElementChild.innerText = newSelection.name;
+      selectedSongId = newSelection.id;
+      selectedSongName = newSelection.name;
+      selectedSongAudio = newSelection.url;
+      addSong(newSelection.name);
+    } else {
+      addSong(null);
+    }
+
+    console.log(`Songs updated (${songsList.length})`);
+  } catch (err) {
+    console.warn("Refresh failed:", err);
+  }
 }
 
 (async function init() {
-    try {
-        await fetchStatsKey();
-        await fetchSongs();
-        if (songsList.length) {
-            addSong(null);
-        } else {
-            console.warn('No songs loaded from API');
-            addSong('No songs');
-        }
-    } catch (err) {
-        console.error('Failed to fetch songs:', err);
-        addSong('Error loading songs');
+  try {
+    await Promise.all([fetchStatsKey(), fetchSongs()]);
+    if (songsList.length) {
+      addSong(null);
+    } else {
+      console.warn("No songs loaded from API");
+      addSong("No songs");
     }
+  } catch (err) {
+    console.error("Failed to fetch songs:", err);
+    addSong("Error loading songs");
+  }
 })();
 
 async function getSSEToken() {
-    const res = await fetch(`${API_BASE}/auth`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ apiKey: API_KEY })
-    });
-    if (!res.ok) throw new Error('Failed to get token');
-    const data = await res.json();
-    return data.token;
+  const res = await fetch(`${API_BASE}/auth`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ apiKey: API_KEY }),
+  });
+  if (!res.ok) throw new Error("Failed to get token");
+  const data = await res.json();
+  return data.token;
 }
 
-document.addEventListener('visibilitychange', () => {
-    if (document.hidden) return;
-    const now = Date.now();
-    for (const entry of activeNotifications) {
-        if (now - entry.startTime >= entry.duration) {
-            hideNotification(entry);
-        }
+document.addEventListener("visibilitychange", () => {
+  if (document.hidden) return;
+  const now = Date.now();
+  for (const entry of activeNotifications) {
+    if (now - entry.startTime >= entry.duration) {
+      hideNotification(entry);
     }
+  }
 });
+
+const roomInput = document.getElementById('roomCodeInput');
+if (roomInput) {
+    roomInput.addEventListener('keydown', function(e) {
+        e.stopPropagation();
+    });
+}
+
+const songInput = document.getElementById('songSearch');
+if (songInput) {
+    songInput.addEventListener('keydown', function(e) {
+        e.stopPropagation();
+    });
+}
