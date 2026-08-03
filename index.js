@@ -1,2065 +1,1725 @@
-const mm = document.createElement("div");
-mm.className = "gameButton uiElement material-icons";
-mm.style.right = "390px";
-mm.style.fontSize = "40px";
-mm.style.verticalAlign = "middle";
-mm.innerHTML = `
-<svg viewBox="0 0 322.199 322.199" width="35" height="40" fill="#fff">
-  <path d="M97.173,322.156c35.754,0.874,67.271-11.577,84.481-30.805c6.111-6.845,10.074-14.932,10.836-16.527
-  c0.448-0.949,0.825-1.955,1.149-2.997l45.168-148.824c2.678-8.782,9.991-10.542,15.978-3.577
-  c4.629,5.392,9.606,11.507,14.659,18.304c20.823,27.968,22.502,64.76,11.397,94.439
-  c-11.112,29.667-32.111,38.046-25.375,47.436c6.757,9.418,33.226-13.974,50.453-41.793
-  c17.212-27.824,19.136-74.354,3.603-112.445c-15.54-38.099-38.17-62.592-42.486-82.467
-  c-0.269-1.272-0.545-2.523-0.821-3.737c-0.453-2.06-0.269-5.574,0.429-7.837l1.242-4.105
-  c3.391-11.146-2.89-22.922-14.058-26.307c-11.141-3.384-22.915,2.914-26.297,14.052L172.77,195.409
-  c-2.673,8.784-10.884,11.481-19.142,7.494c-15.156-7.325-33.448-11.817-53.236-12.303
-  c-53.387-1.311-97.377,27.086-98.267,63.426C1.235,290.35,43.784,320.862,97.173,322.156z"/>
-</svg>
-`;
+const express = require("express");
+const fs = require("fs");
+const cors = require("cors");
+const { timeStamp } = require("console");
+const jwt = require("jsonwebtoken");
+const http = require("http");
+const { WebSocketServer } = require("ws");
+const cookieParser = require("cookie-parser");
+const crypto = require("crypto");
+const { resolveSoa } = require("dns");
+const guestKeys = {};
+const guestSSEClients = {};
+const GUEST_KEY_EXPIRY = 5 * 60 * 1000; // 5 minutes
 
-mm.addEventListener("click", (e) => {
-  e.preventDefault();
-  e.stopPropagation();
-  $(".modmenu").toggle("fade-out");
-});
+const app = express();
+const server = http.createServer(app);
+const wss = new WebSocketServer({ server });
 
-document.getElementById("gameUI").appendChild(mm);
+const PORT = process.env.PORT || 3000;
+const GITHUB_TOKEN = process.env.GITHUB_TOKEN;
+const GITHUB_REPO = process.env.GITHUB_REPO;
+const GITHUB_BRANCH = process.env.GITHUB_BRANCH;
+const API_KEY = process.env.API_KEY;
+const DISCORD_WEBHOOK_URL = process.env.DISCORD_WEBHOOK_URL;
+const JWT_SECRET = process.env.JWT_SECRET;
+const COOKIE_SECRET = process.env.COOKIE_SECRET;
 
-// import MMM v4.2 style.css from website
-var stylesheet = document.createElement("link");
-stylesheet.rel = "stylesheet";
-stylesheet.href = "https://mmm-ernr.onrender.com/stylee.css";
-document.head.appendChild(stylesheet);
+const CATEGORIES = [
+  { id: 999, name: "🇺🇸-----English Songs-----" },
+  { id: 999, name: "🇩🇪-----German Songs-----" },
+  { id: 999, name: "🇨🇳-----Chinese Songs-----" },
+  { id: 999, name: "💥-----Pulary Songs-----" },
+  { id: 999, name: "🌍-----other language Songs-----" },
+  { id: 999, name: "🦊----- Krimsonthefox Music-----" },
+  { id: 999, name: "❓-----Not My Songs-----" },
+];
 
-const currentAudio = new Audio();
-currentAudio.crossOrigin = "anonymous";
-currentAudio.preload = "none";
-
-//menu code
-let MusicMenuMod = document.createElement("div");
-document.getElementById("gameUI").append(MusicMenuMod);
-Object.assign(MusicMenuMod.style, {
-  display: "block",
-  position: "absolute",
-  transition: "transform 0.5s ease",
-  width: "var(--modmenu-width)",
-  transform: "translate(-50%, -50%) scale(1)",
-  backgroundColor: "rgba(0, 0, 0, 0.25)",
-  borderRadius: "45px",
-  top: "50%",
-  left: "50%",
-  zIndex: "2",
-  pointerEvents: "all",
-});
-
-MusicMenuMod.innerHTML = `
-<div class="modmenu">
-    <div class="menuColor">
-        <legend class="header">Music Menu:</legend>
-
-        <!-- Informational info -->
-        <div class="infoText">
-            Information: Press "P" to open/close menu! Press "c" to start/stop the music! "b" to mute! "k" to loopsongs! "j" to pause!
-        </div>
-
-        <!-- Mute chat checkbox -->
-        <div class="muteChat">
-            <div class="HoverText" style="font-size: 17.5px;">Mute Chat?</div>
-            <div class="informationText">Mutes the song lyrics</div>
-            <div class="custom-checkbox">
-                <input type="checkbox" id="mutechat">
-                <label for="mutechat" class="checkbox-label"></label>
-            </div>
-        </div>
-        <br>
-
-        <!-- Loop songs checkbox -->
-        <div class="loopSong">
-            <div class="HoverText" style="font-size: 17.5px;">Loop Songs?</div>
-            <div class="informationText">Loops the current song</div>
-            <div class="custom-checkbox">
-                <input type="checkbox" id="loopsong">
-                <label for="loopsong" class="checkbox-label"></label>
-            </div>
-        </div>
-
-        <div class="volumeControl" style="display:flex; align-items:center; gap:10px; margin: 8px 0; padding-bottom: 14px;">
-            <span style="font-size:17.5px;">Volume</span>
-            <input type="range" id="volumeSlider" min="0" max="3" step="0.01" value="1" style="flex:1; background: #3a3a4a; border-radius: 8px; height: 6px; -webkit-appearance: none; accent-color: #ff79c6;">
-            <span id="volumeValue" style="font-size:15px; color:#aaa; min-width:45px; text-align:right;">100%</span>
-        </div>
-
-        <!-- Autoplay songs -->
-        <div class="autoplay-section" style="margin: 12px 0; padding: 10px; background: rgba(255,255,255,0.06); border-radius: 12px;">
-            <div style="font-size: 17.5px; margin-bottom: 8px; display: flex; align-items: center; gap: 8px; cursor: pointer;" id="autoplayToggle">
-                <span class="HoverText">Autoplay</span>
-                <div class="informationText" style="width:125px!important; height:70px!important;" ">"c" to skip song! "shift+c" to go back!</div>
-                <span id="autoplayStatus" style="font-size: 13px; color: #aaa; font-weight: normal;">Off</span>
-            </div>
-           <div class="autoplay-buttons" id="autoplayButtonsContainer">
-                <button class="autoplay-btn" data-category="🇺🇸-----English Songs-----" style="background: #ff79c6; border: none; color: #1e1e2f; padding: 4px 12px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 12px;">🇺🇸 English</button>
-                <button class="autoplay-btn" data-category="🇩🇪-----German Songs-----" style="background: #ff79c6; border: none; color: #1e1e2f; padding: 4px 12px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 12px;">🇩🇪 German</button>
-                <button class="autoplay-btn" data-category="🇨🇳-----Chinese Songs-----" style="background: #ff79c6; border: none; color: #1e1e2f; padding: 4px 12px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 12px;">🇨🇳 Chinese</button>
-                <button class="autoplay-btn" data-category="💥-----Pulary Songs-----" style="background: #ff79c6; border: none; color: #1e1e2f; padding: 4px 12px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 12px;">💥 Pulary</button>
-                <button class="autoplay-btn" data-category="🌍-----other language Songs-----" style="background: #ff79c6; border: none; color: #1e1e2f; padding: 4px 12px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 12px;">🌍 Other</button>
-                <button class="autoplay-btn" data-category="🦊----- Krimsonthefox Music-----" style="background: #ff79c6; border: none; color: #1e1e2f; padding: 4px 12px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 12px;">🦊 Krimson</button>
-                <button class="autoplay-btn" data-category="-----Not My Songs-----" style="background: #ff79c6; border: none; color: #1e1e2f; padding: 4px 12px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 12px;">❓ Not Mine</button>
-                <button class="autoplay-btn" id="randomAutoplayBtn" style="background: #ffb347; border: none; color: #1e1e2f; padding: 4px 12px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 12px;">Random</button>
-                <button class="autoplay-btn" id="stopAutoplayBtn" style="background: #ff5555; border: none; color: white; padding: 4px 12px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 12px;">Stop</button>
-                <button class="autoplay-btn" id="pauseAutoplayBtn" style="background: #3498db; border: none; color: white; padding: 4px 12px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 12px;">Pause</button>
-            </div>
-        </div>
-
-        <!-- Sync Songs -->
-        <div class="syncsongs-section" style="margin: 12px 0; padding: 10px; background: rgba(255,255,255,0.06); border-radius: 12px;">
-            <div style="font-size: 17.5px; margin-bottom: 8px; display: flex; align-items: center; gap: 8px; cursor: pointer;" id="syncToggle">
-                <span class="HoverText">Sync</span>
-                <span id="syncStatus" style="font-size: 13px; color: #aaa; font-weight: normal;">Off</span>
-            </div>
-            <div class="sync-buttons" id="syncButtonsContainer" style="display: flex; justify-content: right;">
-                <div style="display: flex; align-items: center; gap: 8px; margin: 6px 0; width: 100%;">
-                   <label for="duetModeToggle" style="font-size: 14px;">Duet Mode</label>
-                   <input type="checkbox" id="duetModeToggle" style="width: auto; margin: 0;">
-                   <span id="duetStatus" style="font-size: 12px; color: #aaa;">Off</span><br>
-                </div>
-                <input type="text" id="roomCodeInput" placeholder="Room Code" class="sync-btn" style="flex: 1; min-width: 100px; padding: 4px 8px; background: #3a3a4a; border: 1px solid #555; border-radius: 6px; color: #fff; outline: none;">
-                <button id="joinSyncBtn" class="sync-btn" style="background: #2ecc71; border: none; color: #1e1e2f; padding: 4px 12px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 12px;">Join / Create</button>
-                <button id="leaveSyncBtn" class="sync-btn" style="background: #e74c3c; border: none; color: white; padding: 4px 12px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 12px;">Leave</button>
-                <button id="makeLeaderBtn" class="sync-btn" style="background: #f1c40f; border: none; color: #1e1e2f; padding: 4px 12px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 12px;">Make Leader</button>
-            </div>
-            <div id="syncMembers" style="font-size: 13px; color: #aaa; margin-top: 4px;">Members: none</div>
-        </div>
-
-        <!-- Song selection -->
-        <div class="wrapper">
-            <div class="select-btn">
-                <span>Select Song</span>
-                <i class="uil uil-angle-down"></i>
-            </div>
-            <div class="content">
-                <div class="search">
-                    <i class="uil uil-search"></i>
-                    <input class="input" id="songSearch" spellcheck="false" type="text" placeholder="Search song title">
-                </div>
-                <div class="heading" id="scrollbar">
-                    <div class="whiteline" style="border-color: transparent!important;">
-                        <div class="title" style="text-align: center!important;">Song Names</div>
-                        <div class="undersection">
-                            <ul class="options1 scrollbar"></ul>
-                        </div>
-                    </div>
-                    <!--<div class="secondrow">
-                        <div class="title">Lengths</div>
-                        <ul class="durations scrollbar"></ul>
-                    </div>-->
-                </div>
-            </div>
-        </div>
-
-        <!-- Music Status and Music State -->
-        <div class="infoStatuses">
-            <div id="musicStatus" style="font-size: 17.5px;">Music Status: False</div>
-            <div id="currentlyPlaying" style="font-size: 17.5px;">Currently Playing: none</div>
-        </div>
-    </div>
-</div>
-`;
-
-let autoplayMode = null;
-let autoplayCategory = null;
-let autoPlaySongs = [];
-let autoplayIndex = 0;
-let randomPool = [];
-let randomCategoryName = null;
-
-let songHistory = [];
-let songHistoryIndex = -1;
-let isGoingBack = false;
-
-let notificationDiv = null;
-let notificationTimeout = null;
-let notificationShowTime = 0;
-const activeNotifications = [];
-
-const notificationContainer = document.createElement("div");
-notificationContainer.className = "uiElement resourceDisplay";
-Object.assign(notificationContainer.style, {
-  position: "absolute",
-  bottom: "200px",
-  right: "10px",
-  display: "flex",
-  flexDirection: "column",
-  justifyContent: "flex-end",
-  alignItems: "flex-end",
-  gap: "8px",
-  pointerEvents: "none",
-  zIndex: 100,
-  background: "none",
-});
-document.getElementById("resDisplay").appendChild(notificationContainer);
-
-function showNotification(message, type = "song") {
-  const el = document.createElement("div");
-  const prefix = type === "song" ? "Now Playing:" : "System:";
-  el.textContent = `${prefix} ${message}`;
-
-  Object.assign(el.style, {
-    color: "#fff",
-    backgroundColor: "rgba(0, 0, 0, 0.25)",
-    borderRadius: "12px",
-    padding: "12px 24px",
-    fontSize: "18px",
-    transition:
-      "right 0.5s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.4s ease",
-    opacity: 0,
-    right: "-350px",
-    position: "relative",
-    boxShadow: "0 4px 16px rgba(0,0,0,0.4)",
-    letterSpacing: "0.5px",
-    whiteSpace: "pre-line",
-    wordWrap: "break-word",
-    overflow: "visible",
-    lineHeight: "normal",
-    height: "auto",
-    pointerEvents: "none",
-  });
-
-  notificationContainer.appendChild(el);
-  requestAnimationFrame(() => {
-    el.style.right = "0";
-    el.style.opacity = 1;
-  });
-
-  const duration = type === "song" ? 3000 : 1500;
-  const startTime = Date.now();
-  const entry = { el, startTime, duration };
-  activeNotifications.push(entry);
-
-  const timeout = setTimeout(() => {
-    hideNotification(entry);
-  }, duration);
-  entry.timeout = timeout;
-}
-
-function hideNotification(entry) {
-  if (!entry) return;
-  const { el, timeout } = entry;
-  if (timeout) clearTimeout(timeout);
-  el.style.opacity = 0;
-  el.style.right = "-350px";
-  setTimeout(() => {
-    if (el.parentNode) el.parentNode.removeChild(el);
-  }, 500);
-  const idx = activeNotifications.indexOf(entry);
-  if (idx !== -1) activeNotifications.splice(idx, 1);
-}
-
-function hideNotification(entry) {
-  if (!entry) return;
-  const { el, timeout } = entry;
-  if (timeout) clearTimeout(timeout);
-  el.style.opacity = 0;
-  el.style.right = "-350px";
-  setTimeout(() => {
-    if (el.parentNode) el.parentNode.removeChild(el);
-  }, 500);
-  const idx = activeNotifications.indexOf(entry);
-  if (idx !== -1) activeNotifications.splice(idx, 1);
-}
-
-setupAutoplayEvents();
-updateAutoplayStatus();
-
-const wrapper = document.querySelector(".wrapper"),
-  selectBtn = wrapper.querySelector(".select-btn"),
-  searchInp = wrapper.querySelector("input"),
-  durations1 = wrapper.querySelector(".durations"),
-  optionsDiv = wrapper.querySelector(".options1");
-
-const preconnect = document.createElement("link");
-preconnect.rel = "preconnect";
-preconnect.href = "https://jukehost.co.uk";
-document.head.appendChild(preconnect);
-
-const API_BASE = "https://mmmm-oa5i.onrender.com";
-let API_KEY = null;
-
-async function fetchApiKey() {
-  try {
-    const res = await fetch(`${API_BASE}/api-key`, {
-      credentials: "include",
-    });
-    if (!res.ok) {
-      console.warn("API key request failed with status:", res.status);
-      return false;
-    }
-    const data = await res.json();
-    if (data.key) {
-      API_KEY = data.key;
-      console.log("API key fetched successfully");
-      return true;
-    }
-  } catch (e) {
-    console.error("Failed to fetch API key:", e);
+// DISCORD EMBEDS
+async function sendDiscordAddition(song, categoryName, lyricCount) {
+  if (!DISCORD_WEBHOOK_URL) {
+    console.log("Discord webhook not configured, skipping notification.");
+    return;
   }
-  console.warn("Could not obtain API key - some features may not work.");
-  return false;
-}
-
-let playCounts = JSON.parse(localStorage.getItem("plays") || "{}");
-let STATS_KEY = "fallback";
-let statsUploadTimer = null;
-
-async function fetchStatsKey() {
   try {
-    const res = await fetch(`${API_BASE}/stats-key`, {
-      credentials: "include",
+    const embed = {
+      title: "🎵 New Song Added",
+      color: 0x00ff88,
+      fields: [
+        { name: "Name", value: song.name, inline: true },
+        { name: "ID", value: String(song.id), inline: true },
+        {
+          name: "Category",
+          value: categoryName || "Uncategorized",
+          inline: true,
+        },
+        { name: "Lyrics Lines", value: String(lyricCount), inline: true },
+        { name: "Audio URL", value: `[Link](${song.url})`, inline: false },
+      ],
+      timestamp: new Date().toISOString(),
+      footer: { text: "Song Manager API" },
+    };
+
+    const response = await fetch(DISCORD_WEBHOOK_URL, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ embeds: [embed] }),
     });
-    if (!res.ok) {
-      console.warn("Stats key request failed with status:", res.status);
-      return false;
-    }
-    const data = await res.json();
-    if (data.key) {
-      STATS_KEY = data.key;
-      console.log(`Stats key loaded: ${STATS_KEY}`);
-      return true;
-    }
-  } catch (e) {
-    console.error("Failed to fetch or parse stats key:", e);
-  }
-  console.log("No stats key cookie found, using fallback.");
-  return false;
-}
-
-async function uploadStats() {
-  const stats = { ...playCounts };
-  if (Object.keys(stats).length === 0) return;
-  try {
-    await apiRequest("/stats/upload", "POST", { key: STATS_KEY, stats });
-    console.log(`Stats uploaded (${Object.keys(stats).length} entries)`);
-    return true;
+    if (!response.ok)
+      console.error("Discord delete webhook failed:", response.status);
   } catch (err) {
-    console.warn("Stats upload failed:", err.message);
+    console.error("Discord delete notification error:", err);
+  }
+}
+
+async function sendDiscordDeletion(song) {
+  if (!DISCORD_WEBHOOK_URL) return;
+  try {
+    const embed = {
+      title: "🗑️ Song Deleted",
+      color: 0xff5555,
+      fields: [
+        { name: "Name", value: song.name, inline: true },
+        { name: "ID", value: String(song.id), inline: true },
+      ],
+      timestamp: new Date().toISOString(),
+      footer: { text: "Song Manager API" },
+    };
+    const response = await fetch(DISCORD_WEBHOOK_URL, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ embeds: [embed] }),
+    });
+    if (!response.ok)
+      console.error("Discord delete webhook failed:", response.status);
+  } catch (err) {
+    console.error("Discord delete notification error:", err);
+  }
+}
+
+async function sendDiscordEditNotification(
+  oldSong,
+  newSong,
+  changes,
+  lyricsOldCount,
+  lyricsNewCount,
+) {
+  if (!DISCORD_WEBHOOK_URL) return;
+  try {
+    let fields = [];
+
+    // Always show the song name
+    fields.push({ name: "Song", value: newSong.name, inline: true });
+
+    // name change
+    if (changes.name) {
+      fields.push({
+        name: "Name Change",
+        value: `~~${oldSong.name}~~ → ${newSong.name}`,
+        inline: true,
+      });
+    }
+
+    // URL change
+    if (changes.url) {
+      fields.push({
+        name: "URL",
+        value: `[old](${oldSong.url}) → [new](${newSong.url})`,
+        inline: false,
+      });
+    }
+
+    // Category change
+    if (changes.category) {
+      fields.push({
+        name: "Category",
+        value: `~~${oldSong.category}~~ → ${newSong.category}`,
+        inline: true,
+      });
+    }
+
+    // Public change
+    if (changes.public === true) {
+      const oldPublic = oldSong.public ? "Public" : "Private";
+      const newPublic = newSong.public ? "Public" : "Private";
+      fields.push({
+        name: "Visibility",
+        value: `${oldPublic} → ${newPublic}`,
+        inline: true,
+      });
+    }
+
+    // Lyrics count change
+    if (
+      lyricsOldCount !== undefined &&
+      lyricsNewCount !== undefined &&
+      lyricsOldCount !== lyricsNewCount
+    ) {
+      fields.push({
+        name: "Lyrics Lines",
+        value: `${lyricsOldCount} → ${lyricsNewCount}`,
+        inline: true,
+      });
+    }
+
+    if (fields.length === 0) return;
+
+    const embed = {
+      title: "📝 Song Updated",
+      color: 0xffaa00,
+      fields: fields,
+      timestamp: new Date().toISOString(),
+      footer: { text: `ID: ${oldSong.id}` },
+    };
+    const response = await fetch(DISCORD_WEBHOOK_URL, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ embeds: [embed] }),
+    });
+    if (!response.ok)
+      console.error("Discord edit webhook failed:", response.status);
+  } catch (err) {
+    console.error("Discord edit notification error:", err);
+  }
+}
+
+async function sendGitHubSyncNotification(success, message, details = "") {
+  if (!DISCORD_WEBHOOK_URL) return;
+  try {
+    const embed = {
+      title: "🔗 GitHub Sync",
+      color: success ? 0x3498db : 0xe74c3c, // blue for success, red for failure
+      description: success
+        ? "✅ Sync completed successfully"
+        : "❌ Sync failed",
+      fields: [
+        {
+          name: "Repository",
+          value: GITHUB_REPO || "Not configured",
+          inline: true,
+        },
+        { name: "Branch", value: GITHUB_BRANCH || "main", inline: true },
+        { name: "Message", value: message, inline: false },
+      ],
+      timestamp: new Date().toISOString(),
+      footer: { text: "Song Manager API" },
+    };
+    if (details) {
+      embed.fields.push({ name: "Details", value: details, inline: false });
+    }
+    const response = await fetch(DISCORD_WEBHOOK_URL, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ embeds: [embed] }),
+    });
+    if (!response.ok)
+      console.error("GitHub sync Discord webhook failed:", response.status);
+  } catch (err) {
+    console.error("Error sending GitHub sync Discord notification:", err);
+  }
+}
+
+function requireApiKey(req, res, next) {
+  if (req.signedCookies.auth === "true") {
+    return next();
+  }
+  const key = req.headers["x-api-key"];
+  if (key === API_KEY) {
+    return next();
+  }
+  console.log("Unauthorized access attempt");
+  return res.status(401).json({ error: "Unauthorized" });
+}
+
+function generateGuestKey() {
+  const token = crypto.randomBytes(16).toString("hex");
+  const now = Date.now();
+  guestKeys[token] = {
+    createdAt: now,
+    expiresAt: now + GUEST_KEY_EXPIRY,
+  };
+  return token;
+}
+
+function verifyGuestKey(token) {
+  const entry = guestKeys[token];
+  if (!entry) return false;
+  if (Date.now() > entry.expiresAt) {
+    delete guestKeys[token];
+    return false;
+  }
+  return true;
+}
+
+function verifyGuestToken(req, res, next) {
+  let token = req.headers["x-guest-token"] || req.query.guest_token;
+  if (!token) return next();
+  if (verifyGuestKey(token)) {
+    req.isGuest = true;
+    req.guestToken = token;
+  }
+  next();
+}
+
+app.use(
+  cors({
+    origin: function (origin, callback) {
+      // Allow requests with no origin (like mobile apps or curl requests)
+      if (!origin) return callback(null, true);
+      // Allow any origin (for now)
+      callback(null, origin);
+    },
+    credentials: true,
+  }),
+);
+app.use(express.json({ limit: "10mb" }));
+app.use(cookieParser(COOKIE_SECRET));
+
+app.use((req, res, next) => {
+  const path = req.path;
+  const auth = req.signedCookies.auth;
+
+  if (path === "/manager.html") {
+    const guestToken = req.query.guest_token;
+    if (auth === "true" || (guestToken && verifyGuestKey(guestToken))) {
+      return next();
+    }
+    return res.redirect("/session-expired");
+  }
+
+  if (path === "/generate.html") {
+    if (auth === "true") {
+      return next();
+    }
+    return res.redirect("/");
+  }
+
+  next();
+});
+
+app.post("/auth", (req, res) => {
+  const { apiKey } = req.body;
+  if (apiKey !== API_KEY) {
+    return res.status(401).json({ error: "Invalid API key" });
+  }
+  const token = jwt.sign({ type: "sse" }, JWT_SECRET, { expiresIn: "1h" });
+  res.json({ token });
+});
+
+app.get("/api-key", (req, res) => {
+  const isAuthenticated =
+    req.signedCookies.auth === "true" || req.headers["x-api-key"] === API_KEY;
+  if (!isAuthenticated) {
+    return res.status(401).json({ error: "Unauthorized" });
+  }
+  res.json({ key: API_KEY });
+});
+
+app.post("/verify-key", express.json(), (req, res) => {
+  const { apiKey } = req.body;
+  if (!apiKey) {
+    return res.status(400).json({ valid: false, error: "Missing API key" });
+  }
+  const isValid = apiKey === API_KEY;
+  res.json({ valid: isValid });
+});
+
+app.get("/guest-events/:token", (req, res) => {
+  const token = req.params.token;
+  if (!verifyGuestKey(token)) {
+    return res.status(401).send("Invalid token");
+  }
+  res.writeHead(200, {
+    "Content-Type": "text/event-stream",
+    "Cache-Control": "no-cache",
+    Connection: "keep-alive",
+    "Access-Control-Allow-Origin": "*",
+  });
+  res.write("retry: 10000\n\n");
+
+  guestSSEClients[token] = res;
+
+  req.on("close", () => {
+    delete guestSSEClients[token];
+  });
+});
+
+app.post("/revoke-guest", requireApiKey, (req, res) => {
+  const { token } = req.body;
+  if (!token || !guestKeys[token]) {
+    return res.status(404).json({ error: "Key not found" });
+  }
+  delete guestKeys[token];
+
+  const clientRes = guestSSEClients[token];
+  if (clientRes) {
+    try {
+      clientRes.write(`event: revoked\ndata: {"message":"Key revoked"}\n\n`);
+      clientRes.end();
+    } catch (e) {
+      // ignore
+    }
+    delete guestSSEClients[token];
+  }
+
+  res.json({ message: "Key revoked" });
+});
+
+app.post("/login", express.json(), (req, res) => {
+  const { apiKey } = req.body;
+  if (!apiKey) {
+    return res.status(400).json({ success: false, message: "Missing API key" });
+  }
+  if (apiKey === API_KEY) {
+    res.cookie("auth", "true", {
+      httpOnly: true,
+      signed: true,
+      maxAge: 3600000, // 1 hour
+      sameSite: "none",
+      secure: true,
+    });
+    return res.json({ success: true });
+  } else {
+    return res.status(401).json({ success: false, message: "Invalid API key" });
+  }
+});
+
+app.get("/logout", (req, res) => {
+  res.clearCookie("auth");
+  res.redirect("/");
+});
+
+app.get("/mod-script", (req, res) => {
+  if (req.signedCookies.auth !== "true") {
+    return res.status(401).send("Unauthorized");
+  }
+  try {
+    const script = fs.readFileSync("./mmm-mod.js", "utf8");
+    res.set("Content-Type", "application/javascript");
+    res.send(script);
+  } catch (err) {
+    console.error("Error serving mod script:", err);
+    res.status(500).send("Internal server error");
+  }
+});
+// ROOT
+app.get("/", (req, res) => {
+  const isAuthenticated = req.signedCookies.auth === "true";
+
+  res.send(`
+    <!DOCTYPE html>
+    <html lang="en">
+      <html>
+      <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta
+          name="description"
+          content="MMMM is a multi-page site created by wolfi and made for the userscript part MMM to have a easier way to manage and store songs and their lyrics"
+        />
+        <meta
+          name="keywords"
+          content="MMMM, MMM, MusicMenuModManager, MusicModMenu"
+        />
+        <meta name="author" content="wolfi" />
+        <title>MMMM - Music Menu Mod Manager</title>
+        <style>
+          * { box-sizing: border-box; }
+          body {
+            background: #1e1e2f;
+            color: #eee;
+            font-family: system-ui, -apple-system, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            padding: 20px;
+          }
+          .container {
+            background: #2d2d3a;
+            padding: 40px;
+            border-radius: 16px;
+            text-align: center;
+            max-width: 500px;
+            width: 100%;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+          }
+          h1 { margin-top: 0; font-size: 2.2rem; }
+          input {
+            width: 100%;
+            padding: 14px;
+            margin: 12px 0;
+            background: #3a3a4a;
+            border: 1px solid #555;
+            border-radius: 8px;
+            color: #fff;
+            font-size: 1rem;
+          }
+          button {
+            background: #ff79c6;
+            border: none;
+            padding: 14px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 1.1rem;
+            transition: background 0.2s;
+            width: 100%;
+          }
+          button:hover { background: #ba4085; }
+          .message { margin: 12px 0; font-size: 0.95rem; color: #aaa; }
+          .links {
+            margin-top: 24px;
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+          }
+          .link-btn {
+            display: block;
+            background: #3a3a4a;
+            padding: 16px;
+            border-radius: 12px;
+            text-decoration: none;
+            color: #ff79c6;
+            font-weight: bold;
+            font-size: 1.3rem;
+            transition: background 0.2s, transform 0.1s;
+            border: 1px solid #555;
+          }
+          .link-btn:hover {
+            background: #4a4a5a;
+            transform: scale(1.02);
+          }
+          .link-btn.public {
+            color: #8be9fd;
+            border-color: #8be9fd;
+          }
+          .link-btn.private {
+            color: #ffb347;
+            border-color: #ffb347;
+          }
+          .link-btn.generate {
+            color: #2ecc71;
+            border-color: #2ecc71;
+          }
+          .logout-btn {
+            background: #e74c3c;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            color: white;
+            font-weight: bold;
+            margin-top: 12px;
+          }
+          .logout-btn:hover { background: #c0392b; }
+          .guest-row {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            margin: 10px 0;
+          }
+          .guest-row input {
+            flex: 1;
+            padding: 10px;
+            margin: 0;
+            background: #3a3a4a;
+            border: 1px solid #555;
+            border-radius: 8px;
+            color: #fff;
+            min-width: 120px;
+          }
+          .guest-row button {
+            flex: 0 0 auto;
+            background: #ffb347;
+            padding: 10px 20px;
+            width: auto;
+          }
+          .guest-row button:hover { background: #e6a030; }
+        </style>
+      </head>
+      <body>
+        <div class="container">
+          <h1>MMMM</h1>
+          <p>Music Menu Mod Manager</p>
+          <div class="message" id="statusMsg">
+            ${isAuthenticated ? "You are authenticated." : "Enter your API key to access private manager."}
+          </div>
+
+          ${
+            !isAuthenticated
+              ? `
+            <input type="password" id="apiKeyInput" placeholder="API Key" aria-label="API Key">
+            <button id="saveKeyBtn">Save Key &amp; Unlock Private</button>
+          `
+              : `
+            <div style="margin: 12px 0;">
+              <span style="color: #8be9fd;">Private manager is unlocked.</span>
+            </div>
+            <a href="/logout" class="logout-btn">Logout</a>
+          `
+          }
+
+          <div class="links">
+            <a href="/public.html" class="link-btn public">Public Songs</a>
+
+            ${
+              !isAuthenticated
+                ? `
+              <div class="guest-row">
+                <input type="text" id="guestTokenInput" placeholder="Paste guest token" aria-label="Guest token">
+                <button id="guestAccessBtn">Guest Access</button>
+              </div>
+            `
+                : `
+              <a href="/generate" class="link-btn generate">Generate Guest Keys</a>
+            `
+            }
+
+            ${isAuthenticated ? `<a href="/manager.html" class="link-btn private">Private Manager</a>` : ""}
+          </div>
+        </div>
+
+        <script>
+          ${
+            !isAuthenticated
+              ? `
+            document.getElementById('saveKeyBtn').addEventListener('click', async () => {
+              const key = document.getElementById('apiKeyInput').value.trim();
+              const statusMsg = document.getElementById('statusMsg');
+              if (!key) {
+                statusMsg.textContent = 'Please enter a key.';
+                return;
+              }
+              try {
+                const res = await fetch('/login', {
+                  method: 'POST',
+                  headers: { 'Content-Type': 'application/json' },
+                  body: JSON.stringify({ apiKey: key })
+                });
+                const data = await res.json();
+                if (data.success) {
+                  statusMsg.textContent = 'Key accepted. Refreshing...';
+                  setTimeout(() => location.reload(), 500);
+                } else {
+                  statusMsg.textContent = 'Invalid API key.';
+                }
+              } catch (e) {
+                statusMsg.textContent = 'Error connecting to server.';
+              }
+            });
+
+            document.getElementById('guestAccessBtn').addEventListener('click', () => {
+              const token = document.getElementById('guestTokenInput').value.trim();
+              if (!token) {
+                document.getElementById('statusMsg').textContent = 'Please enter a guest token.';
+                return;
+              }
+              window.location.href = "/manager.html?guest_token=" + encodeURIComponent(token);
+            });
+          `
+              : ""
+          }
+        </script>
+      </body>
+      </html>
+  `);
+});
+
+app.get("/session-expired", (req, res) => {
+  res.sendFile(__dirname + "/session-expired.html");
+});
+
+app.get("/manager.html", (req, res) => {
+  if (req.signedCookies.auth === "true") {
+    return res.sendFile(__dirname + "/manager.html");
+  }
+  const guestToken = req.query.guest_token;
+  if (guestToken && verifyGuestKey(guestToken)) {
+    return res.sendFile(__dirname + "/manager.html");
+  }
+  res.redirect("/session-expired");
+});
+
+const fsPromises = fs.promises;
+
+// in-memory caches
+let songsCache = null;
+let lyricsCache = null;
+let publicSongsCache = null;
+let publicLyricsCache = null;
+
+let isWriting = false;
+const writeQueue = [];
+
+async function writeFileAtomic(filePath, data) {
+  return new Promise((resolve, reject) => {
+    writeQueue.push({ filePath, data, resolve, reject });
+    processWriteQueue();
+  });
+}
+
+async function processWriteQueue() {
+  if (isWriting || writeQueue.length === 0) return;
+  isWriting = true;
+
+  const { filePath, data, resolve, reject } = writeQueue.shift();
+  const tempPath = filePath + ".tmp";
+
+  try {
+    const json = JSON.stringify(data, null, 2);
+    await fsPromises.writeFile(tempPath, json, "utf8");
+    await fsPromises.rename(tempPath, filePath);
+    resolve();
+  } catch (err) {
+    try {
+      await fsPromises.unlink(tempPath);
+    } catch (_) {}
+    reject(err);
+  } finally {
+    isWriting = false;
+    processWriteQueue();
+  }
+}
+
+const PUBLIC_SONGS_FILE = "./public_songs.json";
+const PUBLIC_LYRICS_FILE = "./public_lyrics.json";
+
+const SONGS_FILE = "./songs.json";
+const LYRICS_FILE = "./lyrics.json";
+const STATS_FOLDER = "stats";
+
+async function syncPublicFiles() {
+  const songs = readSongs();
+  const lyrics = readLyrics();
+  const publicSongs = songs
+    .filter((s) => s.public === true && s.id !== 999)
+    .map((s) => ({ ...s, lyricsCount: (lyrics[s.id] || []).length }));
+  const publicLyrics = {};
+  publicSongs.forEach((s) => {
+    publicLyrics[s.id] = lyrics[s.id] || [];
+  });
+
+  publicSongsCache = publicSongs;
+  publicLyricsCache = publicLyrics;
+
+  await Promise.all([
+    writeFileAtomic(PUBLIC_SONGS_FILE, publicSongs),
+    writeFileAtomic(PUBLIC_LYRICS_FILE, publicLyrics),
+  ]);
+}
+function readSongs() {
+  if (songsCache !== null) return songsCache;
+  if (!fs.existsSync(SONGS_FILE)) {
+    const init = CATEGORIES.map((c) => ({
+      id: c.id,
+      name: c.name,
+      url: "",
+      public: false,
+    }));
+    songsCache = init;
+    writeFileAtomic(SONGS_FILE, init).catch(console.error);
+    return init;
+  }
+  const data = fs.readFileSync(SONGS_FILE, "utf8");
+  songsCache = JSON.parse(data);
+  return songsCache;
+}
+function readLyrics() {
+  if (lyricsCache !== null) return lyricsCache;
+  if (!fs.existsSync(LYRICS_FILE)) {
+    lyricsCache = {};
+    return lyricsCache;
+  }
+  const data = fs.readFileSync(LYRICS_FILE, "utf8");
+  lyricsCache = JSON.parse(data);
+  return lyricsCache;
+}
+async function writeSongs(songs) {
+  songsCache = songs;
+  await writeFileAtomic(SONGS_FILE, songs);
+}
+async function writeLyrics(lyrics) {
+  lyricsCache = lyrics;
+  await writeFileAtomic(LYRICS_FILE, lyrics);
+}
+async function getStatsFile(key) {
+  const url = `https://api.github.com/repos/${GITHUB_REPO}/contents/${STATS_FOLDER}/${key}.json`;
+  try {
+    const res = await fetch(url, {
+      headers: {
+        Authorization: `token ${GITHUB_TOKEN}`,
+        Accept: "application/vnd.github.v3+json",
+      },
+    });
+    if (res.status === 404) return null;
+    if (!res.ok) throw new Error(`GitHub API error: ${res.status}`);
+    const data = await res.json();
+    const content = Buffer.from(data.content, "base64").toString("utf8");
+    return JSON.parse(content);
+  } catch (err) {
+    if (err.message.includes("404")) return null;
     throw err;
   }
 }
+async function writeStatsFile(key, stats) {
+  const url = `https://api.github.com/repos/${GITHUB_REPO}/contents/${STATS_FOLDER}/${key}.json`;
+  const content = JSON.stringify(stats, null, 2);
+  const base64Content = Buffer.from(content, "utf8").toString("base64");
 
-function scheduleStatsUpload() {
-  if (statsUploadTimer) clearTimeout(statsUploadTimer);
-  statsUploadTimer = setTimeout(async () => {
-    await uploadStats();
-    statsUploadTimer = null;
-  }, 30000);
-}
-
-let songsList = [];
-let lyricsCache = {};
-
-// changed it to use fetch instead since
-// tampermonkey was ggez'ing unpatcher's websocket proxy
-async function fetchSongs() {
+  let sha = null;
   try {
-    const response = await fetch(`${API_BASE}/songs`, {
-      method: "GET",
-      headers: { "X-API-Key": API_KEY },
+    const getRes = await fetch(url, {
+      headers: {
+        Authorization: `token ${GITHUB_TOKEN}`,
+        Accept: "application/vnd.github.v3+json",
+      },
     });
-
-    if (!response.ok) {
-      const errorText = await response.text();
-      throw new Error(`Status ${response.status}: ${errorText}`);
+    if (getRes.ok) {
+      const data = await getRes.json();
+      sha = data.sha;
     }
+  } catch (e) {}
 
-    songsList = await response.json();
-    return songsList;
-  } catch (err) {
-    console.error("fetchSongs error:", err);
-    throw err; // Re-throws to trigger the catch block where fetchSongs is called
-  }
-}
+  const body = {
+    message: `Update stats for ${key}`,
+    content: base64Content,
+    branch: GITHUB_BRANCH || "main",
+  };
+  if (sha) body.sha = sha;
 
-async function fetchLyrics(songId) {
-  if (lyricsCache[songId]) {
-    return lyricsCache[songId];
-  }
-  const response = await fetch(`${API_BASE}/songs/${songId}/lyrics`, {
-    method: "GET",
-    headers: { "X-API-Key": API_KEY },
-  });
-  if (!response.ok) {
-    throw new Error(response.statusText || `HTTP ${response.status}`);
-  }
-  const data = await response.json();
-  lyricsCache[songId] = data;
-
-  const keys = Object.keys(lyricsCache);
-  if (keys.length > 100) {
-    delete lyricsCache[keys[0]];
-  }
-  return data;
-}
-
-async function apiRequest(endpoint, method, body) {
-  if (!API_KEY) throw new Error("API key not loaded yet");
-
-  const response = await fetch(`${API_BASE}${endpoint}`, {
-    method: method,
+  let putRes = await fetch(url, {
+    method: "PUT",
     headers: {
+      Authorization: `token ${GITHUB_TOKEN}`,
+      Accept: "application/vnd.github.v3+json",
       "Content-Type": "application/json",
-      "X-API-Key": API_KEY,
     },
-    body: body ? JSON.stringify(body) : undefined,
+    body: JSON.stringify(body),
   });
 
-  const responseText = await response.text();
-
-  if (!response.ok) {
-    throw new Error(responseText || `HTTP ${response.status}`);
+  if (putRes.status === 409) {
+    console.log(`Conflict for ${key}, retrying with latest SHA...`);
+    const getRes = await fetch(url, {
+      headers: {
+        Authorization: `token ${GITHUB_TOKEN}`,
+        Accept: "application/vnd.github.v3+json",
+      },
+    });
+    if (getRes.ok) {
+      const data = await getRes.json();
+      body.sha = data.sha;
+      putRes = await fetch(url, {
+        method: "PUT",
+        headers: {
+          Authorization: `token ${GITHUB_TOKEN}`,
+          Accept: "application/vnd.github.v3+json",
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(body),
+      });
+    }
   }
 
+  if (!putRes.ok) {
+    const errText = await putRes.text();
+    throw new Error(`GitHub API error: ${putRes.status} ${errText}`);
+  }
+  return putRes.json();
+}
+
+app.get("/public/songs", (req, res) => {
+  if (!fs.existsSync(PUBLIC_SONGS_FILE)) return res.json([]);
+  const data = fs.readFileSync(PUBLIC_SONGS_FILE, "utf8");
+  res.json(JSON.parse(data));
+});
+
+app.get("/public/lyrics/:id", (req, res) => {
+  const id = parseInt(req.params.id);
+  if (!fs.existsSync(PUBLIC_LYRICS_FILE)) return res.json({});
+  const data = JSON.parse(fs.readFileSync(PUBLIC_LYRICS_FILE, "utf8"));
+  res.json(data[id] || []);
+});
+
+app.post("/public/stats/upload", express.json(), async (req, res) => {
+  const { key, stats } = req.body;
+  if (!key || typeof key !== "string") {
+    return res.status(400).json({ error: "key is required" });
+  }
+  if (!stats || typeof stats !== "object") {
+    return res.status(400).json({ error: "stats must be an object" });
+  }
+  if (!GITHUB_TOKEN || !GITHUB_REPO) {
+    return res
+      .status(500)
+      .json({ error: "GitHub credentials not configured." });
+  }
   try {
-    return JSON.parse(responseText);
-  } catch (e) {
-    return responseText;
+    await writeStatsFile(key, stats);
+    res.json({ message: `Stats for "${key}" saved successfully` });
+  } catch (err) {
+    console.error("Public stats upload error:", err);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+app.get("/public.html", (req, res) => res.sendFile(__dirname + "/public.html"));
+
+// SYNC
+let syncSSEClients = {};
+const syncRooms = new Map();
+
+app.post("/sync/heartbeat", express.json(), (req, res) => {
+  const { roomCode, name } = req.body;
+  if (!roomCode || !name) {
+    return res.status(400).json({ error: "Missing roomCode or name" });
+  }
+  const room = syncRooms.get(roomCode);
+  if (!room) {
+    console.log(`[Heartbeat] Room ${roomCode} not found for ${name}`);
+    return res.status(404).json({ error: "Room not found" });
+  }
+  if (!room.memberLastSeen) room.memberLastSeen = {};
+  if (room.members.includes(name)) {
+    room.memberLastSeen[name] = Date.now();
+    console.log(`[Heartbeat] ${name} in ${roomCode} updated`);
+  } else {
+    room.members.push(name);
+    room.memberLastSeen[name] = Date.now();
+    broadcastSyncUpdate(roomCode);
+    console.log(`[Heartbeat] ${name} re-joined ${roomCode}`);
+  }
+  res.json({ ok: true });
+});
+
+setInterval(() => {
+  const now = Date.now();
+  for (const [roomCode, room] of syncRooms) {
+    if (!room.memberLastSeen) {
+      room.memberLastSeen = {};
+      continue;
+    }
+    const stale = room.members.filter(
+      (name) => now - (room.memberLastSeen[name] || 0) > 120000,
+    );
+    if (stale.length) {
+      console.log(`[Cleanup] Removing stale members from ${roomCode}:`, stale);
+      room.members = room.members.filter((name) => !stale.includes(name));
+      stale.forEach((name) => delete room.memberLastSeen[name]);
+      if (room.members.length === 0) {
+        if (syncSSEClients[roomCode]) {
+          for (const client of syncSSEClients[roomCode]) {
+            try {
+              client.end();
+            } catch (e) {}
+          }
+          delete syncSSEClients[roomCode];
+        }
+        syncRooms.delete(roomCode);
+        console.log(`[Cleanup] Deleted empty room ${roomCode}`);
+        continue;
+      }
+      broadcastSyncUpdate(roomCode);
+    }
+  }
+}, 30000);
+
+function broadcastSyncUpdate(roomCode) {
+  const room = syncRooms.get(roomCode);
+  if (!room) return;
+  const clients = syncSSEClients[roomCode] || [];
+  const payload = JSON.stringify({
+    type: "room_state",
+    leader: room.leader,
+    members: room.members,
+    currentSong: room.currentSong,
+    partnerSongId: room.partnerSongId,
+    paused: room.paused || false,
+    currentTime: room.currentTime || 0,
+    timestamp: room.playTimestamp || Date.now(),
+    loop: room.loop || false,
+  });
+  for (const client of clients) {
+    try {
+      client.write(`data: ${payload}\n\n`);
+    } catch (e) {}
   }
 }
 
-var selectedSongName, selectedSongId, selectedSongAudio;
+app.get("/sync/events/:roomCode", (req, res) => {
+  const { roomCode } = req.params;
+  const room = syncRooms.get(roomCode);
+  if (!room) {
+    return res.status(404).json({ error: "Room not found" });
+  }
 
-function addSong(selectedSong) {
-  optionsDiv.innerHTML = "";
-  songsList.forEach((song) => {
-    let isSelected =
-      selectedSong !== null && song.name === selectedSong ? "selected" : "";
-    let li = document.createElement("li");
-    li.textContent = song.name;
-    li.className = isSelected;
-
-    li.addEventListener("click", () => {
-      updateName(li, song.id, song.name, song.url);
-    });
-
-    optionsDiv.appendChild(li);
+  res.writeHead(200, {
+    "Content-Type": "text/event-stream",
+    "Cache-Control": "no-cache",
+    Connection: "keep-alive",
+    "Access-Control-Allow-Origin": "*",
   });
-}
+  res.write("retry: 10000\n\n");
 
-function updateName(selectedLi, songId, songName, songAudio) {
-  if (!songAudio) return;
+  if (!syncSSEClients[roomCode]) {
+    syncSSEClients[roomCode] = [];
+  }
+  syncSSEClients[roomCode].push(res);
 
-  selectedSongId = songId;
-  selectedSongName = songName;
-  selectedSongAudio = songAudio;
+  const payload = JSON.stringify({
+    type: "room_state",
+    leader: room.leader,
+    members: room.members,
+    currentSong: room.currentSong,
+    paused: room.paused || false,
+    currentTime: room.currentTime || 0,
+  });
+  res.write(`data: ${payload}\n\n`);
 
-  searchInp.value = "";
-  addSong(selectedLi.innerText);
-  wrapper.classList.remove("active");
-  selectBtn.firstElementChild.innerText = selectedLi.innerText;
-}
-
-window.updateName = updateName;
-
-searchInp.addEventListener("keyup", () => {
-  let searchWord = searchInp.value.toLowerCase();
-  let arr = songsList
-    .filter((data) => data.name.toLowerCase().includes(searchWord))
-    .map((data) => {
-      let isSelected =
-        data.name == selectBtn.firstElementChild.innerText ? "selected" : "";
-      return `<li class="${isSelected}" data-id="${data.id}">${data.name}</li>`;
-    })
-    .join("");
-  optionsDiv.innerHTML = arr
-    ? arr
-    : `<p style="font-size: 24px; margin-top: 5px; padding-left:25px;">the song you searched hasn't been found.</p><h4>DM .wolfi_dolfi. to make it :D</h4>`;
-  optionsDiv.querySelectorAll("li").forEach((li) => {
-    let id = parseInt(li.dataset.id);
-    let song = songsList.find((s) => s.id === id);
-
-    li.addEventListener("click", () => {
-      updateName(li, song.id, song.name, song.url);
-    });
+  req.on("close", () => {
+    if (syncSSEClients[roomCode]) {
+      syncSSEClients[roomCode] = syncSSEClients[roomCode].filter(
+        (c) => c !== res,
+      );
+      if (syncSSEClients[roomCode].length === 0) {
+        delete syncSSEClients[roomCode];
+      }
+    }
   });
 });
 
-document
-  .querySelector(".wrapper")
-  .querySelector(".select-btn")
-  .addEventListener("click", () => {
-    document.querySelector(".wrapper").classList.toggle("active");
-    console.log("open");
-  });
+app.post("/sync/join", express.json(), (req, res) => {
+  const { roomCode, name, originalLeader } = req.body;
+  if (!roomCode || !name) {
+    return res.status(400).json({ error: "Missing roomCode or name" });
+  }
 
-function getSongsByCategory(categoryName) {
-  const songs = [];
-  let inCategory = false;
-  for (const song of songsList) {
-    if (song.id === 999) {
-      if (song.name === categoryName) {
-        inCategory = true;
-      } else if (inCategory) {
+  let room = syncRooms.get(roomCode);
+  let isNewRoom = false;
+
+  if (!room) {
+    const leader = originalLeader || name;
+    room = {
+      leader: leader,
+      members: [],
+      memberLastSeen: {},
+      currentSong: null,
+      paused: false,
+      currentTime: 0,
+      loop: false,
+      partnerSongId: null,
+      lastUpdate: Date.now(),
+    };
+    syncRooms.set(roomCode, room);
+    isNewRoom = true;
+    console.log(
+      `[Join] New room ${roomCode} created by ${name} with leader ${leader}`,
+    );
+  } else {
+    if (room.members.length === 0) {
+      if (syncSSEClients[roomCode]) {
+        for (const client of syncSSEClients[roomCode]) {
+          try {
+            client.end();
+          } catch (e) {}
+        }
+        delete syncSSEClients[roomCode];
+      }
+      syncRooms.delete(roomCode);
+      const leader = originalLeader || name;
+      room = {
+        leader: leader,
+        members: [],
+        memberLastSeen: {},
+        currentSong: null,
+        paused: false,
+        currentTime: 0,
+        lastUpdate: Date.now(),
+      };
+      syncRooms.set(roomCode, room);
+      isNewRoom = true;
+      console.log(
+        `[Join] Recreated empty room ${roomCode} with leader ${leader}`,
+      );
+    } else {
+      console.log(
+        `[Join] ${name} joining existing room ${roomCode} with ${room.members.length} members`,
+      );
+    }
+  }
+
+  if (!room.memberLastSeen) room.memberLastSeen = {};
+
+  if (!room.members.includes(name)) {
+    room.members.push(name);
+  }
+  room.memberLastSeen[name] = Date.now();
+  if (!room.leader) room.leader = name;
+
+  room.lastUpdate = Date.now();
+  broadcastSyncUpdate(roomCode);
+
+  res.json({
+    leader: room.leader,
+    members: room.members,
+    currentSong: room.currentSong,
+    paused: room.paused || false,
+    currentTime: room.currentTime || 0,
+    isNewRoom: isNewRoom,
+  });
+});
+
+app.post("/sync/leave", express.json(), (req, res) => {
+  const { roomCode, name } = req.body;
+  if (!roomCode || !name) {
+    return res.status(400).json({ error: "Missing roomCode or name" });
+  }
+  const room = syncRooms.get(roomCode);
+  if (!room) return res.status(404).json({ error: "Room not found" });
+
+  room.members = room.members.filter((m) => m !== name);
+  if (room.memberLastSeen) delete room.memberLastSeen[name];
+  room.lastUpdate = Date.now();
+
+  if (room.members.length === 0) {
+    if (syncSSEClients[roomCode]) {
+      for (const client of syncSSEClients[roomCode]) {
+        try {
+          client.end();
+        } catch (e) {}
+      }
+      delete syncSSEClients[roomCode];
+    }
+    syncRooms.delete(roomCode);
+    console.log(`[Leave] Room ${roomCode} deleted (empty)`);
+  } else if (room.leader === name) {
+    room.leader = room.members[0];
+    console.log(`[Leave] New leader: ${room.leader}`);
+  }
+
+  broadcastSyncUpdate(roomCode);
+  res.json({ message: "Left" });
+});
+
+app.post("/sync/play", express.json(), (req, res) => {
+  const { roomCode, name, songId, currentTime, timestamp, partnerSongId } =
+    req.body;
+  if (!roomCode || !name || songId === undefined) {
+    return res.status(400).json({ error: "Missing roomCode, name, or songId" });
+  }
+  const room = syncRooms.get(roomCode);
+  if (!room) return res.status(404).json({ error: "Room not found" });
+  if (room.leader !== name) {
+    return res.status(403).json({ error: "Only the leader can play a song" });
+  }
+  room.currentSong = songId;
+  room.partnerSongId = partnerSongId || null;
+  room.paused = false;
+  room.currentTime = currentTime || 0;
+  room.playTimestamp = timestamp || Date.now();
+  room.lastUpdate = Date.now();
+  broadcastSyncUpdate(roomCode);
+  res.json({ message: "Song set" });
+});
+
+app.post("/sync/pause", express.json(), (req, res) => {
+  const { roomCode, name, paused, currentTime } = req.body;
+  if (!roomCode || !name) {
+    return res.status(400).json({ error: "Missing roomCode or name" });
+  }
+  const room = syncRooms.get(roomCode);
+  if (!room) return res.status(404).json({ error: "Room not found" });
+  if (room.leader !== name) {
+    return res.status(403).json({ error: "Only the leader can pause" });
+  }
+  room.paused = paused;
+  if (currentTime !== undefined) room.currentTime = currentTime;
+  room.lastUpdate = Date.now();
+  broadcastSyncUpdate(roomCode);
+  res.json({ message: "Pause state updated" });
+});
+
+app.post("/sync/set_loop", express.json(), (req, res) => {
+  const { roomCode, name, loop } = req.body;
+  if (!roomCode || !name) {
+    return res.status(400).json({ error: "Missing roomCode or name" });
+  }
+  const room = syncRooms.get(roomCode);
+  if (!room) return res.status(404).json({ error: "Room not found" });
+  if (room.leader !== name) {
+    return res.status(403).json({ error: "Only the leader can change loop" });
+  }
+  room.loop = loop;
+  room.lastUpdate = Date.now();
+  broadcastSyncUpdate(roomCode);
+  res.json({ message: "Loop state updated" });
+});
+
+app.post("/sync/stop", express.json(), (req, res) => {
+  const { roomCode, name } = req.body;
+  if (!roomCode || !name) {
+    return res.status(400).json({ error: "Missing roomCode or name" });
+  }
+  const room = syncRooms.get(roomCode);
+  if (!room) return res.status(404).json({ error: "Room not found" });
+  if (room.leader !== name) {
+    return res.status(403).json({ error: "Only the leader can stop" });
+  }
+  room.currentSong = null;
+  room.partnerSongId = null;
+  room.paused = true;
+  room.currentTime = 0;
+  room.lastUpdate = Date.now();
+  broadcastSyncUpdate(roomCode);
+  res.json({ message: "Stopped" });
+});
+
+app.post("/sync/make_leader", express.json(), (req, res) => {
+  const { roomCode, name, targetName } = req.body;
+  if (!roomCode || !name || !targetName) {
+    return res
+      .status(400)
+      .json({ error: "Missing roomCode, name, or targetName" });
+  }
+  const room = syncRooms.get(roomCode);
+  if (!room) return res.status(404).json({ error: "Room not found" });
+  if (room.leader !== name) {
+    return res
+      .status(403)
+      .json({ error: "Only the leader can make a new leader" });
+  }
+  const target = room.members.find(
+    (m) => m.toLowerCase() === targetName.toLowerCase(),
+  );
+  if (!target) {
+    return res.status(404).json({ error: "Target not in room" });
+  }
+  room.leader = target;
+  room.lastUpdate = Date.now();
+  broadcastSyncUpdate(roomCode);
+  res.json({ message: `Leader changed to ${target}` });
+});
+
+// PROTECTED
+app.get("/songs", verifyGuestToken, (req, res) => {
+  const isAdmin = req.signedCookies.auth === "true";
+  const isGuest = req.isGuest === true;
+  const isApiKey = req.headers["x-api-key"] === API_KEY;
+  if (!isAdmin && !isGuest && !isApiKey) {
+    return res.status(401).json({ error: "Unauthorized" });
+  }
+  const songs = readSongs();
+  const lyrics = readLyrics();
+  const enhanced = songs.map((song) => {
+    const count = lyrics[song.id] ? lyrics[song.id].length : 0;
+    return { ...song, lyricsCount: count };
+  });
+  res.json(enhanced);
+});
+
+app.get("/songs/:id/lyrics", verifyGuestToken, (req, res) => {
+  const isAdmin = req.signedCookies.auth === "true";
+  const isGuest = req.isGuest === true;
+  const isApiKey = req.headers["x-api-key"] === API_KEY;
+  if (!isAdmin && !isGuest && !isApiKey) {
+    return res.status(401).json({ error: "Unauthorized" });
+  }
+  const id = parseInt(req.params.id);
+  const lyrics = readLyrics();
+  res.json(lyrics[id] || []);
+});
+
+app.put("/songs/reorder", requireApiKey, async (req, res) => {
+  try {
+    const { songs: newSongs } = req.body;
+    if (!Array.isArray(newSongs)) {
+      return res.status(400).json({ error: "songs must be an array" });
+    }
+    for (let s of newSongs) {
+      if (typeof s.id !== "number" || typeof s.name !== "string") {
+        return res
+          .status(400)
+          .json({ error: "each song must have id and name" });
+      }
+    }
+    writeSongs(newSongs);
+    broadcastEvent("song-changed", { action: "reorder" });
+    res.json({ message: "Order updated!" });
+  } catch (err) {
+    console.error("Error in /songs/reorder:", err.stack);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+app.post("/songs", requireApiKey, async (req, res) => {
+  const {
+    name,
+    url,
+    lyrics: lyricArray,
+    categoryIndex,
+    public: isPublic,
+  } = req.body;
+  if (!name || !url) {
+    return res.status(400).json({ error: "name and url are required" });
+  }
+  const songs = readSongs();
+  const maxId = songs.reduce(
+    (max, s) => (s.id !== 999 && s.id > max ? s.id : max),
+    -1,
+  );
+  const newId = maxId + 1;
+
+  let insertIndex = songs.length;
+  let categoryName = "Uncategorized";
+  if (
+    categoryIndex !== undefined &&
+    categoryIndex >= 0 &&
+    categoryIndex < CATEGORIES.length
+  ) {
+    categoryName = CATEGORIES[categoryIndex].name;
+    const foundIndex = songs.findIndex(
+      (s) => s.id === 999 && s.name === categoryName,
+    );
+    if (foundIndex !== -1) {
+      insertIndex = foundIndex + 1;
+    }
+  }
+
+  const newSong = { id: newId, name, url, public: isPublic || false };
+  songs.splice(insertIndex, 0, newSong);
+  await writeSongs(songs);
+
+  const lyricCount =
+    lyricArray && Array.isArray(lyricArray) ? lyricArray.length : 0;
+  if (lyricArray && Array.isArray(lyricArray)) {
+    const lyrics = readLyrics();
+    lyrics[newId] = lyricArray;
+    await writeLyrics(lyrics);
+  }
+
+  sendDiscordAddition(newSong, categoryName, lyricCount);
+  broadcastEvent("song-changed", { action: "add", songId: newId });
+  await syncPublicFiles();
+
+  res.status(201).json(newSong);
+});
+
+app.put("/songs/:id", requireApiKey, async (req, res) => {
+  const id = parseInt(req.params.id);
+  const { name, url, categoryIndex, public: isPublic } = req.body;
+  try {
+    const songs = readSongs();
+    const index = songs.findIndex((s) => s.id === id);
+    if (index === -1) return res.status(404).json({ error: "Song not found" });
+
+    const oldSong = { ...songs[index] };
+    const changes = { name: false, url: false, category: false, public: false };
+
+    let oldCategoryName = "Uncategorized";
+    let lastCategory = "Uncategorized";
+    const songId = songs[index].id;
+    for (let i = 0; i < songs.length; i++) {
+      if (songs[i].id === 999) {
+        lastCategory = songs[i].name;
+      }
+      if (songs[i].id === songId) {
+        oldCategoryName = lastCategory;
         break;
       }
-      continue;
-    }
-    if (inCategory && song.url) {
-      songs.push(song);
-    }
-  }
-  return songs;
-}
-
-function getAllSongs() {
-  return songsList.filter((s) => s.id !== 999 && s.url);
-}
-
-let spamModeActive = false,
-  messageTimeouts = [],
-  chatMessages = [];
-
-let currentlyPlaying = document.getElementById("currentlyPlaying");
-
-let chatMuted = false;
-let loopSong = false;
-
-let audioStarting = false;
-let schedulingActive = false;
-
-function scheduleMessages(messages, startIndex = 0) {
-  schedulingActive = false;
-  if (window._lyricsInterval) {
-    clearInterval(window._lyricsInterval);
-    window._lyricsInterval = null;
-  }
-
-  setTimeout(() => {
-    schedulingActive = true;
-    let i = startIndex;
-    window._lyricsInterval = setInterval(() => {
-      if (!schedulingActive || !currentAudio || currentAudio.paused) {
-        return;
-      }
-      let currentMs = currentAudio.currentTime * 1000;
-      while (i < messages.length && messages[i].delay <= currentMs) {
-        if (!chatMuted) packet("6", messages[i].chat);
-        i++;
-      }
-      if (i >= messages.length) {
-        clearInterval(window._lyricsInterval);
-        window._lyricsInterval = null;
-      }
-    }, 50);
-  }, 50);
-}
-
-const DUET_PAIRS = {
-  194: 195,
-};
-function getPartnerSongId(songId) {
-  if (DUET_PAIRS[songId]) return DUET_PAIRS[songId];
-  for (const [key, value] of Object.entries(DUET_PAIRS)) {
-    if (value === songId) return parseInt(key);
-  }
-  return null;
-}
-
-let audioCtx = null;
-let gainNode = null;
-let volumeSlider = null;
-let volumeValueEl = null;
-
-function initAudioContext() {
-  if (!audioCtx) {
-    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-    gainNode = audioCtx.createGain();
-    const source = audioCtx.createMediaElementSource(currentAudio);
-    source.connect(gainNode);
-    gainNode.connect(audioCtx.destination);
-  }
-  if (audioCtx.state === "suspended") {
-    audioCtx.resume();
-  }
-  return gainNode;
-}
-
-function setBoostedVolume(value) {
-  const gain = initAudioContext();
-  if (!gain) return;
-  const clamped = Math.min(Math.max(value, 0), 3);
-  gain.gain.value = clamped;
-  if (volumeValueEl) {
-    volumeValueEl.textContent = `${Math.round(clamped * 100)}%`;
-  }
-  localStorage.setItem("musicVolumeBoost", clamped);
-}
-
-let savedVolume = parseFloat(localStorage.getItem("musicVolumeBoost"));
-if (isNaN(savedVolume)) savedVolume = 1;
-
-volumeSlider = document.getElementById("volumeSlider");
-volumeValueEl = document.getElementById("volumeValue");
-if (volumeSlider) {
-  volumeSlider.value = savedVolume;
-  setBoostedVolume(savedVolume);
-  volumeSlider.addEventListener("input", (e) => {
-    const val = parseFloat(e.target.value);
-    setBoostedVolume(val);
-  });
-}
-
-let countedThisPlay = false;
-let lastWebhookTime = 0;
-let onTimeUpdateHandler = null;
-
-let isPaused = false;
-let syncStartTime = null;
-
-async function toggleChatSpamMode() {
-  if (spamModeActive) {
-    if (syncRoom && !syncIsLeader) {
-      showNotification("Only the leader can play songs", "system");
-      return;
-    }
-    resetLyricsState();
-    schedulingActive = false;
-    hideNotification();
-    spamModeActive = false;
-    messageTimeouts.forEach(clearTimeout);
-    messageTimeouts = [];
-    currentlyPlaying.innerHTML = "Currently Playing: none";
-    musicStatus.innerHTML = `Music Status: OFF`;
-    document.getElementById("pauseAutoplayBtn").textContent = "Pause";
-    isPaused = false;
-    if (onTimeUpdateHandler) {
-      currentAudio.removeEventListener("timeupdate", onTimeUpdateHandler);
-      onTimeUpdateHandler = null;
-    }
-    currentAudio.pause();
-    currentAudio.currentTime = 0;
-    currentAudio.loop = false;
-    currentAudio.removeEventListener("ended", onSongEnded);
-    if (syncRoom && syncIsLeader) {
-      syncStop();
-    }
-    return;
-  }
-
-  if (autoplayMode) {
-    skipSong();
-    return;
-  }
-
-  if (selectedSongId === undefined || selectedSongId === null) {
-    console.log("No song selected. Select one from the dropdown.");
-    return;
-  }
-
-  try {
-    chatMessages = await fetchLyrics(selectedSongId);
-    spamModeActive = true;
-    currentlyPlaying.innerHTML = `Currently Playing: ${selectedSongName}`;
-    musicStatus.innerHTML = `Music Status: ON`;
-
-    if (onTimeUpdateHandler) {
-      currentAudio.removeEventListener("timeupdate", onTimeUpdateHandler);
-      onTimeUpdateHandler = null;
     }
 
-    currentAudio.pause();
-    currentAudio.currentTime = syncStartTime !== null ? syncStartTime : 0;
-    currentAudio.src = selectedSongAudio;
-    currentAudio.loop = false;
-    syncStartTime = null;
-    countedThisPlay = false;
+    if (name && name !== oldSong.name) {
+      songs[index].name = name;
+      changes.name = true;
+    }
+    if (url && url !== oldSong.url) {
+      songs[index].url = url;
+      changes.url = true;
+    }
 
-    onTimeUpdateHandler = function () {
-      if (!currentAudio.duration) return;
-      let progress = currentAudio.currentTime / currentAudio.duration;
-      if (!countedThisPlay && progress >= 0.25) {
-        countedThisPlay = true;
-        if (!playCounts[selectedSongId]) {
-          playCounts[selectedSongId] = 0;
+    const newPublic = isPublic !== undefined ? isPublic : false;
+    const oldPublic = oldSong.public !== undefined ? oldSong.public : false;
+    if (newPublic !== oldPublic) {
+      songs[index].public = newPublic;
+      changes.public = true;
+    }
+
+    const newSong = { ...songs.find((s) => s.id === id) };
+    if (!changes.public) {
+      oldSong.public = newSong.public;
+    }
+
+    if (
+      categoryIndex !== undefined &&
+      categoryIndex >= 0 &&
+      categoryIndex < CATEGORIES.length
+    ) {
+      const newCategoryName = CATEGORIES[categoryIndex].name;
+      if (newCategoryName !== oldCategoryName) {
+        const songToMove = songs.splice(index, 1)[0];
+        let insertIndex = songs.length;
+        const foundIndex = songs.findIndex(
+          (s) => s.id === 999 && s.name === newCategoryName,
+        );
+        if (foundIndex !== -1) {
+          insertIndex = foundIndex + 1;
         }
-        playCounts[selectedSongId]++;
-        localStorage.setItem("plays", JSON.stringify(playCounts));
-        scheduleStatsUpload();
-        currentAudio.removeEventListener("timeupdate", onTimeUpdateHandler);
-        onTimeUpdateHandler = null;
+        songs.splice(insertIndex, 0, songToMove);
+        changes.category = true;
+        oldSong.category = oldCategoryName;
       }
-    };
-    currentAudio.addEventListener("timeupdate", onTimeUpdateHandler);
-
-    currentAudio.removeEventListener("ended", onSongEnded);
-    currentAudio.addEventListener("ended", onSongEnded);
-
-    initAudioContext();
-
-    await currentAudio.play();
-    const now = Date.now();
-    if (syncRoom && syncIsLeader) {
-      syncPlay(selectedSongId, currentAudio.currentTime, now);
-    }
-    showNotification(selectedSongName, "song");
-    scheduleMessages(chatMessages);
-    document.getElementById("pauseAutoplayBtn").textContent = "Pause";
-    isPaused = false;
-  } catch (err) {
-    if (err.name === "AbortError" || err.name === "NotAllowedError") {
-      console.debug("Playback interrupted gracefully:", err.message);
-      return;
-    }
-    console.warn(
-      `play() rejected for "${selectedSongName}":`,
-      err.name,
-      err.message,
-    );
-  }
-}
-
-async function playSong(song) {
-  if (!song) return;
-
-  selectedSongId = song.id;
-  selectedSongName = song.name;
-  selectedSongAudio = song.url;
-
-  if (spamModeActive) {
-    currentAudio.pause();
-    currentAudio.currentTime = 0;
-    spamModeActive = false;
-    currentAudio.removeEventListener("ended", onSongEnded);
-    messageTimeouts.forEach(clearTimeout);
-    messageTimeouts = [];
-  }
-
-  try {
-    chatMessages = await fetchLyrics(selectedSongId);
-    spamModeActive = true;
-    currentlyPlaying.innerHTML = `Currently Playing: ${selectedSongName}`;
-    musicStatus.innerHTML = `Music Status: ON (Autoplay: ${autoplayMode})`;
-    updateAutoplayStatus();
-
-    if (onTimeUpdateHandler) {
-      currentAudio.removeEventListener("timeupdate", onTimeUpdateHandler);
-      onTimeUpdateHandler = null;
     }
 
-    currentAudio.pause();
-    currentAudio.currentTime = 0;
-    currentAudio.src = selectedSongAudio;
-    currentAudio.loop = false;
+    await writeSongs(songs);
+    broadcastEvent("song-changed", { action: "edit", songId: id });
+    await syncPublicFiles();
 
-    countedThisPlay = false;
-
-    onTimeUpdateHandler = function () {
-      if (!currentAudio.duration) return;
-      let progress = currentAudio.currentTime / currentAudio.duration;
-      if (!countedThisPlay && progress >= 0.25) {
-        countedThisPlay = true;
-        if (!playCounts[selectedSongId]) {
-          playCounts[selectedSongId] = 0;
-        }
-        playCounts[selectedSongId]++;
-        localStorage.setItem("plays", JSON.stringify(playCounts));
-        scheduleStatsUpload();
-        currentAudio.removeEventListener("timeupdate", onTimeUpdateHandler);
-        onTimeUpdateHandler = null;
-      }
-    };
-    currentAudio.addEventListener("timeupdate", onTimeUpdateHandler);
-
-    currentAudio.removeEventListener("ended", onSongEnded);
-    currentAudio.addEventListener("ended", onSongEnded);
-
-    initAudioContext();
-
-    await currentAudio.play();
-    const currentTime = currentAudio.currentTime;
-    const now = Date.now();
-    if (syncRoom && syncIsLeader) {
-      syncPlay(selectedSongId, currentAudio.currentTime, now);
-    }
-
-    scheduleMessages(chatMessages);
-    showNotification(selectedSongName, "song");
-    document.getElementById("pauseAutoplayBtn").textContent = "Pause";
-    isPaused = false;
-  } catch (err) {
-    if (err.name === "AbortError" || err.name === "NotAllowedError") {
-      console.debug("Playback interrupted gracefully:", err.message);
-      return;
-    }
-    console.warn(
-      `play() rejected for "${selectedSongName}":`,
-      err.name,
-      err.message,
-    );
-    setTimeout(() => {
-      playSong(song);
-    }, 1000);
-  }
-}
-
-async function playNextAuto() {
-  if (!autoplayMode) return;
-
-  let nextSong = null;
-  if (autoplayMode === "category") {
-    if (autoplaySongs.length === 0) return;
-    if (autoplayIndex >= autoplaySongs.length) autoplayIndex = 0;
-    nextSong = autoplaySongs[autoplayIndex];
-    autoplayIndex++;
-  } else if (autoplayMode === "random") {
-    if (randomPool.length === 0) {
-      const all = getAllSongs();
-      if (all.length === 0) return;
-      randomPool = all;
-      randomCategoryName = null;
-    }
-    const randomIndex = Math.floor(Math.random() * randomPool.length);
-    nextSong = randomPool[randomIndex];
-  }
-  if (!nextSong) {
-    console.log("No next song available in autoplay mode");
-    return;
-  }
-
-  if (!isGoingBack) {
-    songHistory.push(nextSong);
-    songHistoryIndex = songHistory.length - 1;
-  } else {
-    isGoingBack = false;
-  }
-
-  if (songHistory.length > 100) {
-    songHistory.shift();
-    songHistoryIndex--;
-  }
-
-  await playSong(nextSong);
-}
-
-function skipSong() {
-  schedulingActive = false;
-  if (spamModeActive) {
-    hideNotification();
-    currentAudio.pause();
-    currentAudio.currentTime = 0;
-    currentAudio.removeEventListener("ended", onSongEnded);
-    messageTimeouts.forEach(clearTimeout);
-    messageTimeouts = [];
-    spamModeActive = false;
-    document.getElementById("pauseAutoplayBtn").textContent = "Pause";
-    isPaused = false;
-  }
-  if (autoplayMode) {
-    playNextAuto();
-  } else {
-    currentlyPlaying.innerHTML = "Currently Playing: none";
-    musicStatus.innerHTML = `Music Status: OFF`;
-    updateAutoplayStatus();
-  }
-}
-
-function skipBackSong() {
-  if (!autoplayMode) {
-    console.log("Not in autoplay mode. Press C to start manual play.");
-    return;
-  }
-  if (songHistoryIndex <= 0) {
-    console.log("Already at the first song in history");
-    return;
-  }
-
-  songHistoryIndex--;
-  const prevSong = songHistory[songHistoryIndex];
-  if (!prevSong) return;
-
-  if (autoplayMode === "category") {
-    const idx = autoplaySongs.findIndex((s) => s.id === prevSong.id);
-    if (idx !== -1) {
-      autoplayIndex = idx;
-      console.log(`Adjusted autoplayIndex to ${autoplayIndex}`);
-    }
-  }
-
-  if (spamModeActive) {
-    currentAudio.pause();
-    currentAudio.currentTime = 0;
-    currentAudio.removeEventListener("ended", onSongEnded);
-    messageTimeouts.forEach(clearTimeout);
-    messageTimeouts = [];
-    spamModeActive = false;
-  }
-
-  isGoingBack = true;
-
-  playSong(prevSong);
-}
-
-function onSongEnded() {
-  setTimeout(() => {
-    if (loopSong && !autoplayMode) {
-      currentAudio.currentTime = 0;
-      currentAudio
-        .play()
-        .then(() => {
-          scheduleMessages(chatMessages);
-        })
-        .catch((err) => console.warn("Loop restart failed:", err));
-      return;
-    }
-    resetLyricsState();
-    if (autoplayMode) {
-      playNextAuto();
-    } else {
-      spamModeActive = false;
-      currentlyPlaying.innerHTML = "Currently Playing: none";
-      musicStatus.innerHTML = `Music Status: OFF`;
-      updateAutoplayStatus();
-      document.getElementById("pauseAutoplayBtn").textContent = "Pause";
-      isPaused = false;
-    }
-  }, 200);
-}
-
-function startCategoryAutoplay(categoryName) {
-  if (syncRoom && !syncIsLeader) {
-    showNotification("Only the leader can start autoplay", "system");
-    return;
-  }
-
-  if (spamModeActive) {
-    currentAudio.pause();
-    currentAudio.currentTime = 0;
-    spamModeActive = false;
-    currentAudio.removeEventListener("ended", onSongEnded);
-    messageTimeouts.forEach(clearTimeout);
-    messageTimeouts = [];
-  }
-
-  autoplayMode = "category";
-  autoplayCategory = categoryName;
-  autoplaySongs = getSongsByCategory(categoryName);
-  autoplayIndex = 0;
-  songHistory = [];
-  songHistoryIndex = -1;
-  isGoingBack = false;
-  randomPool = [];
-  randomCategoryName = null;
-
-  if (autoplaySongs.length === 0) {
-    alert(`No songs found in category: ${categoryName}`);
-    autoplayMode = null;
-    updateAutoplayStatus();
-    return;
-  }
-
-  console.log(
-    `Autoplay category "${categoryName}" (${autoplaySongs.length} songs)`,
-  );
-  showNotification(`Autoplay: ${categoryName || "Random"}`, "system");
-  updateAutoplayStatus();
-  playNextAuto();
-}
-
-function startRandomAutoplay() {
-  let pool = [];
-  let categoryName = null;
-
-  if (syncRoom && !syncIsLeader) {
-    showNotification("Only the leader can start autoplay", "system");
-    return;
-  }
-
-  if (autoplayMode === "category" && autoplaySongs.length > 0) {
-    pool = autoplaySongs;
-    categoryName = autoplayCategory;
-  } else {
-    pool = getAllSongs();
-    categoryName = null;
-  }
-
-  if (pool.length === 0) {
-    alert("No songs available.");
-    return;
-  }
-
-  if (spamModeActive) {
-    currentAudio.pause();
-    currentAudio.currentTime = 0;
-    spamModeActive = false;
-    currentAudio.removeEventListener("ended", onSongEnded);
-    messageTimeouts.forEach(clearTimeout);
-    messageTimeouts = [];
-  }
-
-  autoplayMode = "random";
-  autoplayCategory = null;
-  autoplaySongs = [];
-  autoplayIndex = 0;
-  songHistory = [];
-  songHistoryIndex = -1;
-  isGoingBack = false;
-  randomPool = pool;
-  randomCategoryName = categoryName;
-
-  console.log(`Autoplay random from ${pool.length} songs`);
-  showNotification(`Autoplay: ${categoryName || "Random"}`, "system");
-  updateAutoplayStatus();
-  playNextAuto();
-}
-
-function stopAutoplay() {
-  schedulingActive = false;
-  autoplayMode = null;
-  autoplayCategory = null;
-  autoplaySongs = [];
-  autoplayIndex = 0;
-  hideNotification();
-  songHistory = [];
-  songHistoryIndex = -1;
-  isGoingBack = false;
-  randomPool = [];
-  randomCategoryName = null;
-  document.getElementById("pauseAutoplayBtn").textContent = "Pause";
-  isPaused = false;
-
-  if (spamModeActive) {
-    currentAudio.pause();
-    currentAudio.currentTime = 0;
-    spamModeActive = false;
-    currentAudio.removeEventListener("ended", onSongEnded);
-    messageTimeouts.forEach(clearTimeout);
-    messageTimeouts = [];
-    currentlyPlaying.innerHTML = "Currently Playing: none";
-    musicStatus.innerHTML = `Music Status: OFF`;
-    document.getElementById("pauseAutoplayBtn").textContent = "Pause";
-    isPaused = false;
-  }
-
-  updateAutoplayStatus();
-  showNotification("Autoplay stopped", "system");
-  console.log("Autoplay stopped");
-}
-
-function updateAutoplayStatus() {
-  const statusEl = document.getElementById("autoplayStatus");
-  if (!statusEl) return;
-
-  if (autoplayMode === "category" && autoplayCategory) {
-    const cleanName = autoplayCategory.replace(/-----.*$/, "").trim();
-    statusEl.innerHTML = `${cleanName} (${autoplayIndex}/${autoplaySongs.length})`;
-  } else if (autoplayMode === "random") {
-    const count = randomPool.length || getAllSongs().length;
-    let label = "Random";
-    if (randomCategoryName) {
-      const cleanName = randomCategoryName.replace(/-----.*$/, "").trim();
-      label = `Random (${cleanName})`;
-    }
-    statusEl.innerHTML = `${label} (${count} songs)`;
-  } else {
-    statusEl.innerHTML = `Off`;
-  }
-}
-
-function togglePause() {
-  const pauseBtn = document.getElementById("pauseAutoplayBtn");
-  if (!pauseBtn) return;
-
-  if (!currentAudio) return;
-
-  if (!spamModeActive && !autoplayMode) {
-    showNotification("No song is playing", "system");
-    return;
-  }
-
-  if (syncRoom && !syncIsLeader) {
-    showNotification("Only the leader can pause", "system");
-    return;
-  }
-
-  if (currentAudio.paused) {
-    // Resume
-    currentAudio
-      .play()
-      .then(() => {
-        isPaused = false;
-        pauseBtn.textContent = "Pause";
-        musicStatus.innerHTML = `Music Status: ON (${autoplayMode || "Manual"})`;
-        schedulingActive = true;
-
-        let startIndex = 0;
-        const currentMs = currentAudio.currentTime * 1000;
-        for (let j = 0; j < chatMessages.length; j++) {
-          if (chatMessages[j].delay > currentMs) {
-            startIndex = j;
+    if (changes.name || changes.url || changes.category || changes.public) {
+      const newSong = { ...songs.find((s) => s.id === id) };
+      if (changes.category) {
+        let newCategoryName = "Uncategorized";
+        let lastCat = "Uncategorized";
+        for (let i = 0; i < songs.length; i++) {
+          if (songs[i].id === 999) {
+            lastCat = songs[i].name;
+          }
+          if (songs[i].id === id) {
+            newCategoryName = lastCat;
             break;
           }
         }
-        scheduleMessages(chatMessages, startIndex);
-        if (syncRoom && syncIsLeader) {
-          syncPause(false, currentAudio.currentTime);
-        }
-      })
-      .catch((err) => console.warn("Resume failed:", err));
-  } else {
-    // Pause
-    currentAudio.pause();
-    isPaused = true;
-    schedulingActive = false;
-    pauseBtn.textContent = "Play";
-    musicStatus.innerHTML = `Music Status: Paused`;
-    if (syncRoom && syncIsLeader) {
-      syncPause(true, currentAudio.currentTime);
-    }
-  }
-}
-
-function setupAutoplayEvents() {
-  document.querySelectorAll(".autoplay-btn[data-category]").forEach((btn) => {
-    btn.addEventListener("click", () => {
-      startCategoryAutoplay(btn.dataset.category);
-    });
-  });
-
-  const randomBtn = document.getElementById("randomAutoplayBtn");
-  if (randomBtn) randomBtn.addEventListener("click", startRandomAutoplay);
-
-  const stopBtn = document.getElementById("stopAutoplayBtn");
-  if (stopBtn) stopBtn.addEventListener("click", stopAutoplay);
-
-  const pauseBtn = document.getElementById("pauseAutoplayBtn");
-  if (pauseBtn) pauseBtn.addEventListener("click", togglePause);
-}
-
-let syncRoom = null;
-let syncLeader = null;
-let syncMembers = [];
-let syncPaused = false;
-let syncName = "wolfi";
-let syncCurrentSongId = null;
-let syncIsLeader = false;
-let syncEventSource = null;
-let syncHeartbeatInterval = null;
-let isRejoining = false;
-let isLeaving = false;
-let syncLoop = false;
-let syncCurrentTime = 0;
-let duetMode = false;
-
-function resetLyricsState() {
-  if (window._lyricsInterval) {
-    clearInterval(window._lyricsInterval);
-    window._lyricsInterval = null;
-  }
-  schedulingActive = false;
-  chatMessages = [];
-  syncStartTime = null;
-}
-
-function hardResetLyrics() {
-  if (window._lyricsInterval) {
-    clearInterval(window._lyricsInterval);
-    window._lyricsInterval = null;
-  }
-  schedulingActive = false;
-
-  if (!spamModeActive || !selectedSongId) {
-    console.log("No active song – resetting lyrics state (cleared interval)");
-    showNotification("Lyrics reset (no song playing)", "system");
-    return;
-  }
-
-  const songId = selectedSongId;
-  const currentTime = currentAudio.currentTime || 0;
-  console.log(`Hard resetting lyrics for song ${songId} at ${currentTime}s`);
-
-  delete lyricsCache[songId];
-
-  fetchLyrics(songId)
-    .then((lyrics) => {
-      if (!lyrics || lyrics.length === 0) {
-        console.warn("No lyrics returned for hard reset.");
-        showNotification("No lyrics available for this song", "system");
-        return;
-      }
-      chatMessages = lyrics;
-
-      const currentMs = currentTime * 1000;
-      let startIndex = 0;
-      for (let j = 0; j < lyrics.length; j++) {
-        if (lyrics[j].delay > currentMs) {
-          startIndex = j;
-          break;
-        }
-      }
-
-      scheduleMessages(lyrics, startIndex);
-      console.log(
-        `Lyrics hard reset: scheduled from index ${startIndex} (${lyrics.length} lines)`,
-      );
-      showNotification("Lyrics reset and rescheduled", "system");
-    })
-    .catch((err) => {
-      console.error("Hard reset lyrics fetch error:", err);
-      showNotification("Lyrics reset failed – fetch error", "system");
-    });
-}
-
-function startHeartbeat(roomCode) {
-  if (syncHeartbeatInterval) clearInterval(syncHeartbeatInterval);
-  syncHeartbeatInterval = setInterval(() => {
-    if (!syncRoom) {
-      clearInterval(syncHeartbeatInterval);
-      syncHeartbeatInterval = null;
-      return;
-    }
-    fetch(`${API_BASE}/sync/heartbeat`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ roomCode: syncRoom, name: syncName }),
-    }).catch((err) => console.warn("Heartbeat failed:", err));
-  }, 10000);
-}
-
-function connectSyncSSE(roomCode) {
-  if (syncEventSource) {
-    syncEventSource.close();
-    syncEventSource = null;
-  }
-  const currentRoom = roomCode;
-  syncEventSource = new EventSource(`${API_BASE}/sync/events/${currentRoom}`);
-
-  syncEventSource.onmessage = (event) => {
-    try {
-      const msg = JSON.parse(event.data);
-      console.log("SSE update:", msg);
-      handleSyncMessage(msg);
-    } catch (e) {
-      console.warn("SSE parse error:", e);
-    }
-  };
-
-  syncEventSource.onerror = (err) => {
-    console.warn("SSE error, checking room...", err);
-    if (isRejoining || isLeaving) return;
-    const currentRoom = roomCode;
-    const originalLeader = syncLeader;
-    fetch(`${API_BASE}/sync/${currentRoom}`)
-      .then((res) => {
-        if (!res.ok) {
-          console.warn(
-            "Room no longer exists. Rejoining with original leader:",
-            originalLeader,
-          );
-          showNotification("Room was deleted, rejoining...", "system");
-          syncJoin(currentRoom, originalLeader);
-        } else {
-          console.log("Room exists, SSE will reconnect automatically.");
-        }
-      })
-      .catch(() => {
-        console.log(
-          "Network error checking room, will retry on next SSE error.",
-        );
-      });
-  };
-}
-
-function handleSyncMessage(msg) {
-  if (msg.type !== "room_state") return;
-  let needUIUpdate = false;
-
-  if (msg.leader !== syncLeader) {
-    syncLeader = msg.leader;
-    syncIsLeader = syncLeader === syncName;
-    showNotification(`Leader changed to "${syncLeader}"`, "system");
-    document.getElementById("syncStatus").textContent =
-      `Connected (Leader: ${syncLeader})`;
-    needUIUpdate = true;
-  }
-
-  if (JSON.stringify(msg.members) !== JSON.stringify(syncMembers)) {
-    syncMembers = msg.members || [];
-    updateSyncUI();
-    needUIUpdate = true;
-  }
-
-  if (msg.currentTime !== undefined) {
-    syncCurrentTime = msg.currentTime;
-  }
-
-  if (msg.currentSong !== undefined && msg.currentSong !== syncCurrentSongId) {
-    syncCurrentSongId = msg.currentSong;
-
-    if (syncCurrentSongId === null) {
-      if (spamModeActive) {
-        currentAudio.pause();
-        currentAudio.currentTime = 0;
-        spamModeActive = false;
-        currentAudio.removeEventListener("ended", onSongEnded);
-        messageTimeouts.forEach(clearTimeout);
-        messageTimeouts = [];
-        currentlyPlaying.innerHTML = "Currently Playing: none";
-        musicStatus.innerHTML = `Music Status: OFF (synced)`;
-        document.getElementById("pauseAutoplayBtn").textContent = "Pause";
-        isPaused = false;
-        schedulingActive = false;
-        hideNotification();
-      }
-      syncPaused = false;
-      syncCurrentTime = 0;
-      needUIUpdate = true;
-    } else if (!syncIsLeader && syncCurrentSongId !== null) {
-      const timestamp = msg.timestamp || Date.now();
-      let targetSongId = syncCurrentSongId;
-      if (duetMode && msg.partnerSongId) {
-        targetSongId = msg.partnerSongId;
-        console.log(
-          `Duet mode: playing partner song ${targetSongId} instead of ${syncCurrentSongId}`,
-        );
-      }
-      playSyncSong(targetSongId, msg.currentTime || 0, timestamp);
-    }
-    needUIUpdate = true;
-  }
-
-  if (msg.paused !== undefined && syncCurrentSongId !== null) {
-    const newPaused = msg.paused;
-    if (newPaused !== syncPaused) {
-      syncPaused = newPaused;
-
-      if (syncPaused) {
-        if (spamModeActive && !currentAudio.paused) {
-          if (syncCurrentTime !== undefined) {
-            currentAudio.currentTime = syncCurrentTime;
-          }
-          currentAudio.pause();
-          isPaused = true;
-          document.getElementById("pauseAutoplayBtn").textContent = "Play";
-          musicStatus.innerHTML = "Music Status: Paused (synced)";
-          schedulingActive = false;
-          hideNotification();
-        }
+        newSong.category = newCategoryName;
+        oldSong.category = oldCategoryName;
       } else {
-        if (spamModeActive && currentAudio.paused) {
-          if (syncCurrentTime !== undefined) {
-            currentAudio.currentTime = syncCurrentTime;
-            console.log(`Resume: aligned to ${syncCurrentTime}s`);
-          }
-          currentAudio
-            .play()
-            .then(() => {
-              isPaused = false;
-              document.getElementById("pauseAutoplayBtn").textContent = "Pause";
-              musicStatus.innerHTML = `Music Status: ON (Sync)`;
-              schedulingActive = true;
-              let startIndex = 0;
-              const currentMs = currentAudio.currentTime * 1000;
-              for (let j = 0; j < chatMessages.length; j++) {
-                if (chatMessages[j].delay > currentMs) {
-                  startIndex = j;
-                  break;
-                }
-              }
-              scheduleMessages(chatMessages, startIndex);
-            })
-            .catch((err) => console.warn("Resume failed:", err));
-        }
+        newSong.category = oldCategoryName;
+        oldSong.category = oldCategoryName;
       }
-      needUIUpdate = true;
+      sendDiscordEditNotification(oldSong, newSong, changes);
     }
+
+    res.json(songs.find((s) => s.id === id));
+  } catch (err) {
+    console.error("Error in PUT /songs:", err.stack);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+app.delete("/songs/:id", requireApiKey, async (req, res) => {
+  const id = parseInt(req.params.id);
+  const songs = readSongs();
+  const songToDelete = songs.find((s) => s.id === id);
+  if (!songToDelete) {
+    return res.status(404).json({ error: "Song not found" });
   }
 
-  if (msg.loop !== undefined && msg.loop !== syncLoop) {
-    syncLoop = msg.loop;
-    const loopCheckbox = document.getElementById("loopsong");
-    if (loopCheckbox) {
-      loopCheckbox.checked = syncLoop;
-      loopSong = syncLoop;
-      if (currentAudio) currentAudio.loop = syncLoop;
-    }
-    needUIUpdate = true;
-  }
+  const newSongs = songs.filter((s) => s.id !== id);
+  await writeSongs(newSongs);
+  const lyrics = readLyrics();
+  delete lyrics[id];
+  await writeLyrics(lyrics);
 
-  if (needUIUpdate) updateSyncUI();
-}
+  sendDiscordDeletion(songToDelete).catch((err) => {
+    console.error(err);
+  });
+  broadcastEvent("song-changed", { action: "delete", songId: id });
+  await syncPublicFiles();
 
-async function syncJoin(roomCode, originalLeader = null) {
-  stopMusic();
-  syncIsLeader = false;
-  syncLeader = null;
+  res.json({ message: "Deleted" });
+});
 
-  if (isRejoining) return;
-  isRejoining = true;
-  isLeaving = false;
+syncPublicFiles();
+
+app.put("/songs/:id/lyrics", requireApiKey, async (req, res) => {
+  const id = parseInt(req.params.id);
+  const { lyrics: lyricArray, skipDiscord } = req.body;
   try {
-    const body = { roomCode, name: syncName };
-    if (originalLeader) body.originalLeader = originalLeader;
-    const res = await fetch(`${API_BASE}/sync/join`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
+    if (!Array.isArray(lyricArray)) {
+      return res.status(400).json({ error: "lyrics must be an array" });
+    }
+    for (let item of lyricArray) {
+      if (typeof item.chat !== "string" || typeof item.delay !== "number") {
+        return res.status(400).json({
+          error: "Each lyric must have chat(string) and delay(number)",
+        });
+      }
+    }
+
+    const songs = readSongs();
+    const song = songs.find((s) => s.id === id);
+    if (!song) return res.status(404).json({ error: "Song not found" });
+
+    const lyrics = readLyrics();
+    const oldLyrics = lyrics[id] || [];
+    const oldCount = oldLyrics.length;
+    const newCount = lyricArray.length;
+
+    lyrics[id] = lyricArray;
+    await writeLyrics(lyrics);
+    broadcastEvent("song-changed", { action: "edit", songId: id });
+
+    const shouldNotify = skipDiscord !== true;
+    if (
+      shouldNotify &&
+      (oldCount !== newCount ||
+        JSON.stringify(oldLyrics) !== JSON.stringify(lyricArray))
+    ) {
+      const oldSong = { ...song };
+      const newSong = { ...song };
+      sendDiscordEditNotification(
+        oldSong,
+        newSong,
+        {},
+        oldCount,
+        newCount,
+      ).catch((err) => console.error(err));
+    }
+
+    res.json({ message: "Lyrics updated" });
+  } catch (err) {
+    console.error("Error in PUT /songs/:id/lyrics:", err.stack);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+app.post("/stats/upload", requireApiKey, async (req, res) => {
+  const { key, stats } = req.body;
+  if (!key || typeof key !== "string") {
+    return res.status(400).json({ error: "key is required" });
+  }
+  if (!stats || typeof stats !== "object") {
+    return res.status(400).json({ error: "stats must be an object" });
+  }
+
+  if (!GITHUB_TOKEN || !GITHUB_REPO) {
+    return res
+      .status(500)
+      .json({ error: "GitHub credentials not configured." });
+  }
+
+  try {
+    await writeStatsFile(key, stats);
+    res.json({ message: `Stats for "${key}" saved successfully` });
+  } catch (err) {
+    console.error("Stats upload error:", err);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+app.get("/stats/:key", async (req, res) => {
+  const { key } = req.params;
+  if (!GITHUB_TOKEN || !GITHUB_REPO) {
+    return res
+      .status(500)
+      .json({ error: "GitHub credentials not configured." });
+  }
+  try {
+    const stats = await getStatsFile(key);
+    if (stats === null) {
+      return res.status(404).json({ error: "No stats found for this key." });
+    }
+    res.json(stats);
+  } catch (err) {
+    console.error("Stats fetch error:", err);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+app.get("/stats-key", (req, res) => {
+  const key = req.cookies.statsKey;
+  if (!key) {
+    return res.status(404).json({ error: "No stats key stored" });
+  }
+  res.json({ key });
+});
+
+// GITHUB
+app.post("/sync-github", requireApiKey, async (req, res) => {
+  if (!GITHUB_TOKEN || !GITHUB_REPO) {
+    const errorMsg = "GitHub credentials not configured on server.";
+    await sendGitHubSyncNotification(false, errorMsg, "...");
+    return res.status(500).json({ error: errorMsg });
+  }
+
+  async function updateFile(path, content, retries = 2) {
+    const url = `https://api.github.com/repos/${GITHUB_REPO}/contents/${path}`;
+    const base64Content = Buffer.from(
+      JSON.stringify(content, null, 2),
+      "utf8",
+    ).toString("base64");
+    let sha = null;
+    try {
+      const getRes = await fetch(url, {
+        headers: {
+          Authorization: `token ${GITHUB_TOKEN}`,
+          Accept: "application/vnd.github.v3+json",
+        },
+      });
+      if (getRes.ok) {
+        const data = await getRes.json();
+        sha = data.sha;
+      }
+    } catch (e) {
+      /* file doesn't exist */
+    }
+
+    const body = {
+      message: `Update ${path}`,
+      content: base64Content,
+      branch: GITHUB_BRANCH || "main",
+    };
+    if (sha) body.sha = sha;
+
+    let putRes = await fetch(url, {
+      method: "PUT",
+      headers: {
+        Authorization: `token ${GITHUB_TOKEN}`,
+        Accept: "application/vnd.github.v3+json",
+        "Content-Type": "application/json",
+      },
       body: JSON.stringify(body),
     });
-    const data = await res.json();
-    syncRoom = roomCode;
-    syncLeader = data.leader;
-    syncMembers = data.members || [];
-    syncCurrentSongId = data.currentSong || null;
-    syncCurrentTime = data.currentTime || 0;
-    syncPaused = data.paused || false;
-    syncIsLeader = syncLeader === syncName;
-    if (!syncLeader) {
-      syncLeader = syncName;
-      syncIsLeader = true;
-    }
-    syncLoop = data.loop || false;
-    const loopCheckbox = document.getElementById("loopsong");
-    if (loopCheckbox) {
-      loopCheckbox.checked = syncLoop;
-      loopSong = syncLoop;
-      if (currentAudio) currentAudio.loop = syncLoop;
-    }
-    updateSyncUI();
 
-    if (data.isNewRoom) {
-      showNotification(`Created new room: ${roomCode}`, "system");
-    } else {
-      showNotification(`Joined existing room: ${roomCode}`, "system");
+    if (putRes.status === 409 && retries > 0) {
+      console.log(`Conflict on ${path}, retrying...`);
+      const getRes = await fetch(url, {
+        headers: {
+          Authorization: `token ${GITHUB_TOKEN}`,
+          Accept: "application/vnd.github.v3+json",
+        },
+      });
+      if (getRes.ok) {
+        const data = await getRes.json();
+        body.sha = data.sha;
+        putRes = await fetch(url, {
+          method: "PUT",
+          headers: {
+            Authorization: `token ${GITHUB_TOKEN}`,
+            Accept: "application/vnd.github.v3+json",
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(body),
+        });
+      }
+      if (putRes.status === 409) {
+        return updateFile(path, content, retries - 1);
+      }
     }
 
-    startHeartbeat(roomCode);
-    connectSyncSSE(roomCode);
-    updateSyncUI();
-    document.getElementById("syncStatus").textContent =
-      `Connected (Leader: ${syncLeader})`;
-    if (syncCurrentSongId !== null && !syncPaused && !syncIsLeader) {
-      const timestamp = data.timestamp || Date.now();
-      playSyncSong(syncCurrentSongId, syncCurrentTime, timestamp);
+    if (!putRes.ok) {
+      const errText = await putRes.text();
+      throw new Error(
+        `GitHub API error for ${path}: ${putRes.status} ${errText}`,
+      );
     }
-  } catch (err) {
-    console.error("Sync join error:", err);
-    showNotification("Failed to join sync room", "system");
-    alert("Failed to join sync room");
-  } finally {
-    isRejoining = false;
-    isLeaving = false;
+    return putRes.json();
   }
-}
 
-async function syncLeave() {
-  isLeaving = true;
-  resetLyricsState();
-  isRejoining = false;
-  if (syncRoom) {
+  try {
+    const songs = readSongs();
+    const lyrics = readLyrics();
+
+    let publicSongs = [];
+    let publicLyrics = {};
+    if (fs.existsSync(PUBLIC_SONGS_FILE) && fs.existsSync(PUBLIC_LYRICS_FILE)) {
+      publicSongs = JSON.parse(fs.readFileSync(PUBLIC_SONGS_FILE, "utf8"));
+      publicLyrics = JSON.parse(fs.readFileSync(PUBLIC_LYRICS_FILE, "utf8"));
+    }
+
+    await updateFile("songs.json", songs);
+    await updateFile("lyrics.json", lyrics);
+    await updateFile("public/public_songs.json", publicSongs);
+    await updateFile("public/public_lyrics.json", publicLyrics);
+
+    const successMsg = `Updated songs.json (${songs.length} songs), lyrics.json (${Object.keys(lyrics).length} entries), and public files.`;
+    await sendGitHubSyncNotification(true, successMsg);
+    res.json({ message: "Successfully synced to GitHub." });
+  } catch (err) {
+    console.error("GitHub sync error:", err);
+    const errorMsg = err.message || "Unknown error";
+    await sendGitHubSyncNotification(false, "Sync failed", errorMsg);
+    res.status(500).json({ error: errorMsg });
+  }
+});
+
+//SSE
+let sseClients = [];
+app.get("/events", (req, res) => {
+  let apiKey = req.headers["x-api-key"];
+  if (!apiKey && req.query.token) {
     try {
-      await fetch(`${API_BASE}/sync/leave`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ roomCode: syncRoom, name: syncName }),
-      });
+      apiKey = Buffer.from(req.query.token, "base64").toString("utf8");
     } catch (e) {
-      /* ignore */
+      return res.status(401).send("Unauthorized");
     }
   }
-  if (syncEventSource) {
-    syncEventSource.close();
-    syncEventSource = null;
-  }
-  if (syncHeartbeatInterval) {
-    clearInterval(syncHeartbeatInterval);
-    syncHeartbeatInterval = null;
-  }
-  syncRoom = null;
-  syncLeader = null;
-  syncMembers = [];
-  syncCurrentSongId = null;
-  syncCurrentTime = 0;
-  syncPaused = false;
-  syncIsLeader = false;
-  syncLoop = false;
-  syncStartTime = null;
-  updateSyncUI();
-  document.getElementById("syncStatus").textContent = "Off";
-  setTimeout(() => {
-    isLeaving = false;
-  }, 1000);
-}
-
-async function syncPlay(songId, currentTime = 0, timestamp = Date.now()) {
-  if (!syncRoom || !syncIsLeader) return;
-  let partnerSongId = null;
-  if (duetMode) {
-    partnerSongId = getPartnerSongId(songId);
-    if (partnerSongId) {
-      console.log(
-        `Duet mode: sending partner song ID ${partnerSongId} for ${songId}`,
-      );
-    }
-  }
-  try {
-    await fetch(`${API_BASE}/sync/play`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        roomCode: syncRoom,
-        name: syncName,
-        songId,
-        currentTime,
-        timestamp,
-        partnerSongId,
-      }),
-    });
-    syncCurrentSongId = songId;
-    syncPaused = false;
-  } catch (err) {
-    console.error("Sync play error:", err);
-  }
-}
-
-async function syncPause(paused, currentTime = 0) {
-  if (!syncRoom || !syncIsLeader) return;
-  try {
-    await fetch(`${API_BASE}/sync/pause`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        roomCode: syncRoom,
-        name: syncName,
-        paused,
-        currentTime,
-      }),
-    });
-    syncPaused = paused;
-  } catch (err) {
-    console.error("Sync pause error:", err);
-  }
-}
-
-async function syncSetLoop(loop) {
-  if (!syncRoom || !syncIsLeader) return;
-  try {
-    await fetch(`${API_BASE}/sync/set_loop`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ roomCode: syncRoom, name: syncName, loop }),
-    });
-    syncLoop = loop;
-  } catch (err) {
-    console.error("Sync set loop error:", err);
-  }
-}
-
-async function syncStop() {
-  if (!syncRoom || !syncIsLeader) return;
-  try {
-    await fetch(`${API_BASE}/sync/stop`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ roomCode: syncRoom, name: syncName }),
-    });
-    syncCurrentSongId = null;
-    syncPaused = true;
-  } catch (err) {
-    console.error("Sync stop error:", err);
-  }
-}
-
-async function syncMakeLeader(targetName) {
-  if (!syncRoom || !syncIsLeader) return;
-  try {
-    const res = await fetch(`${API_BASE}/sync/make_leader`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        roomCode: syncRoom,
-        name: syncName,
-        targetName: targetName.trim(),
-      }),
-    });
-    if (!res.ok) {
-      const err = await res.json();
-      showNotification(`${err.error || "Failed to change leader"}`, "system");
-      return;
-    }
-  } catch (err) {
-    console.error("Make leader error:", err);
-    showNotification("ould not change leader", "system");
-  }
-}
-
-function updateSyncUI() {
-  const membersEl = document.getElementById("syncMembers");
-  if (!membersEl) return;
-  const count = syncMembers.length;
-  if (count === 0) {
-    membersEl.textContent = "Members: none";
-    return;
-  }
-  const list = syncMembers
-    .map((m) => `${m}${m === syncLeader ? " 👑" : ""}`)
-    .join(", ");
-  membersEl.textContent = `Members (${count}): ${list}`;
-}
-
-function playSyncSong(songId, startTime = 0, serverTimestamp = Date.now()) {
-  resetLyricsState();
-  const song = songsList.find((s) => s.id === songId);
-  if (!song) {
-    console.warn("Sync song not found:", songId);
-    return;
+  if (apiKey !== API_KEY) {
+    return res.status(401).send("Unauthorized");
   }
 
-  const now = Date.now();
-  const elapsed = (now - serverTimestamp) / 1000;
-  let adjustedStart = Math.max(0, startTime + elapsed);
-
-  console.log(
-    `Sync playing: ${song.name}, target start ${adjustedStart}s (offset ${elapsed}s)`,
-  );
-
-  selectedSongId = song.id;
-  selectedSongName = song.name;
-  selectedSongAudio = song.url;
-
-  if (spamModeActive) {
-    currentAudio.pause();
-    currentAudio.currentTime = 0;
-    spamModeActive = false;
-    currentAudio.removeEventListener("ended", onSongEnded);
-    messageTimeouts.forEach(clearTimeout);
-    messageTimeouts = [];
-  }
-
-  currentAudio.src = selectedSongAudio;
-  currentAudio.preload = "auto";
-
-  const loadPromise = new Promise((resolve) => {
-    if (currentAudio.readyState >= 2) {
-      resolve();
-    } else {
-      const onLoad = () => {
-        currentAudio.removeEventListener("loadedmetadata", onLoad);
-        resolve();
-      };
-      currentAudio.addEventListener("loadedmetadata", onLoad);
-      setTimeout(resolve, 2000);
-    }
+  res.writeHead(200, {
+    "Content-Type": "text/event-stream",
+    "Cache-Control": "no-cache",
+    Connection: "keep-alive",
+    "Access-Control-Allow-Origin": "*",
   });
+  res.write("retry: 10000\n\n");
 
-  loadPromise.then(() => {
-    const loadTime = (Date.now() - now) / 1000;
-    adjustedStart = Math.max(0, adjustedStart + loadTime);
-    console.log(
-      `Audio loaded in ${loadTime}s, adjusted start ${adjustedStart}s`,
-    );
+  sseClients.push(res);
+  req.on("close", () => {
+    sseClients = sseClients.filter((client) => client !== res);
+  });
+});
 
-    currentAudio.currentTime = adjustedStart;
-    currentAudio.loop = false;
-    syncStartTime = adjustedStart;
-    syncCurrentTime = adjustedStart;
-
-    initAudioContext();
-
-    currentAudio
-      .play()
-      .then(() => {
-        spamModeActive = true;
-        currentlyPlaying.innerHTML = `Currently Playing: ${selectedSongName}`;
-        musicStatus.innerHTML = `Music Status: ON (Sync)`;
-        document.getElementById("pauseAutoplayBtn").textContent = "Pause";
-        isPaused = false;
-
-        const scheduleLyrics = (lyrics) => {
-          chatMessages = lyrics;
-          const currentMs = currentAudio.currentTime * 1000;
-          let startIndex = 0;
-          for (let j = 0; j < chatMessages.length; j++) {
-            if (chatMessages[j].delay > currentMs) {
-              startIndex = j;
-              break;
-            }
-          }
-          scheduleMessages(chatMessages, startIndex);
-          console.log(
-            `Scheduled lyrics from index ${startIndex} (time: ${currentMs}ms)`,
-          );
-        };
-
-        if (lyricsCache[selectedSongId]) {
-          scheduleLyrics(lyricsCache[selectedSongId]);
-        } else {
-          fetchLyrics(selectedSongId)
-            .then((lyrics) => {
-              scheduleLyrics(lyrics);
-            })
-            .catch((err) => {
-              console.error("Failed to fetch lyrics for sync:", err);
-              chatMessages = [];
-              showNotification("Sync lyrics unavailable", "system");
-            });
-        }
-
-        currentAudio.removeEventListener("ended", onSongEnded);
-        currentAudio.addEventListener("ended", onSongEnded);
-
-        const actualTime = currentAudio.currentTime;
-        if (Math.abs(actualTime - adjustedStart) > 0.5) {
-          console.warn(
-            `Position discrepancy: actual ${actualTime}s, intended ${adjustedStart}s, correcting...`,
-          );
-          currentAudio.currentTime = adjustedStart;
-        }
-      })
-      .catch((err) => {
-        console.warn("Sync play error:", err);
-        spamModeActive = false;
-        showNotification("Sync playback failed", "system");
-      });
+function broadcastEvent(event, data) {
+  const payload = `event: ${event}\ndata: ${JSON.stringify(data)}\n\n`;
+  sseClients.forEach((client) => {
+    try {
+      client.write(payload);
+    } catch (e) {}
   });
 }
 
-document.getElementById("joinSyncBtn").addEventListener("click", () => {
-  const room = document.getElementById("roomCodeInput").value.trim();
-  if (!room) {
-    alert("Please enter a room code.");
-    return;
-  }
-  if (syncRoom) syncLeave();
-  syncJoin(room);
-});
-
-document.getElementById("leaveSyncBtn").addEventListener("click", () => {
-  syncLeave();
-});
-
-document.getElementById("makeLeaderBtn").addEventListener("click", () => {
-  if (!syncRoom || !syncIsLeader) {
-    showNotification("You are not the leader", "system");
-    return;
-  }
-  if (syncMembers.length <= 1) {
-    showNotification("No other members to make leader", "system");
-    return;
-  }
-  const memberList = syncMembers.filter((m) => m !== syncName).join(", ");
-  const target = prompt(
-    `Enter the name of the new leader:\nAvailable: ${memberList}`,
-  );
-  if (!target) return;
-  if (!syncMembers.includes(target) || target === syncName) {
-    showNotification("Invalid member name", "system");
-    return;
-  }
-  syncMakeLeader(target);
-});
-
-document.getElementById("autoplayToggle").addEventListener("click", () => {
-  document.querySelector(".autoplay-section").classList.toggle("open");
-});
-
-document.getElementById("syncToggle").addEventListener("click", () => {
-  document.querySelector(".syncsongs-section").classList.toggle("open");
-});
-
-document
-  .getElementById("duetModeToggle")
-  .addEventListener("change", function () {
-    duetMode = this.checked;
-    document.getElementById("duetStatus").textContent = duetMode ? "ON" : "Off";
-    if (duetMode && syncRoom && !syncIsLeader) {
-      showNotification(
-        "Duet mode enabled – you will receive partner lyrics",
-        "system",
-      );
-    }
-  });
-
-document.getElementById("mutechat").addEventListener("change", function () {
-  chatMuted = this.checked;
-  if (chatMuted) packet("6", "");
-});
-
-document.getElementById("loopsong").addEventListener("change", function () {
-  if (syncRoom && !syncIsLeader) {
-    this.checked = syncLoop;
-    showNotification("Only the leader can change loop", "system");
-    return;
-  }
-  loopSong = this.checked;
-  if (currentAudio) currentAudio.loop = loopSong;
-  if (syncRoom && syncIsLeader) {
-    syncSetLoop(loopSong);
-  }
-});
-
-let pingpong1 = false,
-  interval;
-function pingpong() {
-  packet("6", window.pingTime + "'pingpong");
-}
-
-function togglepingpong() {
-  if (pingpong1) {
-    clearInterval(interval);
+app.get("/generate", (req, res) => {
+  if (req.signedCookies.auth === "true") {
+    res.sendFile(__dirname + "/generate.html");
   } else {
-    interval = setInterval(pingpong, 1000);
+    res.redirect("/");
   }
-  pingpong1 = !pingpong1;
-}
-
-let inputs = [
-  "chatBox",
-  "nameInput",
-  "allianceInput",
-  "mChBox",
-  "songSearch",
-  "roomCodeInput",
-];
-window.addEventListener(
-  "keydown",
-  (e) => {
-    if (e.key === "C" && !inputs.includes(document.activeElement.id)) {
-      e.preventDefault();
-      e.stopPropagation();
-      skipBackSong();
-      showNotification("Back", "system");
-    } else if (
-      e.key.toLowerCase() === "c" &&
-      !inputs.includes(document.activeElement.id)
-    ) {
-      e.preventDefault();
-      e.stopPropagation();
-      if (autoplayMode) {
-        skipSong();
-        showNotification("Skipped", "system");
-      } else {
-        toggleChatSpamMode();
-      }
-    }
-    if (
-      e.key.toLowerCase() === "p" &&
-      !inputs.includes(document.activeElement.id) &&
-      document.getElementById("mainMenu").style.display === "none"
-    ) {
-      e.preventDefault();
-      e.stopPropagation();
-      $(".modmenu").toggle("fade-out");
-    }
-    if (
-      e.key.toLowerCase() === "u" &&
-      !inputs.includes(document.activeElement.id) &&
-      document.getElementById("mainMenu").style.display === "none"
-    ) {
-      togglepingpong();
-    }
-    if (
-      e.key.toLowerCase() === "b" &&
-      !inputs.includes(document.activeElement.id) &&
-      document.getElementById("mainMenu").style.display === "none"
-    ) {
-      const muteChat = document.getElementById("mutechat");
-      muteChat.checked = !muteChat.checked;
-      muteChat.dispatchEvent(new Event("change"));
-      showNotification(`Mute ${muteChat.checked ? "ON" : "OFF"}`, "system");
-    }
-    if (
-      e.key.toLowerCase() === "k" &&
-      !inputs.includes(document.activeElement.id) &&
-      document.getElementById("mainMenu").style.display === "none"
-    ) {
-      const songLoop = document.getElementById("loopsong");
-      songLoop.checked = !songLoop.checked;
-      songLoop.dispatchEvent(new Event("change"));
-      showNotification(`Loop ${songLoop.checked ? "ON" : "OFF"}`, "system");
-    }
-    if (
-      e.shiftKey &&
-      e.which === 57 /* shift + nine */ &&
-      !inputs.includes(document.activeElement.id) &&
-      document.getElementById("mainMenu").style.display === "none"
-    ) {
-      e.preventDefault();
-      if (typeof refreshSongs === "function") {
-        refreshSongs()
-          .then(() => {
-            showNotification("Refreshed", "system");
-          })
-          .catch(() => {
-            showNotification("Refreshed failed", "system");
-          });
-      } else {
-        console.warn("refreshSongs function not defined");
-      }
-    }
-    if (
-      e.shiftKey &&
-      e.which === 48 /* shift + zero */ &&
-      !inputs.includes(document.activeElement.id) &&
-      document.getElementById("mainMenu").style.display === "none"
-    ) {
-      e.preventDefault();
-      if (typeof uploadStats === "function") {
-        uploadStats()
-          .then(() => {
-            showNotification("Stats uploaded", "system");
-          })
-          .catch(() => {
-            showNotification("Stats upload failed", "system");
-          });
-      } else {
-        console.warn("uploadStats function not defined");
-      }
-    }
-    if (
-      e.key.toLowerCase() === "j" /* j */ &&
-      !inputs.includes(document.activeElement.id)
-    ) {
-      e.preventDefault();
-      togglePause();
-      showNotification(currentAudio.paused ? "Paused" : "Resumed", "system");
-    }
-    if (
-      e.shiftKey &&
-      e.which === 56 /* shift + eight */ &&
-      !inputs.includes(document.activeElement.id) &&
-      document.getElementById("mainMenu").style.display === "none"
-    ) {
-      e.preventDefault();
-      if (typeof hardResetLyrics === "function") {
-        hardResetLyrics();
-        showNotification("Lyrics reset", "system");
-      } else {
-        console.warn("hardResetLyrics function not defined");
-      }
-    }
-  },
-  true,
-);
-
-function stopMusic() {
-  if (spamModeActive) {
-    currentAudio.pause();
-    currentAudio.currentTime = 0;
-    spamModeActive = false;
-    currentAudio.removeEventListener("ended", onSongEnded);
-    messageTimeouts.forEach(clearTimeout);
-    messageTimeouts = [];
-    currentlyPlaying.innerHTML = "Currently Playing: none";
-    musicStatus.innerHTML = `Music Status: OFF`;
-    document.getElementById("pauseAutoplayBtn").textContent = "Pause";
-    isPaused = false;
-    schedulingActive = false;
-    hideNotification();
-  }
-}
-
-window.stopMusic = function () {
-  stopMusic();
-};
-
-window.addEventListener("beforeunload", () => {
-  currentAudio.pause();
-  currentAudio.currentTime = 0;
-  currentAudio.loop = false;
-  messageTimeouts.forEach(clearTimeout);
-  messageTimeouts = [];
 });
 
-let songsHash = "";
-async function refreshSongs() {
-  try {
-    const newList = await fetchSongs();
-    const newHash = JSON.stringify(newList);
-    if (newHash === songsHash) return;
-    songsList = newList;
-    songsHash = newHash;
+app.post("/generate-guest", requireApiKey, (req, res) => {
+  const token = generateGuestKey();
+  res.json({ token });
+});
 
-    if (selectedSongId === undefined || selectedSongId === null) {
-      addSong(null);
-      console.log(`Songs updated (${songsList.length})`);
-      return;
-    }
-
-    let exists = songsList.some((s) => s.id === selectedSongId);
-    let newSelection = null;
-    if (exists) {
-      newSelection = songsList.find((s) => s.id === selectedSongId);
-    } else {
-      const firstReal = songsList.find((s) => s.id !== 999 && s.url);
-      if (firstReal) newSelection = firstReal;
-    }
-
-    if (newSelection) {
-      selectBtn.firstElementChild.innerText = newSelection.name;
-      selectedSongId = newSelection.id;
-      selectedSongName = newSelection.name;
-      selectedSongAudio = newSelection.url;
-      addSong(newSelection.name);
-    } else {
-      addSong(null);
-    }
-
-    console.log(`Songs updated (${songsList.length})`);
-  } catch (err) {
-    console.warn("Refresh failed:", err);
-  }
-}
-
-(async function init() {
-  try {
-    await fetchApiKey();
-    if (!API_KEY) {
-      console.error("No API key available. Please ensure you are logged in.");
-      return;
-    }
-
-    await Promise.all([fetchStatsKey(), fetchSongs()]);
-    if (songsList.length) {
-      addSong(null);
-    } else {
-      console.warn("No songs loaded from API");
-      addSong("No songs");
-    }
-  } catch (err) {
-    console.error("Failed to fetch songs:", err);
-    addSong("Error loading songs");
-  }
-})();
-
-async function getSSEToken() {
-  if (!API_KEY) throw new Error("API key not loaded yet");
-
-  const res = await fetch(`${API_BASE}/auth`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ apiKey: API_KEY }),
-  });
-  if (!res.ok) throw new Error("Failed to get token");
-  const data = await res.json();
-  return data.token;
-}
-
-document.addEventListener("visibilitychange", () => {
-  if (document.hidden) return;
+app.get("/guest-keys", requireApiKey, (req, res) => {
   const now = Date.now();
-  for (const entry of activeNotifications) {
-    if (now - entry.startTime >= entry.duration) {
-      hideNotification(entry);
+  for (const key in guestKeys) {
+    if (guestKeys[key].expiresAt < now) {
+      delete guestKeys[key];
     }
   }
+  const list = Object.keys(guestKeys).map((key) => ({
+    token: key,
+    createdAt: guestKeys[key].createdAt,
+    expiresAt: guestKeys[key].expiresAt,
+  }));
+  res.json(list);
 });
 
-const roomInput = document.getElementById("roomCodeInput");
-if (roomInput) {
-  roomInput.addEventListener("keydown", function (e) {
-    e.stopPropagation();
-  });
-}
+app.post("/revoke-guest", requireApiKey, (req, res) => {
+  const { token } = req.body;
+  if (!token || !guestKeys[token]) {
+    return res.status(404).json({ error: "Key not found" });
+  }
+  delete guestKeys[token];
+  res.json({ message: "Key revoked" });
+});
 
-const songInput = document.getElementById("songSearch");
-if (songInput) {
-  songInput.addEventListener("keydown", function (e) {
-    e.stopPropagation();
-  });
-}
+app.get("/health", (req, res) => res.send("OK"));
+
+app.use(express.static(__dirname));
+
+//app.listen(PORT, () => console.log(`API running on port ${PORT}`));
+server.listen(PORT, () => console.log(`API running on port ${PORT}`));
