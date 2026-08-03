@@ -306,6 +306,15 @@ app.post("/auth", (req, res) => {
   res.json({ token });
 });
 
+app.get("/api-key", (req, res) => {
+  const isAuthenticated =
+    req.signedCookies.auth === "true" || req.headers["x-api-key"] === API_KEY;
+  if (!isAuthenticated) {
+    return res.status(401).json({ error: "Unauthorized" });
+  }
+  res.json({ key: API_KEY });
+});
+
 app.post("/verify-key", express.json(), (req, res) => {
   const { apiKey } = req.body;
   if (!apiKey) {
