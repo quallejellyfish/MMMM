@@ -2006,25 +2006,13 @@ async function refreshSongs() {
   }
 }
 
-function wait(callback, retries = 60) {
-  if (typeof packet !== "undefined" && typeof $ !== "undefined") {
-    callback();
-    return;
-  }
-  if (retries <= 0) {
-    console.warn("Game never became ready. Mod may not work correctly.");
-    callback();
-    return;
-  }
-  setTimeout(() => wait(callback, retries - 1), 200);
-}
-
-wait(() => {
+function waitInit() {
+  console.log("MMM mod initializing...");
   (async function init() {
     try {
       await fetchApiKey();
       if (!API_KEY) {
-        console.error("No API key available. Please ensure you are logged in.");
+        console.error("No API key available...");
         return;
       }
       await Promise.all([fetchStatsKey(), fetchSongs()]);
@@ -2039,7 +2027,13 @@ wait(() => {
       addSong("Error loading songs");
     }
   })();
-});
+}
+
+if (document.readyState === "complete") {
+  setTimeout(waitInit, 2000);
+} else {
+  window.addEventListener("load", () => setTimeout(waitInit, 2000));
+}
 
 async function getSSEToken() {
   if (!API_KEY) throw new Error("API key not loaded yet");
