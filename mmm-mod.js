@@ -2006,26 +2006,40 @@ async function refreshSongs() {
   }
 }
 
-(async function init() {
-  try {
-    await fetchApiKey();
-    if (!API_KEY) {
-      console.error("No API key available. Please ensure you are logged in.");
-      return;
-    }
-
-    await Promise.all([fetchStatsKey(), fetchSongs()]);
-    if (songsList.length) {
-      addSong(null);
-    } else {
-      console.warn("No songs loaded from API");
-      addSong("No songs");
-    }
-  } catch (err) {
-    console.error("Failed to fetch songs:", err);
-    addSong("Error loading songs");
+function wait(callback, retries = 60) {
+  if (typeof packet !== "undefined" && typeof $ !== "undefined") {
+    callback();
+    return;
   }
-})();
+  if (retries <= 0) {
+    console.warn("Game never became ready. Mod may not work correctly.");
+    callback();
+    return;
+  }
+  setTimeout(() => wait(callback, retries - 1), 200);
+}
+
+wait(() => {
+  (async function init() {
+    try {
+      await fetchApiKey();
+      if (!API_KEY) {
+        console.error("No API key available. Please ensure you are logged in.");
+        return;
+      }
+      await Promise.all([fetchStatsKey(), fetchSongs()]);
+      if (songsList.length) {
+        addSong(null);
+      } else {
+        console.warn("No songs loaded from API");
+        addSong("No songs");
+      }
+    } catch (err) {
+      console.error("Failed to fetch songs:", err);
+      addSong("Error loading songs");
+    }
+  })();
+});
 
 async function getSSEToken() {
   if (!API_KEY) throw new Error("API key not loaded yet");
