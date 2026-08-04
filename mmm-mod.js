@@ -540,7 +540,7 @@ function scheduleMessages(messages, startIndex = 0) {
       }
       let currentMs = currentAudio.currentTime * 1000;
       while (i < messages.length && messages[i].delay <= currentMs) {
-        if (!chatMuted) packet("6", messages[i].chat);
+        if (!chatMuted) pendMessages(messages[i].chat);
         i++;
       }
       if (i >= messages.length) {
@@ -1777,7 +1777,7 @@ document
 
 document.getElementById("mutechat").addEventListener("change", function () {
   chatMuted = this.checked;
-  if (chatMuted) packet("6", "");
+  if (chatMuted) pendMessages("6", "");
 });
 
 document.getElementById("loopsong").addEventListener("change", function () {
@@ -1796,7 +1796,7 @@ document.getElementById("loopsong").addEventListener("change", function () {
 let pingpong1 = false,
   interval;
 function pingpong() {
-  packet("6", window.pingTime + "'pingpong");
+  pendMessages("6", window.pingTime + "'pingpong");
 }
 
 function togglepingpong() {
@@ -2006,39 +2006,26 @@ async function refreshSongs() {
   }
 }
 
-function waitForPacket(callback, retries = 50) {
-    if (typeof packet !== 'undefined') {
-        callback();
-        return;
+(async function init() {
+  try {
+    await fetchApiKey();
+    if (!API_KEY) {
+      console.error("No API key available. Please ensure you are logged in.");
+      return;
     }
-    if (retries <= 0) {
-        console.warn('Packet never became available. Lyrics will not send.');
-        return;
-    }
-    setTimeout(() => waitForPacket(callback, retries - 1), 200);
-}
 
-waitForPacket(() => {
-    (async function init() {
-        try {
-            await fetchApiKey();
-            if (!API_KEY) {
-                console.error("No API key available. Please ensure you are logged in.");
-                return;
-            }
-            await Promise.all([fetchStatsKey(), fetchSongs()]);
-            if (songsList.length) {
-                addSong(null);
-            } else {
-                console.warn("No songs loaded from API");
-                addSong("No songs");
-            }
-        } catch (err) {
-            console.error("Failed to fetch songs:", err);
-            addSong("Error loading songs");
-        }
-    })();
-});
+    await Promise.all([fetchStatsKey(), fetchSongs()]);
+    if (songsList.length) {
+      addSong(null);
+    } else {
+      console.warn("No songs loaded from API");
+      addSong("No songs");
+    }
+  } catch (err) {
+    console.error("Failed to fetch songs:", err);
+    addSong("Error loading songs");
+  }
+})();
 
 async function getSSEToken() {
   if (!API_KEY) throw new Error("API key not loaded yet");
