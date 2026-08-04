@@ -1777,7 +1777,7 @@ document
 
 document.getElementById("mutechat").addEventListener("change", function () {
   chatMuted = this.checked;
-  if (chatMuted) pendMessages("6", "");
+  if (chatMuted) pendMessages("");
 });
 
 document.getElementById("loopsong").addEventListener("change", function () {
@@ -1796,7 +1796,7 @@ document.getElementById("loopsong").addEventListener("change", function () {
 let pingpong1 = false,
   interval;
 function pingpong() {
-  pendMessages("6", window.pingTime + "'pingpong");
+  pendMessages(window.pingTime + "'pingpong");
 }
 
 function togglepingpong() {
