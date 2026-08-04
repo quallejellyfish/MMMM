@@ -2006,26 +2006,39 @@ async function refreshSongs() {
   }
 }
 
-(async function init() {
-  try {
-    await fetchApiKey();
-    if (!API_KEY) {
-      console.error("No API key available. Please ensure you are logged in.");
-      return;
+function waitForPacket(callback, retries = 50) {
+    if (typeof packet !== 'undefined') {
+        callback();
+        return;
     }
+    if (retries <= 0) {
+        console.warn('Packet never became available. Lyrics will not send.');
+        return;
+    }
+    setTimeout(() => waitForPacket(callback, retries - 1), 200);
+}
 
-    await Promise.all([fetchStatsKey(), fetchSongs()]);
-    if (songsList.length) {
-      addSong(null);
-    } else {
-      console.warn("No songs loaded from API");
-      addSong("No songs");
-    }
-  } catch (err) {
-    console.error("Failed to fetch songs:", err);
-    addSong("Error loading songs");
-  }
-})();
+waitForPacket(() => {
+    (async function init() {
+        try {
+            await fetchApiKey();
+            if (!API_KEY) {
+                console.error("No API key available. Please ensure you are logged in.");
+                return;
+            }
+            await Promise.all([fetchStatsKey(), fetchSongs()]);
+            if (songsList.length) {
+                addSong(null);
+            } else {
+                console.warn("No songs loaded from API");
+                addSong("No songs");
+            }
+        } catch (err) {
+            console.error("Failed to fetch songs:", err);
+            addSong("Error loading songs");
+        }
+    })();
+});
 
 async function getSSEToken() {
   if (!API_KEY) throw new Error("API key not loaded yet");
