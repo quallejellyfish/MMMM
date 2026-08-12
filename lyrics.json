@@ -78093,12 +78093,20 @@
       "delay": 25720
     },
     {
-      "chat": "One more growl Im in your snare",
-      "delay": 27397
+      "chat": "One more growl",
+      "delay": 27383
     },
     {
-      "chat": "Chains or ropes I dont care",
+      "chat": "Im in your snare",
+      "delay": 28061
+    },
+    {
+      "chat": "Chains or ropes",
       "delay": 29083
+    },
+    {
+      "chat": "I dont care",
+      "delay": 29930
     },
     {
       "chat": "Tied so tight with that",
@@ -78117,8 +78125,12 @@
       "delay": 33535
     },
     {
-      "chat": "No safe word baby dont you stop",
+      "chat": "No safe word baby",
       "delay": 34280
+    },
+    {
+      "chat": "dont you stop",
+      "delay": 35168
     },
     {
       "chat": "Pinned and purring",
@@ -78129,12 +78141,16 @@
       "delay": 44775
     },
     {
-      "chat": "You take control I lose my hold",
+      "chat": "You take control",
       "delay": 46071
     },
     {
+      "chat": "I lose my hold",
+      "delay": 47386
+    },
+    {
       "chat": "Fangs on skin its hot and raw",
-      "delay": 49721
+      "delay": 49736
     },
     {
       "chat": "Back me up against that wall",
@@ -78181,12 +78197,20 @@
       "delay": 108733
     },
     {
-      "chat": "Youre the spark Im feelin fine",
-      "delay": 109687
+      "chat": "Youre the spark",
+      "delay": 109735
     },
     {
-      "chat": "Teeth on collar rough and sweet",
+      "chat": "Im feelin fine",
+      "delay": 110328
+    },
+    {
+      "chat": "Teeth on collar",
       "delay": 111401
+    },
+    {
+      "chat": "rough and sweet",
+      "delay": 112413
     },
     {
       "chat": "You know just how to knock",
@@ -78205,12 +78229,20 @@
       "delay": 115805
     },
     {
-      "chat": "Were the freaks that rave unbound",
-      "delay": 116515
+      "chat": "Were the freaks",
+      "delay": 116601
     },
     {
-      "chat": "Scratch that itch pull that strap",
+      "chat": "that rave unbound",
+      "delay": 117227
+    },
+    {
+      "chat": "Scratch that itch",
       "delay": 118271
+    },
+    {
+      "chat": "pull that strap",
+      "delay": 119075
     },
     {
       "chat": "Ill wear your marks like",
@@ -78241,8 +78273,12 @@
       "delay": 130104
     },
     {
-      "chat": "You take control I lose my hold",
+      "chat": "You take control",
       "delay": 131794
+    },
+    {
+      "chat": "I lose my hold",
+      "delay": 133067
     },
     {
       "chat": "Fangs on skin its hot and raw",
@@ -78315,6 +78351,376 @@
     {
       "chat": "Tied and twisted I want it all",
       "delay": 207477
+    }
+  ],
+  "211": [
+    {
+      "chat": "Youre in my blood",
+      "delay": 1153
+    },
+    {
+      "chat": "I feel you crawl",
+      "delay": 7923
+    },
+    {
+      "chat": "One touch and I fall",
+      "delay": 12914
+    },
+    {
+      "chat": "You move like heat",
+      "delay": 19102
+    },
+    {
+      "chat": "beneath my fur",
+      "delay": 20616
+    },
+    {
+      "chat": "A spark a flame",
+      "delay": 22517
+    },
+    {
+      "chat": "then its all a blur",
+      "delay": 23883
+    },
+    {
+      "chat": "Eyes like embers",
+      "delay": 26123
+    },
+    {
+      "chat": "breath so slow",
+      "delay": 27944
+    },
+    {
+      "chat": "You kiss and I lose",
+      "delay": 29330
+    },
+    {
+      "chat": "all control",
+      "delay": 31380
+    },
+    {
+      "chat": "Your voice it trembles",
+      "delay": 32818
+    },
+    {
+      "chat": "in my ears",
+      "delay": 34624
+    },
+    {
+      "chat": "A wicked sound that",
+      "delay": 36321
+    },
+    {
+      "chat": "melts my fears",
+      "delay": 38034
+    },
+    {
+      "chat": "You leave your mark",
+      "delay": 39698
+    },
+    {
+      "chat": "no need to speak",
+      "delay": 41225
+    },
+    {
+      "chat": "Im on the ground",
+      "delay": 43052
+    },
+    {
+      "chat": "Im feeling weak",
+      "delay": 44541
+    },
+    {
+      "chat": "Every touch a little deeper",
+      "delay": 47049
+    },
+    {
+      "chat": "Girl you got me burnin fever",
+      "delay": 50578
+    },
+    {
+      "chat": "When youre near",
+      "delay": 53879
+    },
+    {
+      "chat": "I cant breathe right",
+      "delay": 55051
+    },
+    {
+      "chat": "You light my soul",
+      "delay": 56840
+    },
+    {
+      "chat": "ignite the night",
+      "delay": 58283
+    },
+    {
+      "chat": "You give me fever",
+      "delay": 62425
+    },
+    {
+      "chat": "Set me on fire",
+      "delay": 64683
+    },
+    {
+      "chat": "Caught in your claws",
+      "delay": 66408
+    },
+    {
+      "chat": "tangled in desire",
+      "delay": 67799
+    },
+    {
+      "chat": "Weak at the knees",
+      "delay": 69942
+    },
+    {
+      "chat": "I need your touch",
+      "delay": 71213
+    },
+    {
+      "chat": "Like a drug girl",
+      "delay": 73164
+    },
+    {
+      "chat": "I crave too much",
+      "delay": 75021
+    },
+    {
+      "chat": "One and only wild and clever",
+      "delay": 77573
+    },
+    {
+      "chat": "Tails entwined alone together",
+      "delay": 80970
+    },
+    {
+      "chat": "You give me fever",
+      "delay": 85334
+    },
+    {
+      "chat": "I cant let go",
+      "delay": 86953
+    },
+    {
+      "chat": "My body screams",
+      "delay": 89010
+    },
+    {
+      "chat": "what you already know",
+      "delay": 89963
+    },
+    {
+      "chat": "Youre in my system",
+      "delay": 104771
+    },
+    {
+      "chat": "sweet and slow",
+      "delay": 106680
+    },
+    {
+      "chat": "My pulse cant lie",
+      "delay": 108319
+    },
+    {
+      "chat": "youve got that glow",
+      "delay": 109774
+    },
+    {
+      "chat": "Your scent is sin",
+      "delay": 111676
+    },
+    {
+      "chat": "your moves are slick",
+      "delay": 113238
+    },
+    {
+      "chat": "Each kiss each gasp",
+      "delay": 114970
+    },
+    {
+      "chat": "another hit",
+      "delay": 116790
+    },
+    {
+      "chat": "You scratch beneath",
+      "delay": 118655
+    },
+    {
+      "chat": "my wild skin",
+      "delay": 119874
+    },
+    {
+      "chat": "And draw the chaos from within",
+      "delay": 121990
+    },
+    {
+      "chat": "I dont want more",
+      "delay": 125395
+    },
+    {
+      "chat": "I want just you",
+      "delay": 126868
+    },
+    {
+      "chat": "We dance in flames",
+      "delay": 128953
+    },
+    {
+      "chat": "in shades of blue",
+      "delay": 130699
+    },
+    {
+      "chat": "Every touch a little deeper",
+      "delay": 132873
+    },
+    {
+      "chat": "Girl you got me burnin fever",
+      "delay": 136336
+    },
+    {
+      "chat": "When youre near",
+      "delay": 139813
+    },
+    {
+      "chat": "I cant breathe right",
+      "delay": 141137
+    },
+    {
+      "chat": "You light my soul",
+      "delay": 142541
+    },
+    {
+      "chat": "ignite the night",
+      "delay": 143997
+    },
+    {
+      "chat": "You give me fever",
+      "delay": 148040
+    },
+    {
+      "chat": "Set me on fire",
+      "delay": 150365
+    },
+    {
+      "chat": "Caught in your claws",
+      "delay": 152134
+    },
+    {
+      "chat": "tangled in desire",
+      "delay": 153467
+    },
+    {
+      "chat": "Weak at the knees",
+      "delay": 155651
+    },
+    {
+      "chat": "I need your touch",
+      "delay": 156862
+    },
+    {
+      "chat": "Like a drug girl",
+      "delay": 158935
+    },
+    {
+      "chat": "I crave too much",
+      "delay": 160688
+    },
+    {
+      "chat": "One and only wild and clever",
+      "delay": 163282
+    },
+    {
+      "chat": "Tails entwined alone together",
+      "delay": 166800
+    },
+    {
+      "chat": "You give me fever",
+      "delay": 171100
+    },
+    {
+      "chat": "I cant let go",
+      "delay": 172679
+    },
+    {
+      "chat": "My body screams",
+      "delay": 174754
+    },
+    {
+      "chat": "what you already know",
+      "delay": 175766
+    },
+    {
+      "chat": "Foxes dont fall easy",
+      "delay": 191570
+    },
+    {
+      "chat": "But you",
+      "delay": 195591
+    },
+    {
+      "chat": "You made me burn",
+      "delay": 198284
+    },
+    {
+      "chat": "And I want to burn forever",
+      "delay": 200721
+    },
+    {
+      "chat": "You give me fever",
+      "delay": 205267
+    },
+    {
+      "chat": "Set me on fire",
+      "delay": 206976
+    },
+    {
+      "chat": "Caught in your claws",
+      "delay": 208689
+    },
+    {
+      "chat": "tangled in desire",
+      "delay": 210032
+    },
+    {
+      "chat": "Weak at the knees",
+      "delay": 212183
+    },
+    {
+      "chat": "I need your touch",
+      "delay": 213467
+    },
+    {
+      "chat": "Like a drug girl",
+      "delay": 215535
+    },
+    {
+      "chat": "I crave too much",
+      "delay": 217219
+    },
+    {
+      "chat": "One and only wild and clever",
+      "delay": 219858
+    },
+    {
+      "chat": "Tails entwined alone together",
+      "delay": 223227
+    },
+    {
+      "chat": "You give me fever",
+      "delay": 227344
+    },
+    {
+      "chat": "Im yours I know",
+      "delay": 229235
+    },
+    {
+      "chat": "Melt me slow",
+      "delay": 231695
+    },
+    {
+      "chat": "and steal the show",
+      "delay": 233063
     }
   ],
   "999": [
