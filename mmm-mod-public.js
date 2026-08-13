@@ -102,7 +102,7 @@ MusicMenuMod.innerHTML = `
                     <button class="stats-btn" id="setStatsKeyBtn">Set Key</button>
                     <button class="stats-btn upload" id="uploadStatsBtn">Upload Stats</button>
                 </div>
-                <div class="stats-status" id="statsStatusText">Key: not set</div>
+                <div class="stats-status" id="statsStatusText" style="font-size: 13px; color: #aaa; margin-top: 4px;">Key: not set</div>
             </div>
         </div>
 
@@ -133,7 +133,7 @@ MusicMenuMod.innerHTML = `
                 <span class="HoverText">Sync</span>
                 <span id="syncStatus" style="font-size: 13px; color: #aaa; font-weight: normal;">Off</span>
             </div>
-            <div class="sync-buttons" id="syncButtonsContainer" style="display: flex; justify-content: right;">
+            <div class="sync-buttons" id="syncButtonsContainer" style="display: flex; flex-wrap: wrap; justify-content: flex-end;">
                 <div style="display: flex; align-items: center; gap: 8px; margin: 6px 0; width: 100%;">
                    <label for="duetModeToggle" style="font-size: 14px;">Duet Mode</label>
                    <input type="checkbox" id="duetModeToggle" style="width: auto; margin: 0;">
@@ -2022,6 +2022,13 @@ if (roomInput) {
 const songInput = document.getElementById("songSearch");
 if (songInput) {
   songInput.addEventListener("keydown", function (e) {
+    e.stopPropagation();
+  });
+}
+
+const statsInput = document.getElementById("statsKeyInput");
+if (statsInput) {
+  statsInput.addEventListener("keydown", function (e) {
     e.stopPropagation();
   });
 }
