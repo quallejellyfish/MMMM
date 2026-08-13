@@ -343,8 +343,7 @@ function scheduleStatsUpload() {
   statsUploadTimer = setTimeout(async () => {
     try {
       await uploadStats();
-    } catch (e) {
-    }
+    } catch (e) {}
     statsUploadTimer = null;
   }, 30000);
 }
@@ -1970,23 +1969,18 @@ async function refreshSongs() {
 }
 
 function waitInit() {
-  console.log("MMM mod initializing...");
+  console.log("MMM public mod initializing...");
   (async function init() {
     try {
-      await fetchApiKey();
-      if (!API_KEY) {
-        console.error("No API key available...");
-        return;
-      }
-      await Promise.all([fetchStatsKey(), fetchSongs()]);
+      await fetchSongs();
       if (songsList.length) {
         addSong(null);
       } else {
-        console.warn("No songs loaded from API");
-        addSong("No songs");
+        console.warn("No public songs loaded");
+        addSong("No public songs");
       }
     } catch (err) {
-      console.error("Failed to fetch songs:", err);
+      console.error("Failed to fetch public songs:", err);
       addSong("Error loading songs");
     }
   })();
@@ -1996,19 +1990,6 @@ if (document.readyState === "complete") {
   setTimeout(waitInit, 2000);
 } else {
   window.addEventListener("load", () => setTimeout(waitInit, 2000));
-}
-
-async function getSSEToken() {
-  if (!API_KEY) throw new Error("API key not loaded yet");
-
-  const res = await fetch(`${API_BASE}/auth`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ apiKey: API_KEY }),
-  });
-  if (!res.ok) throw new Error("Failed to get token");
-  const data = await res.json();
-  return data.token;
 }
 
 document.addEventListener("visibilitychange", () => {
