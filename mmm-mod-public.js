@@ -98,7 +98,7 @@ MusicMenuMod.innerHTML = `
             </div>
             <div id="statsContent">
                 <div class="stats-row">
-                    <input type="text" id="statsKeyInput" placeholder="Enter your stats key">
+                    <input type="text" id="statsKeyInput" placeholder="Enter your stats key" style="flex: 1; min-width: 100px; padding: 4px 8px; background: #3a3a4a; border: 1px solid #555; border-radius: 6px; color: #fff; outline: none;">
                     <button class="stats-btn" id="setStatsKeyBtn">Set Key</button>
                     <button class="stats-btn upload" id="uploadStatsBtn">Upload Stats</button>
                 </div>
