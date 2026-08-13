@@ -102,7 +102,6 @@ MusicMenuMod.innerHTML = `
                     <button class="stats-btn" id="setStatsKeyBtn">Set Key</button>
                     <button class="stats-btn upload" id="uploadStatsBtn">Upload Stats</button>
                 </div>
-                <div class="stats-status" id="statsStatusText" style="font-size: 13px; color: #aaa; margin-top: 4px;">Key: not set</div>
             </div>
         </div>
 
