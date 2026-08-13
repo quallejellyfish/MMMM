@@ -89,22 +89,19 @@ MusicMenuMod.innerHTML = `
             <span id="volumeValue" style="font-size:15px; color:#aaa; min-width:45px; text-align:right;">100%</span>
         </div>
 
-        <!-- Stats dropdown -->
+        <!-- Stats Section -->
         <div class="stats-section">
-            <div style="font-size: 17.5px; margin-bottom: 0; display: flex; align-items: center; gap: 8px; cursor: pointer;" id="statsToggle">
+            <div style="font-size: 17.5px; margin-bottom: 8px; display: flex; align-items: center; gap: 8px; cursor: pointer;" id="statsToggle">
                 <span class="HoverText">Stats</span>
                 <span id="statsStatus" style="font-size: 13px; color: #aaa; font-weight: normal;">Key: not set</span>
             </div>
             <div id="statsContent">
-                <div class="stats-content-inner">
-                    <div class="stats-row">
-                        <span style="font-size: 14px;">Stats Key:</span>
-                        <input type="text" id="statsKeyInput" placeholder="Enter your stats key">
-                        <button id="setStatsKeyBtn">Set Key</button>
-                        <button id="uploadStatsBtn">Upload Stats</button>
-                    </div>
-                    <div id="statsStatusDetail" style="font-size: 12px; color: #aaa; margin-top: 2px;">Key: not set</div>
+                <div class="stats-row">
+                    <input type="text" id="statsKeyInput" placeholder="Enter your stats key">
+                    <button class="stats-btn" id="setStatsKeyBtn">Set Key</button>
+                    <button class="stats-btn upload" id="uploadStatsBtn">Upload Stats</button>
                 </div>
+                <div class="stats-status" id="statsStatusText">Key: not set</div>
             </div>
         </div>
 
@@ -1732,8 +1729,8 @@ document.getElementById("syncToggle").addEventListener("click", () => {
   document.querySelector(".syncsongs-section").classList.toggle("open");
 });
 
-document.getElementById("statsToggle").addEventListener("click", function() {
-    document.querySelector(".stats-section").classList.toggle("open");
+document.getElementById("statsToggle").addEventListener("click", function () {
+  document.querySelector(".stats-section").classList.toggle("open");
 });
 
 document
