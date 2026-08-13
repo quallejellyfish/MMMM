@@ -90,9 +90,10 @@ MusicMenuMod.innerHTML = `
         </div>
 
         <!-- Stats Section -->
-        <div class="stats-section">
+        <div class="stats-section" style="margin: 12px 0; padding: 10px; background: rgba(255,255,255,0.06); border-radius: 12px;">
             <div style="font-size: 17.5px; margin-bottom: 8px; display: flex; align-items: center; gap: 8px; cursor: pointer;" id="statsToggle">
                 <span class="HoverText">Stats</span>
+                <div class="informationText" style="width:125px!important; height:70px!important;" ">stats</div>
                 <span id="statsStatus" style="font-size: 13px; color: #aaa; font-weight: normal;">Key: not set</span>
             </div>
             <div id="statsContent">
