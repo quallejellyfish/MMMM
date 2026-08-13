@@ -93,7 +93,7 @@ MusicMenuMod.innerHTML = `
         <div class="stats-section" style="margin: 12px 0; padding: 10px; background: rgba(255,255,255,0.06); border-radius: 12px;">
             <div style="font-size: 17.5px; margin-bottom: 8px; display: flex; align-items: center; gap: 8px; cursor: pointer;" id="statsToggle">
                 <span class="HoverText">Stats</span>
-                <div class="informationText" style="width:125px!important; height:70px!important;" ">stats</div>
+                <div class="informationText" style="width:125px!important; height:70px!important;">stats</div>
                 <span id="statsStatus" style="font-size: 13px; color: #aaa; font-weight: normal;">Key: not set</span>
             </div>
             <div id="statsContent">
@@ -109,7 +109,7 @@ MusicMenuMod.innerHTML = `
         <div class="autoplay-section" style="margin: 12px 0; padding: 10px; background: rgba(255,255,255,0.06); border-radius: 12px;">
             <div style="font-size: 17.5px; margin-bottom: 8px; display: flex; align-items: center; gap: 8px; cursor: pointer;" id="autoplayToggle">
                 <span class="HoverText">Autoplay</span>
-                <div class="informationText" style="width:125px!important; height:70px!important;" ">"c" to skip song! "shift+c" to go back!</div>
+                <div class="informationText" style="width:125px!important; height:70px!important;">"c" to skip song! "shift+c" to go back!</div>
                 <span id="autoplayStatus" style="font-size: 13px; color: #aaa; font-weight: normal;">Off</span>
             </div>
            <div class="autoplay-buttons" id="autoplayButtonsContainer">
