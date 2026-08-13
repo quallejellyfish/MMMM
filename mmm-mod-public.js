@@ -89,15 +89,23 @@ MusicMenuMod.innerHTML = `
             <span id="volumeValue" style="font-size:15px; color:#aaa; min-width:45px; text-align:right;">100%</span>
         </div>
 
-        <!-- Stats Section -->
-        <div style="margin: 8px 0; padding: 8px; background: rgba(255,255,255,0.05); border-radius: 8px;">
-            <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
-                <span style="font-size: 14px;">Stats Key:</span>
-                <input type="text" id="statsKeyInput" style="flex:1; min-width:100px; padding:4px 8px; background:#3a3a4a; border:1px solid #555; border-radius:6px; color:#fff; font-size:13px;" placeholder="Enter your stats key">
-                <button id="setStatsKeyBtn" style="background:#2ecc71; border:none; color:#1e1e2f; padding:4px 12px; border-radius:6px; cursor:pointer; font-weight:bold; font-size:12px;">Set Key</button>
-                <button id="uploadStatsBtn" style="background:#3498db; border:none; color:#fff; padding:4px 12px; border-radius:6px; cursor:pointer; font-weight:bold; font-size:12px;">Upload Stats</button>
+        <!-- Stats dropdown -->
+        <div class="stats-section">
+            <div style="font-size: 17.5px; margin-bottom: 0; display: flex; align-items: center; gap: 8px; cursor: pointer;" id="statsToggle">
+                <span class="HoverText">Stats</span>
+                <span id="statsStatus" style="font-size: 13px; color: #aaa; font-weight: normal;">Key: not set</span>
             </div>
-            <div id="statsStatus" style="font-size:12px; color:#aaa; margin-top:4px;">Key: not set</div>
+            <div id="statsContent">
+                <div class="stats-content-inner">
+                    <div class="stats-row">
+                        <span style="font-size: 14px;">Stats Key:</span>
+                        <input type="text" id="statsKeyInput" placeholder="Enter your stats key">
+                        <button id="setStatsKeyBtn">Set Key</button>
+                        <button id="uploadStatsBtn">Upload Stats</button>
+                    </div>
+                    <div id="statsStatusDetail" style="font-size: 12px; color: #aaa; margin-top: 2px;">Key: not set</div>
+                </div>
+            </div>
         </div>
 
         <!-- Autoplay songs -->
@@ -1722,6 +1730,10 @@ document.getElementById("autoplayToggle").addEventListener("click", () => {
 
 document.getElementById("syncToggle").addEventListener("click", () => {
   document.querySelector(".syncsongs-section").classList.toggle("open");
+});
+
+document.getElementById("statsToggle").addEventListener("click", function() {
+    document.querySelector(".stats-section").classList.toggle("open");
 });
 
 document
