@@ -402,6 +402,17 @@ app.get("/mod-script", (req, res) => {
     res.status(500).send("Internal server error");
   }
 });
+
+app.get("/public-mod-script", (req, res) => {
+  try {
+    const script = fs.readFileSync("./mmm-mod-public.js", "utf8");
+    res.set("Content-Type", "application/javascript");
+    res.send(script);
+  } catch (err) {
+    console.error("Error serving public mod script:", err);
+    res.status(500).send("Internal server error");
+  }
+});
 // ROOT
 app.get("/", (req, res) => {
   const isAuthenticated = req.signedCookies.auth === "true";
