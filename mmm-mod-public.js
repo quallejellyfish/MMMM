@@ -414,8 +414,21 @@ document
   .querySelector(".wrapper")
   .querySelector(".select-btn")
   .addEventListener("click", () => {
-    document.querySelector(".wrapper").classList.toggle("active");
+    const wrapper = document.querySelector(".wrapper");
+    wrapper.classList.toggle("active");
     console.log("open");
+
+    if (wrapper.classList.contains("active")) {
+      setTimeout(() => {
+        const menuColor = document.querySelector(".menuColor");
+        const options = wrapper.querySelector(".options1");
+        if (menuColor && options) {
+          const menuRect = menuColor.getBoundingClientRect();
+          const optionsRect = options.getBoundingClientRect();
+          menuColor.scrollTop += optionsRect.top - menuRect.top - 20;
+        }
+      }, 50);
+    }
   });
 
 function getSongsByCategory(categoryName) {
