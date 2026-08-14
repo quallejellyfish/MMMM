@@ -132,7 +132,7 @@ MusicMenuMod.innerHTML = `
                 <span class="HoverText">Sync</span>
                 <span id="syncStatus" style="font-size: 13px; color: #aaa; font-weight: normal;">Off</span>
             </div>
-            <div class="sync-buttons" id="syncButtonsContainer" style="display: flex; flex-wrap: wrap; justify-content: flex-end;">
+            <div class="sync-buttons" id="syncButtonsContainer" style="display: flex; flex-wrap: wrap !important; justify-content: flex-end;">
                 <div style="display: flex; align-items: center; gap: 8px; margin: 6px 0; width: 100%;">
                    <label for="duetModeToggle" style="font-size: 14px;">Duet Mode</label>
                    <input type="checkbox" id="duetModeToggle" style="width: auto; margin: 0;">
