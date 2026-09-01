@@ -1840,6 +1840,7 @@ waitForGameUI((gameElement) => {
     "songSearch",
     "roomCodeInput",
   ];
+  const mainMenu = document.getElementById("mainMenu") || document.getElementById("main-menu");
   window.addEventListener(
     "keydown",
     (e) => {
@@ -1864,7 +1865,7 @@ waitForGameUI((gameElement) => {
       if (
         e.key.toLowerCase() === "p" &&
         !inputs.includes(document.activeElement.id) &&
-        document.getElementById("mainMenu").style.display === "none"
+        mainMenu.style.display === "none"
       ) {
         e.preventDefault();
         e.stopPropagation();
@@ -1873,14 +1874,14 @@ waitForGameUI((gameElement) => {
       if (
         e.key.toLowerCase() === "u" &&
         !inputs.includes(document.activeElement.id) &&
-        document.getElementById("mainMenu").style.display === "none"
+        mainMenu.style.display === "none"
       ) {
         togglepingpong();
       }
       if (
         e.key.toLowerCase() === "b" &&
         !inputs.includes(document.activeElement.id) &&
-        document.getElementById("mainMenu").style.display === "none"
+        mainMenu.style.display === "none"
       ) {
         const muteChat = document.getElementById("mutechat");
         muteChat.checked = !muteChat.checked;
@@ -1890,7 +1891,7 @@ waitForGameUI((gameElement) => {
       if (
         e.key.toLowerCase() === "k" &&
         !inputs.includes(document.activeElement.id) &&
-        document.getElementById("mainMenu").style.display === "none"
+        mainMenu.style.display === "none"
       ) {
         const songLoop = document.getElementById("loopsong");
         songLoop.checked = !songLoop.checked;
@@ -1901,7 +1902,7 @@ waitForGameUI((gameElement) => {
         e.shiftKey &&
         e.which === 57 /* shift + nine */ &&
         !inputs.includes(document.activeElement.id) &&
-        document.getElementById("mainMenu").style.display === "none"
+        mainMenu.style.display === "none"
       ) {
         e.preventDefault();
         if (typeof refreshSongs === "function") {
@@ -1920,7 +1921,7 @@ waitForGameUI((gameElement) => {
         e.shiftKey &&
         e.which === 48 /* shift + zero */ &&
         !inputs.includes(document.activeElement.id) &&
-        document.getElementById("mainMenu").style.display === "none"
+        mainMenu.style.display === "none"
       ) {
         e.preventDefault();
         if (typeof uploadStats === "function") {
@@ -1947,7 +1948,7 @@ waitForGameUI((gameElement) => {
         e.shiftKey &&
         e.which === 56 /* shift + eight */ &&
         !inputs.includes(document.activeElement.id) &&
-        document.getElementById("mainMenu").style.display === "none"
+        mainMenu.style.display === "none"
       ) {
         e.preventDefault();
         if (typeof hardResetLyrics === "function") {
