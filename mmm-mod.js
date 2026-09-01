@@ -225,7 +225,7 @@ waitForGameUI((gameElement) => {
     zIndex: 100,
     background: "none",
   });
-  document.getElementById("resDisplay").appendChild(notificationContainer);
+  document.body.append(notificationContainer);
 
   function showNotification(message, type = "song") {
     const el = document.createElement("div");
