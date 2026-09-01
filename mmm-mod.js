@@ -41,8 +41,8 @@ waitForGameUI((gameElement) => {
     $(".modmenu").toggle("fade-out");
   });
 
-  gameElement.appendChild(mm);
-
+  //gameElement.appendChild(mm);
+  document.body.append(mm);
   // import MMM v4.2 style.css from website
   var stylesheet = document.createElement("link");
   stylesheet.rel = "stylesheet";
@@ -55,7 +55,8 @@ waitForGameUI((gameElement) => {
 
   //menu code
   let MusicMenuMod = document.createElement("div");
-  gameElement.appendChild(MusicMenuMod);
+  //gameElement.appendChild(MusicMenuMod);
+  document.body.append(MusicMenuMod);
   Object.assign(MusicMenuMod.style, {
     display: "block",
     position: "absolute",
@@ -1840,7 +1841,8 @@ waitForGameUI((gameElement) => {
     "songSearch",
     "roomCodeInput",
   ];
-  const mainMenu = document.getElementById("mainMenu") || document.getElementById("main-menu");
+  const mainMenu =
+    document.getElementById("mainMenu") || document.getElementById("main-menu");
   window.addEventListener(
     "keydown",
     (e) => {
