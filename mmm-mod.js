@@ -15,7 +15,7 @@ function waitForGameUI(callback) {
   observer.observe(document.body, { childList: true, subtree: true });
 }
 
-waitForGameUI(() => {
+waitForGameUI((gameElement) => {
   const mm = document.createElement("div");
   mm.className = "gameButton uiElement material-icons";
   mm.style.right = "390px";
