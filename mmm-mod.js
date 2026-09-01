@@ -79,7 +79,7 @@ waitForGameUI((gameElement) => {
 
         <!-- Mute chat checkbox -->
         <div class="muteChat">
-            <div class="HoverText" style="font-size: 17.5px;">Mute Chat?</div>
+            <div class="HoverText" style="font-size: 17.5px !important;">Mute Chat?</div>
             <div class="informationText">Mutes the song lyrics</div>
             <div class="custom-checkbox">
                 <input type="checkbox" id="mutechat">
@@ -90,7 +90,7 @@ waitForGameUI((gameElement) => {
 
         <!-- Loop songs checkbox -->
         <div class="loopSong">
-            <div class="HoverText" style="font-size: 17.5px;">Loop Songs?</div>
+            <div class="HoverText" style="font-size: 17.5px !important;">Loop Songs?</div>
             <div class="informationText">Loops the current song</div>
             <div class="custom-checkbox">
                 <input type="checkbox" id="loopsong">
@@ -99,17 +99,17 @@ waitForGameUI((gameElement) => {
         </div>
 
         <div class="volumeControl" style="display:flex; align-items:center; gap:10px; margin: 8px 0; padding-bottom: 14px;">
-            <span style="font-size:17.5px;">Volume</span>
+            <span style="font-size:17.5px !important;">Volume</span>
             <input type="range" id="volumeSlider" min="0" max="3" step="0.01" value="1" style="flex:1; background: #3a3a4a; border-radius: 8px; height: 6px; -webkit-appearance: none; accent-color: #ff79c6;">
-            <span id="volumeValue" style="font-size:15px; color:#aaa; min-width:45px; text-align:right;">100%</span>
+            <span id="volumeValue" style="font-size:15px !important; color:#aaa; min-width:45px; text-align:right;">100%</span>
         </div>
 
         <!-- Autoplay songs -->
         <div class="autoplay-section" style="margin: 12px 0; padding: 10px; background: rgba(255,255,255,0.06); border-radius: 12px;">
-            <div style="font-size: 17.5px; margin-bottom: 8px; display: flex; align-items: center; gap: 8px; cursor: pointer;" id="autoplayToggle">
+            <div style="font-size: 17.5px !important; margin-bottom: 8px; display: flex; align-items: center; gap: 8px; cursor: pointer;" id="autoplayToggle">
                 <span class="HoverText">Autoplay</span>
                 <div class="informationText" style="width:125px!important; height:70px!important;" ">"c" to skip song! "shift+c" to go back!</div>
-                <span id="autoplayStatus" style="font-size: 13px; color: #aaa; font-weight: normal;">Off</span>
+                <span id="autoplayStatus" style="font-size: 13px !important; color: #aaa; font-weight: normal;">Off</span>
             </div>
            <div class="autoplay-buttons" id="autoplayButtonsContainer">
                 <button class="autoplay-btn" data-category="🇺🇸-----English Songs-----" style="background: #ff79c6; border: none; color: #1e1e2f; padding: 4px 12px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 12px;">🇺🇸 English</button>
@@ -127,22 +127,22 @@ waitForGameUI((gameElement) => {
 
         <!-- Sync Songs -->
         <div class="syncsongs-section" style="margin: 12px 0; padding: 10px; background: rgba(255,255,255,0.06); border-radius: 12px;">
-            <div style="font-size: 17.5px; margin-bottom: 8px; display: flex; align-items: center; gap: 8px; cursor: pointer;" id="syncToggle">
+            <div style="font-size: 17.5px !important; margin-bottom: 8px; display: flex; align-items: center; gap: 8px; cursor: pointer;" id="syncToggle">
                 <span class="HoverText">Sync</span>
-                <span id="syncStatus" style="font-size: 13px; color: #aaa; font-weight: normal;">Off</span>
+                <span id="syncStatus" style="font-size: 13px !important; color: #aaa; font-weight: normal;">Off</span>
             </div>
             <div class="sync-buttons" id="syncButtonsContainer" style="display: flex; justify-content: right;">
                 <div style="display: flex; align-items: center; gap: 8px; margin: 6px 0; width: 100%;">
-                   <label for="duetModeToggle" style="font-size: 14px;">Duet Mode</label>
+                   <label for="duetModeToggle" style="font-size: 14px !important;">Duet Mode</label>
                    <input type="checkbox" id="duetModeToggle" style="width: auto; margin: 0;">
-                   <span id="duetStatus" style="font-size: 12px; color: #aaa;">Off</span><br>
+                   <span id="duetStatus" style="font-size: 12px !important; color: #aaa;">Off</span><br>
                 </div>
                 <input type="text" id="roomCodeInput" placeholder="Room Code" class="sync-btn" style="flex: 1; min-width: 100px; padding: 4px 8px; background: #3a3a4a; border: 1px solid #555; border-radius: 6px; color: #fff; outline: none;">
                 <button id="joinSyncBtn" class="sync-btn" style="background: #2ecc71; border: none; color: #1e1e2f; padding: 4px 12px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 12px;">Join / Create</button>
                 <button id="leaveSyncBtn" class="sync-btn" style="background: #e74c3c; border: none; color: white; padding: 4px 12px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 12px;">Leave</button>
                 <button id="makeLeaderBtn" class="sync-btn" style="background: #f1c40f; border: none; color: #1e1e2f; padding: 4px 12px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 12px;">Make Leader</button>
             </div>
-            <div id="syncMembers" style="font-size: 13px; color: #aaa; margin-top: 4px;">Members: none</div>
+            <div id="syncMembers" style="font-size: 13px !important; color: #aaa; margin-top: 4px;">Members: none</div>
         </div>
 
         <!-- Song selection -->
@@ -173,8 +173,8 @@ waitForGameUI((gameElement) => {
 
         <!-- Music Status and Music State -->
         <div class="infoStatuses">
-            <div id="musicStatus" style="font-size: 17.5px;">Music Status: False</div>
-            <div id="currentlyPlaying" style="font-size: 17.5px;">Currently Playing: none</div>
+            <div id="musicStatus" style="font-size: 17.5px !important;">Music Status: False</div>
+            <div id="currentlyPlaying" style="font-size: 17.5px !important;">Currently Playing: none</div>
         </div>
     </div>
 </div>
@@ -191,9 +191,6 @@ waitForGameUI((gameElement) => {
   let songHistoryIndex = -1;
   let isGoingBack = false;
 
-  let notificationDiv = null;
-  let notificationTimeout = null;
-  let notificationShowTime = 0;
   const activeNotifications = [];
 
   const notificationContainer = document.createElement("div");
@@ -806,9 +803,9 @@ waitForGameUI((gameElement) => {
 
     let nextSong = null;
     if (autoplayMode === "category") {
-      if (autoplaySongs.length === 0) return;
-      if (autoplayIndex >= autoplaySongs.length) autoplayIndex = 0;
-      nextSong = autoplaySongs[autoplayIndex];
+      if (autoPlaySongs.length === 0) return;
+      if (autoplayIndex >= autoPlaySongs.length) autoplayIndex = 0;
+      nextSong = autoPlaySongs[autoplayIndex];
       autoplayIndex++;
     } else if (autoplayMode === "random") {
       if (randomPool.length === 0) {
@@ -877,7 +874,7 @@ waitForGameUI((gameElement) => {
     if (!prevSong) return;
 
     if (autoplayMode === "category") {
-      const idx = autoplaySongs.findIndex((s) => s.id === prevSong.id);
+      const idx = autoPlaySongs.findIndex((s) => s.id === prevSong.id);
       if (idx !== -1) {
         autoplayIndex = idx;
         console.log(`Adjusted autoplayIndex to ${autoplayIndex}`);
@@ -941,7 +938,7 @@ waitForGameUI((gameElement) => {
 
     autoplayMode = "category";
     autoplayCategory = categoryName;
-    autoplaySongs = getSongsByCategory(categoryName);
+    autoPlaySongs = getSongsByCategory(categoryName);
     autoplayIndex = 0;
     songHistory = [];
     songHistoryIndex = -1;
@@ -949,7 +946,7 @@ waitForGameUI((gameElement) => {
     randomPool = [];
     randomCategoryName = null;
 
-    if (autoplaySongs.length === 0) {
+    if (autoPlaySongs.length === 0) {
       alert(`No songs found in category: ${categoryName}`);
       autoplayMode = null;
       updateAutoplayStatus();
@@ -957,7 +954,7 @@ waitForGameUI((gameElement) => {
     }
 
     console.log(
-      `Autoplay category "${categoryName}" (${autoplaySongs.length} songs)`,
+      `Autoplay category "${categoryName}" (${autoPlaySongs.length} songs)`,
     );
     showNotification(`Autoplay: ${categoryName || "Random"}`, "system");
     updateAutoplayStatus();
@@ -973,8 +970,8 @@ waitForGameUI((gameElement) => {
       return;
     }
 
-    if (autoplayMode === "category" && autoplaySongs.length > 0) {
-      pool = autoplaySongs;
+    if (autoplayMode === "category" && autoPlaySongs.length > 0) {
+      pool = autoPlaySongs;
       categoryName = autoplayCategory;
     } else {
       pool = getAllSongs();
@@ -997,7 +994,7 @@ waitForGameUI((gameElement) => {
 
     autoplayMode = "random";
     autoplayCategory = null;
-    autoplaySongs = [];
+    autoPlaySongs = [];
     autoplayIndex = 0;
     songHistory = [];
     songHistoryIndex = -1;
@@ -1015,7 +1012,7 @@ waitForGameUI((gameElement) => {
     schedulingActive = false;
     autoplayMode = null;
     autoplayCategory = null;
-    autoplaySongs = [];
+    autoPlaySongs = [];
     autoplayIndex = 0;
     hideNotification();
     songHistory = [];
@@ -1050,7 +1047,7 @@ waitForGameUI((gameElement) => {
 
     if (autoplayMode === "category" && autoplayCategory) {
       const cleanName = autoplayCategory.replace(/-----.*$/, "").trim();
-      statusEl.innerHTML = `${cleanName} (${autoplayIndex}/${autoplaySongs.length})`;
+      statusEl.innerHTML = `${cleanName} (${autoplayIndex}/${autoPlaySongs.length})`;
     } else if (autoplayMode === "random") {
       const count = randomPool.length || getAllSongs().length;
       let label = "Random";
