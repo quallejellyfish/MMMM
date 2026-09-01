@@ -1,4 +1,4 @@
-const mm = document.createElement("div");
+/*const mm = document.createElement("div");
 mm.className = "gameButton uiElement material-icons";
 mm.style.right = "390px";
 mm.style.fontSize = "40px";
@@ -23,7 +23,7 @@ mm.addEventListener("click", (e) => {
   $(".modmenu").toggle("fade-out");
 });
 
-// document.getElementById("gameUI").appendChild(mm);
+document.getElementById("gameUI").appendChild(mm);*/
 document.getElementById("game-ui").appendChild(mm);
 
 // import MMM v4.2 style.css from website
