@@ -67,20 +67,6 @@ waitForGameUI((gameElement) => {
   let MusicMenuMod = document.createElement("div");
   //gameElement.appendChild(MusicMenuMod);
   document.body.append(MusicMenuMod);
-  Object.assign(MusicMenuMod.style, {
-    display: "block",
-    position: "absolute",
-    transition: "transform 0.5s ease",
-    width: "var(--modmenu-width)",
-    transform: "translate(-50%, -50%) scale(1)",
-    backgroundColor: "rgba(0, 0, 0, 0.25)",
-    borderRadius: "45px",
-    top: "50%",
-    left: "50%",
-    zIndex: "2",
-    pointerEvents: "all",
-  });
-
   MusicMenuMod.innerHTML = `
 <div class="modmenu">
     <div class="menuColor">
@@ -268,19 +254,6 @@ waitForGameUI((gameElement) => {
       hideNotification(entry);
     }, duration);
     entry.timeout = timeout;
-  }
-
-  function hideNotification(entry) {
-    if (!entry) return;
-    const { el, timeout } = entry;
-    if (timeout) clearTimeout(timeout);
-    el.style.opacity = 0;
-    el.style.right = "-350px";
-    setTimeout(() => {
-      if (el.parentNode) el.parentNode.removeChild(el);
-    }, 500);
-    const idx = activeNotifications.indexOf(entry);
-    if (idx !== -1) activeNotifications.splice(idx, 1);
   }
 
   function hideNotification(entry) {
@@ -1845,9 +1818,13 @@ waitForGameUI((gameElement) => {
 
   let inputs = [
     "chatBox",
+    "chat-input",
     "nameInput",
+    "name-input",
     "allianceInput",
+    "alliance-input",
     "mChBox",
+    "mch-box",
     "songSearch",
     "roomCodeInput",
   ];
