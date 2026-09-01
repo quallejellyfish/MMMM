@@ -3,7 +3,7 @@ function waitForGameUI(callback) {
     const el =
       document.getElementById("gameUI") || document.getElementById("game-ui");
     if (el) {
-      callback();
+      callback(el);
       return true;
     }
     return false;
@@ -41,7 +41,7 @@ waitForGameUI(() => {
     $(".modmenu").toggle("fade-out");
   });
 
-  document.getElementById("game-ui").appendChild(mm);
+  gameElement.appendChild(mm);
 
   // import MMM v4.2 style.css from website
   var stylesheet = document.createElement("link");
@@ -55,7 +55,7 @@ waitForGameUI(() => {
 
   //menu code
   let MusicMenuMod = document.createElement("div");
-  document.getElementById("game-ui").append(MusicMenuMod);
+  gameElement.appendChild(MusicMenuMod);
   Object.assign(MusicMenuMod.style, {
     display: "block",
     position: "absolute",
