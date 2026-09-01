@@ -23,7 +23,8 @@ mm.addEventListener("click", (e) => {
   $(".modmenu").toggle("fade-out");
 });
 
-document.getElementById("gameUI").appendChild(mm);
+// document.getElementById("gameUI").appendChild(mm);
+document.getElementById("game-ui").appendChild(mm);
 
 // import MMM v4.2 style.css from website
 var stylesheet = document.createElement("link");
