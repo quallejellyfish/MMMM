@@ -48,7 +48,7 @@ waitForGameUI((gameElement) => {
   mm.addEventListener("click", (e) => {
     e.preventDefault();
     e.stopPropagation();
-    $(".modmenu").toggle("fade-out");
+    document.querySelector(".modmenu").classList.toggle("fade-out");
   });
 
   //gameElement.appendChild(mm);
@@ -1881,7 +1881,7 @@ waitForGameUI((gameElement) => {
       ) {
         e.preventDefault();
         e.stopPropagation();
-        $(".modmenu").toggle("fade-out");
+        document.querySelector(".modmenu").classList.toggle("fade-out");
       }
       if (
         e.key.toLowerCase() === "u" &&
