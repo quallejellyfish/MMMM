@@ -37,7 +37,7 @@ currentAudio.preload = "none";
 
 //menu code
 let MusicMenuMod = document.createElement("div");
-document.getElementById("gameUI").append(MusicMenuMod);
+document.getElementById("game-ui").append(MusicMenuMod);
 Object.assign(MusicMenuMod.style, {
   display: "block",
   position: "absolute",
