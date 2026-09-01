@@ -13,6 +13,16 @@ function waitForGameUI(callback) {
     if (check()) observer.disconnect();
   });
   observer.observe(document.body, { childList: true, subtree: true });
+
+  setTimeout(() => {
+    if (
+      !document.getElementById("gameUI") &&
+      !document.getElementById("game-ui")
+    ) {
+      observer.disconnect();
+      callback(document.body);
+    }
+  }, 5000);
 }
 
 waitForGameUI((gameElement) => {
