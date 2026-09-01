@@ -148,7 +148,7 @@ waitForGameUI((gameElement) => {
         <!-- Song selection -->
         <div class="wrapper">
             <div class="select-btn">
-                <span>Select Song</span>
+                <span style="font-size:22px !important;">Select Song</span>
                 <i class="uil uil-angle-down"></i>
             </div>
             <div class="content">
