@@ -390,11 +390,16 @@ app.get("/logout", (req, res) => {
 });
 
 app.get("/mod-script", (req, res) => {
-  if (req.signedCookies.auth !== "true") {
+  if (req.signedCookies.auth !== "true")
     return res.status(401).send("Unauthorized");
-  }
+
+  const version = req.query.v || "default";
+  let file;
+  if (version === "falcon") file = "./mmm-falcon.js";
+  else file = "./mmm-mod.js";
+
   try {
-    const script = fs.readFileSync("./mmm-mod.js", "utf8");
+    const script = fs.readFileSync(file, "utf8");
     res.set("Content-Type", "application/javascript");
     res.send(script);
   } catch (err) {
