@@ -131,16 +131,16 @@ waitForGameUI((gameElement) => {
                 <span class="HoverText">Sync</span>
                 <span id="syncStatus" style="font-size: 13px !important; color: #aaa; font-weight: normal;">Off</span>
             </div>
-            <div class="sync-buttons" id="syncButtonsContainer" style="display: flex; justify-content: right;">
+            <div class="sync-buttons" id="syncButtonsContainer">
                 <div style="display: flex; align-items: center; gap: 8px; margin: 6px 0; width: 100%;">
                    <label for="duetModeToggle" style="font-size: 14px !important;">Duet Mode</label>
                    <input type="checkbox" id="duetModeToggle" style="width: auto; margin: 0;">
                    <span id="duetStatus" style="font-size: 12px !important; color: #aaa;">Off</span><br>
                 </div>
-                <input type="text" id="roomCodeInput" placeholder="Room Code" class="sync-btn" style="flex: 1; max-width: 160px; padding: 4px 8px; background: #3a3a4a; border: 1px solid #555; border-radius: 6px; color: #fff; outline: none; margin-right: 43px;">
+                <input type="text" id="roomCodeInput" placeholder="Room Code" class="sync-btn" style="flex: 1; max-width: 160px; padding: 4px 8px; background: #3a3a4a; border: 1px solid #555; border-radius: 6px; color: #fff; outline: none;">
                 <button id="joinSyncBtn" class="sync-btn" style="background: #2ecc71; border: none; color: #1e1e2f; padding: 4px 12px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 12px;">Join / Create</button>
                 <button id="leaveSyncBtn" class="sync-btn" style="background: #e74c3c; border: none; color: white; padding: 4px 12px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 12px;">Leave</button>
-                <button id="makeLeaderBtn" class="sync-btn" style="background: #f1c40f; border: none; color: #1e1e2f; padding: 4px 12px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 12px; margin-left: 73%;">Make Leader</button>
+                <button id="makeLeaderBtn" class="sync-btn" style="background: #f1c40f; border: none; color: #1e1e2f; padding: 4px 12px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 12px; margin-left: 55%;">Make Leader</button>
             </div>
             <div id="syncMembers" style="font-size: 13px !important; color: #aaa; margin-top: 4px;">Members: none</div>
         </div>
