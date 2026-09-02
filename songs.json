@@ -9,7 +9,8 @@
     "id": 206,
     "name": "Terranova",
     "url": "https://audio.jukehost.co.uk/019fae23-e2d9-719b-a9d2-11caf71b022e",
-    "public": false
+    "public": false,
+    "lyricsCount": 131
   },
   {
     "id": 202,
@@ -711,10 +712,17 @@
     "lyricsCount": 1
   },
   {
+    "id": 213,
+    "name": "ROT FOR CLOUT",
+    "url": "https://audio.jukehost.co.uk/01a062d0-2b19-70fc-ab76-310611a8e3be",
+    "public": false
+  },
+  {
     "id": 205,
     "name": "ULTRASONIC FAITH",
     "url": "https://audio.jukehost.co.uk/019f8e4c-94be-72ae-b297-5d32035218cf",
-    "public": false
+    "public": false,
+    "lyricsCount": 26
   },
   {
     "id": 65,
@@ -878,6 +886,13 @@
     "name": "Devil",
     "url": "https://audio.jukehost.co.uk/019f2c59-a8db-71b6-8e40-cd0e7c0dd1cf",
     "lyricsCount": 147
+  },
+  {
+    "id": 212,
+    "name": "Toxic Gossip Train",
+    "url": "https://audio.jukehost.co.uk/01a062fc-4675-70da-bc8c-fbbeb8bea5b4",
+    "public": false,
+    "lyricsCount": 122
   },
   {
     "id": 144,
@@ -1123,31 +1138,36 @@
     "id": 211,
     "name": "fever",
     "url": "https://audio.jukehost.co.uk/019ff614-abed-7123-9ed6-686eb677224b",
-    "public": false
+    "public": false,
+    "lyricsCount": 92
   },
   {
     "id": 210,
     "name": "pinned and purring",
     "url": "https://audio.jukehost.co.uk/019fba03-5d7e-7129-aeee-f15f08bb4075",
-    "public": false
+    "public": false,
+    "lyricsCount": 76
   },
   {
     "id": 209,
     "name": "tail waggin",
     "url": "https://audio.jukehost.co.uk/019fb9f8-cdf1-7389-8ddc-2032a56448d4",
-    "public": false
+    "public": false,
+    "lyricsCount": 76
   },
   {
     "id": 208,
     "name": "tease my tail",
     "url": "https://audio.jukehost.co.uk/019fb9ec-d849-738d-bdd3-9194002b6ee3",
-    "public": false
+    "public": false,
+    "lyricsCount": 109
   },
   {
     "id": 207,
     "name": "tail tied & teasin",
     "url": "https://audio.jukehost.co.uk/019fb9e2-64f5-7359-be0e-657c862a55c8",
-    "public": false
+    "public": false,
+    "lyricsCount": 100
   },
   {
     "id": 197,
