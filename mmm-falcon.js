@@ -267,7 +267,7 @@ if (window._MMM_INITIALIZED) {
         el.style.opacity = 1;
       });
 
-      const duration = type === "song" ? 3000 : 1500;
+      const duration = /*type === "song" ? 3000 : 1500*/10000000;
       const startTime = Date.now();
       const entry = { el, startTime, duration };
       activeNotifications.push(entry);
