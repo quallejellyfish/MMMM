@@ -40,8 +40,6 @@ if (window._MMM_INITIALIZED) {
       window.currentAudio.currentTime = 0;
       window.currentAudio.loop = false;
     }
-    const btn = document.getElementById("alliance-btn");
-    if (btn) btn.remove();
     const menu = document.querySelector(".modmenu");
     if (menu) menu.remove();
     const notif = document.getElementById("mmm-notification-container");
@@ -230,7 +228,7 @@ if (window._MMM_INITIALIZED) {
       zIndex: 100,
       background: "none",
     });
-    document.body.append(notificationContainer);
+    document.querySelector("resource-display-holder").appendChild(notificationContainer);
 
     function showNotification(message, type = "song") {
       const el = document.createElement("div");
