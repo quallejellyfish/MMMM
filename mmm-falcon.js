@@ -40,11 +40,11 @@ if (window._MMM_INITIALIZED) {
       window.currentAudio.currentTime = 0;
       window.currentAudio.loop = false;
     }
-    const btn = document.querySelector(".gameButton.uiElement.material-icons");
+    const btn = document.getElementById("alliance-btn");
     if (btn) btn.remove();
     const menu = document.querySelector(".modmenu");
     if (menu) menu.remove();
-    const notif = document.querySelector(".uiElement.resourceDisplay");
+    const notif = document.getElementById("mmm-notification-container");
     if (notif) notif.remove();
     delete window._MMM_INITIALIZED;
   };
@@ -79,7 +79,7 @@ if (window._MMM_INITIALIZED) {
       document.querySelector(".modmenu").classList.toggle("fade-out");
     });
 
-    document.body.append(mm);
+    document.getElementById("game-ui").appendChild(mm);
     // import MMM v4.2 style.css from website
     var stylesheet = document.createElement("link");
     stylesheet.rel = "stylesheet";
@@ -219,6 +219,7 @@ if (window._MMM_INITIALIZED) {
     const activeNotifications = [];
 
     const notificationContainer = document.createElement("div");
+    notificationContainer.id = "mmm-notification-container";
     Object.assign(notificationContainer.style, {
       display: "flex",
       flexDirection: "column",
