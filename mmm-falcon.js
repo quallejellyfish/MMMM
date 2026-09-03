@@ -228,7 +228,7 @@ if (window._MMM_INITIALIZED) {
       zIndex: 100,
       background: "none",
     });
-    document.querySelector("resource-display-holder").appendChild(notificationContainer);
+    document.querySelector(".resource-display-holder").appendChild(notificationContainer);
 
     function showNotification(message, type = "song") {
       const el = document.createElement("div");
