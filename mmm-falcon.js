@@ -26,7 +26,33 @@ if (window._MMM_INITIALIZED) {
 } else {
   console.log("initializing...");
   window._MMM_INITIALIZED = true;
+  window._mmmCleanup = function () {
+    if (window._mmmKeydownListener) {
+      window.removeEventListener("keydown", window._mmmKeydownListener, true);
+      delete window._mmmKeydownListener;
+    }
+    if (window._lyricsInterval) {
+      clearInterval(window._lyricsInterval);
+      window._lyricsInterval = null;
+    }
+    if (window.currentAudio) {
+      window.currentAudio.pause();
+      window.currentAudio.currentTime = 0;
+      window.currentAudio.loop = false;
+    }
+    const btn = document.querySelector(".gameButton.uiElement.material-icons");
+    if (btn) btn.remove();
+    const menu = document.querySelector(".modmenu");
+    if (menu) menu.remove();
+    const notif = document.querySelector(".uiElement.resourceDisplay");
+    if (notif) notif.remove();
+    delete window._MMM_INITIALIZED;
+  };
   (() => {
+    if (window._mmmKeydownListener) {
+      window.removeEventListener("keydown", window._mmmKeydownListener, true);
+      delete window._mmmKeydownListener;
+    }
     const mm = document.createElement("div");
     mm.className = "gameButton uiElement material-icons";
     mm.style.right = "390px";
@@ -73,7 +99,7 @@ if (window._MMM_INITIALIZED) {
 
         <!-- Informational info -->
         <div class="infoText">
-            Information: Press "P" to open/close menu! Press "c" to start/stop the music! "b" to mute! "k" to loopsongs! "j" to pause!
+            Information: Press "p" to open/close menu! Press "c" to start/stop the music! "b" to mute! "k" to loopsongs! "j" to pause!
         </div>
 
         <!-- Mute chat checkbox -->
@@ -1857,132 +1883,165 @@ if (window._MMM_INITIALIZED) {
       "songSearch",
       "roomCodeInput",
     ];
-    const mainMenu =
-      document.getElementById("mainMenu") ||
-      document.getElementById("main-menu");
-    window.addEventListener(
-      "keydown",
-      (e) => {
-        if (e.key === "C" && !inputs.includes(document.activeElement.id)) {
-          e.preventDefault();
-          e.stopPropagation();
-          skipBackSong();
-          showNotification("Back", "system");
-        } else if (
-          e.key.toLowerCase() === "c" &&
-          !inputs.includes(document.activeElement.id)
-        ) {
-          e.preventDefault();
-          e.stopPropagation();
-          if (autoplayMode) {
-            skipSong();
-            showNotification("Skipped", "system");
-          } else {
-            toggleChatSpamMode();
-          }
+
+    const keydownHandler = function (e) {
+      const menu = document.querySelector(".modmenu");
+      const mainMenu =
+        document.getElementById("mainMenu") ||
+        document.getElementById("main-menu");
+
+      const isGameMenuClosed =
+        mainMenu === null || mainMenu.style.display === "none";
+
+      if (!isGameMenuClosed) return;
+
+      // ---- Key: C (Uppercase) - Skip Back ----
+      if (e.key === "C" && !inputs.includes(document.activeElement.id)) {
+        e.preventDefault();
+        e.stopPropagation();
+        skipBackSong();
+        showNotification("Back", "system");
+        return;
+      }
+
+      // ---- Key: c (Lowercase) - Skip or Play/Stop ----
+      if (
+        e.key.toLowerCase() === "c" &&
+        !inputs.includes(document.activeElement.id)
+      ) {
+        e.preventDefault();
+        e.stopPropagation();
+        if (autoplayMode) {
+          skipSong();
+          showNotification("Skipped", "system");
+        } else {
+          toggleChatSpamMode();
         }
-        if (
-          e.key.toLowerCase() === "p" &&
-          !inputs.includes(document.activeElement.id) &&
-          mainMenu.style.display === "none"
-        ) {
-          e.preventDefault();
-          e.stopPropagation();
-          document.querySelector(".modmenu").classList.toggle("fade-out");
+        return;
+      }
+
+      // ---- Key: p - Toggle Mod Menu ----
+      if (
+        e.key.toLowerCase() === "p" &&
+        !inputs.includes(document.activeElement.id)
+      ) {
+        e.preventDefault();
+        e.stopPropagation();
+        if (menu) {
+          menu.classList.toggle("fade-out");
+        } else {
+          console.warn("Mod menu not found – cannot toggle.");
         }
-        if (
-          e.key.toLowerCase() === "u" &&
-          !inputs.includes(document.activeElement.id) &&
-          mainMenu.style.display === "none"
-        ) {
-          togglepingpong();
-        }
-        if (
-          e.key.toLowerCase() === "b" &&
-          !inputs.includes(document.activeElement.id) &&
-          mainMenu.style.display === "none"
-        ) {
-          const muteChat = document.getElementById("mutechat");
+        return;
+      }
+
+      // ---- Key: u - Toggle PingPong ----
+      if (
+        e.key.toLowerCase() === "u" &&
+        !inputs.includes(document.activeElement.id)
+      ) {
+        e.preventDefault();
+        e.stopPropagation();
+        togglepingpong();
+        return;
+      }
+
+      // ---- Key: b - Toggle Mute Chat ----
+      if (
+        e.key.toLowerCase() === "b" &&
+        !inputs.includes(document.activeElement.id)
+      ) {
+        e.preventDefault();
+        e.stopPropagation();
+        const muteChat = document.getElementById("mutechat");
+        if (muteChat) {
           muteChat.checked = !muteChat.checked;
           muteChat.dispatchEvent(new Event("change"));
           showNotification(`Mute ${muteChat.checked ? "ON" : "OFF"}`, "system");
         }
-        if (
-          e.key.toLowerCase() === "k" &&
-          !inputs.includes(document.activeElement.id) &&
-          mainMenu.style.display === "none"
-        ) {
-          const songLoop = document.getElementById("loopsong");
+        return;
+      }
+
+      // ---- Key: k - Toggle Loop Song ----
+      if (
+        e.key.toLowerCase() === "k" &&
+        !inputs.includes(document.activeElement.id)
+      ) {
+        e.preventDefault();
+        e.stopPropagation();
+        const songLoop = document.getElementById("loopsong");
+        if (songLoop) {
           songLoop.checked = !songLoop.checked;
           songLoop.dispatchEvent(new Event("change"));
           showNotification(`Loop ${songLoop.checked ? "ON" : "OFF"}`, "system");
         }
-        if (
-          e.shiftKey &&
-          e.which === 57 /* shift + nine */ &&
-          !inputs.includes(document.activeElement.id) &&
-          mainMenu.style.display === "none"
-        ) {
-          e.preventDefault();
-          if (typeof refreshSongs === "function") {
-            refreshSongs()
-              .then(() => {
-                showNotification("Refreshed", "system");
-              })
-              .catch(() => {
-                showNotification("Refreshed failed", "system");
-              });
-          } else {
-            console.warn("refreshSongs function not defined");
-          }
+        return;
+      }
+
+      // ---- Shift+9 - Refresh Songs ----
+      if (
+        e.shiftKey &&
+        e.which === 57 &&
+        !inputs.includes(document.activeElement.id)
+      ) {
+        e.preventDefault();
+        if (typeof refreshSongs === "function") {
+          refreshSongs()
+            .then(() => showNotification("Refreshed", "system"))
+            .catch(() => showNotification("Refreshed failed", "system"));
+        } else {
+          console.warn("refreshSongs function not defined");
         }
-        if (
-          e.shiftKey &&
-          e.which === 48 /* shift + zero */ &&
-          !inputs.includes(document.activeElement.id) &&
-          mainMenu.style.display === "none"
-        ) {
-          e.preventDefault();
-          if (typeof uploadStats === "function") {
-            uploadStats()
-              .then(() => {
-                showNotification("Stats uploaded", "system");
-              })
-              .catch(() => {
-                showNotification("Stats upload failed", "system");
-              });
-          } else {
-            console.warn("uploadStats function not defined");
-          }
+        return;
+      }
+
+      // ---- Shift+0 - Upload Stats ----
+      if (
+        e.shiftKey &&
+        e.which === 48 &&
+        !inputs.includes(document.activeElement.id)
+      ) {
+        e.preventDefault();
+        if (typeof uploadStats === "function") {
+          uploadStats()
+            .then(() => showNotification("Stats uploaded", "system"))
+            .catch(() => showNotification("Stats upload failed", "system"));
+        } else {
+          console.warn("uploadStats function not defined");
         }
-        if (
-          e.key.toLowerCase() === "j" /* j */ &&
-          !inputs.includes(document.activeElement.id)
-        ) {
-          e.preventDefault();
-          togglePause();
-          showNotification(
-            currentAudio.paused ? "Paused" : "Resumed",
-            "system",
-          );
+        return;
+      }
+
+      // ---- Key: j - Toggle Pause ----
+      if (
+        e.key.toLowerCase() === "j" &&
+        !inputs.includes(document.activeElement.id)
+      ) {
+        e.preventDefault();
+        togglePause();
+        showNotification(currentAudio.paused ? "Paused" : "Resumed", "system");
+        return;
+      }
+
+      // ---- Shift+8 - Hard Reset Lyrics ----
+      if (
+        e.shiftKey &&
+        e.which === 56 &&
+        !inputs.includes(document.activeElement.id)
+      ) {
+        e.preventDefault();
+        if (typeof hardResetLyrics === "function") {
+          hardResetLyrics();
+          showNotification("Lyrics reset", "system");
+        } else {
+          console.warn("hardResetLyrics function not defined");
         }
-        if (
-          e.shiftKey &&
-          e.which === 56 /* shift + eight */ &&
-          !inputs.includes(document.activeElement.id) &&
-          mainMenu.style.display === "none"
-        ) {
-          e.preventDefault();
-          if (typeof hardResetLyrics === "function") {
-            hardResetLyrics();
-            showNotification("Lyrics reset", "system");
-          } else {
-            console.warn("hardResetLyrics function not defined");
-          }
-        }
-      },
-      true,
-    );
+        return;
+      }
+    };
+
+    window._mmmKeydownHandler = keydownHandler;
+    window.addEventListener("keydown", keydownHandler, true);
 
     function stopMusic() {
       if (spamModeActive) {
