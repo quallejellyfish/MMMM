@@ -79316,7 +79316,7 @@
     },
     {
       "chat": "(Go!)",
-      "delay": 45509
+      "delay": 45409
     },
     {
       "chat": "Yep, that's right,",
@@ -79623,8 +79623,12 @@
       "delay": 145290
     },
     {
-      "chat": "maybe not a single real reason.",
+      "chat": "maybe not a",
       "delay": 146403
+    },
+    {
+      "chat": "single real reason.",
+      "delay": 147054
     },
     {
       "chat": "my blood's already",
