@@ -114,7 +114,7 @@
               placeholder="Enter your stats key"
               style="width: 180px"
           /></label>
-          <label style="display: flex; align-items: center; width: 10%;">
+          <label style="display: flex; align-items: center; width: 10%">
             Remember my key
             <input type="checkbox" id="rememberStatsKey" checked />
           </label>
@@ -168,7 +168,7 @@
           if (!res.ok) {
             if (res.status === 401) {
               status.textContent =
-                "Unauthorized – please log in at the root page.";
+                "Unauthorized - please log in at the root page.";
               return;
             }
             throw new Error(await res.text());
@@ -209,11 +209,14 @@
           if (!res.ok) throw new Error(await res.text());
           const data = await res.json();
           playData = data;
-          localStorage.setItem("statsKey", key);
-          status.textContent = `Loaded ${Object.keys(playData).length} entries.`;
+
           if (document.getElementById("rememberStatsKey").checked) {
-            setStatsCookie(key);
+            localStorage.setItem("statsKey", key);
+          } else {
+            localStorage.removeItem("statsKey");
           }
+
+          status.textContent = `Loaded ${Object.keys(playData).length} entries.`;
           renderTable();
         } catch (err) {
           status.textContent = `Error: ${err.message}`;
@@ -256,21 +259,11 @@
           .join("");
       }
 
-      const STATS_KEY_STORAGE = "statsKey";
-
-      function setStatsCookie(key) {
-        document.cookie = `statsKey=${encodeURIComponent(key)}; path=/; max-age=2592000; SameSite=None; Secure`;
-      }
-
-      function getStatsCookie() {
-        const match = document.cookie.match(/statsKey=([^;]+)/);
-        return match ? decodeURIComponent(match[1]) : null;
-      }
-
       window.addEventListener("DOMContentLoaded", () => {
-        const savedKey = getStatsCookie();
+        const savedKey = localStorage.getItem("statsKey");
         if (savedKey) {
           document.getElementById("statsKey").value = savedKey;
+          document.getElementById("rememberStatsKey").checked = true;
           setTimeout(fetchStatsFromServer, 300);
         }
       });
