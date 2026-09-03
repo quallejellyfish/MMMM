@@ -54,10 +54,11 @@ if (window._MMM_INITIALIZED) {
       delete window._mmmKeydownHandler;
     }
     const mm = document.createElement("div");
-    mm.className = "gameButton uiElement material-icons";
+    mm.id = "alliance-btn";
     mm.style.right = "390px";
     mm.style.fontSize = "40px";
     mm.style.verticalAlign = "middle";
+    mm.style.left = "335px";
     mm.innerHTML = `
 <svg viewBox="0 0 322.199 322.199" width="35" height="40" fill="#fff">
   <path d="M97.173,322.156c35.754,0.874,67.271-11.577,84.481-30.805c6.111-6.845,10.074-14.932,10.836-16.527
@@ -91,9 +92,9 @@ if (window._MMM_INITIALIZED) {
 
     //menu code
     let MusicMenuMod = document.createElement("div");
+    MusicMenuMod.className = "modmenu";
     document.body.append(MusicMenuMod);
     MusicMenuMod.innerHTML = `
-<div class="modmenu">
     <div class="menuColor">
         <legend class="header">Music Menu:</legend>
 
@@ -202,7 +203,6 @@ if (window._MMM_INITIALIZED) {
             <div id="currentlyPlaying" style="font-size: 17.5px !important;">Currently Playing: none</div>
         </div>
     </div>
-</div>
 `;
 
     let autoplayMode = null;
@@ -219,11 +219,7 @@ if (window._MMM_INITIALIZED) {
     const activeNotifications = [];
 
     const notificationContainer = document.createElement("div");
-    notificationContainer.className = "uiElement resourceDisplay";
     Object.assign(notificationContainer.style, {
-      position: "absolute",
-      bottom: "200px",
-      right: "10px",
       display: "flex",
       flexDirection: "column",
       justifyContent: "flex-end",
@@ -259,6 +255,7 @@ if (window._MMM_INITIALIZED) {
         lineHeight: "normal",
         height: "auto",
         pointerEvents: "none",
+        overflow: "visible !important",
       });
 
       notificationContainer.appendChild(el);
@@ -267,7 +264,7 @@ if (window._MMM_INITIALIZED) {
         el.style.opacity = 1;
       });
 
-      const duration = /*type === "song" ? 3000 : 1500*/10000000;
+      const duration = type === "song" ? 3000 : 1500;
       const startTime = Date.now();
       const entry = { el, startTime, duration };
       activeNotifications.push(entry);
