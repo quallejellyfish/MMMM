@@ -1,31 +1,27 @@
-function waitForGameUI(callback) {
-  const check = () => {
-    const el =
-      document.getElementById("gameUI") || document.getElementById("game-ui");
-    if (el) {
-      callback(el);
-      return true;
+function getCached(key, useLocalStorage = false) {
+  const storage = useLocalStorage ? localStorage : sessionStorage;
+  const item = storage.getItem("mmm_" + key);
+  if (!item) return null;
+  try {
+    const parsed = JSON.parse(item);
+    if (!useLocalStorage && parsed.expiry && Date.now() > parsed.expiry) {
+      storage.removeItem("mmm_" + key);
+      return null;
     }
-    return false;
-  };
-  if (check()) return;
-  const observer = new MutationObserver(() => {
-    if (check()) observer.disconnect();
-  });
-  observer.observe(document.body, { childList: true, subtree: true });
-
-  setTimeout(() => {
-    if (
-      !document.getElementById("gameUI") &&
-      !document.getElementById("game-ui")
-    ) {
-      observer.disconnect();
-      callback(document.body);
-    }
-  }, 5000);
+    return parsed.data;
+  } catch (e) {
+    return null;
+  }
 }
 
-waitForGameUI((gameElement) => {
+function setCached(key, data, useLocalStorage = false, ttlMs = null) {
+  const storage = useLocalStorage ? localStorage : sessionStorage;
+  const obj = { data };
+  if (ttlMs) obj.expiry = Date.now() + ttlMs;
+  storage.setItem("mmm_" + key, JSON.stringify(obj));
+}
+
+(() => {
   const mm = document.createElement("div");
   mm.className = "gameButton uiElement material-icons";
   mm.style.right = "390px";
@@ -51,7 +47,6 @@ waitForGameUI((gameElement) => {
     document.querySelector(".modmenu").classList.toggle("fade-out");
   });
 
-  //gameElement.appendChild(mm);
   document.body.append(mm);
   // import MMM v4.2 style.css from website
   var stylesheet = document.createElement("link");
@@ -65,7 +60,6 @@ waitForGameUI((gameElement) => {
 
   //menu code
   let MusicMenuMod = document.createElement("div");
-  //gameElement.appendChild(MusicMenuMod);
   document.body.append(MusicMenuMod);
   MusicMenuMod.innerHTML = `
 <div class="modmenu">
@@ -284,6 +278,12 @@ waitForGameUI((gameElement) => {
   let API_KEY = null;
 
   async function fetchApiKey() {
+    const cached = getCached("apiKey");
+    if (cached) {
+      API_KEY = cached;
+      console.log("API key loaded from sessionStorage");
+      return true;
+    }
     try {
       const res = await fetch(`${API_BASE}/api-key`, {
         credentials: "include",
@@ -295,7 +295,8 @@ waitForGameUI((gameElement) => {
       const data = await res.json();
       if (data.key) {
         API_KEY = data.key;
-        console.log("API key fetched successfully");
+        setCached("apiKey", API_KEY);
+        console.log("API key fetched and cached in sessionStorage");
         return true;
       }
     } catch (e) {
@@ -310,24 +311,29 @@ waitForGameUI((gameElement) => {
   let statsUploadTimer = null;
 
   async function fetchStatsKey() {
+    const stored = localStorage.getItem("mmm_statsKey");
+    if (stored) {
+      STATS_KEY = stored;
+      console.log("Stats key loaded from localStorage");
+      return true;
+    }
     try {
       const res = await fetch(`${API_BASE}/stats-key`, {
         credentials: "include",
       });
-      if (!res.ok) {
-        console.warn("Stats key request failed with status:", res.status);
-        return false;
-      }
-      const data = await res.json();
-      if (data.key) {
-        STATS_KEY = data.key;
-        console.log(`Stats key loaded: ${STATS_KEY}`);
-        return true;
+      if (res.ok) {
+        const data = await res.json();
+        if (data.key) {
+          STATS_KEY = data.key;
+          localStorage.setItem("mmm_statsKey", STATS_KEY);
+          console.log("Stats key fetched and stored in localStorage");
+          return true;
+        }
       }
     } catch (e) {
-      console.error("Failed to fetch or parse stats key:", e);
+      console.error("Failed to fetch stats key:", e);
     }
-    console.log("No stats key cookie found, using fallback.");
+    console.log("No stats key found, using fallback.");
     return false;
   }
 
@@ -358,22 +364,30 @@ waitForGameUI((gameElement) => {
   // changed it to use fetch instead since
   // tampermonkey was ggez'ing unpatcher's websocket proxy
   async function fetchSongs() {
+    const cached = getCached("songs");
+    if (cached) {
+      songsList = cached;
+      console.log(
+        `Songs loaded from sessionStorage (${songsList.length} songs)`,
+      );
+      return songsList;
+    }
     try {
       const response = await fetch(`${API_BASE}/songs`, {
         method: "GET",
         headers: { "X-API-Key": API_KEY },
       });
-
       if (!response.ok) {
         const errorText = await response.text();
         throw new Error(`Status ${response.status}: ${errorText}`);
       }
-
       songsList = await response.json();
+      setCached("songs", songsList, false, 300000); // 5 min
+      console.log(`Songs fetched and cached (${songsList.length} songs)`);
       return songsList;
     } catch (err) {
       console.error("fetchSongs error:", err);
-      throw err; // Re-throws to trigger the catch block where fetchSongs is called
+      throw err;
     }
   }
 
