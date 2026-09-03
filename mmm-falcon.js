@@ -27,9 +27,9 @@ if (window._MMM_INITIALIZED) {
   console.log("initializing...");
   window._MMM_INITIALIZED = true;
   window._mmmCleanup = function () {
-    if (window._mmmKeydownListener) {
-      window.removeEventListener("keydown", window._mmmKeydownListener, true);
-      delete window._mmmKeydownListener;
+    if (window._mmmKeydownHandler) {
+      window.removeEventListener("keydown", window._mmmKeydownHandler, true);
+      delete window._mmmKeydownHandler;
     }
     if (window._lyricsInterval) {
       clearInterval(window._lyricsInterval);
@@ -49,9 +49,9 @@ if (window._MMM_INITIALIZED) {
     delete window._MMM_INITIALIZED;
   };
   (() => {
-    if (window._mmmKeydownListener) {
-      window.removeEventListener("keydown", window._mmmKeydownListener, true);
-      delete window._mmmKeydownListener;
+    if (window._mmmKeydownHandler) {
+      window.removeEventListener("keydown", window._mmmKeydownHandler, true);
+      delete window._mmmKeydownHandler;
     }
     const mm = document.createElement("div");
     mm.className = "gameButton uiElement material-icons";
