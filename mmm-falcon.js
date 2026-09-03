@@ -246,7 +246,6 @@ if (window._MMM_INITIALIZED) {
         opacity: 0,
         right: "-350px",
         position: "relative",
-        boxShadow: "0 4px 16px rgba(0,0,0,0.4)",
         letterSpacing: "0.5px",
         whiteSpace: "pre-line",
         wordWrap: "break-word",
@@ -293,7 +292,6 @@ if (window._MMM_INITIALIZED) {
     const wrapper = document.querySelector(".wrapper"),
       selectBtn = wrapper.querySelector(".select-btn"),
       searchInp = wrapper.querySelector("input"),
-      durations1 = wrapper.querySelector(".durations"),
       optionsDiv = wrapper.querySelector(".options1");
 
     const preconnect = document.createElement("link");
