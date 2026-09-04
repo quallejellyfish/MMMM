@@ -82,7 +82,7 @@ if (window._MMM_INITIALIZED) {
   c-53.387-1.311-97.377,27.086-98.267,63.426C1.235,290.35,43.784,320.862,97.173,322.156z"/>
 </svg>
 `;
-    document.getElementById("delete-me-pls").appendChild(mmm);
+    document.getElementById("delete-me-pls").appendChild(mm);
 
     mm.addEventListener("click", (e) => {
       e.preventDefault();
