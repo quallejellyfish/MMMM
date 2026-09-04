@@ -116,7 +116,7 @@ if (window._MMM_INITIALIZED) {
 
         <!-- Informational info -->
         <div class="infoText">
-            Information: Press "p" to open/close menu! Press "c" to start/stop the music! "b" to mute! "k" to loopsongs! "j" to pause!
+            Information: Press "p" to open/close menu! Press "c" to start/stop the music! "b" to mute! "k" to loopsongs! "j" to pause! "shift+nine" to refresh songs! "shift+zero" to upload stats! hover over text for more information!
         </div>
 
         <!-- Mute chat checkbox -->
