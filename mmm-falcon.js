@@ -541,7 +541,7 @@ if (window._MMM_INITIALIZED) {
       });
     });
 
-    document.wrapper.selectBtn.addEventListener("click", () => {
+    selectBtn.addEventListener("click", () => {
       wrapper.classList.toggle("active");
       console.log("open");
 
