@@ -39,11 +39,20 @@ if (window._MMM_INITIALIZED) {
       window.currentAudio.pause();
       window.currentAudio.currentTime = 0;
       window.currentAudio.loop = false;
+      window.currentAudio.src = "";
+      window.currentAudio.load();
+      delete window.currentAudio;
     }
     const menu = document.querySelector(".modmenu");
     if (menu) menu.remove();
     const notif = document.getElementById("mmm-notification-container");
     if (notif) notif.remove();
+    const dele = document.getElementById("delete-me-pls");
+    if (dele) dele.remove();
+    const styleLink = document.querySelector(
+      'link[href="https://mmm-ernr.onrender.com/stylee.css"]',
+    );
+    if (styleLink) styleLink.remove();
     delete window._MMM_INITIALIZED;
   };
   (() => {
@@ -51,6 +60,9 @@ if (window._MMM_INITIALIZED) {
       window.removeEventListener("keydown", window._mmmKeydownHandler, true);
       delete window._mmmKeydownHandler;
     }
+    const deletion = document.createElement("div");
+    deletion.id = "delete-me-pls";
+    document.getElementById("game-ui").appendChild(deletion);
     const mm = document.createElement("div");
     mm.id = "alliance-btn";
     mm.style.right = "390px";
@@ -70,6 +82,7 @@ if (window._MMM_INITIALIZED) {
   c-53.387-1.311-97.377,27.086-98.267,63.426C1.235,290.35,43.784,320.862,97.173,322.156z"/>
 </svg>
 `;
+    document.getElementById("delete-me-pls").appendChild(mmm);
 
     mm.addEventListener("click", (e) => {
       e.preventDefault();
@@ -77,14 +90,19 @@ if (window._MMM_INITIALIZED) {
       document.querySelector(".modmenu").classList.toggle("fade-out");
     });
 
-    document.getElementById("game-ui").appendChild(mm);
     // import MMM v4.2 style.css from website
-    var stylesheet = document.createElement("link");
-    stylesheet.rel = "stylesheet";
-    stylesheet.href = "https://mmm-ernr.onrender.com/stylee.css";
-    document.head.appendChild(stylesheet);
+    let existingStyle = document.querySelector(
+      'link[href="https://mmm-ernr.onrender.com/stylee.css"]',
+    );
+    if (!existingStyle) {
+      var stylesheet = document.createElement("link");
+      stylesheet.rel = "stylesheet";
+      stylesheet.href = "https://mmm-ernr.onrender.com/stylee.css";
+      document.head.appendChild(stylesheet);
+    }
 
-    const currentAudio = new Audio();
+    window.currentAudio = new Audio();
+    const currentAudio = window.currentAudio;
     currentAudio.crossOrigin = "anonymous";
     currentAudio.preload = "none";
 
@@ -228,7 +246,9 @@ if (window._MMM_INITIALIZED) {
       zIndex: 100,
       background: "none",
     });
-    document.querySelector(".resource-display-holder").prepend(notificationContainer);
+    document
+      .querySelector(".resource-display-holder")
+      .prepend(notificationContainer);
 
     function showNotification(message, type = "song") {
       const el = document.createElement("div");
@@ -521,13 +541,30 @@ if (window._MMM_INITIALIZED) {
       });
     });
 
-    document
-      .querySelector(".wrapper")
-      .querySelector(".select-btn")
-      .addEventListener("click", () => {
-        document.querySelector(".wrapper").classList.toggle("active");
-        console.log("open");
-      });
+    document.wrapper.selectBtn.addEventListener("click", () => {
+      wrapper.classList.toggle("active");
+      console.log("open");
+
+      if (
+        autoplayMode &&
+        selectedSongId !== undefined &&
+        selectedSongId !== null
+      ) {
+        setTimeout(() => {
+          const li = optionsDiv.querySelector(
+            `li[data-id="${selectedSongId}"]`,
+          );
+          if (li) {
+            const container = optionsDiv;
+            const containerRect = container.getBoundingClientRect();
+            const liRect = li.getBoundingClientRect();
+            const offset =
+              liRect.top - containerRect.top + container.scrollTop - 20;
+            container.scrollTop = offset;
+          }
+        }, 150);
+      }
+    });
 
     function getSongsByCategory(categoryName) {
       const songs = [];
@@ -557,11 +594,11 @@ if (window._MMM_INITIALIZED) {
       chatMessages = [];
 
     let currentlyPlaying = document.getElementById("currentlyPlaying");
+    let musicStatus = document.getElementById("musicStatus");
 
     let chatMuted = false;
     let loopSong = false;
 
-    let audioStarting = false;
     let schedulingActive = false;
 
     function scheduleMessages(messages, startIndex = 0) {
