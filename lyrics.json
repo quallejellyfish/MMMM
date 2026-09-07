@@ -80196,7 +80196,7 @@
     },
     {
       "chat": "\"kawaii toka\"",
-      "delay": 26144
+      "delay": 27544
     },
     {
       "chat": "Sonna serifu ja monotarinai",
@@ -80331,8 +80331,12 @@
       "delay": 83325
     },
     {
-      "chat": "izanau kaze to yureru kigitachi",
+      "chat": "izanau kaze to",
       "delay": 88147
+    },
+    {
+      "chat": "yureru kigitachi",
+      "delay": 90900
     },
     {
       "chat": "Kimi ni kono koe ga",
