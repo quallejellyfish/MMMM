@@ -1622,6 +1622,7 @@ if (window._MMM_INITIALIZED) {
         isLeaving = false;
       }, 1000);
     }
+    window._mmmSyncLeave = syncLeave;
 
     async function syncPlay(songId, currentTime = 0, timestamp = Date.now()) {
       if (!syncRoom || !syncIsLeader) return;
@@ -2178,11 +2179,14 @@ if (window._MMM_INITIALIZED) {
     };
 
     window.addEventListener("beforeunload", () => {
-      currentAudio.pause();
+      /*currentAudio.pause();
       currentAudio.currentTime = 0;
       currentAudio.loop = false;
       messageTimeouts.forEach(clearTimeout);
-      messageTimeouts = [];
+      messageTimeouts = [];*/
+      if (typeof syncLeave === "function") {
+        syncLeave();
+      }
     });
 
     let songsHash = "";
