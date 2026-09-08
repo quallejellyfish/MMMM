@@ -1369,28 +1369,27 @@ if (window._MMM_INITIALIZED) {
       };
 
       syncEventSource.onerror = (err) => {
-        console.warn("SSE error, checking room...", err);
-        if (isRejoining || isLeaving) return;
-        const currentRoom = roomCode;
-        const originalLeader = syncLeader;
-        fetch(`${API_BASE}/sync/${currentRoom}`)
-          .then((res) => {
-            if (!res.ok) {
-              console.warn(
-                "Room no longer exists. Rejoining with original leader:",
-                originalLeader,
-              );
-              showNotification("Room was deleted, rejoining...", "system");
-              syncJoin(currentRoom, originalLeader);
-            } else {
-              console.log("Room exists, SSE will reconnect automatically.");
-            }
-          })
-          .catch(() => {
+        console.warn("SSE error, attempting to rejoin...", err);
+        if (isRejoining || isLeaving) {
+          console.log("Already rejoining or leaving, ignoring.");
+          return;
+        }
+
+        if (window._mmmReconnectTimer) {
+          clearTimeout(window._mmmReconnectTimer);
+        }
+
+        window._mmmReconnectTimer = setTimeout(() => {
+          window._mmmReconnectTimer = null;
+          if (syncRoom && !isRejoining) {
             console.log(
-              "Network error checking room, will retry on next SSE error.",
+              `Rejoining room ${syncRoom} with leader ${syncLeader || "unknown"}`,
             );
-          });
+            showNotification("Room was deleted, rejoining...", "system");
+
+            syncJoin(syncRoom, syncLeader || null);
+          }
+        }, 3000);
       };
     }
 
@@ -1518,6 +1517,11 @@ if (window._MMM_INITIALIZED) {
     }
 
     async function syncJoin(roomCode, originalLeader = null) {
+      if (window._mmmReconnectTimer) {
+        clearTimeout(window._mmmReconnectTimer);
+        window._mmmReconnectTimer = null;
+      }
+
       stopMusic();
       syncIsLeader = false;
       syncLeader = null;
