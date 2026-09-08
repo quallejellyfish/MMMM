@@ -253,6 +253,7 @@
       let songList = [];
       let lyricCache = {};
       let songsHash = "";
+      let isSaving = false;
       const statusMsg = document.getElementById("statusMsg");
 
       const urlParams = new URLSearchParams(window.location.search);
@@ -335,6 +336,11 @@
       }
 
       async function saveSong() {
+        if (isSaving) {
+          console.warn("Save already in progress");
+          return;
+        }
+
         const editId = document.getElementById("editId").value;
         const name = document.getElementById("songName").value.trim();
         const url = document.getElementById("audioUrl").value.trim();
@@ -362,6 +368,10 @@
             return;
           }
         }
+
+        isSaving = true;
+        saveBtn.disabled = true;
+        saveBtn.textContent = "Saving...";
 
         try {
           if (editId === "") {
@@ -414,7 +424,7 @@
           "💥-----Pulary Songs-----": 3,
           "🌍-----other language Songs-----": 4,
           "🦊----- Krimsonthefox Music-----": 5,
-          "-----Not My Songs-----": 6,
+          "❓-----Not My Songs-----": 6,
         };
         return categoryMap[currentCategory] ?? 0;
       }
