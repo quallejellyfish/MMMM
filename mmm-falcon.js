@@ -1521,8 +1521,9 @@ if (window._MMM_INITIALIZED) {
         clearTimeout(window._mmmReconnectTimer);
         window._mmmReconnectTimer = null;
       }
-
-      stopMusic();
+      if (!syncRoom) {
+        stopMusic();
+      }
       syncIsLeader = false;
       syncLeader = null;
 
