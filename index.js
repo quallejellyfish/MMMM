@@ -105,6 +105,13 @@ async function sendDiscordEditNotification(
   lyricsNewCount,
 ) {
   if (!DISCORD_WEBHOOK_URL) return;
+  const hasChange =
+    changes.name ||
+    changes.url ||
+    changes.category ||
+    changes.public ||
+    changes.lyrics;
+  if (!hasChange) return;
   try {
     let fields = [];
 
@@ -928,7 +935,7 @@ setInterval(() => {
       continue;
     }
     const stale = room.members.filter(
-      (name) => now - (room.memberLastSeen[name] || 0) > 120000,
+      (name) => now - (room.memberLastSeen[name] || 0) > 24 * 60 * 60,
     );
     if (stale.length) {
       console.log(`[Cleanup] Removing stale members from ${roomCode}:`, stale);
