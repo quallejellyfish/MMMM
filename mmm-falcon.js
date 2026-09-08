@@ -1955,8 +1955,18 @@ if (window._MMM_INITIALIZED) {
 
     let pingpong1 = false,
       interval;
+
+    function getPingFromDisplay() {
+      const el = document.getElementById("ping-display");
+      if (!el) return "0";
+      const text = el.textContent || "";
+      const match = text.match(/(\d+)\s*ms/);
+      return match ? match[1] : "0";
+    }
+
     function pingpong() {
-      pendMessages(window.pingTime + "'pingpong");
+      const ping = getPingFromDisplay();
+      pendMessages(ping + "'pingpong");
     }
 
     function togglepingpong() {
