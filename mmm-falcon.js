@@ -60,37 +60,43 @@ if (window._MMM_INITIALIZED) {
       window.removeEventListener("keydown", window._mmmKeydownHandler, true);
       delete window._mmmKeydownHandler;
     }
-    const deletion = document.createElement("div");
-    deletion.id = "delete-me-pls";
+
     const game_ui = document.getElementById("game-ui");
-    if (game_ui) game_ui.appendChild(deletion);
-    const music_icon = document.createElement("div");
-    music_icon.id = "alliance-btn";
-    music_icon.style.right = "390px";
-    music_icon.style.fontSize = "40px";
-    music_icon.style.verticalAlign = "middle";
-    music_icon.style.left = "335px";
-    music_icon.innerHTML = `
-<svg viewBox="0 0 322.199 322.199" width="35" height="40" fill="#fff">
-  <path d="M97.173,322.156c35.754,0.874,67.271-11.577,84.481-30.805c6.111-6.845,10.074-14.932,10.836-16.527
-  c0.448-0.949,0.825-1.955,1.149-2.997l45.168-148.824c2.678-8.782,9.991-10.542,15.978-3.577
-  c4.629,5.392,9.606,11.507,14.659,18.304c20.823,27.968,22.502,64.76,11.397,94.439
-  c-11.112,29.667-32.111,38.046-25.375,47.436c6.757,9.418,33.226-13.974,50.453-41.793
-  c17.212-27.824,19.136-74.354,3.603-112.445c-15.54-38.099-38.17-62.592-42.486-82.467
-  c-0.269-1.272-0.545-2.523-0.821-3.737c-0.453-2.06-0.269-5.574,0.429-7.837l1.242-4.105
-  c3.391-11.146-2.89-22.922-14.058-26.307c-11.141-3.384-22.915,2.914-26.297,14.052L172.77,195.409
-  c-2.673,8.784-10.884,11.481-19.142,7.494c-15.156-7.325-33.448-11.817-53.236-12.303
-  c-53.387-1.311-97.377,27.086-98.267,63.426C1.235,290.35,43.784,320.862,97.173,322.156z"/>
-</svg>
-`;
-    if (deletion && music_icon) {
-      document.getElementById("delete-me-pls").appendChild(music_icon);
+    if (game_ui) {
+      const deletion = document.createElement("div");
+      deletion.id = "delete-me-pls";
+
+      const music_icon = document.createElement("div");
+      music_icon.id = "alliance-btn";
+
+      music_icon.style.right = "390px";
+      music_icon.style.fontSize = "40px";
+      music_icon.style.verticalAlign = "middle";
+      music_icon.style.left = "335px";
+
+      music_icon.innerHTML = `
+        <svg viewBox="0 0 322.199 322.199" width="35" height="40" fill="#fff">
+          <path d="M97.173,322.156c35.754,0.874,67.271-11.577,84.481-30.805c6.111-6.845,10.074-14.932,10.836-16.527
+          c0.448-0.949,0.825-1.955,1.149-2.997l45.168-148.824c2.678-8.782,9.991-10.542,15.978-3.577
+          c4.629,5.392,9.606,11.507,14.659,18.304c20.823,27.968,22.502,64.76,11.397,94.439
+          c-11.112,29.667-32.111,38.046-25.375,47.436c6.757,9.418,33.226-13.974,50.453-41.793
+          c17.212-27.824,19.136-74.354,3.603-112.445c-15.54-38.099-38.17-62.592-42.486-82.467
+          c-0.269-1.272-0.545-2.523-0.821-3.737c-0.453-2.06-0.269-5.574,0.429-7.837l1.242-4.105
+          c3.391-11.146-2.89-22.922-14.058-26.307c-11.141-3.384-22.915,2.914-26.297,14.052L172.77,195.409
+          c-2.673,8.784-10.884,11.481-19.142,7.494c-15.156-7.325-33.448-11.817-53.236-12.303
+          c-53.387-1.311-97.377,27.086-98.267,63.426C1.235,290.35,43.784,320.862,97.173,322.156z"/>
+        </svg>
+      `;
+
+      deletion.appendChild(music_icon);
+      game_ui.appendChild(deletion);
+
+      music_icon.addEventListener("click", (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        document.querySelector(".modmenu").classList.toggle("fade-out");
+      });
     }
-    music_icon.addEventListener("click", (e) => {
-      e.preventDefault();
-      e.stopPropagation();
-      document.querySelector(".modmenu").classList.toggle("fade-out");
-    });
 
     // import MMM v4.2 style.css from website
     let existingStyle = document.querySelector(
