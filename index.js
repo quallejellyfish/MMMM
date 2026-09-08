@@ -131,11 +131,13 @@ async function sendDiscordEditNotification(
 
     // Category change
     if (changes.category) {
-      fields.push({
-        name: "Category",
-        value: `~~${oldSong.category}~~ → ${newSong.category}`,
-        inline: true,
-      });
+      if (oldSong.category !== newSong.category) {
+        fields.push({
+          name: "Category",
+          value: `~~${oldSong.category}~~ → ${newSong.category}`,
+          inline: true,
+        });
+      }
     }
 
     // Public change
@@ -158,6 +160,15 @@ async function sendDiscordEditNotification(
       fields.push({
         name: "Lyrics Lines",
         value: `${lyricsOldCount} → ${lyricsNewCount}`,
+        inline: true,
+      });
+    }
+
+    // Lyrics content change
+    if (changes.lyrics) {
+      fields.push({
+        name: "Lyrics",
+        value: "Content updated",
         inline: true,
       });
     }
@@ -1470,22 +1481,23 @@ app.put("/songs/:id/lyrics", requireApiKey, async (req, res) => {
     const oldCount = oldLyrics.length;
     const newCount = lyricArray.length;
 
+    const lyricsChanged =
+      JSON.stringify(oldLyrics) !== JSON.stringify(lyricArray);
+
     lyrics[id] = lyricArray;
     await writeLyrics(lyrics);
     broadcastEvent("song-changed", { action: "edit", songId: id });
 
     const shouldNotify = skipDiscord !== true;
-    if (
-      shouldNotify &&
-      (oldCount !== newCount ||
-        JSON.stringify(oldLyrics) !== JSON.stringify(lyricArray))
-    ) {
+    if (shouldNotify && (lyricsChanged || oldCount !== newCount)) {
       const oldSong = { ...song };
       const newSong = { ...song };
+      const changes = {};
+      if (lyricsChanged) changes.lyrics = true;
       sendDiscordEditNotification(
         oldSong,
         newSong,
-        {},
+        changes,
         oldCount,
         newCount,
       ).catch((err) => console.error(err));
