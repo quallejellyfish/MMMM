@@ -505,6 +505,21 @@ if (window._MMM_INITIALIZED) {
       }
     }
 
+    function highlightCurrentSong() {
+      if (!optionsDiv) return;
+      optionsDiv
+        .querySelectorAll("li")
+        .forEach((li) => li.classList.remove("selected"));
+      if (selectedSongId !== undefined && selectedSongId !== null) {
+        const targetLi = optionsDiv.querySelector(
+          `li[data-id="${selectedSongId}"]`,
+        );
+        if (targetLi) {
+          targetLi.classList.add("selected");
+        }
+      }
+    }
+
     function addSong(selectedSong) {
       optionsDiv.innerHTML = "";
       songsList.forEach((song) => {
@@ -579,13 +594,11 @@ if (window._MMM_INITIALIZED) {
           );
           if (li) {
             const container = optionsDiv;
-            const containerRect = container.getBoundingClientRect();
-            const liRect = li.getBoundingClientRect();
-            let offset =
-              liRect.top - containerRect.top + container.scrollTop - 20;
-            offset = Math.max(0, offset); // Prevent negative scroll
-            container.scrollTop = offset;
-            console.log(`Scrolled to song ID ${selectedSongId}`);
+            const targetScroll = li.offsetTop - 15;
+            container.scrollTop = Math.max(0, targetScroll);
+            console.log(
+              `Scrolled to song ID ${selectedSongId} (offset: ${targetScroll})`,
+            );
           } else {
             console.warn(`Song with ID ${selectedSongId} not found in list.`);
           }
@@ -745,6 +758,7 @@ if (window._MMM_INITIALIZED) {
           syncStop();
         }
         updateSelectButton("Select Song");
+        highlightCurrentSong();
         return;
       }
 
@@ -764,6 +778,7 @@ if (window._MMM_INITIALIZED) {
         currentlyPlaying.innerHTML = `Currently Playing: ${selectedSongName}`;
         musicStatus.innerHTML = `Music Status: ON`;
         updateSelectButton(selectedSongName);
+        highlightCurrentSong();
 
         if (onTimeUpdateHandler) {
           currentAudio.removeEventListener("timeupdate", onTimeUpdateHandler);
@@ -828,6 +843,7 @@ if (window._MMM_INITIALIZED) {
       selectedSongName = song.name;
       selectedSongAudio = song.url;
       updateSelectButton(selectedSongName);
+      highlightCurrentSong();
 
       if (spamModeActive) {
         currentAudio.pause();
@@ -1744,6 +1760,8 @@ if (window._MMM_INITIALIZED) {
       selectedSongId = song.id;
       selectedSongName = song.name;
       selectedSongAudio = song.url;
+      updateSelectButton(selectedSongName);
+      highlightCurrentSong();
 
       if (spamModeActive) {
         currentAudio.pause();
@@ -2258,6 +2276,13 @@ if (window._MMM_INITIALIZED) {
     const songInput = document.getElementById("songSearch");
     if (songInput) {
       songInput.addEventListener("keydown", function (e) {
+        e.stopPropagation();
+      });
+    }
+
+    const userInput = document.getElementById("syncNameInput");
+    if (userInput) {
+      userInput.addEventListener("keydown", function (e) {
         e.stopPropagation();
       });
     }
