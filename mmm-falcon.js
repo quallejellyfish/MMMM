@@ -62,7 +62,8 @@ if (window._MMM_INITIALIZED) {
     }
     const deletion = document.createElement("div");
     deletion.id = "delete-me-pls";
-    document.getElementById("game-ui").appendChild(deletion);
+    const game_ui = document.getElementById("game-ui")
+    if (game_ui) game_ui.appendChild(deletion);
     const mm = document.createElement("div");
     mm.id = "alliance-btn";
     mm.style.right = "390px";
