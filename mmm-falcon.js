@@ -593,12 +593,8 @@ if (window._MMM_INITIALIZED) {
             `li[data-id="${selectedSongId}"]`,
           );
           if (li) {
-            const container = optionsDiv;
-            const targetScroll = li.offsetTop - 15;
-            container.scrollTop = Math.max(0, targetScroll);
-            console.log(
-              `Scrolled to song ID ${selectedSongId} (offset: ${targetScroll})`,
-            );
+            li.scrollIntoView({ block: "start", behavior: "smooth" });
+            console.log(`Scrolled to song ID ${selectedSongId}`);
           } else {
             console.warn(`Song with ID ${selectedSongId} not found in list.`);
           }
