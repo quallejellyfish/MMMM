@@ -357,7 +357,8 @@
     "id": 220,
     "name": "PTK - Facharbeiter",
     "url": "https://audio.jukehost.co.uk/01a080ed-e5e0-7041-a1e6-c6e0609ed37d",
-    "public": false
+    "public": false,
+    "lyricsCount": 115
   },
   {
     "id": 190,
@@ -987,7 +988,7 @@
     "name": "Exorcist",
     "url": "https://audio.jukehost.co.uk/01a07c80-0175-726c-a5fe-96dccb9d7153",
     "public": false,
-    "lyricsCount": 68
+    "lyricsCount": 69
   },
   {
     "id": 141,
@@ -1287,6 +1288,13 @@
     "lyricsCount": 1
   },
   {
+    "id": 24,
+    "name": "Live A Lie",
+    "url": "https://audio.jukehost.co.uk/CWtit3g4zw4XLrSvpddFYpPCTH9rw84w",
+    "lyricsCount": 63,
+    "public": true
+  },
+  {
     "id": 25,
     "name": "ifound - dead of night",
     "url": "https://audio.jukehost.co.uk/pZdMllvSz6o9S0Wa5TphtaPikqyieyDS",
@@ -1298,6 +1306,13 @@
     "name": "adrenaline",
     "url": "https://audio.jukehost.co.uk/KFpunthlsNi6ArFYF9QGwWDlOMuJv6Hk",
     "lyricsCount": 63,
+    "public": true
+  },
+  {
+    "id": 31,
+    "name": "voe giants",
+    "url": "https://audio.jukehost.co.uk/xpTRtNy1Q4lGo8VtSGR0S4rBJmDN6aFG",
+    "lyricsCount": 45,
     "public": true
   },
   {
@@ -1340,20 +1355,6 @@
     "name": "rise rise rise rise",
     "url": "https://audio.jukehost.co.uk/Al9tqErmTqjdiSQ99XnRyxJw7tvtXOtb",
     "lyricsCount": 77,
-    "public": true
-  },
-  {
-    "id": 24,
-    "name": "Live A Lie",
-    "url": "https://audio.jukehost.co.uk/CWtit3g4zw4XLrSvpddFYpPCTH9rw84w",
-    "lyricsCount": 63,
-    "public": true
-  },
-  {
-    "id": 31,
-    "name": "voe giants",
-    "url": "https://audio.jukehost.co.uk/xpTRtNy1Q4lGo8VtSGR0S4rBJmDN6aFG",
-    "lyricsCount": 63,
     "public": true
   }
 ]
