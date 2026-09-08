@@ -64,13 +64,13 @@ if (window._MMM_INITIALIZED) {
     deletion.id = "delete-me-pls";
     const game_ui = document.getElementById("game-ui");
     if (game_ui) game_ui.appendChild(deletion);
-    const mm = document.createElement("div");
-    mm.id = "alliance-btn";
-    mm.style.right = "390px";
-    mm.style.fontSize = "40px";
-    mm.style.verticalAlign = "middle";
-    mm.style.left = "335px";
-    mm.innerHTML = `
+    const music_icon = document.createElement("div");
+    music_icon.id = "alliance-btn";
+    music_icon.style.right = "390px";
+    music_icon.style.fontSize = "40px";
+    music_icon.style.verticalAlign = "middle";
+    music_icon.style.left = "335px";
+    music_icon.innerHTML = `
 <svg viewBox="0 0 322.199 322.199" width="35" height="40" fill="#fff">
   <path d="M97.173,322.156c35.754,0.874,67.271-11.577,84.481-30.805c6.111-6.845,10.074-14.932,10.836-16.527
   c0.448-0.949,0.825-1.955,1.149-2.997l45.168-148.824c2.678-8.782,9.991-10.542,15.978-3.577
@@ -83,10 +83,10 @@ if (window._MMM_INITIALIZED) {
   c-53.387-1.311-97.377,27.086-98.267,63.426C1.235,290.35,43.784,320.862,97.173,322.156z"/>
 </svg>
 `;
-    if (deletion && mmm) {
-      document.getElementById("delete-me-pls").appendChild(mm);
+    if (deletion && music_icon) {
+      document.getElementById("delete-me-pls").appendChild(music_icon);
     }
-    mm.addEventListener("click", (e) => {
+    music_icon.addEventListener("click", (e) => {
       e.preventDefault();
       e.stopPropagation();
       document.querySelector(".modmenu").classList.toggle("fade-out");
