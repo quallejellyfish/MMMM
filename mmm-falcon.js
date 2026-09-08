@@ -62,7 +62,7 @@ if (window._MMM_INITIALIZED) {
     }
     const deletion = document.createElement("div");
     deletion.id = "delete-me-pls";
-    const game_ui = document.getElementById("game-ui")
+    const game_ui = document.getElementById("game-ui");
     if (game_ui) game_ui.appendChild(deletion);
     const mm = document.createElement("div");
     mm.id = "alliance-btn";
@@ -83,7 +83,7 @@ if (window._MMM_INITIALIZED) {
   c-53.387-1.311-97.377,27.086-98.267,63.426C1.235,290.35,43.784,320.862,97.173,322.156z"/>
 </svg>
 `;
-    document.getElementById("delete-me-pls").appendChild(mmm);
+    document.getElementById("delete-me-pls").appendChild(mm);
 
     mm.addEventListener("click", (e) => {
       e.preventDefault();
@@ -489,6 +489,12 @@ if (window._MMM_INITIALIZED) {
 
     var selectedSongName, selectedSongId, selectedSongAudio;
 
+    function updateSelectButton(songName) {
+      if (selectBtn && selectBtn.firstElementChild) {
+        selectBtn.firstElementChild.innerText = songName || "Select Song";
+      }
+    }
+
     function addSong(selectedSong) {
       optionsDiv.innerHTML = "";
       songsList.forEach((song) => {
@@ -546,7 +552,7 @@ if (window._MMM_INITIALIZED) {
       });
     });
 
-    document.wrapper.selectBtn.addEventListener("click", () => {
+    selectBtn.addEventListener("click", function () {
       wrapper.classList.toggle("active");
       console.log("open");
 
@@ -563,11 +569,15 @@ if (window._MMM_INITIALIZED) {
             const container = optionsDiv;
             const containerRect = container.getBoundingClientRect();
             const liRect = li.getBoundingClientRect();
-            const offset =
+            let offset =
               liRect.top - containerRect.top + container.scrollTop - 20;
+            offset = Math.max(0, offset);
             container.scrollTop = offset;
+            console.log(`Scrolled to song ID ${selectedSongId}`);
+          } else {
+            console.warn(`Song with ID ${selectedSongId} not found in list.`);
           }
-        }, 150);
+        }, 200);
       }
     });
 
@@ -722,6 +732,7 @@ if (window._MMM_INITIALIZED) {
         if (syncRoom && syncIsLeader) {
           syncStop();
         }
+        updateSelectButton("Select Song");
         return;
       }
 
@@ -740,6 +751,7 @@ if (window._MMM_INITIALIZED) {
         spamModeActive = true;
         currentlyPlaying.innerHTML = `Currently Playing: ${selectedSongName}`;
         musicStatus.innerHTML = `Music Status: ON`;
+        updateSelectButton(selectedSongName);
 
         if (onTimeUpdateHandler) {
           currentAudio.removeEventListener("timeupdate", onTimeUpdateHandler);
@@ -803,6 +815,7 @@ if (window._MMM_INITIALIZED) {
       selectedSongId = song.id;
       selectedSongName = song.name;
       selectedSongAudio = song.url;
+      updateSelectButton(selectedSongName);
 
       if (spamModeActive) {
         currentAudio.pause();
@@ -1121,6 +1134,7 @@ if (window._MMM_INITIALIZED) {
 
       updateAutoplayStatus();
       showNotification("Autoplay stopped", "system");
+      updateSelectButton("Select Song");
       console.log("Autoplay stopped");
     }
 
