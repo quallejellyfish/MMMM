@@ -258,7 +258,7 @@ if (window._MMM_INITIALIZED) {
       zIndex: 100,
       background: "none",
     });
-    
+
     const resource_display_holder = document.querySelector(
       ".resource-display-holder",
     );
@@ -513,7 +513,7 @@ if (window._MMM_INITIALIZED) {
         let li = document.createElement("li");
         li.textContent = song.name;
         li.className = isSelected;
-
+        li.dataset.id = song.id;
         li.addEventListener("click", () => {
           updateName(li, song.id, song.name, song.url);
         });
@@ -563,10 +563,12 @@ if (window._MMM_INITIALIZED) {
     });
 
     selectBtn.addEventListener("click", function () {
+      const isOpening = !wrapper.classList.contains("active");
       wrapper.classList.toggle("active");
       console.log("open");
 
       if (
+        isOpening &&
         autoplayMode &&
         selectedSongId !== undefined &&
         selectedSongId !== null
@@ -581,7 +583,7 @@ if (window._MMM_INITIALIZED) {
             const liRect = li.getBoundingClientRect();
             let offset =
               liRect.top - containerRect.top + container.scrollTop - 20;
-            offset = Math.max(0, offset);
+            offset = Math.max(0, offset); // Prevent negative scroll
             container.scrollTop = offset;
             console.log(`Scrolled to song ID ${selectedSongId}`);
           } else {
