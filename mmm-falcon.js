@@ -82,7 +82,7 @@ if (window._MMM_INITIALIZED) {
   c-53.387-1.311-97.377,27.086-98.267,63.426C1.235,290.35,43.784,320.862,97.173,322.156z"/>
 </svg>
 `;
-    document.getElementById("delete-me-pls").appendChild(mm);
+    document.getElementById("delete-me-pls").appendChild(mmm);
 
     mm.addEventListener("click", (e) => {
       e.preventDefault();
@@ -178,6 +178,10 @@ if (window._MMM_INITIALIZED) {
                    <label for="duetModeToggle" style="font-size: 14px !important;">Duet Mode</label>
                    <input type="checkbox" id="duetModeToggle" style="width: auto; margin: 0;">
                    <span id="duetStatus" style="font-size: 12px !important; color: #aaa;">Off</span><br>
+                </div>
+                <div style="display: flex; align-items: center; gap: 8px; margin: 6px 0; width: 100%;">
+                  <label for="syncNameInput" style="font-size: 14px !important;">Your Name</label>
+                  <input type="text" id="syncNameInput" placeholder="a-z, 0-9 only" maxlength="20" style="flex: 1; max-width: 120px; padding: 4px 8px; background: #3a3a4a; border: 1px solid #555; border-radius: 6px; color: #fff; outline: none; font-size: 13px;">
                 </div>
                 <input type="text" id="roomCodeInput" placeholder="Room Code" class="sync-btn" style="flex: 1; max-width: 160px; padding: 4px 8px; background: #3a3a4a; border: 1px solid #555; border-radius: 6px; color: #fff; outline: none;">
                 <button id="joinSyncBtn" class="sync-btn" style="background: #2ecc71; border: none; color: #1e1e2f; padding: 4px 12px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 12px;">Join / Create</button>
@@ -541,7 +545,7 @@ if (window._MMM_INITIALIZED) {
       });
     });
 
-    selectBtn.addEventListener("click", () => {
+    document.wrapper.selectBtn.addEventListener("click", () => {
       wrapper.classList.toggle("active");
       console.log("open");
 
@@ -1215,7 +1219,7 @@ if (window._MMM_INITIALIZED) {
     let syncLeader = null;
     let syncMembers = [];
     let syncPaused = false;
-    let syncName = "wolfi";
+    let syncName = localStorage.getItem("mmm_syncName") || "User";
     let syncCurrentSongId = null;
     let syncIsLeader = false;
     let syncEventSource = null;
@@ -1811,6 +1815,27 @@ if (window._MMM_INITIALIZED) {
       });
     }
 
+    const syncNameInput = document.getElementById("syncNameInput");
+    if (syncNameInput) {
+      syncNameInput.value = syncName;
+      syncNameInput.addEventListener("input", function (e) {
+        let raw = this.value;
+        let cleaned = raw.replace(/[^a-zA-Z0-9]/g, "");
+        if (cleaned !== raw) {
+          this.value = cleaned;
+        }
+        if (cleaned.length > 0) {
+          syncName = cleaned;
+          localStorage.setItem("mmm_syncName", syncName);
+          if (syncRoom) {
+            document.getElementById("syncStatus").textContent =
+              `Connected (Leader: ${syncLeader})`;
+            updateSyncUI();
+          }
+        }
+      });
+    }
+
     document.getElementById("joinSyncBtn").addEventListener("click", () => {
       const room = document.getElementById("roomCodeInput").value.trim();
       if (!room) {
@@ -1913,6 +1938,7 @@ if (window._MMM_INITIALIZED) {
       "mch-box",
       "songSearch",
       "roomCodeInput",
+      "syncNameInput",
     ];
 
     const keydownHandler = function (e) {
