@@ -434,7 +434,28 @@
           "🦊----- Krimsonthefox Music-----": 5,
           "❓-----Not My Songs-----": 6,
         };
-        return categoryMap[currentCategory] ?? 0;
+
+        if (categoryMap[currentCategory] !== undefined) {
+          return categoryMap[currentCategory];
+        }
+
+        /*const fallbackMap = {
+          "-----English Songs-----": 0,
+          "-----German Songs-----": 1,
+          "-----Chinese Songs-----": 2,
+          "-----Pulary Songs-----": 3,
+          "-----other language Songs-----": 4,
+          "----- Krimsonthefox Music-----": 5,
+          "-----Not My Songs-----": 6,
+        };
+        const stripped = currentCategory.replace(/[^\w\s\-]/g, "").trim();
+        for (const [key, value] of Object.entries(fallbackMap)) {
+          if (stripped.includes(key.replace(/[^\w\s\-]/g, "").trim())) {
+            return value;
+          }
+        }*/
+
+        return 0;
       }
 
       async function editSong(id) {
