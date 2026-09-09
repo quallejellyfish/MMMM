@@ -370,8 +370,12 @@
         }
 
         isSaving = true;
-        saveBtn.disabled = true;
-        saveBtn.textContent = "Saving...";
+        if (saveBtn) {
+          saveBtn.disabled = true;
+          saveBtn.textContent = "Saving...";
+        } else {
+          console.warn("Save button not found, but proceeding anyway.");
+        }
 
         try {
           if (editId === "") {
