@@ -439,7 +439,7 @@
           return categoryMap[currentCategory];
         }
 
-        /*const fallbackMap = {
+        const fallbackMap = {
           "-----English Songs-----": 0,
           "-----German Songs-----": 1,
           "-----Chinese Songs-----": 2,
@@ -453,7 +453,7 @@
           if (stripped.includes(key.replace(/[^\w\s\-]/g, "").trim())) {
             return value;
           }
-        }*/
+        }
 
         return 0;
       }
