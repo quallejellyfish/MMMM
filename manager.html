@@ -348,6 +348,7 @@
         const categoryIndex = parseInt(
           document.getElementById("categorySelect").value,
         );
+        const saveBtn = document.getElementById("saveBtn");
 
         if (!name || !url) return alert("Name and URL are required");
 
@@ -373,8 +374,6 @@
         if (saveBtn) {
           saveBtn.disabled = true;
           saveBtn.textContent = "Saving...";
-        } else {
-          console.warn("Save button not found, but proceeding anyway.");
         }
 
         try {
@@ -397,9 +396,7 @@
             });
             await apiRequest(`/songs/${idNum}/lyrics`, "PUT", {
               lyrics: lyricsArray,
-              // skipDiscord: true,
             });
-
             delete lyricCache[idNum];
             statusMsg.innerHTML = `Updated song ID ${idNum}`;
           }
@@ -407,6 +404,13 @@
           await loadSongs();
         } catch (err) {
           console.error(err);
+          statusMsg.innerHTML = `Error: ${err.message}`;
+        } finally {
+          isSaving = false;
+          if (saveBtn) {
+            saveBtn.disabled = false;
+            saveBtn.textContent = "Save";
+          }
         }
       }
 
