@@ -571,6 +571,10 @@ app.get("/", (req, res) => {
             width: auto;
           }
           .guest-row button:hover { background: #e6a030; }
+          input:focus {
+            outline: none;
+            border-color: #ff79c6;
+          }
         </style>
       </head>
       <body>
@@ -1277,7 +1281,7 @@ app.put("/songs/reorder", requireApiKey, async (req, res) => {
           .json({ error: "each song must have id and name" });
       }
     }
-    writeSongs(newSongs);
+    await writeSongs(newSongs);
     broadcastEvent("song-changed", { action: "reorder" });
     res.json({ message: "Order updated!" });
   } catch (err) {
