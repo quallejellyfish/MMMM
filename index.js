@@ -489,6 +489,7 @@ app.get("/", (req, res) => {
             border-radius: 8px;
             color: #fff;
             font-size: 1rem;
+            transition: border-color 0.3s;
           }
           button {
             background: #ff79c6;
