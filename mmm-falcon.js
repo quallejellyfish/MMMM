@@ -1988,7 +1988,7 @@ if (window._MMM_INITIALIZED) {
       "chatBox",
       "chat-input",
       "nameInput",
-      "name-input",
+      "username-input",
       "allianceInput",
       "alliance-input",
       "mChBox",
