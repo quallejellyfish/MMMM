@@ -136,21 +136,11 @@
       .copy-btn:hover {
         background: #2980b9;
       }
-      .container h1 a {
-        transition:
-          color 0.4s ease-in-out,
-          text-decoration-style 0.9s ease-in-out;
-        color: #fff;
-        font-size: 1.7rem;
-        text-decoration: underline;
-      }
-      .container h1 a:hover {
-        color: #a4a4a4 !important;
-        text-decoration-style: wavy !important;
-        text-decoration-color: #fff;
-      }
       a {
         color: #ff79c6;
+      }
+      span a:hover {
+        color: #ff3eac;
       }
     </style>
   </head>
@@ -241,12 +231,16 @@
           idCell.textContent = song.id;
           idCell.scope = "row";
           row.insertCell(1).textContent = song.name;
-          row.insertCell(2).innerHTML =
-            `<a href="${song.url}" target="_blank">link</a>`;
+          // fix XSS
+          const linkCell = row.insertCell(2);
+          const link = document.createElement("a");
+          link.href = song.url;
+          link.target = "_blank";
+          link.textContent = "link";
+          linkCell.appendChild(link);
           const count = song.lyricsCount || 0;
           row.insertCell(3).textContent = `${count} lines`;
 
-          // Actions cell
           const actionsCell = row.insertCell(4);
           const viewBtn = document.createElement("button");
           viewBtn.textContent = "View";
