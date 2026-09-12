@@ -57,6 +57,7 @@
         border: 1px solid #555;
         border-radius: 8px;
         color: #fff;
+        transition: border-color 0.3s;
       }
       table {
         width: 100%;
@@ -79,27 +80,29 @@
         padding: 8px 16px;
         border-radius: 12px;
       }
-      .container h1 a {
-        color: #fff;
-        font-size: 1.7rem;
-        text-decoration: underline;
-        transition: color 0.4s;
-      }
-      .container h1 a:hover {
-        color: #a4a4a4 !important;
-        text-decoration-style: wavy !important;
-      }
       a {
         color: #ff79c6;
+      }
+      span a:hover {
+        color: #ff3eac;
+      }
+      input:focus {
+        outline: none;
+        border-color: #ff79c6;
       }
     </style>
   </head>
   <body>
     <div class="container">
       <h1>
-        <span>MMMM - Play Stats</span>
+        <span>MMMM - Stats Leaderboard</span>
       </h1>
-      <a href="/">Back to Home</a>
+      <span>
+        <a href="/">Back to Home</a> |
+        <a href="/manager.html">Go to Manager</a> |
+        <a href="/formatter.html">Go to Formatter</a> |
+        <a href="/public.html">Go to Public Manager</a>
+      </span>
       <div class="card">
         <div class="flex">
           <label
