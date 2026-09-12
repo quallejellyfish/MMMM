@@ -70,6 +70,7 @@
         border: 1px solid #555;
         border-radius: 8px;
         color: #fff;
+        transition: border-color 0.3s;
       }
       table {
         width: 100%;
@@ -116,22 +117,16 @@
       #songsTableBody tr {
         transition: opacity 0.15s ease;
       }
-
-      .container h1 a {
-        transition:
-          color 0.4s ease-in-out,
-          text-decoration-style 0.9s ease-in-out;
-        color: #fff;
-        font-size: 1.7rem;
-        text-decoration: underline;
-      }
-      .container h1 a:hover {
-        color: #a4a4a4 !important;
-        text-decoration-style: wavy !important;
-        text-decoration-color: #fff;
-      }
       a {
         color: #ff79c6;
+      }
+      span a:hover {
+        color: #ff3eac;
+      }
+      input:focus,
+      textarea:focus {
+        outline: none;
+        border-color: #ff79c6;
       }
     </style>
   </head>
@@ -139,9 +134,13 @@
     <div class="container">
       <h1>
         <span>MMMM - Music Menu Mod Manager</span>
-        <span>|</span>
-        <a href="/stats.html">Go to Stats Leaderboard</a>
       </h1>
+      <span>
+        <a href="/">Back to Home</a> |
+        <a href="/formatter.html">Go to Formatter</a> |
+        <a href="/public.html">Go to Public Manager</a> |
+        <a href="/stats.html">Go to Stats Leaderboard</a>
+      </span>
       <div
         id="guestBanner"
         style="
@@ -150,14 +149,14 @@
           color: #1e1e2f;
           padding: 10px 20px;
           border-radius: 8px;
-          margin-bottom: 20px;
+          margin: 20px 0 20px 0;
           text-align: center;
           font-weight: bold;
         "
       >
         Guest Mode - Read Only
       </div>
-      <a href="/">Back to Home</a>
+
       <div class="card">
         <div class="flex">
           <label
@@ -321,7 +320,8 @@
           songList = await apiRequest("/songs", "GET");
           songsHash = JSON.stringify(songList);
           renderTable();
-          statusMsg.innerHTML = `Loaded ${songList.length} songs`;
+          const count = songList.filter((s) => s.id !== 999).length;
+          statusMsg.innerHTML = `Loaded ${count} songs`;
         } catch (err) {
           statusMsg.innerHTML = `Error: ${err.message}`;
         }
@@ -772,12 +772,179 @@
         updateSongCount();
       }
 
+      function toAscii(str) {
+        const map = {
+          ä: "a",
+          ö: "o",
+          ü: "u",
+          ß: "s",
+          Ä: "A",
+          Ö: "O",
+          Ü: "U",
+          à: "a",
+          á: "a",
+          â: "a",
+          ã: "a",
+          å: "a",
+          ā: "a",
+          ă: "a",
+          ą: "a",
+          è: "e",
+          é: "e",
+          ê: "e",
+          ë: "e",
+          ē: "e",
+          ĕ: "e",
+          ė: "e",
+          ę: "e",
+          ě: "e",
+          ì: "i",
+          í: "i",
+          î: "i",
+          ï: "i",
+          ī: "i",
+          ĭ: "i",
+          į: "i",
+          ı: "i",
+          ò: "o",
+          ó: "o",
+          ô: "o",
+          õ: "o",
+          ø: "o",
+          ō: "o",
+          ŏ: "o",
+          ő: "o",
+          ù: "u",
+          ú: "u",
+          û: "u",
+          ū: "u",
+          ŭ: "u",
+          ů: "u",
+          ű: "u",
+          ų: "u",
+          ñ: "n",
+          ń: "n",
+          ņ: "n",
+          ň: "n",
+          ç: "c",
+          ć: "c",
+          ĉ: "c",
+          ċ: "c",
+          č: "c",
+          ý: "y",
+          ÿ: "y",
+          ŷ: "y",
+          š: "s",
+          ś: "s",
+          ŝ: "s",
+          ş: "s",
+          ž: "z",
+          ź: "z",
+          ż: "z",
+          ř: "r",
+          ŕ: "r",
+          ď: "d",
+          đ: "d",
+          ť: "t",
+          ţ: "t",
+          ľ: "l",
+          ĺ: "l",
+          ł: "l",
+          ğ: "g",
+          ĝ: "g",
+          ġ: "g",
+          ģ: "g",
+          À: "A",
+          Á: "A",
+          Â: "A",
+          Ã: "A",
+          Å: "A",
+          Ā: "A",
+          Ă: "A",
+          Ą: "A",
+          È: "E",
+          É: "E",
+          Ê: "E",
+          Ë: "E",
+          Ē: "E",
+          Ĕ: "E",
+          Ė: "E",
+          Ę: "E",
+          Ě: "E",
+          Ì: "I",
+          Í: "I",
+          Î: "I",
+          Ï: "I",
+          Ī: "I",
+          Ĭ: "I",
+          Į: "I",
+          İ: "I",
+          Ò: "O",
+          Ó: "O",
+          Ô: "O",
+          Õ: "O",
+          Ø: "O",
+          Ō: "O",
+          Ŏ: "O",
+          Ő: "O",
+          Ù: "U",
+          Ú: "U",
+          Û: "U",
+          Ū: "U",
+          Ŭ: "U",
+          Ů: "U",
+          Ű: "U",
+          Ų: "U",
+          Ñ: "N",
+          Ń: "N",
+          Ņ: "N",
+          Ň: "N",
+          Ç: "C",
+          Ć: "C",
+          Ĉ: "C",
+          Ċ: "C",
+          Č: "C",
+          Ý: "Y",
+          Ŷ: "Y",
+          Ÿ: "Y",
+          Š: "S",
+          Ś: "S",
+          Ŝ: "S",
+          Ş: "S",
+          Ž: "Z",
+          Ź: "Z",
+          Ż: "Z",
+          Ř: "R",
+          Ŕ: "R",
+          Ď: "D",
+          Đ: "D",
+          Ť: "T",
+          Ţ: "T",
+          Ľ: "L",
+          Ĺ: "L",
+          Ł: "L",
+          Ğ: "G",
+          Ĝ: "G",
+          Ġ: "G",
+          Ģ: "G",
+          "’": "'",
+          "‘": "'",
+          "“": '"',
+          "”": '"',
+          "–": "-",
+          "—": "-",
+          "…": "...",
+        };
+        return str.replace(/[^\u0000-\u007F]/g, (ch) =>
+          map[ch] !== undefined ? map[ch] : ch,
+        );
+      }
+
       function convertLyrics(text) {
         let cleaned = text.trim();
 
-        if (cleaned.startsWith("return")) {
-          cleaned = cleaned.replace(/^\s*return\s*/, "").trim();
-        }
+        cleaned = cleaned.replace(/^\s*return\s+/i, "");
+        cleaned = cleaned.replace(/^\s*chats?\s*=\s*/i, "");
 
         if (cleaned.startsWith("(") && cleaned.endsWith(")")) {
           cleaned = cleaned.slice(1, -1).trim();
@@ -805,6 +972,7 @@
         if (!Array.isArray(result)) {
           throw new Error("Lyrics must be an array.");
         }
+
         for (let i = 0; i < result.length; i++) {
           const item = result[i];
           if (typeof item.chat !== "string" || typeof item.delay !== "number") {
@@ -812,6 +980,7 @@
               `Item at index ${i} is invalid: each entry must have "chat" (string) and "delay" (number).`,
             );
           }
+          item.chat = toAscii(item.chat);
         }
 
         return result;
