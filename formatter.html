@@ -1,0 +1,526 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="MMMM is a multi-page site created by wolfi and made for the userscript part MMM to have a easier way to manage and store songs and their lyrics"
+    />
+    <meta
+      name="keywords"
+      content="MMMM, MMM, MusicMenuModManager, MusicModMenu"
+    />
+    <meta name="author" content="wolfi" />
+    <title>MMMM - Music Menu Mod Manager</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Hammersmith+One&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      * {
+        box-sizing: border-box;
+        font-family: "Hammersmith One", sans-serif;
+      }
+      body {
+        background: #1e1e2f;
+        color: #eee;
+        padding: 20px;
+      }
+      .container {
+        max-width: 1400px;
+        margin: 0 auto;
+      }
+      .card {
+        background: #2d2d3a;
+        border-radius: 16px;
+        padding: 20px;
+        margin: 20px 0;
+      }
+      button {
+        background: #ff79c6;
+        border: none;
+        padding: 10px 18px;
+        border-radius: 8px;
+        cursor: pointer;
+        color: #1e1e2f;
+        font-weight: bold;
+        transition:
+          background 0.2s,
+          color 0.2s;
+        margin-right: 6px;
+        margin-top: 4px;
+      }
+      button:hover {
+        background: #ba4085;
+        color: #fff;
+      }
+      button.secondary {
+        background: #3a3a4a;
+        color: #eee;
+      }
+      button.secondary:hover {
+        background: #4a4a5a;
+      }
+      button.success {
+        background: #2ecc71;
+      }
+      button.success:hover {
+        background: #27ae60;
+        color: #fff;
+      }
+      a:hover {
+        color: #ba4085;
+      }
+      textarea {
+        width: 100%;
+        padding: 10px;
+        margin: 8px 0;
+        background: #3a3a4a;
+        border: 1px solid #555;
+        border-radius: 8px;
+        color: #fff;
+        min-height: 200px;
+        transition: border-color 0.3s;
+      }
+      textarea::-webkit-scrollbar {
+        background: transparent;
+      }
+      textarea::-webkit-scrollbar-thumb {
+        background: transparent;
+      }
+      textarea::-webkit-scrollbar-track {
+        background: transparent;
+      }
+      textarea::-webkit-scrollbar-corner {
+        background: transparent;
+      }
+      textarea::-webkit-scrollbar-track-piece {
+        background: transparent;
+      }
+      textarea:focus {
+        outline: none;
+        border-color: #ff79c6;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+      }
+      th,
+      td {
+        text-align: left;
+        padding: 10px;
+        border-bottom: 1px solid #444;
+      }
+      .flex {
+        display: flex;
+        gap: 12px;
+        flex-wrap: wrap;
+        align-items: center;
+      }
+      .status {
+        background: #3a3a4a;
+        padding: 8px 16px;
+        border-radius: 12px;
+      }
+      .small {
+        font-size: 12px;
+        color: #aaa;
+      }
+      pre {
+        background: #0f0f17;
+        padding: 12px;
+        border-radius: 12px;
+        overflow-x: auto;
+      }
+      .drag-handle:hover svg path {
+        fill: #fff !important;
+      }
+      tr.drag-over {
+        border-top: 3px solid #ff79c6;
+        background: rgba(255, 121, 198, 0.08);
+      }
+      .drag-ghost {
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+        border: 2px solid #ff79c6 !important;
+      }
+      #songsTableBody tr {
+        transition: opacity 0.15s ease;
+      }
+      a {
+        color: #ff79c6;
+      }
+      span a:hover {
+        color: #ff3eac;
+      }
+      label {
+        display: block;
+        font-size: 14px;
+        color: #aaa;
+        margin-bottom: 6px;
+      }
+      .toolbar {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin-top: 14px;
+        align-items: center;
+      }
+      .stats {
+        display: flex;
+        gap: 12px;
+        flex-wrap: wrap;
+        margin-bottom: 14px;
+      }
+      .stat {
+        background: #3a3a4a;
+        padding: 8px 14px;
+        border-radius: 10px;
+        font-size: 13px;
+        color: #ccc;
+        transition: background 0.3s;
+      }
+      .stat:hover {
+        background: #4a4a5a;
+      }
+      .stat strong {
+        color: #ff79c6;
+        margin-left: 4px;
+      }
+      .stat.danger strong {
+        color: #ff5555;
+      }
+      .status {
+        background: #3a3a4a;
+        padding: 8px 16px;
+        border-radius: 12px;
+        font-size: 13px;
+        color: #aaa;
+        margin-top: 12px;
+        display: inline-block;
+      }
+      .status.ok {
+        color: #2ecc71;
+      }
+      .status.err {
+        color: #ff5555;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1>
+        <span>MMMM - Lyrics Formatter</span>
+      </h1>
+      <span>
+        <a href="/">Back to Home</a> |
+        <a href="/manager.html">Go to Manager</a> |
+        <a href="/public.html">Go to Public Manager</a> |
+        <a href="/stats.html">Go to Stats Leaderboard</a>
+      </span>
+
+      <div class="card">
+        <div class="stats">
+          <div class="stat">Input lines: <strong id="statIn">0</strong></div>
+          <div class="stat">
+            Output fragments: <strong id="statOut">0</strong>
+          </div>
+          <div class="stat">
+            Longest fragment: <strong id="statMax">0</strong>
+          </div>
+          <div class="stat danger">
+            Over 30 chars: <strong id="statOver">0</strong>
+          </div>
+        </div>
+
+        <div class="flex-1-2">
+          <div class="pane input">
+            <label for="rawInput">Raw Lyrics</label>
+            <textarea
+              id="rawInput"
+              spellcheck="false"
+              placeholder="Paste raw lyrics here, one line per lyric...&#10;&#10;Example:&#10;Booby boob boob bob boby&#10;Yeah, bob bob!&#10;I'm gettin' bobbed boobed&#10;[Verse 1]&#10;boobies bob boob bob bobby"
+            ></textarea>
+          </div>
+        </div>
+
+        <div class="pane output">
+          <label for="output">Formatted Output</label>
+          <textarea
+            id="output"
+            spellcheck="false"
+            readonly
+            placeholder="Your formatted output will appear here..."
+          ></textarea>
+        </div>
+
+        Keep Punctuation? <input type="checkbox" id="punctToggle" />
+        <div class="toolbar">
+          <button id="formatBtn" class="success">Format Lyrics</button>
+          <button id="copyJsBtn">Copy JS</button>
+          <button id="copyJsonBtn" class="secondary">Copy JSON</button>
+          <button id="clearBtn" class="secondary">Clear</button>
+        </div>
+
+        <div class="status" id="statusMsg">Ready.</div>
+      </div>
+    </div>
+    <script>
+      const MAX_LEN = 30;
+      const PUNCT_RE = /[.!?:;"()\[\]{},]/g;
+
+      let keepPunctuation = false;
+
+      function removeHtml(s) {
+        if (typeof s !== "string") return "";
+        return s
+          .replace(/<br\s*\/?>/gi, " ")
+          .replace(/<[^>]+>/g, "")
+          .replace(/&amp;/g, "&")
+          .replace(/&lt;/g, "<")
+          .replace(/&gt;/g, ">")
+          .replace(/&quot;/g, '"')
+          .replace(/&#39;/g, "'")
+          .replace(/&apos;/g, "'");
+      }
+
+      function removeMetadata(s) {
+        if (typeof s !== "string") return "";
+        return s.replace(/\[[^\]]*\]/g, "");
+      }
+
+      function asciiNormalize(input) {
+        if (typeof input !== "string") {
+          console.warn("Received non-string, defaulting to ''", input);
+          return "";
+        }
+        return input
+          .replace(/ä/g, "ae")
+          .replace(/Ä/g, "Ae")
+          .replace(/ö/g, "oe")
+          .replace(/Ö/g, "Oe")
+          .replace(/ü/g, "ue")
+          .replace(/Ü/g, "Ue")
+          .replace(/ß/g, "ss")
+          .replace(/[\u2018\u2019\u201A\u201B\u2032]/g, "'")
+          .replace(/[\u201C\u201D\u201E\u201F\u2033]/g, '"')
+          .replace(/[\u2013\u2014]/g, "-")
+          .normalize("NFKD")
+          .replace(/[\u0300-\u036f]/g, "")
+          .replace(/[^\x00-\x7F]/g, "");
+      }
+
+      function removePunctuation(s) {
+        return s.replace(PUNCT_RE, " ");
+      }
+
+      function cleanLine(line, keepPunct) {
+        if (typeof line !== "string") return "";
+        let s = line;
+        s = removeHtml(s);
+        s = removeMetadata(s);
+        s = asciiNormalize(s);
+        if (!keepPunct) s = removePunctuation(s);
+        s = s.replace(/\s+/g, " ").trim();
+        return s;
+      }
+
+      function splitLine(line) {
+        if (line.length <= MAX_LEN) return [line];
+
+        const words = line.split(" ").filter(Boolean);
+        if (!words.length) return [];
+
+        if (words.length === 1) {
+          const parts = [];
+          for (let i = 0; i < lines.length; i += MAX_LEN) {
+            parts.push(line.slice(i, i + MAX_LEN));
+          }
+          return parts;
+        }
+
+        const fragments = [];
+        let current = [];
+
+        for (const word of words) {
+          const canidate = current.length
+            ? current.join(" ") + " " + word
+            : word;
+          if (canidate.length <= MAX_LEN) {
+            current.push(word);
+          } else {
+            if (current.length) {
+              fragments.push(current.join(" "));
+              current = [];
+            }
+            if (word.length > MAX_LEN) {
+              for (let i = 0; i < word.length; i += MAX_LEN) {
+                fragments.push(word.slice(i, i + MAX_LEN));
+              }
+            } else {
+              current.push(word);
+            }
+          }
+        }
+        if (current.length) fragments.push(current.join(" "));
+
+        if (fragments.length >= 2) {
+          const last = fragments[fragments.length - 1];
+          if (last.split(" ").length === 1) {
+            const prevIdx = fragments.length - 2;
+            const prevWords = fragments[prevIdx].split(" ");
+            if (prevWords.length > 1) {
+              const moved = prevWords.pop();
+              fragments[prevIdx] = prevWords.join(" ");
+              fragments[fragments.length - 1] = moved + " " + last;
+            }
+          }
+        }
+        return fragments;
+      }
+
+      function processLyrics(input, keepPunct) {
+        if (typeof input !== "string") return [];
+        const lines = input.split(/\r?\n/);
+        const out = [];
+        for (const raw of lines) {
+          const cleaned = cleanLine(raw, keepPunct);
+          if (!cleaned) continue;
+          for (const f of splitLine(cleaned)) {
+            if (f) out.push(f);
+          }
+        }
+        return out;
+      }
+
+      function toJsOutput(frags) {
+        if (!frags.length) return "return [];";
+        const parts = frags.map((f) => {
+          const esc = f.replace(/\\/g, "\\\\").replace(/"/g, '\\"');
+          return `  {\n    chat: "${esc}",\n    delay: 0\n  }`;
+        });
+        return `return [\n${parts.join(",\n")}\n];`;
+      }
+
+      function toJsonOutput(frags) {
+        return JSON.stringify(
+          frags.map((f) => ({
+            chat: f,
+            delay: 0,
+          })),
+          null,
+          2,
+        );
+      }
+
+      const rawInput = document.getElementById("rawInput");
+      const output = document.getElementById("output");
+      const statusMsg = document.getElementById("statusMsg");
+      const statIn = document.getElementById("statIn");
+      const statOut = document.getElementById("statOut");
+      const statMax = document.getElementById("statMax");
+      const statOver = document.getElementById("statOver");
+      const punctToggle = document.getElementById("punctToggle");
+
+      let lastFragments = [];
+
+      function setStatus(msg, kind) {
+        statusMsg.textContent = msg;
+        statusMsg.className = "status" + (kind ? " " + kind : "");
+      }
+
+      function updateStats(inputText, frags) {
+        const inLines = inputText
+          .split(/\r?\n/)
+          .filter((l) => l.trim().length > 0).length;
+        statIn.textContent = inLines;
+        statOut.textContent = frags.length;
+        const maxLen = frags.reduce((m, f) => Math.max(m, f.length), 0);
+        statMax.textContent = maxLen;
+        const over = frags.filter((f) => f.length > MAX_LEN).length;
+        statOver.textContent = over;
+      }
+      let penis
+      function format() {
+        const text = rawInput.value;
+        if (!text.trim()) {
+          lastFragments = [];
+          output.value = "";
+          updateStats("", []);
+          setStatus("Nothing to format.", "err");
+          return;
+        }
+        const frags = processLyrics(text, keepPunctuation);
+        lastFragments = frags;
+        output.value = toJsOutput(frags);
+        updateStats(text, frags);
+        const mode = keepPunctuation
+          ? "punctuation kept"
+          : "punctuation removed";
+        setStatus(
+          `Formatted ${frags.length} fragment${
+            frags.length === 1 ? "" : "s"
+          } (${mode}).`,
+          "ok",
+        );
+      }
+      document.getElementById("formatBtn").addEventListener("click", format);
+
+      document
+        .getElementById("copyJsBtn")
+        .addEventListener("click", async () => {
+          if (!lastFragments.length) {
+            setStatus("Nothing to copy. Click Format first.", "err");
+            return;
+          }
+          try {
+            await navigator.clipboard.writeText(toJsOutput(lastFragments));
+            setStatus("Copied JS to clipboard.", "ok");
+          } catch {
+            setStatus("Clipboard blocked by browser.", "err");
+          }
+        });
+      document
+        .getElementById("copyJsonBtn")
+        .addEventListener("click", async () => {
+          if (!lastFragments.length) {
+            setStatus("Nothing to copy. Click Format first.", "err");
+            return;
+          }
+          try {
+            await navigator.clipboard.writeText(toJsonOutput(lastFragments));
+            setStatus("Copied JSON to clipboard.", "ok");
+          } catch {
+            setStatus("Clipboard blocked by browser.", "err");
+          }
+        });
+      document.getElementById("clearBtn").addEventListener("click", () => {
+        rawInput.value = "";
+        output.value = "";
+        lastFragments = [];
+        updateStats("", []);
+        setStatus("Cleared.");
+      });
+
+      punctToggle.addEventListener("change", () => {
+        keepPunctuation = punctToggle.checked;
+
+        if (rawInput.value.trim()) {
+          format();
+        } else {
+          setStatus(
+            keepPunctuation
+              ? "Punctuation will be kept on next format."
+              : "Punctuation will be removed on next format.",
+          );
+        }
+      });
+
+      rawInput.addEventListener("input", () => {
+        updateStats(rawInput.value, lastFragments);
+      });
+    </script>
+  </body>
+</html>
