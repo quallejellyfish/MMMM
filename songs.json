@@ -9,7 +9,8 @@
     "id": 232,
     "name": "Verity Disstrack",
     "url": "https://audio.jukehost.co.uk/01a08bb3-be19-701b-855d-8ab54a96b0d6",
-    "public": false
+    "public": false,
+    "lyricsCount": 80
   },
   {
     "id": 206,
@@ -909,28 +910,28 @@
     "lyricsCount": 122
   },
   {
-    "id": 144,
-    "name": "rabbit hole rachie",
-    "url": "https://audio.jukehost.co.uk/4pZ2kvqGZNBci9JpJtY4sFyoxLfHeYZJ",
-    "lyricsCount": 144
-  },
-  {
     "id": 102,
     "name": "rabbit hole",
     "url": "https://audio.jukehost.co.uk/ODdm9P7J56WTVUQzvhqgl4twm4qykZdW",
     "lyricsCount": 104
   },
   {
-    "id": 152,
-    "name": "monitoring rachie",
-    "url": "https://audio.jukehost.co.uk/019e36a1-26d1-7195-9bd2-739be551b628",
-    "lyricsCount": 185
+    "id": 144,
+    "name": "rabbit hole rachie",
+    "url": "https://audio.jukehost.co.uk/4pZ2kvqGZNBci9JpJtY4sFyoxLfHeYZJ",
+    "lyricsCount": 144
   },
   {
     "id": 156,
     "name": "Monitoring",
     "url": "https://audio.jukehost.co.uk/019eccae-078d-73a8-8963-ecf9d934589a",
     "lyricsCount": 114
+  },
+  {
+    "id": 152,
+    "name": "monitoring rachie",
+    "url": "https://audio.jukehost.co.uk/019e36a1-26d1-7195-9bd2-739be551b628",
+    "lyricsCount": 185
   },
   {
     "id": 153,
@@ -951,17 +952,17 @@
     "lyricsCount": 144
   },
   {
+    "id": 101,
+    "name": "Split Dance",
+    "url": "https://audio.jukehost.co.uk/YQ4WL2W9HXNBrEKLPestwLi4DcikSaPl",
+    "lyricsCount": 89
+  },
+  {
     "id": 203,
     "name": "English Split Dance",
     "url": "https://audio.jukehost.co.uk/019f8143-bd28-73c5-af07-3566e8137ad5",
     "public": false,
     "lyricsCount": 113
-  },
-  {
-    "id": 101,
-    "name": "Split Dance",
-    "url": "https://audio.jukehost.co.uk/YQ4WL2W9HXNBrEKLPestwLi4DcikSaPl",
-    "lyricsCount": 89
   },
   {
     "id": 204,
@@ -983,18 +984,18 @@
     "lyricsCount": 93
   },
   {
-    "id": 214,
-    "name": "English Exorcist",
-    "url": "https://audio.jukehost.co.uk/01a0683b-3278-73bb-b9a4-3fcdf2f8d0a5",
-    "public": false,
-    "lyricsCount": 85
-  },
-  {
     "id": 215,
     "name": "Exorcist",
     "url": "https://audio.jukehost.co.uk/01a07c80-0175-726c-a5fe-96dccb9d7153",
     "public": false,
     "lyricsCount": 69
+  },
+  {
+    "id": 214,
+    "name": "English Exorcist",
+    "url": "https://audio.jukehost.co.uk/01a0683b-3278-73bb-b9a4-3fcdf2f8d0a5",
+    "public": false,
+    "lyricsCount": 85
   },
   {
     "id": 141,
@@ -1022,9 +1023,16 @@
   },
   {
     "id": 145,
-    "name": "im talking to you",
+    "name": "I'm talking to you!",
     "url": "https://audio.jukehost.co.uk/mBTQsMCnRIwFLiF60HN0aGxCTPjWEljS",
     "lyricsCount": 62
+  },
+  {
+    "id": 233,
+    "name": "I'm talking to you! English",
+    "url": "https://audio.jukehost.co.uk/01a0959c-0cda-705b-bd29-4b73d78312da",
+    "public": false,
+    "lyricsCount": 98
   },
   {
     "id": 157,
@@ -1052,7 +1060,7 @@
   },
   {
     "id": 161,
-    "name": "yararara",
+    "name": "Yararara",
     "url": "https://audio.jukehost.co.uk/019ec691-20ac-73f8-889c-4834539aeba4",
     "lyricsCount": 87
   },
