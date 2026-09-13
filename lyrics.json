@@ -28267,332 +28267,472 @@
   ],
   "84": [
     {
-      "chat": "Dizzy mondai toka dou suru?",
-      "delay": 13630
+      "chat": "Dizzy mondai toka dousuru?",
+      "delay": 13594
     },
     {
-      "chat": "Ten P toka dou suru?",
-      "delay": 15240
+      "chat": "Ten P toka dousuru?",
+      "delay": 14900
     },
     {
-      "chat": "Touan maruutsushi de dou shiyou?",
-      "delay": 16660
+      "chat": "Touan maru utsushi",
+      "delay": 16381
     },
     {
-      "chat": "Jinsei toka dou shiyou?",
-      "delay": 17020
+      "chat": "de doushiyou?",
+      "delay": 17340
     },
     {
-      "chat": "Easy guzou toka dou suru?",
-      "delay": 19500
+      "chat": "Jinsei toka doushiyou?",
+      "delay": 17925
     },
     {
-      "chat": "Shinkou toka dou suru?",
-      "delay": 20870
+      "chat": "Easy guuzou toka dousuru?",
+      "delay": 19448
     },
     {
-      "chat": "Daitai de ikiteku ronri jan?",
-      "delay": 22760
+      "chat": "Shinkou toka dousuru?",
+      "delay": 20962
     },
     {
-      "chat": "Tatakatteru lonely boy poi ne",
-      "delay": 24060
+      "chat": "Daitai de ikite ku ronrijan?",
+      "delay": 22282
     },
     {
-      "chat": "Dizzy baddo na paradokkusu?",
-      "delay": 37540
+      "chat": "Tatakatteru lonely boy",
+      "delay": 23984
+    },
+    {
+      "chat": "poi ne",
+      "delay": 25274
+    },
+    {
+      "chat": "Dizzy baddona paradokusu?",
+      "delay": 37690
     },
     {
       "chat": "Moppara karamatteru",
-      "delay": 39560
+      "delay": 39181
     },
     {
-      "chat": "Yuumeijin buttemo chou ijou",
-      "delay": 41020
+      "chat": "Yuumeijin butte mo chou ijou",
+      "delay": 40759
     },
     {
-      "chat": "Kyuudaiten choumiryou Easy",
-      "delay": 42230
+      "chat": "kyuudai-ten choumiryou",
+      "delay": 42167
     },
     {
-      "chat": "Bakkuretara dou shiyou?",
-      "delay": 43870
+      "chat": "Easy bakkuretara doushiyou?",
+      "delay": 43733
     },
     {
-      "chat": "Yokubattara dou deshou",
-      "delay": 45480
+      "chat": "Yokubattara doudeshou",
+      "delay": 45278
     },
     {
-      "chat": "Koakuma de kyou mo genkai daarin",
-      "delay": 46860
+      "chat": "Koakuma de kyou mo",
+      "delay": 46716
     },
     {
-      "chat": "Niwari mashi inabikari kirai maji",
-      "delay": 49940
+      "chat": "genkai daarin",
+      "delay": 48773
     },
     {
-      "chat": "Hidariashi imaimashii na shikashi maji?",
-      "delay": 53420
+      "chat": "Niwarimashi",
+      "delay": 50037
     },
     {
-      "chat": "Kitai dai shibaritai",
-      "delay": 57250
+      "chat": "inabikari",
+      "delay": 50870
     },
     {
-      "chat": "Matte fake ja munashii jan?",
-      "delay": 59270
+      "chat": "kiraimaji",
+      "delay": 52148
+    },
+    {
+      "chat": "hidariashi",
+      "delay": 53306
+    },
+    {
+      "chat": "Imaimashii na,",
+      "delay": 54501
+    },
+    {
+      "chat": "Shikashi maji?",
+      "delay": 55904
+    },
+    {
+      "chat": "Kitai dai",
+      "delay": 57047
+    },
+    {
+      "chat": "shibaritai",
+      "delay": 58240
+    },
+    {
+      "chat": "Matte fake ja munashiijan?",
+      "delay": 59302
     },
     {
       "chat": "Tsugunaitai sugu aitai",
-      "delay": 62190
+      "delay": 62121
     },
     {
-      "chat": "Kuru baitai byoumei wa nai kedo",
-      "delay": 63300
+      "chat": "kitaru baitai",
+      "delay": 63384
     },
     {
-      "chat": "Mune ga itai makoto ni ishi ga yowai",
-      "delay": 64810
+      "chat": "Byoumei wa naikedo munegaitai",
+      "delay": 64100
     },
     {
-      "chat": "Kikikaikai dou shiyou mo nai",
-      "delay": 66600
+      "chat": "Makotoni ishi ga yowai",
+      "delay": 65493
     },
     {
-      "chat": "Kedo mada aimai iki ga tsumarisou",
-      "delay": 67240
+      "chat": "Kikikaikai",
+      "delay": 66482
     },
     {
-      "chat": "Tsumari atsumari kara sogai",
-      "delay": 68010
+      "chat": "Doushiyou mo naikedo",
+      "delay": 67155
     },
     {
-      "chat": "Sarete shimau youna",
-      "delay": 70580
+      "chat": "mada aimai",
+      "delay": 67796
     },
     {
-      "chat": "Moushiwakenai hodo ni atsumatteku",
-      "delay": 71550
+      "chat": "Iki ga tsumarisou",
+      "delay": 68399
     },
     {
-      "chat": "Q.E.D shoumei",
-      "delay": 73050
+      "chat": "Tsumari atsumari kara sogai sa",
+      "delay": 69135
     },
     {
-      "chat": "Hontou ga chikazuite sore mo uso",
-      "delay": 74030
+      "chat": "rete shimau youna",
+      "delay": 70587
+    },
+    {
+      "chat": "Moushiwakenai hodo ni",
+      "delay": 71360
+    },
+    {
+      "chat": "atsumatte ku",
+      "delay": 72257
+    },
+    {
+      "chat": "Q. E. D.",
+      "delay": 72815
+    },
+    {
+      "chat": "shoumei",
+      "delay": 73866
+    },
+    {
+      "chat": "Hontou ga chikadzuite",
+      "delay": 74486
+    },
+    {
+      "chat": "sore mo uso",
+      "delay": 75802
     },
     {
       "chat": "Jirettai kotoba dake",
-      "delay": 77060
+      "delay": 77000
     },
     {
-      "chat": "Tokete iku no ningen ni chikazuite",
-      "delay": 78870
+      "chat": "tokete iku no",
+      "delay": 78688
     },
     {
-      "chat": "Kore mo usorashii",
-      "delay": 82440
+      "chat": "Ningen ni chikadzuite",
+      "delay": 80502
     },
     {
-      "chat": "Houteishiki de naoshise!",
-      "delay": 83510
+      "chat": "kore mo usorashii",
+      "delay": 81905
     },
     {
-      "chat": "Maybe aijou toka dou suru?",
-      "delay": 98430
+      "chat": "Houteishiki de yarinaose!",
+      "delay": 83646
+    },
+    {
+      "chat": "Maybe aiou toka dousuru?",
+      "delay": 98621
     },
     {
       "chat": "Daitai wa izon suru",
-      "delay": 100280
+      "delay": 99964
     },
     {
-      "chat": "Kaitou anadarake de dou shiyou?",
-      "delay": 101630
+      "chat": "Kaitou ana darake",
+      "delay": 101425
     },
     {
-      "chat": "Donmai machigatte kou",
-      "delay": 101830
+      "chat": "de doushiyou?",
+      "delay": 102392
     },
     {
-      "chat": "Easy zurechattara dou suru?",
-      "delay": 104560
+      "chat": "Donmai machigatt kou",
+      "delay": 103086
     },
     {
-      "chat": "Kinsen de nagutteru",
-      "delay": 104770
+      "chat": "Easy zure chattara dousuru?",
+      "delay": 104463
+    },
+    {
+      "chat": "Kinsen de naguttru",
+      "delay": 106008
     },
     {
       "chat": "Kassai de tsunagaru rinne jan?",
-      "delay": 107560
+      "delay": 107391
     },
     {
-      "chat": "Imishin o jushin shiyou ussai na",
-      "delay": 109370
+      "chat": "Imishin wo jushin shiyou",
+      "delay": 108990
+    },
+    {
+      "chat": "Ussa i na",
+      "delay": 110127
     },
     {
       "chat": "Ikiba ga nai sore ja tsurai",
-      "delay": 110330
+      "delay": 110879
     },
     {
-      "chat": "Hanpa ga nai byoumei wa shinjiru",
-      "delay": 112050
+      "chat": "hanpa ga nai",
+      "delay": 111886
     },
     {
-      "chat": "Kami no chigai toutemo toutemo",
-      "delay": 113380
+      "chat": "Byoumei wa shinjiru",
+      "delay": 112575
     },
     {
-      "chat": "Kotae wa nai hetsuratte mitasenai",
-      "delay": 114840
+      "chat": "kami no chigai",
+      "delay": 113506
     },
     {
-      "chat": "Nara mada tarinai imi de",
-      "delay": 116280
+      "chat": "Toute mo toute mo kotae wa nai",
+      "delay": 114124
     },
     {
-      "chat": "Kuraiai aikyou no maai",
-      "delay": 117660
+      "chat": "Hetsuratte mitasenainara",
+      "delay": 115420
     },
     {
-      "chat": "Aihan shite shibai wa Dirty mou",
-      "delay": 118710
+      "chat": "mada tarinai",
+      "delay": 116513
     },
     {
-      "chat": "Mitakunai hodo ni karamatteku",
-      "delay": 120050
+      "chat": "Imi de kurai ai aikyou no maai",
+      "delay": 117338
     },
     {
-      "chat": "Q.E.D shoumei",
-      "delay": 121570
+      "chat": "Souhan shite shibai wa dirty",
+      "delay": 118544
     },
     {
-      "chat": "Shuuen ga chikazuite kore ga kiso",
-      "delay": 123110
+      "chat": "Mou mitakunai hodo ni",
+      "delay": 120002
+    },
+    {
+      "chat": "karamatte ku",
+      "delay": 120975
+    },
+    {
+      "chat": "Q. E. D.",
+      "delay": 121577
+    },
+    {
+      "chat": "shoumei",
+      "delay": 122484
+    },
+    {
+      "chat": "Shuuen ga chikadzuite",
+      "delay": 123107
+    },
+    {
+      "chat": "kore ga kiso",
+      "delay": 124501
     },
     {
       "chat": "Sukuitai risou made",
-      "delay": 125670
+      "delay": 125533
     },
     {
-      "chat": "Koborete iku no inbou ni chikazuite",
-      "delay": 127260
+      "chat": "koborete iku no",
+      "delay": 127373
     },
     {
-      "chat": "Kore ga misorashii",
-      "delay": 130840
+      "chat": "Inbou ni chikadzuite",
+      "delay": 129061
+    },
+    {
+      "chat": "kore ga misorashii",
+      "delay": 130497
     },
     {
       "chat": "Jissai damashite kuraeba",
-      "delay": 132240
+      "delay": 132149
     },
     {
-      "chat": "Yumemitetai sore ga mirai",
-      "delay": 135460
+      "chat": "Yumemi tetai sore ga mirai",
+      "delay": 135352
     },
     {
-      "chat": "Jittai wa nekkyou de sametara meiwaku",
-      "delay": 138630
+      "chat": "Jittai wa nekkyou de",
+      "delay": 138237
     },
     {
-      "chat": "Yumemisetai kareta shitai",
-      "delay": 141400
+      "chat": "sametara meiwaku",
+      "delay": 139342
     },
     {
-      "chat": "Zonbun ni ajiwatte mitaseba kairaku",
-      "delay": 144310
+      "chat": "Yume misetai kareta shitai",
+      "delay": 141272
     },
     {
-      "chat": "Narikawatte toita",
-      "delay": 171560
+      "chat": "Zonbun ni ajiwatte",
+      "delay": 144036
     },
     {
-      "chat": "Inga wa Bitter kegareta shisou wa",
-      "delay": 173770
+      "chat": "mitaseba kairaku",
+      "delay": 145857
     },
     {
-      "chat": "Nigai ne nariagatte tsubureta",
-      "delay": 176840
+      "chat": "Narikawatte hodoita",
+      "delay": 171896
     },
     {
-      "chat": "Naisho na kikai ogamarete Happy",
-      "delay": 179680
+      "chat": "inga wa bitter",
+      "delay": 173633
+    },
+    {
+      "chat": "Kegareta shisou wa nigai ne",
+      "delay": 175180
+    },
+    {
+      "chat": "Nariagatte tsubureta",
+      "delay": 177707
+    },
+    {
+      "chat": "naishona kikai",
+      "delay": 179592
+    },
+    {
+      "chat": "Ogama rete happy",
+      "delay": 181454
     },
     {
       "chat": "Tsugunaitai sugu aitai",
-      "delay": 183860
+      "delay": 183584
     },
     {
-      "chat": "Kuru baitai byoumei wa nai kedo",
-      "delay": 184890
+      "chat": "kitaru baitai",
+      "delay": 184844
     },
     {
-      "chat": "Mune ga itai makoto ni ishi ga yowai",
-      "delay": 186380
+      "chat": "Byoumei wa naikedo munegaitai",
+      "delay": 185635
     },
     {
-      "chat": "Kikikaikai dou shiyou mo nai",
-      "delay": 187970
+      "chat": "Makotoni ishi ga yowai",
+      "delay": 186637
     },
     {
-      "chat": "Kedo mada aimai iki ga tsumarisou",
-      "delay": 188950
+      "chat": "Kikikaikai doushiyou mo",
+      "delay": 187787
     },
     {
-      "chat": "Tsumari atsumari kara sogai",
-      "delay": 189360
+      "chat": "naikedo mada aimai",
+      "delay": 188822
     },
     {
-      "chat": "Sarete shimau youna",
-      "delay": 191920
+      "chat": "Iki ga tsumarisou",
+      "delay": 189866
     },
     {
-      "chat": "Moushiwakenai hodo ni atsumatteku",
-      "delay": 192930
+      "chat": "Tsumari atsumari kara sogai sa",
+      "delay": 190624
+    },
+    {
+      "chat": "rete shimau youna",
+      "delay": 191528
+    },
+    {
+      "chat": "Moushiwakenai hodo ni",
+      "delay": 192882
+    },
+    {
+      "chat": "atsumatte ku",
+      "delay": 193754
     },
     {
       "chat": "Q.E.D-D-D-D-D-D-D",
-      "delay": 194430
+      "delay": 194302
     },
     {
       "chat": "Shoumei",
-      "delay": 196900
+      "delay": 197067
     },
     {
-      "chat": "Hontou ga chikazuite sore mo uso",
-      "delay": 197670
+      "chat": "Hontou ga chikadzuite",
+      "delay": 197541
+    },
+    {
+      "chat": "sore mo uso",
+      "delay": 198801
     },
     {
       "chat": "Jirettai kotoba dake",
-      "delay": 200750
+      "delay": 199979
     },
     {
-      "chat": "Tokete iku no ningen ni chikazuite",
-      "delay": 203230
+      "chat": "tokete iku no",
+      "delay": 201733
     },
     {
-      "chat": "Kore mo usorashii",
-      "delay": 205130
+      "chat": "Ningen ni chikadzuite",
+      "delay": 203598
     },
     {
-      "chat": "Kanjou o motta garakuta",
-      "delay": 206950
+      "chat": "kore mo usorashii",
+      "delay": 204897
     },
     {
-      "chat": "Yumemisetai sore ga mirai",
-      "delay": 209770
+      "chat": "Kanjou wo motta",
+      "delay": 206624
     },
     {
-      "chat": "Jittai wa nekkyou de sametara meiwaku",
-      "delay": 212820
+      "chat": "ga-ra-ku-ta",
+      "delay": 207837
     },
     {
-      "chat": "Yumemisetai kareta shitai",
-      "delay": 216040
+      "chat": "Yume misetai sore ga mirai",
+      "delay": 209669
     },
     {
-      "chat": "Zonbun na nekkyou de kuracchatte",
-      "delay": 218680
+      "chat": "Jittai wa nekkyou de",
+      "delay": 212692
+    },
+    {
+      "chat": "sametara meiwaku",
+      "delay": 213949
+    },
+    {
+      "chat": "Yume misetai kareta shitai",
+      "delay": 215683
+    },
+    {
+      "chat": "Zonbun na nekkyou",
+      "delay": 218624
+    },
+    {
+      "chat": "de kuratchatte!!",
+      "delay": 219822
     }
   ],
   "85": [
