@@ -273,13 +273,6 @@
     "lyricsCount": 51
   },
   {
-    "id": 230,
-    "name": "No Rival - Egzod",
-    "url": "https://audio.jukehost.co.uk/01a08632-65cb-7110-b47d-25c0b20b954a",
-    "public": true,
-    "lyricsCount": 59
-  },
-  {
     "id": 236,
     "name": "Living Life In The Night",
     "url": "https://audio.jukehost.co.uk/01a08622-eeee-72b5-8e3a-d3f75562057d",
@@ -348,5 +341,40 @@
     "url": "https://audio.jukehost.co.uk/01a09a14-188d-716e-b82b-638c968f4703",
     "public": true,
     "lyricsCount": 86
+  },
+  {
+    "id": 246,
+    "name": "UNSECRET & Noeni - Fallout",
+    "url": "https://audio.jukehost.co.uk/01a09a15-f144-73a1-a8d3-5becee64236d",
+    "public": true,
+    "lyricsCount": 62
+  },
+  {
+    "id": 247,
+    "name": "No One Sleep In Tokyo",
+    "url": "https://audio.jukehost.co.uk/01a09a16-9fce-734c-a42e-19f32ff428df",
+    "public": true,
+    "lyricsCount": 71
+  },
+  {
+    "id": 248,
+    "name": "Running In The 90's",
+    "url": "https://audio.jukehost.co.uk/01a09a18-0ddc-71c5-a7df-6fc5806a9a0d",
+    "public": true,
+    "lyricsCount": 68
+  },
+  {
+    "id": 249,
+    "name": "Initial D - Gas Gas Gas",
+    "url": "https://audio.jukehost.co.uk/01a09a19-0cfe-7223-bfd9-f192ff88c592",
+    "public": true,
+    "lyricsCount": 106
+  },
+  {
+    "id": 230,
+    "name": "No Rival - Egzod",
+    "url": "https://audio.jukehost.co.uk/01a08632-65cb-7110-b47d-25c0b20b954a",
+    "public": true,
+    "lyricsCount": 59
   }
 ]
