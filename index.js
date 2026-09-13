@@ -35,6 +35,30 @@ const CATEGORIES = [
   { id: 999, name: "❓-----Not My Songs-----" },
 ];
 
+function normalizeCategoryName(name) {
+  return String(name)
+    .replace(/[^\w\s\-]/g, "")
+    .replace(/\s+/g, " ")
+    .trim()
+    .toLowerCase();
+}
+
+function findCategoryHeaderIndex(songs, categoryName) {
+  let idx = songs.findIndex((s) => s.id === 999 && s.name === categoryName);
+  if (idx !== -1) return idx;
+
+  const targetNorm = normalizeCategoryName(categoryName);
+  idx = songs.findIndex(
+    (s) => s.id === 999 && normalizeCategoryName(s.name) === targetNorm,
+  );
+  if (idx !== -1) return idx;
+
+  for (let i = songs.length - 1; i >= 0; i--) {
+    if (songs[i].id === 999) return i;
+  }
+  return -1;
+}
+
 // DISCORD EMBEDS
 async function sendDiscordAddition(song, categoryName, lyricCount) {
   if (!DISCORD_WEBHOOK_URL) {
@@ -1336,9 +1360,7 @@ app.post("/songs", requireApiKey, async (req, res) => {
     categoryIndex < CATEGORIES.length
   ) {
     categoryName = CATEGORIES[categoryIndex].name;
-    const foundIndex = songs.findIndex(
-      (s) => s.id === 999 && s.name === categoryName,
-    );
+    const foundIndex = findCategoryHeaderIndex(songs, categoryName);
     if (foundIndex !== -1) {
       insertIndex = foundIndex + 1;
     }
@@ -1414,12 +1436,13 @@ app.put("/songs/:id", requireApiKey, async (req, res) => {
       categoryIndex < CATEGORIES.length
     ) {
       const newCategoryName = CATEGORIES[categoryIndex].name;
-      if (newCategoryName !== oldCategoryName) {
+      if (
+        normalizeCategoryName(newCategoryName) !==
+        normalizeCategoryName(oldCategoryName)
+      ) {
         const songToMove = songs.splice(index, 1)[0];
         let insertIndex = songs.length;
-        const foundIndex = songs.findIndex(
-          (s) => s.id === 999 && s.name === newCategoryName,
-        );
+        const foundIndex = findCategoryHeaderIndex(songs, newCategoryName);
         if (foundIndex !== -1) {
           insertIndex = foundIndex + 1;
         }
