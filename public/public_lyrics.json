@@ -14406,5 +14406,1241 @@
       "chat": "I am the champion.",
       "delay": 208123
     }
+  ],
+  "246": [
+    {
+      "chat": "Hush now, dry your eyes",
+      "delay": 19833
+    },
+    {
+      "chat": "Fate is upon us",
+      "delay": 24167
+    },
+    {
+      "chat": "The changing of times",
+      "delay": 26084
+    },
+    {
+      "chat": "Welcome blood red skies",
+      "delay": 27417
+    },
+    {
+      "chat": "Burn in wake of a",
+      "delay": 32751
+    },
+    {
+      "chat": "world left behind",
+      "delay": 35001
+    },
+    {
+      "chat": " DI YA, DA, DA",
+      "delay": 37280
+    },
+    {
+      "chat": "DA DA, DE DI YA",
+      "delay": 39238
+    },
+    {
+      "chat": "DA DA, DE DA",
+      "delay": 40613
+    },
+    {
+      "chat": "DI YA, DA, DA",
+      "delay": 45988
+    },
+    {
+      "chat": "DE, DI YA",
+      "delay": 48155
+    },
+    {
+      "chat": "DA DA",
+      "delay": 49113
+    },
+    {
+      "chat": "DE DI, YA",
+      "delay": 50125
+    },
+    {
+      "chat": "DA, DA, DE, DA",
+      "delay": 51257
+    },
+    {
+      "chat": "Can't escape the fallout",
+      "delay": 53632
+    },
+    {
+      "chat": "Feel the fire rain down",
+      "delay": 58048
+    },
+    {
+      "chat": "See the shadows",
+      "delay": 62382
+    },
+    {
+      "chat": "rising all around",
+      "delay": 63531
+    },
+    {
+      "chat": "Can't escape the FALLOUT,",
+      "delay": 66489
+    },
+    {
+      "chat": "fallout",
+      "delay": 69239
+    },
+    {
+      "chat": "Down to the ashes",
+      "delay": 72114
+    },
+    {
+      "chat": "Bones are left to dry",
+      "delay": 76531
+    },
+    {
+      "chat": "Waves of desolation",
+      "delay": 80781
+    },
+    {
+      "chat": "There's nowhere safe to hide",
+      "delay": 85031
+    },
+    {
+      "chat": "DI YA",
+      "delay": 89971
+    },
+    {
+      "chat": "DA DA DE",
+      "delay": 90762
+    },
+    {
+      "chat": "DI YA.",
+      "delay": 91972
+    },
+    {
+      "chat": "DA DA DE",
+      "delay": 92346
+    },
+    {
+      "chat": "DI YA",
+      "delay": 94160
+    },
+    {
+      "chat": "DA DA DE DA",
+      "delay": 95035
+    },
+    {
+      "chat": "DI YA",
+      "delay": 98539
+    },
+    {
+      "chat": "DA DA DE",
+      "delay": 99372
+    },
+    {
+      "chat": "DI YA",
+      "delay": 100521
+    },
+    {
+      "chat": "DA DA DE",
+      "delay": 101729
+    },
+    {
+      "chat": "DI YA",
+      "delay": 102762
+    },
+    {
+      "chat": "DA DA DE DA",
+      "delay": 103878
+    },
+    {
+      "chat": "Can't escape the fallout",
+      "delay": 105890
+    },
+    {
+      "chat": "Feel the fire rain down",
+      "delay": 110265
+    },
+    {
+      "chat": "See the shadows",
+      "delay": 114557
+    },
+    {
+      "chat": "rising all around",
+      "delay": 115849
+    },
+    {
+      "chat": "Can't escape the fallout,",
+      "delay": 118897
+    },
+    {
+      "chat": "FALLOUT!",
+      "delay": 121814
+    },
+    {
+      "chat": "DI YA",
+      "delay": 142237
+    },
+    {
+      "chat": "DA DA DE",
+      "delay": 143153
+    },
+    {
+      "chat": "DI YA.",
+      "delay": 144528
+    },
+    {
+      "chat": "DA DA DE",
+      "delay": 145362
+    },
+    {
+      "chat": "DI YA",
+      "delay": 146305
+    },
+    {
+      "chat": "DA DA DE DA",
+      "delay": 147347
+    },
+    {
+      "chat": "DI YA",
+      "delay": 150730
+    },
+    {
+      "chat": "DA DA DE",
+      "delay": 151722
+    },
+    {
+      "chat": "DI YA",
+      "delay": 153049
+    },
+    {
+      "chat": "DA DA DE",
+      "delay": 154008
+    },
+    {
+      "chat": "DI YA",
+      "delay": 155133
+    },
+    {
+      "chat": "DA DA DE DA",
+      "delay": 156174
+    },
+    {
+      "chat": "Can't escape the fallout!",
+      "delay": 166921
+    },
+    {
+      "chat": "Feel the fire rain down",
+      "delay": 171296
+    },
+    {
+      "chat": "See the shadows",
+      "delay": 175755
+    },
+    {
+      "chat": "rising all around",
+      "delay": 177058
+    },
+    {
+      "chat": "Can't escape the fallout",
+      "delay": 180183
+    },
+    {
+      "chat": "FALLOUT!",
+      "delay": 182433
+    },
+    {
+      "chat": "Can't escape the fallout,",
+      "delay": 184642
+    },
+    {
+      "chat": "FALLOUT!",
+      "delay": 187267
+    }
+  ],
+  "247": [
+    {
+      "chat": "(4... 3... 2... 1...)",
+      "delay": 666
+    },
+    {
+      "chat": "no one sleep in Tokyo",
+      "delay": 19197
+    },
+    {
+      "chat": "all right crossing the line",
+      "delay": 22301
+    },
+    {
+      "chat": "no one quit the radio",
+      "delay": 25392
+    },
+    {
+      "chat": "Tokyo is on fire",
+      "delay": 28432
+    },
+    {
+      "chat": "even if you say",
+      "delay": 43821
+    },
+    {
+      "chat": "'I have been the world wide'",
+      "delay": 45341
+    },
+    {
+      "chat": "I'll take you where",
+      "delay": 47124
+    },
+    {
+      "chat": "surely you have never been",
+      "delay": 48190
+    },
+    {
+      "chat": "all right in the fight",
+      "delay": 50558
+    },
+    {
+      "chat": "I'm OK... come on",
+      "delay": 52047
+    },
+    {
+      "chat": "come on",
+      "delay": 56005
+    },
+    {
+      "chat": "hey do you feel",
+      "delay": 59374
+    },
+    {
+      "chat": "the night is breathable",
+      "delay": 60688
+    },
+    {
+      "chat": "look at this town",
+      "delay": 62760
+    },
+    {
+      "chat": "which is unbelievable",
+      "delay": 63347
+    },
+    {
+      "chat": "no other places",
+      "delay": 64805
+    },
+    {
+      "chat": "like that in the world",
+      "delay": 66021
+    },
+    {
+      "chat": "worldddd",
+      "delay": 69264
+    },
+    {
+      "chat": "worlddddddddd (1, 2, 3, 4)",
+      "delay": 70144
+    },
+    {
+      "chat": "no one sleep in Tokyo",
+      "delay": 71825
+    },
+    {
+      "chat": "all right crossing the line",
+      "delay": 74843
+    },
+    {
+      "chat": "no one quit the radio",
+      "delay": 78137
+    },
+    {
+      "chat": "Tokyo is on fire",
+      "delay": 81203
+    },
+    {
+      "chat": "no one sleep in Tokyo",
+      "delay": 84393
+    },
+    {
+      "chat": "all right crossing the line",
+      "delay": 87302
+    },
+    {
+      "chat": "no one quit the radio",
+      "delay": 90403
+    },
+    {
+      "chat": "Tokyo is on fire",
+      "delay": 93473
+    },
+    {
+      "chat": "turning to the left",
+      "delay": 108894
+    },
+    {
+      "chat": "easy chicks and red lights",
+      "delay": 110364
+    },
+    {
+      "chat": "and to the right",
+      "delay": 112367
+    },
+    {
+      "chat": "crazy music everywhere",
+      "delay": 113305
+    },
+    {
+      "chat": "all right in the fight",
+      "delay": 115705
+    },
+    {
+      "chat": "I'm OK... come on",
+      "delay": 116855
+    },
+    {
+      "chat": "come on",
+      "delay": 120924
+    },
+    {
+      "chat": "hey do you feel",
+      "delay": 124448
+    },
+    {
+      "chat": "the night is breathable",
+      "delay": 125832
+    },
+    {
+      "chat": "look at this town",
+      "delay": 127767
+    },
+    {
+      "chat": "which is unbelievable",
+      "delay": 128514
+    },
+    {
+      "chat": "no other places",
+      "delay": 130885
+    },
+    {
+      "chat": "like that in the world",
+      "delay": 131984
+    },
+    {
+      "chat": "worldddd",
+      "delay": 134333
+    },
+    {
+      "chat": "worlddddddddd (1, 2, 3, 4)",
+      "delay": 135245
+    },
+    {
+      "chat": "no one sleep in Tokyo",
+      "delay": 136842
+    },
+    {
+      "chat": "all right crossing the line",
+      "delay": 140026
+    },
+    {
+      "chat": "no one quit the radio",
+      "delay": 143077
+    },
+    {
+      "chat": "Tokyo is on fire",
+      "delay": 146286
+    },
+    {
+      "chat": "no one sleep in Tokyo",
+      "delay": 149266
+    },
+    {
+      "chat": "all right crossing the line",
+      "delay": 152487
+    },
+    {
+      "chat": "no one quit the radio",
+      "delay": 155436
+    },
+    {
+      "chat": "Tokyo is on fire",
+      "delay": 158546
+    },
+    {
+      "chat": "(come on)",
+      "delay": 198369
+    },
+    {
+      "chat": "(1, 2, 3, 4)",
+      "delay": 212566
+    },
+    {
+      "chat": "all right crossing the line",
+      "delay": 217328
+    },
+    {
+      "chat": "Tokyo is on fire",
+      "delay": 223658
+    },
+    {
+      "chat": "hey do you feel",
+      "delay": 239082
+    },
+    {
+      "chat": "the night is breathable",
+      "delay": 240318
+    },
+    {
+      "chat": "look at this town",
+      "delay": 242486
+    },
+    {
+      "chat": "which is unbelievable",
+      "delay": 243515
+    },
+    {
+      "chat": "no other places",
+      "delay": 245525
+    },
+    {
+      "chat": "like that in the world",
+      "delay": 246600
+    },
+    {
+      "chat": "worldddd",
+      "delay": 248992
+    },
+    {
+      "chat": "worlddddddddd (1, 2, 3, 4)",
+      "delay": 249680
+    },
+    {
+      "chat": "no one sleep in Tokyo",
+      "delay": 251454
+    },
+    {
+      "chat": "all right crossing the line",
+      "delay": 254568
+    },
+    {
+      "chat": "no one quit the radio",
+      "delay": 257616
+    },
+    {
+      "chat": "Tokyo is on fire",
+      "delay": 260747
+    },
+    {
+      "chat": "no one sleep in Tokyo",
+      "delay": 263779
+    },
+    {
+      "chat": "all right crossing the line",
+      "delay": 266950
+    },
+    {
+      "chat": "no one quit the radio",
+      "delay": 270051
+    },
+    {
+      "chat": "Tokyo is on fire",
+      "delay": 273070
+    }
+  ],
+  "248": [
+    {
+      "chat": "Modern talking",
+      "delay": 37412
+    },
+    {
+      "chat": "modern walking in the streets",
+      "delay": 38991
+    },
+    {
+      "chat": "New desire",
+      "delay": 41601
+    },
+    {
+      "chat": "Take me higher",
+      "delay": 43481
+    },
+    {
+      "chat": "lift me higher with your speed",
+      "delay": 45089
+    },
+    {
+      "chat": "I need fire",
+      "delay": 47729
+    },
+    {
+      "chat": "Get the satellite",
+      "delay": 49220
+    },
+    {
+      "chat": "if you want to see me",
+      "delay": 50892
+    },
+    {
+      "chat": "Talking on the net",
+      "delay": 52225
+    },
+    {
+      "chat": "I know the way you like it",
+      "delay": 53699
+    },
+    {
+      "chat": "Get your credit card",
+      "delay": 55329
+    },
+    {
+      "chat": "'cause I need no money",
+      "delay": 56862
+    },
+    {
+      "chat": "All I wanna get is you",
+      "delay": 58339
+    },
+    {
+      "chat": "baby",
+      "delay": 60480
+    },
+    {
+      "chat": "Running in the 90's",
+      "delay": 61344
+    },
+    {
+      "chat": "is a new way I like to be",
+      "delay": 63976
+    },
+    {
+      "chat": "I'm just running in the 90's",
+      "delay": 66664
+    },
+    {
+      "chat": "Come on baby, run to me",
+      "delay": 70141
+    },
+    {
+      "chat": "We are running in the 90's",
+      "delay": 72800
+    },
+    {
+      "chat": "it's a new way to set me free",
+      "delay": 76141
+    },
+    {
+      "chat": "I'm just running in the 90's",
+      "delay": 78722
+    },
+    {
+      "chat": "Yes, I wanna know",
+      "delay": 82242
+    },
+    {
+      "chat": "yes, I wanna see",
+      "delay": 83850
+    },
+    {
+      "chat": "Cyber talking",
+      "delay": 97880
+    },
+    {
+      "chat": "cybersex is on the line",
+      "delay": 99613
+    },
+    {
+      "chat": "New desire",
+      "delay": 102184
+    },
+    {
+      "chat": "Take me higher",
+      "delay": 104150
+    },
+    {
+      "chat": "boost me higher with your mind",
+      "delay": 105691
+    },
+    {
+      "chat": "Set me on fire",
+      "delay": 108203
+    },
+    {
+      "chat": "Get the satellite",
+      "delay": 109645
+    },
+    {
+      "chat": "if you want to see me",
+      "delay": 111347
+    },
+    {
+      "chat": "Talking on the net",
+      "delay": 112769
+    },
+    {
+      "chat": "I know the way you like it",
+      "delay": 114379
+    },
+    {
+      "chat": "Get your credit card",
+      "delay": 115896
+    },
+    {
+      "chat": "'cause I need no money",
+      "delay": 117307
+    },
+    {
+      "chat": "All I wanna get is you",
+      "delay": 118617
+    },
+    {
+      "chat": "baby",
+      "delay": 121097
+    },
+    {
+      "chat": "Running in the 90's",
+      "delay": 121814
+    },
+    {
+      "chat": "is a new way I like to be",
+      "delay": 124582
+    },
+    {
+      "chat": "I'm just running in the 90's",
+      "delay": 127196
+    },
+    {
+      "chat": "Come on baby, run to me",
+      "delay": 130595
+    },
+    {
+      "chat": "We are running in the 90's",
+      "delay": 133233
+    },
+    {
+      "chat": "it's a new way to set me free",
+      "delay": 136673
+    },
+    {
+      "chat": "I'm just running in the 90's",
+      "delay": 139225
+    },
+    {
+      "chat": "Yes, I wanna know",
+      "delay": 142868
+    },
+    {
+      "chat": "yes, I wanna see",
+      "delay": 144325
+    },
+    {
+      "chat": "New desire",
+      "delay": 162690
+    },
+    {
+      "chat": "I need fire",
+      "delay": 168845
+    },
+    {
+      "chat": "Running in the 90's",
+      "delay": 182496
+    },
+    {
+      "chat": "is a new way I like to be",
+      "delay": 185165
+    },
+    {
+      "chat": "I'm just running in the 90's",
+      "delay": 187744
+    },
+    {
+      "chat": "Come on, baby, run to me",
+      "delay": 191424
+    },
+    {
+      "chat": "We are running in the 90's",
+      "delay": 193885
+    },
+    {
+      "chat": "it's a new way to set me free",
+      "delay": 197333
+    },
+    {
+      "chat": "I'm just running in the 90's",
+      "delay": 199971
+    },
+    {
+      "chat": "Yes, I wanna know",
+      "delay": 203451
+    },
+    {
+      "chat": "yes, I wanna see",
+      "delay": 204949
+    },
+    {
+      "chat": "Take me higher",
+      "delay": 225179
+    },
+    {
+      "chat": "lift me higher with your speed",
+      "delay": 226699
+    },
+    {
+      "chat": "I need fire",
+      "delay": 229356
+    },
+    {
+      "chat": "Get the satellite",
+      "delay": 230937
+    },
+    {
+      "chat": "talking on the net",
+      "delay": 233983
+    },
+    {
+      "chat": "Get your credit card",
+      "delay": 236922
+    },
+    {
+      "chat": "all I wanna get",
+      "delay": 240004
+    },
+    {
+      "chat": "Running in the 90's",
+      "delay": 242899
+    },
+    {
+      "chat": "Running in the 90's",
+      "delay": 248968
+    },
+    {
+      "chat": "Running in the 90's",
+      "delay": 255200
+    },
+    {
+      "chat": "Running in the 90's",
+      "delay": 261190
+    }
+  ],
+  "249": [
+    {
+      "chat": "Ah",
+      "delay": 16852
+    },
+    {
+      "chat": "gas, gas, gas, gas",
+      "delay": 20009
+    },
+    {
+      "chat": "Ah",
+      "delay": 23124
+    },
+    {
+      "chat": "Do you like..",
+      "delay": 28271
+    },
+    {
+      "chat": "my car",
+      "delay": 29853
+    },
+    {
+      "chat": "m y c a r",
+      "delay": 31468
+    },
+    {
+      "chat": "m  y  c  a  r",
+      "delay": 33132
+    },
+    {
+      "chat": "Guess you're ready",
+      "delay": 53109
+    },
+    {
+      "chat": "'cause I'm waiting for you",
+      "delay": 54291
+    },
+    {
+      "chat": "It's gonna be so exciting",
+      "delay": 56129
+    },
+    {
+      "chat": "Got this feeling",
+      "delay": 59290
+    },
+    {
+      "chat": "really deep in my soul",
+      "delay": 60499
+    },
+    {
+      "chat": "Let's get out",
+      "delay": 62281
+    },
+    {
+      "chat": "I wanna go",
+      "delay": 63135
+    },
+    {
+      "chat": "come along",
+      "delay": 64048
+    },
+    {
+      "chat": "get it on",
+      "delay": 64855
+    },
+    {
+      "chat": "Gonna take my car",
+      "delay": 65993
+    },
+    {
+      "chat": "gonna sit in",
+      "delay": 67562
+    },
+    {
+      "chat": "Gonna drive along",
+      "delay": 69035
+    },
+    {
+      "chat": "'til I get you",
+      "delay": 70474
+    },
+    {
+      "chat": "'Cause I'm crazy",
+      "delay": 71823
+    },
+    {
+      "chat": "hot and ready",
+      "delay": 72562
+    },
+    {
+      "chat": "but you like it",
+      "delay": 73541
+    },
+    {
+      "chat": "I wanna race for you",
+      "delay": 75010
+    },
+    {
+      "chat": "(Shall I go now?)",
+      "delay": 76610
+    },
+    {
+      "chat": "Gas, gas, gas",
+      "delay": 78109
+    },
+    {
+      "chat": "I'm gonna step on the gas",
+      "delay": 79810
+    },
+    {
+      "chat": "Tonight, I'll fly",
+      "delay": 81642
+    },
+    {
+      "chat": "(and be your lover)",
+      "delay": 82962
+    },
+    {
+      "chat": "Yeah, yeah, yeah",
+      "delay": 84370
+    },
+    {
+      "chat": "I'll be so quick as a flash",
+      "delay": 86101
+    },
+    {
+      "chat": "And I'll be your hero",
+      "delay": 87884
+    },
+    {
+      "chat": "Gas, gas, gas",
+      "delay": 90651
+    },
+    {
+      "chat": "I'm gonna run as a flash",
+      "delay": 92379
+    },
+    {
+      "chat": "Tonight, I'll fight",
+      "delay": 94059
+    },
+    {
+      "chat": "(to be the winner)",
+      "delay": 95507
+    },
+    {
+      "chat": "Yeah, yeah, yeah",
+      "delay": 96707
+    },
+    {
+      "chat": "I'm gonna step on the gas",
+      "delay": 98547
+    },
+    {
+      "chat": "And you'll see the big show",
+      "delay": 100286
+    },
+    {
+      "chat": "Don't be lazy",
+      "delay": 115520
+    },
+    {
+      "chat": "'cause I'm burning for you",
+      "delay": 116751
+    },
+    {
+      "chat": "It's like a hot sensation",
+      "delay": 118340
+    },
+    {
+      "chat": "Got this power",
+      "delay": 121733
+    },
+    {
+      "chat": "that is taking me out",
+      "delay": 122913
+    },
+    {
+      "chat": "Yes, I've got a crush on you",
+      "delay": 124681
+    },
+    {
+      "chat": "ready, now",
+      "delay": 126347
+    },
+    {
+      "chat": "ready, go",
+      "delay": 127174
+    },
+    {
+      "chat": "Gonna take my car",
+      "delay": 128335
+    },
+    {
+      "chat": "gonna sit in",
+      "delay": 129935
+    },
+    {
+      "chat": "Gonna drive alone",
+      "delay": 131481
+    },
+    {
+      "chat": "'til I get you",
+      "delay": 132775
+    },
+    {
+      "chat": "'Cause I'm crazy",
+      "delay": 134244
+    },
+    {
+      "chat": "hot and ready",
+      "delay": 134975
+    },
+    {
+      "chat": "but you like it",
+      "delay": 135999
+    },
+    {
+      "chat": "I wanna race for you",
+      "delay": 137279
+    },
+    {
+      "chat": "(Shall I go now?)",
+      "delay": 138938
+    },
+    {
+      "chat": "Gas, gas, gas",
+      "delay": 140455
+    },
+    {
+      "chat": "I'm gonna step on the gas",
+      "delay": 142178
+    },
+    {
+      "chat": "Tonight, I'll fly",
+      "delay": 143999
+    },
+    {
+      "chat": "(and be your lover)",
+      "delay": 145311
+    },
+    {
+      "chat": "Yeah, yeah, yeah",
+      "delay": 146738
+    },
+    {
+      "chat": "I'll be so quick as a flash",
+      "delay": 148512
+    },
+    {
+      "chat": "And I'll be your hero",
+      "delay": 149975
+    },
+    {
+      "chat": "Gas, gas, gas",
+      "delay": 152978
+    },
+    {
+      "chat": "I'm gonna run as a flash",
+      "delay": 154668
+    },
+    {
+      "chat": "Tonight, I'll fight",
+      "delay": 156447
+    },
+    {
+      "chat": "(to be the winner)",
+      "delay": 157809
+    },
+    {
+      "chat": "Yeah, yeah, yeah",
+      "delay": 159081
+    },
+    {
+      "chat": "I'm gonna step on the gas",
+      "delay": 160931
+    },
+    {
+      "chat": "And you'll see the big show",
+      "delay": 162463
+    },
+    {
+      "chat": "Guess you're ready",
+      "delay": 190277
+    },
+    {
+      "chat": "'cause I'm waiting for you",
+      "delay": 191426
+    },
+    {
+      "chat": "It's gonna be so exciting",
+      "delay": 193215
+    },
+    {
+      "chat": "Got this feeling",
+      "delay": 196471
+    },
+    {
+      "chat": "really deep in my soul",
+      "delay": 197789
+    },
+    {
+      "chat": "Let's get out",
+      "delay": 199408
+    },
+    {
+      "chat": "I wanna go",
+      "delay": 200224
+    },
+    {
+      "chat": "come along",
+      "delay": 201197
+    },
+    {
+      "chat": "get it on",
+      "delay": 202034
+    },
+    {
+      "chat": "Gonna take my car",
+      "delay": 203234
+    },
+    {
+      "chat": "do you like",
+      "delay": 205986
+    },
+    {
+      "chat": "my car?",
+      "delay": 207605
+    },
+    {
+      "chat": "'Cause I'm crazy",
+      "delay": 209005
+    },
+    {
+      "chat": "hot and ready",
+      "delay": 209685
+    },
+    {
+      "chat": "but you like it",
+      "delay": 210823
+    },
+    {
+      "chat": "I wanna race for you",
+      "delay": 212133
+    },
+    {
+      "chat": "(Shall I go now?)",
+      "delay": 213653
+    },
+    {
+      "chat": "Gas, gas, gas",
+      "delay": 216813
+    },
+    {
+      "chat": "I'm gonna step on the gas",
+      "delay": 218514
+    },
+    {
+      "chat": "Tonight, I'll fly",
+      "delay": 220185
+    },
+    {
+      "chat": "(and be your lover)",
+      "delay": 221665
+    },
+    {
+      "chat": "Yeah, yeah, yeah",
+      "delay": 223046
+    },
+    {
+      "chat": "I'll be so quick as a flash",
+      "delay": 224756
+    },
+    {
+      "chat": "And I'll be your hero",
+      "delay": 226354
+    },
+    {
+      "chat": "Gas, gas, gas",
+      "delay": 229245
+    },
+    {
+      "chat": "I'm gonna run as a flash",
+      "delay": 231130
+    },
+    {
+      "chat": "Tonight, I'll fight",
+      "delay": 232840
+    },
+    {
+      "chat": "(to be the winner)",
+      "delay": 234090
+    },
+    {
+      "chat": "Yeah, yeah, yeah",
+      "delay": 235448
+    },
+    {
+      "chat": "I'm gonna step on the gas",
+      "delay": 237389
+    },
+    {
+      "chat": "And you'll see the big show",
+      "delay": 238866
+    },
+    {
+      "chat": "Gas, gas, gas",
+      "delay": 241797
+    },
+    {
+      "chat": "Yeah, yeah, yeah",
+      "delay": 244805
+    },
+    {
+      "chat": "Gas, gas, gas",
+      "delay": 247975
+    },
+    {
+      "chat": "And you'll see the big show",
+      "delay": 251293
+    },
+    {
+      "chat": "Ah",
+      "delay": 268089
+    }
   ]
 }
