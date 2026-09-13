@@ -10722,7 +10722,7 @@
     },
     {
       "chat": "Can't stop me now",
-      "delay": 33260
+      "delay": 33026
     },
     {
       "chat": "I got no rival",
@@ -10754,7 +10754,7 @@
     },
     {
       "chat": "I'll be standing on my own",
-      "delay": 49787
+      "delay": 49078
     },
     {
       "chat": "Never gonna take my thrown",
@@ -10778,146 +10778,146 @@
     },
     {
       "chat": "No rival",
-      "delay": 62270
+      "delay": 60227
     },
     {
-      "chat": "no rival",
+      "chat": "No rival",
       "delay": 71329
     },
     {
       "chat": "No Rival",
-      "delay": 87295
+      "delay": 77295
     },
     {
       "chat": "Tell them now what you gon' do",
-      "delay": 94694
+      "delay": 84694
     },
     {
       "chat": "We can do this face-to-face",
-      "delay": 97265
+      "delay": 87265
     },
     {
       "chat": "Reckoning is coming real soon",
-      "delay": 100316
+      "delay": 90316
     },
     {
       "chat": "Doesn't matter what you say",
-      "delay": 103254
+      "delay": 93254
     },
     {
       "chat": "Tryna tell you",
-      "delay": 106175
+      "delay": 96175
     },
     {
       "chat": "listen to the moment",
-      "delay": 107203
+      "delay": 97203
     },
     {
       "chat": "Can't take mine 'cause I own it",
-      "delay": 108512
+      "delay": 98512
     },
     {
       "chat": "Don't you know that",
-      "delay": 112714
+      "delay": 102714
     },
     {
       "chat": "I'm locked and I'm loaded?",
-      "delay": 113869
+      "delay": 103869
     },
     {
       "chat": "You're out of focus",
-      "delay": 115389
+      "delay": 105389
     },
     {
       "chat": "Oh-oh-oh-oh-oh-oh-oh",
-      "delay": 118202
+      "delay": 108202
     },
     {
       "chat": "Get ready for the fallout",
-      "delay": 12161
+      "delay": 111061
     },
     {
       "chat": "Oh-oh-oh-oh-oh-oh-oh",
-      "delay": 124362
+      "delay": 114362
     },
     {
       "chat": "Can't stop me now",
-      "delay": 126885
+      "delay": 116885
     },
     {
       "chat": "I got no rival",
-      "delay": 129205
+      "delay": 119205
     },
     {
       "chat": "I'ma find my way",
-      "delay": 133830
+      "delay": 121383
     },
     {
       "chat": "Through the blood and pain",
-      "delay": 137220
+      "delay": 123722
     },
     {
       "chat": "Game of survival",
-      "delay": 142420
+      "delay": 125242
     },
     {
       "chat": "Any time or place",
-      "delay": 144610
+      "delay": 127461
     },
     {
       "chat": "Watch 'em run away",
-      "delay": 146310
+      "delay": 129631
     },
     {
       "chat": "I got no-",
-      "delay": 141210
+      "delay": 131210
     },
     {
       "chat": "I'll be standing on my own",
-      "delay": 142959
+      "delay": 132959
     },
     {
       "chat": "Never gonna take my throne",
-      "delay": 145221
+      "delay": 135221
     },
     {
       "chat": "I got no rival",
-      "delay": 147141
+      "delay": 137141
     },
     {
       "chat": "Watch 'em run away",
-      "delay": 149351
+      "delay": 139351
     },
     {
       "chat": "I got no, no, no",
-      "delay": 151221
+      "delay": 141221
     },
     {
       "chat": "I got no, no, no rival",
-      "delay": 152770
-    },
-    {
-      "chat": "no Rival",
-      "delay": 154149
+      "delay": 142770
     },
     {
       "chat": "No rival",
-      "delay": 169116
+      "delay": 144149
+    },
+    {
+      "chat": "No rival",
+      "delay": 149116
     },
     {
       "chat": "I got no, no, no",
-      "delay": 163194
+      "delay": 153194
     },
     {
       "chat": "I got no, no, no rival",
-      "delay": 164695
+      "delay": 154695
     },
     {
       "chat": "No rival",
-      "delay": 171239
+      "delay": 161239
     },
     {
-      "chat": "no Rival",
+      "chat": "No rival",
       "delay": 179204
     }
   ],
@@ -15641,6 +15641,104 @@
     {
       "chat": "Ah",
       "delay": 268089
+    }
+  ],
+  "250": [
+    {
+      "chat": "Left me alone in the darkness",
+      "delay": 14500
+    },
+    {
+      "chat": "Leave me okay",
+      "delay": 17000
+    },
+    {
+      "chat": "Holding you show now",
+      "delay": 20000
+    },
+    {
+      "chat": "You're heartless",
+      "delay": 21000
+    },
+    {
+      "chat": "Left me alone in the darkness",
+      "delay": 36500
+    },
+    {
+      "chat": "Leave me okay",
+      "delay": 39250
+    },
+    {
+      "chat": "Left me alone in the darkness",
+      "delay": 42250
+    },
+    {
+      "chat": "Leave me okay",
+      "delay": 45000
+    },
+    {
+      "chat": "Holding you show now",
+      "delay": 64500
+    },
+    {
+      "chat": "You're heartless",
+      "delay": 65250
+    },
+    {
+      "chat": "Left me alone in the darkness",
+      "delay": 67250
+    },
+    {
+      "chat": "Leave me okay",
+      "delay": 84000
+    },
+    {
+      "chat": "Leave me okay",
+      "delay": 89500
+    },
+    {
+      "chat": "Left me alone in the darkness",
+      "delay": 103250
+    },
+    {
+      "chat": "Leave me okay",
+      "delay": 106250
+    },
+    {
+      "chat": "Holding you show now",
+      "delay": 109000
+    },
+    {
+      "chat": "You're heartless",
+      "delay": 110000
+    },
+    {
+      "chat": "BASSLINE GONNA MAKE MY SHOTS",
+      "delay": 113000
+    },
+    {
+      "chat": "Holding you show now",
+      "delay": 131500
+    },
+    {
+      "chat": "You're heartless",
+      "delay": 132500
+    },
+    {
+      "chat": "Left me alone in the darkness",
+      "delay": 137000
+    },
+    {
+      "chat": "Leave me okay",
+      "delay": 144000
+    },
+    {
+      "chat": "Left me alone in the darkness",
+      "delay": 148000
+    },
+    {
+      "chat": "Leave me okay",
+      "delay": 155000
     }
   ]
 }
