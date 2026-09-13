@@ -315,6 +315,25 @@ app.use((req, res, next) => {
   next();
 });
 
+app.get("/file-sizes", requireApiKey, (req, res) => {
+  const sizes = {};
+  const files = [
+    "songs.json",
+    "lyrics.json",
+    "public_songs.json",
+    "public_lyrics.json",
+  ];
+  for (const f of files) {
+    try {
+      const stat = fs.statSync(`./${f}`);
+      sizes[f] = `${(stat.size / 1024).toFixed(2)} KB`;
+    } catch (e) {
+      sizes[f] = "not found";
+    }
+  }
+  res.json(sizes);
+});
+
 app.post("/auth", (req, res) => {
   const { apiKey } = req.body;
   if (apiKey !== API_KEY) {
@@ -1582,77 +1601,121 @@ app.post("/sync-github", requireApiKey, async (req, res) => {
   }
 
   async function updateFile(path, content, retries = 2) {
-    const url = `https://api.github.com/repos/${GITHUB_REPO}/contents/${path}`;
-    const base64Content = Buffer.from(
-      JSON.stringify(content, null, 2),
-      "utf8",
-    ).toString("base64");
-    let sha = null;
-    try {
-      const getRes = await fetch(url, {
-        headers: {
-          Authorization: `token ${GITHUB_TOKEN}`,
-          Accept: "application/vnd.github.v3+json",
-        },
-      });
-      if (getRes.ok) {
-        const data = await getRes.json();
-        sha = data.sha;
-      }
-    } catch (e) {
-      /* file doesn't exist */
-    }
-
-    const body = {
-      message: `Update ${path}`,
-      content: base64Content,
-      branch: GITHUB_BRANCH || "main",
+    const apiBase = `https://api.github.com/repos/${GITHUB_REPO}`;
+    const headers = {
+      Authorization: `token ${GITHUB_TOKEN}`,
+      Accept: "application/vnd.github.v3+json",
+      "Content-Type": "application/json",
     };
-    if (sha) body.sha = sha;
 
-    let putRes = await fetch(url, {
-      method: "PUT",
-      headers: {
-        Authorization: `token ${GITHUB_TOKEN}`,
-        Accept: "application/vnd.github.v3+json",
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(body),
+    const blobRes = await fetch(`${apiBase}/git/blobs`, {
+      method: "POST",
+      headers,
+      body: JSON.stringify({
+        content: JSON.stringify(content, null, 2),
+        encoding: "utf-8",
+      }),
     });
 
-    if (putRes.status === 409 && retries > 0) {
-      console.log(`Conflict on ${path}, retrying...`);
-      const getRes = await fetch(url, {
-        headers: {
-          Authorization: `token ${GITHUB_TOKEN}`,
-          Accept: "application/vnd.github.v3+json",
-        },
-      });
-      if (getRes.ok) {
-        const data = await getRes.json();
-        body.sha = data.sha;
-        putRes = await fetch(url, {
-          method: "PUT",
-          headers: {
-            Authorization: `token ${GITHUB_TOKEN}`,
-            Accept: "application/vnd.github.v3+json",
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(body),
-        });
-      }
-      if (putRes.status === 409) {
-        return updateFile(path, content, retries - 1);
-      }
-    }
-
-    if (!putRes.ok) {
-      const errText = await putRes.text();
+    if (!blobRes.ok) {
+      const errText = await blobRes.text();
       throw new Error(
-        `GitHub API error for ${path}: ${putRes.status} ${errText}`,
+        `GitHub Blob error (${path}): ${blobRes.status} ${errText}`,
       );
     }
-    return putRes.json();
+    const blob = await blobRes.json();
+
+    const branch = GITHUB_BRANCH || "main";
+    const refRes = await fetch(`${apiBase}/git/ref/heads/${branch}`, {
+      headers,
+    });
+    if (!refRes.ok) {
+      const errText = await refRes.text();
+      throw new Error(
+        `GitHub Ref error (${path}): ${refRes.status} ${errText}`,
+      );
+    }
+    const ref = await refRes.json();
+    const latestCommitSha = ref.object.sha;
+
+    const commitRes = await fetch(`${apiBase}/git/commits/${latestCommitSha}`, {
+      headers,
+    });
+    if (!commitRes.ok) {
+      const errText = await commitRes.text();
+      throw new Error(
+        `GitHub Commit error (${path}): ${commitRes.status} ${errText}`,
+      );
+    }
+    const latestCommit = await commitRes.json();
+    const baseTreeSha = latestCommit.tree.sha;
+
+    const pathParts = path.split("/");
+    let treePayload;
+    if (pathParts.length === 1) {
+      treePayload = [
+        { path: pathParts[0], mode: "100644", type: "blob", sha: blob.sha },
+      ];
+    } else {
+      treePayload = [{ path, mode: "100644", type: "blob", sha: blob.sha }];
+    }
+
+    const treeRes = await fetch(`${apiBase}/git/trees`, {
+      method: "POST",
+      headers,
+      body: JSON.stringify({
+        base_tree: baseTreeSha,
+        tree: treePayload,
+      }),
+    });
+
+    if (!treeRes.ok) {
+      const errText = await treeRes.text();
+      throw new Error(
+        `GitHub Tree error (${path}): ${treeRes.status} ${errText}`,
+      );
+    }
+    const newTree = await treeRes.json();
+
+    const newCommitRes = await fetch(`${apiBase}/git/commits`, {
+      method: "POST",
+      headers,
+      body: JSON.stringify({
+        message: `Update ${path}`,
+        tree: newTree.sha,
+        parents: [latestCommitSha],
+      }),
+    });
+
+    if (!newCommitRes.ok) {
+      const errText = await newCommitRes.text();
+      throw new Error(
+        `GitHub Commit create error (${path}): ${newCommitRes.status} ${errText}`,
+      );
+    }
+    const newCommit = await newCommitRes.json();
+
+    const updateRefRes = await fetch(`${apiBase}/git/refs/heads/${branch}`, {
+      method: "PATCH",
+      headers,
+      body: JSON.stringify({
+        sha: newCommit.sha,
+        force: false,
+      }),
+    });
+
+    if (!updateRefRes.ok) {
+      const errText = await updateRefRes.text();
+      if (updateRefRes.status === 409 && retries > 0) {
+        console.log(`Conflict on ${path}, retrying...`);
+        return updateFile(path, content, retries - 1);
+      }
+      throw new Error(
+        `GitHub Ref update error (${path}): ${updateRefRes.status} ${errText}`,
+      );
+    }
+
+    return updateRefRes.json();
   }
 
   try {
@@ -1666,6 +1729,12 @@ app.post("/sync-github", requireApiKey, async (req, res) => {
       publicLyrics = JSON.parse(fs.readFileSync(PUBLIC_LYRICS_FILE, "utf8"));
     }
 
+    console.log(
+      `songs.json size: ${(JSON.stringify(songs).length / 1024).toFixed(2)} KB`,
+    );
+    console.log(
+      `lyrics.json size: ${(JSON.stringify(lyrics).length / 1024).toFixed(2)} KB`,
+    );
     await updateFile("songs.json", songs);
     await updateFile("lyrics.json", lyrics);
     await updateFile("public/public_songs.json", publicSongs);
