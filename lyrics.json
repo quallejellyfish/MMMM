@@ -23851,12 +23851,20 @@
       "delay": 1050
     },
     {
-      "chat": "Nani ga seikai ka wakaranai nda",
+      "chat": "Nani ga seikai ka",
       "delay": 3480
     },
     {
-      "chat": "Donna kukyou mo idonde byou de endo",
+      "chat": "wakaranai nda",
+      "delay": 4980
+    },
+    {
+      "chat": "Donna kukyou mo idonde",
       "delay": 6110
+    },
+    {
+      "chat": "byou de endo",
+      "delay": 7842
     },
     {
       "chat": "Tsumaranai mama",
@@ -23871,8 +23879,12 @@
       "delay": 11150
     },
     {
-      "chat": "Kakomareteru hou ga shiawase janka",
+      "chat": "Kakomareteru hou ga",
       "delay": 13050
+    },
+    {
+      "chat": "shiawase janka",
+      "delay": 14786
     },
     {
       "chat": "Konna kugyou wa nozondenai yo",
@@ -23880,7 +23892,7 @@
     },
     {
       "chat": "Tada tsumaranai mama",
-      "delay": 16000
+      "delay": 17773
     },
     {
       "chat": "'Cause I'm PERFECT Yeah",
@@ -23899,11 +23911,19 @@
       "delay": 41840
     },
     {
-      "chat": "Tada hitasura shumi o kiwametetai",
+      "chat": "Tada hitasura shumi",
       "delay": 43780
     },
     {
-      "chat": "Dakeredo hito wa hito wa kitai shiteru",
+      "chat": "o kiwametetai",
+      "delay": 45073
+    },
+    {
+      "chat": "Dakeredo hito wa hito",
+      "delay": 46380
+    },
+    {
+      "chat": "wa kitai shiteru",
       "delay": 46380
     },
     {
@@ -23923,8 +23943,12 @@
       "delay": 58640
     },
     {
-      "chat": "Donna kukyou mo idonde byou de endo",
+      "chat": "Donna kukyou mo idonde",
       "delay": 61060
+    },
+    {
+      "chat": "byou de endo",
+      "delay": 62336
     },
     {
       "chat": "Tsumaranai mama",
@@ -23939,8 +23963,12 @@
       "delay": 66320
     },
     {
-      "chat": "Kakomareteru hou ga shiawase janka",
+      "chat": "Kakomareteru hou ga",
       "delay": 67780
+    },
+    {
+      "chat": "shiawase janka",
+      "delay": 69719
     },
     {
       "chat": "Konna kugyou wa nozondenai yo",
@@ -23983,8 +24011,12 @@
       "delay": 98890
     },
     {
-      "chat": "Donna kukyou mo idonde byou de endo",
+      "chat": "Donna kukyou mo idonde",
       "delay": 101340
+    },
+    {
+      "chat": "byou de endo",
+      "delay": 103291
     },
     {
       "chat": "Tsumaranai mama",
@@ -23999,8 +24031,12 @@
       "delay": 106860
     },
     {
-      "chat": "Kakomareteru hou ga shiawase janka",
+      "chat": "Kakomareteru hou ga",
       "delay": 108900
+    },
+    {
+      "chat": "shiawase janka",
+      "delay": 110202
     },
     {
       "chat": "Konna kugyou wa nozondenai yo",
@@ -24023,12 +24059,20 @@
       "delay": 117840
     },
     {
-      "chat": "Mou sukoshi dake tsudukun ja zanki",
+      "chat": "Mou sukoshi dake",
       "delay": 118980
     },
     {
-      "chat": "Nihiru yamete choujin mo yamete sa",
+      "chat": "tsudukun ja zanki",
+      "delay": 120118
+    },
+    {
+      "chat": "Nihiru yamete choujin",
       "delay": 121470
+    },
+    {
+      "chat": "mo yamete sa",
+      "delay": 122909
     },
     {
       "chat": "Yasushiku narou",
