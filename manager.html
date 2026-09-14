@@ -678,13 +678,28 @@
 
           async function onDragEnd(e) {
             if (!isDragging) return;
+
+            const rowToMove = draggedRow;
+            if (!rowToMove) {
+              isDragging = false;
+              draggedRow = null;
+              dragInsertLine = null;
+              if (dragGhost) {
+                document.body.removeChild(dragGhost);
+                dragGhost = null;
+              }
+              return;
+            }
+
             isDragging = false;
             document.removeEventListener("mousemove", onDragMove);
             document.removeEventListener("mouseup", onDragEnd);
+
             if (dragGhost) {
               document.body.removeChild(dragGhost);
               dragGhost = null;
             }
+
             let targetRow = null;
             if (dragInsertLine) {
               const dropTarget = document.elementFromPoint(
@@ -695,10 +710,14 @@
               dragInsertLine.remove();
               dragInsertLine = null;
             }
+
             document
               .querySelectorAll("tr")
               .forEach((tr) => (tr.style.opacity = "1"));
             if (draggedRow) draggedRow.style.opacity = "1";
+
+            draggedRow = null;
+            dragInsertLine = null;
 
             if (targetRow && targetRow !== draggedRow) {
               const fromIndex = parseInt(draggedRow.dataset.index);
