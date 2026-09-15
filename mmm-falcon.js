@@ -795,13 +795,7 @@ if (window._MMM_INITIALIZED) {
         currentAudio.pause();
         currentAudio.src = selectedSongAudio;
         currentAudio.load();
-        currentAudio.addEventListener(
-          "loadedmetadata",
-          () => {
-            currentAudio.currentTime = startAt;
-          },
-          { once: true },
-        );
+        currentAudio.currentTime = startAt;
         currentAudio.loop = false;
         syncStartTime = null;
         countedThisPlay = false;
