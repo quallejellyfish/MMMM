@@ -1833,21 +1833,26 @@ if (window._MMM_INITIALIZED) {
                   break;
                 }
               }
-              scheduleMessages(chatMessages, startIndex);
               console.log(
-                `Scheduled lyrics from index ${startIndex} (time: ${currentMs}ms)`,
+                `[Sync] Scheduling lyrics from index ${startIndex}/${chatMessages.length} at ${currentMs}ms`,
               );
+              scheduleMessages(chatMessages, startIndex);
             };
 
             if (lyricsCache[selectedSongId]) {
+              console.log(`[Sync] Using cached lyrics for ${selectedSongId}`);
               scheduleLyrics(lyricsCache[selectedSongId]);
             } else {
+              console.log(`[Sync] Fetching lyrics for ${selectedSongId}`);
               fetchLyrics(selectedSongId)
                 .then((lyrics) => {
+                  console.log(
+                    `[Sync] Got ${lyrics.length} lyrics lines for ${selectedSongId}`,
+                  );
                   scheduleLyrics(lyrics);
                 })
                 .catch((err) => {
-                  console.error("Failed to fetch lyrics for sync:", err);
+                  console.error("[Sync] Failed to fetch lyrics:", err);
                   chatMessages = [];
                   showNotification("Sync lyrics unavailable", "system");
                 });
@@ -1882,7 +1887,8 @@ if (window._MMM_INITIALIZED) {
           this.value = cleaned;
         }
         if (cleaned.length > 0) {
-          syncName = cleaned || ("fallback usr" + Math.floor(Math.random() * 9999));
+          syncName =
+            cleaned || "fallback usr" + Math.floor(Math.random() * 9999);
           localStorage.setItem("mmm_syncName", syncName);
           if (syncRoom) {
             document.getElementById("syncStatus").textContent =
