@@ -1882,7 +1882,7 @@ if (window._MMM_INITIALIZED) {
           this.value = cleaned;
         }
         if (cleaned.length > 0) {
-          syncName = cleaned;
+          syncName = cleaned || ("fallback usr" + Math.floor(Math.random() * 9999));
           localStorage.setItem("mmm_syncName", syncName);
           if (syncRoom) {
             document.getElementById("syncStatus").textContent =
