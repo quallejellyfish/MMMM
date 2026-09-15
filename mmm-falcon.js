@@ -1344,17 +1344,37 @@ if (window._MMM_INITIALIZED) {
 
     function startHeartbeat(roomCode) {
       if (syncHeartbeatInterval) clearInterval(syncHeartbeatInterval);
-      syncHeartbeatInterval = setInterval(() => {
+      syncHeartbeatInterval = setInterval(async () => {
         if (!syncRoom) {
           clearInterval(syncHeartbeatInterval);
           syncHeartbeatInterval = null;
           return;
         }
-        fetch(`${API_BASE}/sync/heartbeat`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ roomCode: syncRoom, name: syncName }),
-        }).catch((err) => console.warn("Heartbeat failed:", err));
+        try {
+          const res = await fetch(`${API_BASE}/sync/heartbeat`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ roomCode: syncRoom, name: syncName }),
+          });
+          if (res.status === 404) {
+            console.warn("[MMM] Room vanished, rejoining...");
+            const currentRoom = syncRoom;
+            const leader = syncLeader;
+            if (syncEventSource) {
+              syncEventSource.close();
+              syncEventSource = null;
+            }
+            if (syncHeartbeatInterval) {
+              clearInterval(syncHeartbeatInterval);
+              syncHeartbeatInterval = null;
+            }
+            syncRoom = null;
+            showNotification("Room expired — rejoining…", "system");
+            syncJoin(currentRoom, leader);
+          }
+        } catch (err) {
+          console.warn("Heartbeat failed:", err);
+        }
       }, 10000);
     }
 
@@ -1389,15 +1409,20 @@ if (window._MMM_INITIALIZED) {
           clearTimeout(window._mmmReconnectTimer);
         }
 
+        if (syncEventSource) {
+          syncEventSource.close();
+          syncEventSource = null;
+        }
+
+        if (isRejoining || isLeaving) return;
+        if (window._mmmReconnectTimer) clearTimeout(window._mmmReconnectTimer);
         window._mmmReconnectTimer = setTimeout(() => {
           window._mmmReconnectTimer = null;
           if (syncRoom && !isRejoining) {
-            console.log(
-              `Rejoining room ${syncRoom} with leader ${syncLeader || "unknown"}`,
-            );
-            showNotification("Room was deleted, rejoining...", "system");
-
-            syncJoin(syncRoom, syncLeader || null);
+            const room = syncRoom;
+            const leader = syncLeader;
+            syncRoom = null;
+            syncJoin(room, leader || null);
           }
         }, 3000);
       };
@@ -1899,15 +1924,17 @@ if (window._MMM_INITIALIZED) {
       });
     }
 
-    document.getElementById("joinSyncBtn").addEventListener("click", () => {
-      const room = document.getElementById("roomCodeInput").value.trim();
-      if (!room) {
-        alert("Please enter a room code.");
-        return;
-      }
-      if (syncRoom) syncLeave();
-      syncJoin(room);
-    });
+    document
+      .getElementById("joinSyncBtn")
+      .addEventListener("click", async () => {
+        const room = document.getElementById("roomCodeInput").value.trim();
+        if (!room) {
+          alert("Please enter a room code.");
+          return;
+        }
+        if (syncRoom) await syncLeave();
+        syncJoin(room);
+      });
 
     document.getElementById("leaveSyncBtn").addEventListener("click", () => {
       syncLeave();
@@ -2288,13 +2315,22 @@ if (window._MMM_INITIALIZED) {
     }
 
     document.addEventListener("visibilitychange", () => {
+      if (document.visibilityState !== "visible") return;
       if (document.hidden) return;
+      if (!syncRoom) return;
+
       const now = Date.now();
       for (const entry of activeNotifications) {
         if (now - entry.startTime >= entry.duration) {
           hideNotification(entry);
         }
       }
+
+      fetch(`${API_BASE}/sync/heartbeat`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ roomCode: syncRoom, name: syncName }),
+      }).catch(() => {});
     });
 
     const roomInput = document.getElementById("roomCodeInput");
