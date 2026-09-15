@@ -539,6 +539,7 @@ if (window._MMM_INITIALIZED) {
 
     function updateName(selectedLi, songId, songName, songAudio) {
       if (!songAudio) return;
+      if (blockIfFollower("select songs")) return;
 
       selectedSongId = songId;
       selectedSongName = songName;
@@ -737,11 +738,9 @@ if (window._MMM_INITIALIZED) {
     let syncStartTime = null;
 
     async function toggleChatSpamMode() {
+      if (blockIfFollower("play songs")) return;
+
       if (spamModeActive) {
-        if (syncRoom && !syncIsLeader) {
-          showNotification("Only the leader can play songs", "system");
-          return;
-        }
         resetLyricsState();
         schedulingActive = false;
         hideNotification();
@@ -844,6 +843,7 @@ if (window._MMM_INITIALIZED) {
 
     async function playSong(song) {
       if (!song) return;
+      if (blockIfFollower("play songs")) return;
 
       selectedSongId = song.id;
       selectedSongName = song.name;
@@ -968,6 +968,7 @@ if (window._MMM_INITIALIZED) {
     }
 
     function skipSong() {
+      if (blockIfFollower("skip songs")) return;
       schedulingActive = false;
       if (spamModeActive) {
         hideNotification();
@@ -990,6 +991,8 @@ if (window._MMM_INITIALIZED) {
     }
 
     function skipBackSong() {
+      if (blockIfFollower("skip songs")) return;
+
       if (!autoplayMode) {
         console.log("Not in autoplay mode. Press C to start manual play.");
         return;
@@ -1052,10 +1055,7 @@ if (window._MMM_INITIALIZED) {
     }
 
     function startCategoryAutoplay(categoryName) {
-      if (syncRoom && !syncIsLeader) {
-        showNotification("Only the leader can start autoplay", "system");
-        return;
-      }
+      if (blockIfFollower("start autoplay")) return;
 
       if (spamModeActive) {
         currentAudio.pause();
@@ -1095,10 +1095,7 @@ if (window._MMM_INITIALIZED) {
       let pool = [];
       let categoryName = null;
 
-      if (syncRoom && !syncIsLeader) {
-        showNotification("Only the leader can start autoplay", "system");
-        return;
-      }
+      if (blockIfFollower("start autoplay")) return;
 
       if (autoplayMode === "category" && autoPlaySongs.length > 0) {
         pool = autoPlaySongs;
@@ -1203,10 +1200,7 @@ if (window._MMM_INITIALIZED) {
         return;
       }
 
-      if (syncRoom && !syncIsLeader) {
-        showNotification("Only the leader can pause", "system");
-        return;
-      }
+      if (blockIfFollower("start autoplay")) return;
 
       if (currentAudio.paused) {
         // Resume
@@ -1278,6 +1272,18 @@ if (window._MMM_INITIALIZED) {
     let syncLoop = false;
     let syncCurrentTime = 0;
     let duetMode = false;
+
+    function isSyncFollower() {
+      return !!syncRoom && !syncIsLeader;
+    }
+
+    function blockIfFollower(action) {
+      if (isSyncFollower()) {
+        showNotification(`Only the leader can ${action}`, "system");
+        return true;
+      }
+      return false;
+    }
 
     function resetLyricsState() {
       if (window._lyricsInterval) {
@@ -1433,8 +1439,14 @@ if (window._MMM_INITIALIZED) {
       let needUIUpdate = false;
 
       if (msg.leader !== syncLeader) {
+        const wasLeader = syncIsLeader;
         syncLeader = msg.leader;
         syncIsLeader = syncLeader === syncName;
+        if (wasLeader && !syncIsLeader && autoplayMode) {
+          console.log("[Sync] Lost leadership — stopping local autoplay");
+          stopAutoplay();
+        }
+
         showNotification(`Leader changed to "${syncLeader}"`, "system");
         document.getElementById("syncStatus").textContent =
           `Connected (Leader: ${syncLeader})`;
@@ -1990,7 +2002,7 @@ if (window._MMM_INITIALIZED) {
     });
 
     document.getElementById("loopsong").addEventListener("change", function () {
-      if (syncRoom && !syncIsLeader) {
+      if (isSyncFollower()) {
         this.checked = syncLoop;
         showNotification("Only the leader can change loop", "system");
         return;
