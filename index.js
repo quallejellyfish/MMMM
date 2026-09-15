@@ -1054,11 +1054,13 @@ app.get("/sync/events/:roomCode", (req, res) => {
     leader: room.leader,
     members: room.members,
     currentSong: room.currentSong,
+    partnerSongId: room.partnerSongId,
     paused: room.paused || false,
     currentTime: room.currentTime || 0,
     timestamp: room.playTimestamp || Date.now(),
     loop: room.loop || false,
   });
+
   res.write(`data: ${payload}\n\n`);
 
   req.on("close", () => {
