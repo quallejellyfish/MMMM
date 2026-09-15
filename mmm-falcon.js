@@ -168,7 +168,7 @@ if (window._MMM_INITIALIZED) {
                 <button class="autoplay-btn" data-category="💥-----Pulary Songs-----" style="background: #ff79c6; border: none; color: #1e1e2f; padding: 4px 12px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 12px;">💥 Pulary</button>
                 <button class="autoplay-btn" data-category="🌍-----other language Songs-----" style="background: #ff79c6; border: none; color: #1e1e2f; padding: 4px 12px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 12px;">🌍 Other</button>
                 <button class="autoplay-btn" data-category="🦊----- Krimsonthefox Music-----" style="background: #ff79c6; border: none; color: #1e1e2f; padding: 4px 12px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 12px;">🦊 Krimson</button>
-                <button class="autoplay-btn" data-category="-----Not My Songs-----" style="background: #ff79c6; border: none; color: #1e1e2f; padding: 4px 12px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 12px;">❓ Not Mine</button>
+                <button class="autoplay-btn" data-category="❓-----Not My Songs-----" style="background: #ff79c6; border: none; color: #1e1e2f; padding: 4px 12px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 12px;">❓ Not Mine</button>
                 <button class="autoplay-btn" id="randomAutoplayBtn" style="background: #ffb347; border: none; color: #1e1e2f; padding: 4px 12px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 12px;">Random</button>
                 <button class="autoplay-btn" id="stopAutoplayBtn" style="background: #ff5555; border: none; color: white; padding: 4px 12px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 12px;">Stop</button>
                 <button class="autoplay-btn" id="pauseAutoplayBtn" style="background: #3498db; border: none; color: white; padding: 4px 12px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 12px;">Pause</button>
@@ -602,12 +602,22 @@ if (window._MMM_INITIALIZED) {
       }
     });
 
+    function normalizeCategoryName(name) {
+      return String(name)
+        .replace(/[^\w\s\-]/g, "")
+        .replace(/\s+/g, " ")
+        .trim()
+        .toLowerCase();
+    }
+
     function getSongsByCategory(categoryName) {
       const songs = [];
       let inCategory = false;
+      const targetNorm = normalizeCategoryName(categoryName);
+
       for (const song of songsList) {
         if (song.id === 999) {
-          if (song.name === categoryName) {
+          if (normalizeCategoryName(song.name) === targetNorm) {
             inCategory = true;
           } else if (inCategory) {
             break;
@@ -1988,7 +1998,7 @@ if (window._MMM_INITIALIZED) {
       "chatBox",
       "chat-input",
       "nameInput",
-      "username-input",
+      "name-input",
       "allianceInput",
       "alliance-input",
       "mChBox",
