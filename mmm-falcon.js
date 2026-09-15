@@ -790,9 +790,18 @@ if (window._MMM_INITIALIZED) {
           onTimeUpdateHandler = null;
         }
 
+        const startAt = syncStartTime !== null ? syncStartTime : 0;
+        syncStartTime = null;
         currentAudio.pause();
-        currentAudio.currentTime = syncStartTime !== null ? syncStartTime : 0;
         currentAudio.src = selectedSongAudio;
+        currentAudio.load();
+        currentAudio.addEventListener(
+          "loadedmetadata",
+          () => {
+            currentAudio.currentTime = startAt;
+          },
+          { once: true },
+        );
         currentAudio.loop = false;
         syncStartTime = null;
         countedThisPlay = false;
@@ -1564,6 +1573,7 @@ if (window._MMM_INITIALIZED) {
     }
 
     async function syncJoin(roomCode, originalLeader = null) {
+      resetLyricsState();
       if (window._mmmReconnectTimer) {
         clearTimeout(window._mmmReconnectTimer);
         window._mmmReconnectTimer = null;
@@ -2213,6 +2223,7 @@ if (window._MMM_INITIALIZED) {
     window.addEventListener("keydown", keydownHandler, true);
 
     function stopMusic() {
+      syncStartTime = null;
       if (spamModeActive) {
         currentAudio.pause();
         currentAudio.currentTime = 0;
