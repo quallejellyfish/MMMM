@@ -1623,6 +1623,21 @@ if (window._MMM_INITIALIZED) {
           const timestamp = data.timestamp || Date.now();
           playSyncSong(syncCurrentSongId, syncCurrentTime, timestamp);
         }
+        
+        if (
+          syncIsLeader &&
+          spamModeActive &&
+          selectedSongId !== null &&
+          selectedSongId !== undefined &&
+          !isPaused &&
+          data.currentSong !== selectedSongId
+        ) {
+          console.log(
+            `[Sync] Leader restoring server state — server had "${data.currentSong}", ` +
+              `restoring "${selectedSongId}" at ${currentAudio.currentTime.toFixed(1)}s`,
+          );
+          await syncPlay(selectedSongId, currentAudio.currentTime, Date.now());
+        }
       } catch (err) {
         console.error("Sync join error:", err);
         showNotification("Failed to join sync room", "system");
