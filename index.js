@@ -1,11 +1,13 @@
 const express = require("express");
 const fs = require("fs");
 const cors = require("cors");
+const { timeStamp } = require("console");
 const jwt = require("jsonwebtoken");
 const http = require("http");
 const { WebSocketServer } = require("ws");
 const cookieParser = require("cookie-parser");
 const crypto = require("crypto");
+const { resolveSoa } = require("dns");
 const guestKeys = {};
 const guestSSEClients = {};
 const GUEST_KEY_EXPIRY = 5 * 60 * 1000; // 5 minutes
@@ -22,14 +24,6 @@ const API_KEY = process.env.API_KEY;
 const DISCORD_WEBHOOK_URL = process.env.DISCORD_WEBHOOK_URL;
 const JWT_SECRET = process.env.JWT_SECRET;
 const COOKIE_SECRET = process.env.COOKIE_SECRET;
-
-const CROSS_SITE_COOKIE = {
-  httpOnly: true,
-  signed: true,
-  secure: true,
-  sameSite: "none",
-  path: "/",
-};
 
 const CATEGORIES = [
   { id: 999, name: "🇺🇸-----English Songs-----" },
@@ -439,9 +433,10 @@ app.post("/login", express.json(), (req, res) => {
   }
   if (apiKey === API_KEY) {
     res.cookie("auth", "true", {
-      ...CROSS_SITE_COOKIE,
+      httpOnly: true,
       signed: true,
-      maxAge: 3600000,
+      maxAge: 3600000, // 1 hour
+      secure: true,
     });
     return res.json({ success: true });
   } else {
@@ -450,7 +445,7 @@ app.post("/login", express.json(), (req, res) => {
 });
 
 app.get("/logout", (req, res) => {
-  res.clearCookie("auth", CROSS_SITE_COOKIE);
+  res.clearCookie("auth");
   res.redirect("/");
 });
 
@@ -1081,8 +1076,7 @@ app.get("/sync/events/:roomCode", (req, res) => {
 
 app.post("/sync/join", express.json(), (req, res) => {
   const { roomCode, name, originalLeader } = req.body;
-  if (!roomCode || !name)
-    return res.status(400).json({ error: "Missing roomCode or name" });
+  if (!roomCode || !name) return res.status(400).json({ error: "Missing roomCode or name" });
 
   let room = syncRooms.get(roomCode);
   let isNewRoom = false;
