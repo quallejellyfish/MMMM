@@ -436,7 +436,9 @@ app.post("/login", express.json(), (req, res) => {
       httpOnly: true,
       signed: true,
       maxAge: 3600000, // 1 hour
+      sameSite: "none",
       secure: true,
+      partitioned: true,
     });
     return res.json({ success: true });
   } else {
@@ -1076,7 +1078,8 @@ app.get("/sync/events/:roomCode", (req, res) => {
 
 app.post("/sync/join", express.json(), (req, res) => {
   const { roomCode, name, originalLeader } = req.body;
-  if (!roomCode || !name) return res.status(400).json({ error: "Missing roomCode or name" });
+  if (!roomCode || !name)
+    return res.status(400).json({ error: "Missing roomCode or name" });
 
   let room = syncRooms.get(roomCode);
   let isNewRoom = false;
@@ -1111,6 +1114,7 @@ app.post("/sync/join", express.json(), (req, res) => {
     currentSong: room.currentSong,
     paused: room.paused || false,
     currentTime: room.currentTime || 0,
+    timestamp: room.playTimestamp || Date.now(),
     loop: room.loop || false,
     isNewRoom,
   });
