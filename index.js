@@ -28,7 +28,6 @@ const CROSS_SITE_COOKIE = {
   signed: true,
   secure: true,
   sameSite: "none",
-  partitioned: true,
   path: "/",
 };
 
