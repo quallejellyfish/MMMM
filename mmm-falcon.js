@@ -1464,7 +1464,8 @@ if (window._MMM_INITIALIZED) {
         syncCurrentSongId = msg.currentSong;
 
         if (syncCurrentSongId === null) {
-          if (spamModeActive) {
+          const intentionalStop = msg.paused === true;
+          if (intentionalStop && spamModeActive) {
             currentAudio.pause();
             currentAudio.currentTime = 0;
             spamModeActive = false;
@@ -1477,8 +1478,12 @@ if (window._MMM_INITIALIZED) {
             isPaused = false;
             schedulingActive = false;
             hideNotification();
+          } else if (!intentionalStop) {
+            console.log(
+              "[Sync] Room reset (paused=false) — keeping local playback",
+            );
           }
-          syncPaused = false;
+          syncPaused = msg.paused || false;
           syncCurrentTime = 0;
           needUIUpdate = true;
         } else if (!syncIsLeader && syncCurrentSongId !== null) {
@@ -1558,7 +1563,6 @@ if (window._MMM_INITIALIZED) {
     }
 
     async function syncJoin(roomCode, originalLeader = null) {
-      resetLyricsState();
       if (window._mmmReconnectTimer) {
         clearTimeout(window._mmmReconnectTimer);
         window._mmmReconnectTimer = null;
@@ -1857,16 +1861,16 @@ if (window._MMM_INITIALIZED) {
 
             const scheduleLyrics = (lyrics) => {
               chatMessages = lyrics;
-              const currentMs = currentAudio.currentTime * 1000;
+              const intendedMs = adjustedStart * 1000;
               let startIndex = 0;
               for (let j = 0; j < chatMessages.length; j++) {
-                if (chatMessages[j].delay > currentMs) {
+                if (chatMessages[j].delay > intendedMs) {
                   startIndex = j;
                   break;
                 }
               }
               console.log(
-                `[Sync] Scheduling lyrics from index ${startIndex}/${chatMessages.length} at ${currentMs}ms`,
+                `[Sync] Scheduling lyrics from index ${startIndex}/${chatMessages.length} at ${intendedMs}ms`,
               );
               scheduleMessages(chatMessages, startIndex);
             };
