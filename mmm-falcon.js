@@ -971,7 +971,7 @@ if (window._MMM_INITIALIZED) {
     }
 
     function skipSong() {
-      if (blockIfFollower("skip songs")) return;
+      if (blockIfFollower("skip songs")) return false;
       schedulingActive = false;
       if (spamModeActive) {
         hideNotification();
@@ -991,18 +991,19 @@ if (window._MMM_INITIALIZED) {
         musicStatus.innerHTML = `Music Status: OFF`;
         updateAutoplayStatus();
       }
+      return true;
     }
 
     function skipBackSong() {
-      if (blockIfFollower("skip songs")) return;
+      if (blockIfFollower("skip songs")) return false;
 
       if (!autoplayMode) {
         console.log("Not in autoplay mode. Press C to start manual play.");
-        return;
+        return false;
       }
       if (songHistoryIndex <= 0) {
         console.log("Already at the first song in history");
-        return;
+        return false;
       }
 
       songHistoryIndex--;
@@ -1029,6 +1030,7 @@ if (window._MMM_INITIALIZED) {
       isGoingBack = true;
 
       playSong(prevSong);
+      return true;
     }
 
     function onSongEnded() {
@@ -1194,16 +1196,16 @@ if (window._MMM_INITIALIZED) {
 
     function togglePause() {
       const pauseBtn = document.getElementById("pauseAutoplayBtn");
-      if (!pauseBtn) return;
+      if (!pauseBtn) return false;
 
-      if (!currentAudio) return;
+      if (!currentAudio) return false;
 
       if (!spamModeActive && !autoplayMode) {
         showNotification("No song is playing", "system");
-        return;
+        return false;
       }
 
-      if (blockIfFollower("start autoplay")) return;
+      if (blockIfFollower("pause")) return false;
 
       if (currentAudio.paused) {
         // Resume
@@ -1240,6 +1242,7 @@ if (window._MMM_INITIALIZED) {
           syncPause(true, currentAudio.currentTime);
         }
       }
+      return true;
     }
 
     function setupAutoplayEvents() {
@@ -2067,8 +2070,7 @@ if (window._MMM_INITIALIZED) {
       if (e.key === "C" && !inputs.includes(document.activeElement.id)) {
         e.preventDefault();
         e.stopPropagation();
-        skipBackSong();
-        showNotification("Back", "system");
+        if (skipBackSong() !== false) showNotification("Back", "system");
         return;
       }
 
@@ -2080,8 +2082,7 @@ if (window._MMM_INITIALIZED) {
         e.preventDefault();
         e.stopPropagation();
         if (autoplayMode) {
-          skipSong();
-          showNotification("Skipped", "system");
+          if (skipSong() !== false) showNotification("Skipped", "system");
         } else {
           toggleChatSpamMode();
         }
@@ -2137,6 +2138,10 @@ if (window._MMM_INITIALIZED) {
       ) {
         e.preventDefault();
         e.stopPropagation();
+        if (isSyncFollower()) {
+          showNotification("Only the leader can change loop", "system");
+          return;
+        }
         const songLoop = document.getElementById("loopsong");
         if (songLoop) {
           songLoop.checked = !songLoop.checked;
@@ -2186,8 +2191,12 @@ if (window._MMM_INITIALIZED) {
         !inputs.includes(document.activeElement.id)
       ) {
         e.preventDefault();
-        togglePause();
-        showNotification(currentAudio.paused ? "Paused" : "Resumed", "system");
+        if (togglePause() !== false) {
+          showNotification(
+            currentAudio.paused ? "Paused" : "Resumed",
+            "system",
+          );
+        }
         return;
       }
 
