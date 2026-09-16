@@ -985,34 +985,51 @@ app.post("/sync/heartbeat", express.json(), (req, res) => {
   res.json({ ok: true });
 });
 
+const ROOM_GRACE_PERIOD = 5 * 60 * 1000;
+const MEMBER_STALE_MS = 2 * 60 * 1000;
+
 setInterval(() => {
   const now = Date.now();
   for (const [roomCode, room] of syncRooms) {
-    if (!room.memberLastSeen) {
-      room.memberLastSeen = {};
-      continue;
-    }
+    if (!room.memberLastSeen) room.memberLastSeen = {};
+
     const stale = room.members.filter(
-      (name) => now - (room.memberLastSeen[name] || 0) > 24 * 60 * 60 * 1000,
+      (name) => now - (room.memberLastSeen[name] || 0) > MEMBER_STALE_MS,
     );
+
     if (stale.length) {
       console.log(`[Cleanup] Removing stale members from ${roomCode}:`, stale);
       room.members = room.members.filter((name) => !stale.includes(name));
       stale.forEach((name) => delete room.memberLastSeen[name]);
-      if (room.members.length === 0) {
-        if (syncSSEClients[roomCode]) {
-          for (const client of syncSSEClients[roomCode]) {
-            try {
-              client.end();
-            } catch (e) {}
-          }
-          delete syncSSEClients[roomCode];
-          syncRooms.delete(roomCode);
-        }
-        console.log(`[Cleanup] Deleted empty room ${roomCode}`);
-        continue;
+
+      if (room.leader && stale.includes(room.leader)) {
+        room.leader = room.members[0] || null;
+        console.log(`[Cleanup] New leader for ${roomCode}: ${room.leader}`);
+      }
+
+      if (room.members.length === 0 && !room.emptySince) {
+        room.emptySince = Date.now();
       }
       broadcastSyncUpdate(roomCode);
+    }
+
+    if (
+      room.members.length === 0 &&
+      room.emptySince &&
+      now - room.emptySince > ROOM_GRACE_PERIOD
+    ) {
+      if (syncSSEClients[roomCode]) {
+        for (const client of syncSSEClients[roomCode]) {
+          try {
+            client.end();
+          } catch (e) {}
+        }
+        delete syncSSEClients[roomCode];
+      }
+      syncRooms.delete(roomCode);
+      console.log(
+        `[Cleanup] Deleted empty room ${roomCode} after grace period`,
+      );
     }
   }
 }, 30000);
@@ -1104,6 +1121,7 @@ app.post("/sync/join", express.json(), (req, res) => {
       loop: false,
       partnerSongId: null,
       lastUpdate: Date.now(),
+      emptySince: null,
     };
     syncRooms.set(roomCode, room);
     isNewRoom = true;
@@ -1114,6 +1132,7 @@ app.post("/sync/join", express.json(), (req, res) => {
   room.memberLastSeen[name] = Date.now();
   if (!room.leader) room.leader = originalLeader || name;
 
+  room.emptySince = null;
   room.lastUpdate = Date.now();
   broadcastSyncUpdate(roomCode);
 
@@ -1142,16 +1161,8 @@ app.post("/sync/leave", express.json(), (req, res) => {
   room.lastUpdate = Date.now();
 
   if (room.members.length === 0) {
-    if (syncSSEClients[roomCode]) {
-      for (const client of syncSSEClients[roomCode]) {
-        try {
-          client.end();
-        } catch (e) {}
-      }
-      delete syncSSEClients[roomCode];
-    }
-    syncRooms.delete(roomCode);
-    console.log(`[Leave] Room ${roomCode} deleted (empty)`);
+    room.emptySince = Date.now();
+    console.log(`[Leave] Room ${roomCode} is now empty (grace period started)`);
   } else if (room.leader === name) {
     room.leader = room.members[0];
     console.log(`[Leave] New leader: ${room.leader}`);
