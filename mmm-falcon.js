@@ -1334,7 +1334,7 @@ if (window._MMM_INITIALIZED) {
           chatMessages = lyrics;
 
           const currentMs = currentTime * 1000;
-          let startIndex = 0;
+          let startIndex = lyrics.length;
           for (let j = 0; j < lyrics.length; j++) {
             if (lyrics[j].delay > currentMs) {
               startIndex = j;
@@ -1485,6 +1485,7 @@ if (window._MMM_INITIALIZED) {
             console.log(
               "[Sync] Room reset (paused=false) — keeping local playback",
             );
+            republishIfLeaderPlaying();
           }
           syncPaused = msg.paused || false;
           syncCurrentTime = 0;
@@ -1623,21 +1624,7 @@ if (window._MMM_INITIALIZED) {
           const timestamp = data.timestamp || Date.now();
           playSyncSong(syncCurrentSongId, syncCurrentTime, timestamp);
         }
-        
-        if (
-          syncIsLeader &&
-          spamModeActive &&
-          selectedSongId !== null &&
-          selectedSongId !== undefined &&
-          !isPaused &&
-          data.currentSong !== selectedSongId
-        ) {
-          console.log(
-            `[Sync] Leader restoring server state — server had "${data.currentSong}", ` +
-              `restoring "${selectedSongId}" at ${currentAudio.currentTime.toFixed(1)}s`,
-          );
-          await syncPlay(selectedSongId, currentAudio.currentTime, Date.now());
-        }
+        republishIfLeaderPlaying();
       } catch (err) {
         console.error("Sync join error:", err);
         showNotification("Failed to join sync room", "system");
@@ -1646,6 +1633,21 @@ if (window._MMM_INITIALIZED) {
         isRejoining = false;
         isLeaving = false;
       }
+    }
+
+    function republishIfLeaderPlaying() {
+      if (!syncRoom || !syncIsLeader) return;
+      if (!spamModeActive) return;
+      if (selectedSongId === null || selectedSongId === undefined) return;
+      if (!currentAudio || currentAudio.paused) return;
+      if (syncCurrentSongId === selectedSongId) return;
+
+      const now = Date.now();
+      const curTime = currentAudio.currentTime || 0;
+      console.log(
+        `[Sync] Republishing leader state: song=${selectedSongId} time=${curTime.toFixed(2)}s`,
+      );
+      syncPlay(selectedSongId, curTime, now);
     }
 
     async function syncLeave() {
@@ -1880,7 +1882,7 @@ if (window._MMM_INITIALIZED) {
             const scheduleLyrics = (lyrics) => {
               chatMessages = lyrics;
               const intendedMs = adjustedStart * 1000;
-              let startIndex = 0;
+              let startIndex = chatMessages.length;
               for (let j = 0; j < chatMessages.length; j++) {
                 if (chatMessages[j].delay > intendedMs) {
                   startIndex = j;
