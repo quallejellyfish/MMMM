@@ -1,13 +1,11 @@
 const express = require("express");
 const fs = require("fs");
 const cors = require("cors");
-const { timeStamp } = require("console");
 const jwt = require("jsonwebtoken");
 const http = require("http");
 const { WebSocketServer } = require("ws");
 const cookieParser = require("cookie-parser");
 const crypto = require("crypto");
-const { resolveSoa } = require("dns");
 const guestKeys = {};
 const guestSSEClients = {};
 const GUEST_KEY_EXPIRY = 5 * 60 * 1000; // 5 minutes
@@ -24,6 +22,15 @@ const API_KEY = process.env.API_KEY;
 const DISCORD_WEBHOOK_URL = process.env.DISCORD_WEBHOOK_URL;
 const JWT_SECRET = process.env.JWT_SECRET;
 const COOKIE_SECRET = process.env.COOKIE_SECRET;
+
+const CROSS_SITE_COOKIE = {
+  httpOnly: true,
+  signed: true,
+  secure: true,
+  sameSite: "none",
+  partitioned: true,
+  path: "/",
+};
 
 const CATEGORIES = [
   { id: 999, name: "🇺🇸-----English Songs-----" },
@@ -433,12 +440,9 @@ app.post("/login", express.json(), (req, res) => {
   }
   if (apiKey === API_KEY) {
     res.cookie("auth", "true", {
-      httpOnly: true,
+      ...CROSS_SITE_COOKIE,
       signed: true,
-      maxAge: 3600000, // 1 hour
-      sameSite: "none",
-      secure: true,
-      partitioned: true,
+      maxAge: 3600000,
     });
     return res.json({ success: true });
   } else {
@@ -447,7 +451,7 @@ app.post("/login", express.json(), (req, res) => {
 });
 
 app.get("/logout", (req, res) => {
-  res.clearCookie("auth");
+  res.clearCookie("auth", CROSS_SITE_COOKIE);
   res.redirect("/");
 });
 
