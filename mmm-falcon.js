@@ -1384,7 +1384,7 @@ if (window._MMM_INITIALIZED) {
         } catch (err) {
           console.warn("Heartbeat failed:", err);
         }
-      }, 10000);
+      }, 7000);
     }
 
     function connectSyncSSE(roomCode) {
@@ -1409,31 +1409,22 @@ if (window._MMM_INITIALIZED) {
 
       syncEventSource.onerror = (err) => {
         console.warn("SSE error, attempting to rejoin...", err);
-        if (isRejoining || isLeaving) {
-          console.log("Already rejoining or leaving, ignoring.");
-          return;
-        }
-
-        if (window._mmmReconnectTimer) {
-          clearTimeout(window._mmmReconnectTimer);
-        }
+        if (isRejoining || isLeaving) return;
 
         if (syncEventSource) {
           syncEventSource.close();
           syncEventSource = null;
         }
 
-        if (isRejoining || isLeaving) return;
         if (window._mmmReconnectTimer) clearTimeout(window._mmmReconnectTimer);
         window._mmmReconnectTimer = setTimeout(() => {
           window._mmmReconnectTimer = null;
           if (syncRoom && !isRejoining) {
             const room = syncRoom;
             const leader = syncLeader;
-            syncRoom = null;
             syncJoin(room, leader || null);
           }
-        }, 3000);
+        }, 1500);
       };
     }
 
