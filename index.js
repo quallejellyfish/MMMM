@@ -25,6 +25,21 @@ const DISCORD_WEBHOOK_URL = process.env.DISCORD_WEBHOOK_URL;
 const JWT_SECRET = process.env.JWT_SECRET;
 const COOKIE_SECRET = process.env.COOKIE_SECRET;
 
+const COOKIE_SET = {
+  httpOnly: true,
+  signed: true,
+  secure: true,
+  sameSite: "none",
+  path: "/",
+};
+
+const COOKIE_CLEAR = {
+  httpOnly: true,
+  secure: true,
+  sameSite: "none",
+  path: "/",
+};
+
 const CATEGORIES = [
   { id: 999, name: "🇺🇸-----English Songs-----" },
   { id: 999, name: "🇩🇪-----German Songs-----" },
@@ -432,12 +447,7 @@ app.post("/login", express.json(), (req, res) => {
     return res.status(400).json({ success: false, message: "Missing API key" });
   }
   if (apiKey === API_KEY) {
-    res.cookie("auth", "true", {
-      httpOnly: true,
-      signed: true,
-      maxAge: 3600000, // 1 hour
-      secure: true,
-    });
+    res.cookie("auth", "true", { ...COOKIE_SET, maxAge: 3600000 });
     return res.json({ success: true });
   } else {
     return res.status(401).json({ success: false, message: "Invalid API key" });
@@ -445,7 +455,8 @@ app.post("/login", express.json(), (req, res) => {
 });
 
 app.get("/logout", (req, res) => {
-  res.clearCookie("auth");
+  res.clearCookie("auth", COOKIE_CLEAR);
+  res.clearCookie("auth", { ...COOKIE_CLEAR, partitioned: true });
   res.redirect("/");
 });
 
@@ -1076,7 +1087,8 @@ app.get("/sync/events/:roomCode", (req, res) => {
 
 app.post("/sync/join", express.json(), (req, res) => {
   const { roomCode, name, originalLeader } = req.body;
-  if (!roomCode || !name) return res.status(400).json({ error: "Missing roomCode or name" });
+  if (!roomCode || !name)
+    return res.status(400).json({ error: "Missing roomCode or name" });
 
   let room = syncRooms.get(roomCode);
   let isNewRoom = false;
