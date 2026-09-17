@@ -673,8 +673,8 @@ if (window._MMM_INITIALIZED) {
             clearInterval(window._lyricsInterval);
             window._lyricsInterval = null;
           }
-        }, 50);
-      }, 50);
+        }, 20);
+      }, 20);
     }
 
     const DUET_PAIRS = {
@@ -824,19 +824,33 @@ if (window._MMM_INITIALIZED) {
 
         initAudioContext();
 
+        let announcedStart = null;
         if (syncRoom && syncIsLeader) {
-          const scheduledStart = Date.now() + SYNC_START_DELAY_MS;
-          syncPlay(selectedSongId, 0, scheduledStart);
+          announcedStart = Date.now() + SYNC_START_DELAY_MS;
+          syncPlay(selectedSongId, 0, announcedStart);
 
           currentAudio.currentTime = 0;
-          const waitMs = scheduledStart - Date.now();
+          const waitMs = announcedStart - Date.now();
           if (waitMs > 0) {
             await new Promise((r) => setTimeout(r, waitMs));
           }
           currentAudio.currentTime = 0;
         }
 
-        await currentAudio.play();
+        try {
+          await currentAudio.play();
+        } catch (err) {
+          if (syncRoom && syncIsLeader && announcedStart !== null) {
+            console.warn(
+              "[Sync] Leader play() failed — retracting phantom room state:",
+              err.name,
+              err.message,
+            );
+            syncStop();
+          }
+          throw err;
+        }
+
         showNotification(selectedSongName, "song");
         scheduleMessages(chatMessages, 0);
         document.getElementById("pauseAutoplayBtn").textContent = "Pause";
@@ -914,19 +928,33 @@ if (window._MMM_INITIALIZED) {
 
         initAudioContext();
 
+        let announcedStart = null;
         if (syncRoom && syncIsLeader) {
-          const scheduledStart = Date.now() + SYNC_START_DELAY_MS;
-          syncPlay(selectedSongId, 0, scheduledStart);
+          announcedStart = Date.now() + SYNC_START_DELAY_MS;
+          syncPlay(selectedSongId, 0, announcedStart);
 
           currentAudio.currentTime = 0;
-          const waitMs = scheduledStart - Date.now();
+          const waitMs = announcedStart - Date.now();
           if (waitMs > 0) {
             await new Promise((r) => setTimeout(r, waitMs));
           }
           currentAudio.currentTime = 0;
         }
 
-        await currentAudio.play();
+        try {
+          await currentAudio.play();
+        } catch (err) {
+          if (syncRoom && syncIsLeader && announcedStart !== null) {
+            console.warn(
+              "[Sync] Leader play() failed — retracting phantom room state:",
+              err.name,
+              err.message,
+            );
+            syncStop();
+          }
+          throw err;
+        }
+
         scheduleMessages(chatMessages, 0);
         document.getElementById("pauseAutoplayBtn").textContent = "Pause";
         isPaused = false;
