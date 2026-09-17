@@ -244,6 +244,8 @@ if (window._MMM_INITIALIZED) {
     let songHistoryIndex = -1;
     let isGoingBack = false;
 
+    const SYNC_START_DELAY_MS = 2000;
+
     const activeNotifications = [];
 
     const notificationContainer = document.createElement("div");
@@ -822,13 +824,21 @@ if (window._MMM_INITIALIZED) {
 
         initAudioContext();
 
-        await currentAudio.play();
-        const now = Date.now();
         if (syncRoom && syncIsLeader) {
-          syncPlay(selectedSongId, currentAudio.currentTime, now);
+          const scheduledStart = Date.now() + SYNC_START_DELAY_MS;
+          syncPlay(selectedSongId, 0, scheduledStart);
+
+          currentAudio.currentTime = 0;
+          const waitMs = scheduledStart - Date.now();
+          if (waitMs > 0) {
+            await new Promise((r) => setTimeout(r, waitMs));
+          }
+          currentAudio.currentTime = 0;
         }
+
+        await currentAudio.play();
         showNotification(selectedSongName, "song");
-        scheduleMessages(chatMessages);
+        scheduleMessages(chatMessages, 0);
         document.getElementById("pauseAutoplayBtn").textContent = "Pause";
         isPaused = false;
       } catch (err) {
@@ -904,15 +914,20 @@ if (window._MMM_INITIALIZED) {
 
         initAudioContext();
 
-        await currentAudio.play();
-        const currentTime = currentAudio.currentTime;
-        const now = Date.now();
         if (syncRoom && syncIsLeader) {
-          syncPlay(selectedSongId, currentAudio.currentTime, now);
+          const scheduledStart = Date.now() + SYNC_START_DELAY_MS;
+          syncPlay(selectedSongId, 0, scheduledStart);
+
+          currentAudio.currentTime = 0;
+          const waitMs = scheduledStart - Date.now();
+          if (waitMs > 0) {
+            await new Promise((r) => setTimeout(r, waitMs));
+          }
+          currentAudio.currentTime = 0;
         }
 
-        scheduleMessages(chatMessages);
-        showNotification(selectedSongName, "song");
+        await currentAudio.play();
+        scheduleMessages(chatMessages, 0);
         document.getElementById("pauseAutoplayBtn").textContent = "Pause";
         isPaused = false;
       } catch (err) {
@@ -1280,7 +1295,9 @@ if (window._MMM_INITIALIZED) {
     let duetMode = false;
 
     function isSyncFollower() {
-      return !!syncRoom && !syncIsLeader;
+      if (syncIsLeader) return false;
+      if (window._mmmRejoining) return true;
+      return !!syncRoom;
     }
 
     function blockIfFollower(action) {
@@ -1380,7 +1397,6 @@ if (window._MMM_INITIALIZED) {
               clearInterval(syncHeartbeatInterval);
               syncHeartbeatInterval = null;
             }
-            syncRoom = null;
             showNotification("Room expired — rejoining…", "system");
             syncJoin(currentRoom, leader);
           }
@@ -1571,18 +1587,22 @@ if (window._MMM_INITIALIZED) {
         clearTimeout(window._mmmReconnectTimer);
         window._mmmReconnectTimer = null;
       }
-      if (!syncRoom) {
+
+      const wasAlreadyInRoom = !!syncRoom;
+      if (!wasAlreadyInRoom) {
         stopMusic();
+        syncIsLeader = false;
+        syncLeader = null;
       }
-      syncIsLeader = false;
-      syncLeader = null;
 
       if (isRejoining) return;
       isRejoining = true;
       isLeaving = false;
+      window._mmmRejoining = true;
       try {
         const body = { roomCode, name: syncName };
         if (originalLeader) body.originalLeader = originalLeader;
+        if (window._mmmRejoining || wasAlreadyInRoom) body.isRejoin = true;
         const res = await fetch(`${API_BASE}/sync/join`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -1632,6 +1652,7 @@ if (window._MMM_INITIALIZED) {
       } finally {
         isRejoining = false;
         isLeaving = false;
+        window._mmmRejoining = false;
       }
     }
 
@@ -1857,79 +1878,98 @@ if (window._MMM_INITIALIZED) {
       });
 
       loadPromise.then(() => {
-        const loadTime = (Date.now() - now) / 1000;
-        adjustedStart = Math.max(0, adjustedStart + loadTime);
-        console.log(
-          `Audio loaded in ${loadTime}s, adjusted start ${adjustedStart}s`,
-        );
+        const nowMs = Date.now();
+        const isScheduledFuture = serverTimestamp > nowMs;
 
-        currentAudio.currentTime = adjustedStart;
-        currentAudio.loop = false;
-        syncStartTime = adjustedStart;
-        syncCurrentTime = adjustedStart;
+        let delayMs = 0;
+        if (isScheduledFuture) {
+          delayMs = serverTimestamp - nowMs;
+          adjustedStart = Math.max(0, startTime);
+          console.log(
+            `[Sync] Scheduled start in ${delayMs}ms at position ${adjustedStart}s`,
+          );
+        } else {
+          const elapsed = (nowMs - serverTimestamp) / 1000;
+          adjustedStart = Math.max(0, startTime + elapsed);
+          console.log(
+            `[Sync] Late join: elapsed ${elapsed.toFixed(2)}s → start ${adjustedStart.toFixed(2)}s`,
+          );
+        }
 
-        initAudioContext();
+        const doPlay = () => {
+          currentAudio.currentTime = adjustedStart;
+          currentAudio.loop = false;
+          syncStartTime = adjustedStart;
+          syncCurrentTime = adjustedStart;
 
-        currentAudio
-          .play()
-          .then(() => {
-            spamModeActive = true;
-            currentlyPlaying.innerHTML = `Currently Playing: ${selectedSongName}`;
-            musicStatus.innerHTML = `Music Status: ON (Sync)`;
-            document.getElementById("pauseAutoplayBtn").textContent = "Pause";
-            isPaused = false;
+          initAudioContext();
 
-            const scheduleLyrics = (lyrics) => {
-              chatMessages = lyrics;
-              const intendedMs = adjustedStart * 1000;
-              let startIndex = chatMessages.length;
-              for (let j = 0; j < chatMessages.length; j++) {
-                if (chatMessages[j].delay > intendedMs) {
-                  startIndex = j;
-                  break;
+          currentAudio
+            .play()
+            .then(() => {
+              spamModeActive = true;
+              currentlyPlaying.innerHTML = `Currently Playing: ${selectedSongName}`;
+              musicStatus.innerHTML = `Music Status: ON (Sync)`;
+              document.getElementById("pauseAutoplayBtn").textContent = "Pause";
+              isPaused = false;
+
+              const scheduleLyrics = (lyrics) => {
+                chatMessages = lyrics;
+                const intendedMs = adjustedStart * 1000;
+                let startIndex = chatMessages.length;
+                for (let j = 0; j < chatMessages.length; j++) {
+                  if (chatMessages[j].delay > intendedMs) {
+                    startIndex = j;
+                    break;
+                  }
                 }
+                console.log(
+                  `[Sync] Scheduling lyrics from index ${startIndex}/${chatMessages.length} at ${intendedMs}ms`,
+                );
+                scheduleMessages(chatMessages, startIndex);
+              };
+
+              if (lyricsCache[selectedSongId]) {
+                console.log(`[Sync] Using cached lyrics for ${selectedSongId}`);
+                scheduleLyrics(lyricsCache[selectedSongId]);
+              } else {
+                console.log(`[Sync] Fetching lyrics for ${selectedSongId}`);
+                fetchLyrics(selectedSongId)
+                  .then((lyrics) => {
+                    console.log(
+                      `[Sync] Got ${lyrics.length} lyrics lines for ${selectedSongId}`,
+                    );
+                    scheduleLyrics(lyrics);
+                  })
+                  .catch((err) => {
+                    console.error("[Sync] Failed to fetch lyrics:", err);
+                    chatMessages = [];
+                    showNotification("Sync lyrics unavailable", "system");
+                  });
               }
-              console.log(
-                `[Sync] Scheduling lyrics from index ${startIndex}/${chatMessages.length} at ${intendedMs}ms`,
-              );
-              scheduleMessages(chatMessages, startIndex);
-            };
 
-            if (lyricsCache[selectedSongId]) {
-              console.log(`[Sync] Using cached lyrics for ${selectedSongId}`);
-              scheduleLyrics(lyricsCache[selectedSongId]);
-            } else {
-              console.log(`[Sync] Fetching lyrics for ${selectedSongId}`);
-              fetchLyrics(selectedSongId)
-                .then((lyrics) => {
-                  console.log(
-                    `[Sync] Got ${lyrics.length} lyrics lines for ${selectedSongId}`,
-                  );
-                  scheduleLyrics(lyrics);
-                })
-                .catch((err) => {
-                  console.error("[Sync] Failed to fetch lyrics:", err);
-                  chatMessages = [];
-                  showNotification("Sync lyrics unavailable", "system");
-                });
-            }
+              currentAudio.removeEventListener("ended", onSongEnded);
+              currentAudio.addEventListener("ended", onSongEnded);
 
-            currentAudio.removeEventListener("ended", onSongEnded);
-            currentAudio.addEventListener("ended", onSongEnded);
-
-            const actualTime = currentAudio.currentTime;
-            if (Math.abs(actualTime - adjustedStart) > 0.5) {
-              console.warn(
-                `Position discrepancy: actual ${actualTime}s, intended ${adjustedStart}s, correcting...`,
-              );
-              currentAudio.currentTime = adjustedStart;
-            }
-          })
-          .catch((err) => {
-            console.warn("Sync play error:", err);
-            spamModeActive = false;
-            showNotification("Sync playback failed", "system");
-          });
+              const actualTime = currentAudio.currentTime;
+              if (Math.abs(actualTime - adjustedStart) > 0.5) {
+                console.warn(
+                  `Position discrepancy: actual ${actualTime}s, intended ${adjustedStart}s, correcting...`,
+                );
+                currentAudio.currentTime = adjustedStart;
+              }
+            })
+            .catch((err) => {
+              console.warn("Sync play error:", err);
+              spamModeActive = false;
+              showNotification("Sync playback failed", "system");
+            });
+        };
+        if (delayMs > 0) {
+          setTimeout(doPlay, delayMs);
+        } else {
+          doPlay();
+        }
       });
     }
 
