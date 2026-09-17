@@ -1112,7 +1112,7 @@ app.post("/sync/join", express.json(), (req, res) => {
 
   if (!room) {
     room = {
-      leader: originalLeader || name,
+      leader: originalLeader || (isRejoin ? name : name),
       members: [],
       memberLastSeen: {},
       currentSong: null,
@@ -1130,7 +1130,10 @@ app.post("/sync/join", express.json(), (req, res) => {
   if (!room.memberLastSeen) room.memberLastSeen = {};
   if (!room.members.includes(name)) room.members.push(name);
   room.memberLastSeen[name] = Date.now();
-  if (!room.leader) room.leader = originalLeader || name;
+
+  if (!room.leader) {
+    room.leader = originalLeader || name;
+  }
 
   room.emptySince = null;
   room.lastUpdate = Date.now();
