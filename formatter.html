@@ -519,6 +519,14 @@
       rawInput.addEventListener("input", () => {
         updateStats(rawInput.value, lastFragments);
       });
+      let formatDebounce = null;
+      rawInput.addEventListener("input", () => {
+        updateStats(rawInput.value, lastFragments);
+        clearTimeout(formatDebounce);
+        formatDebounce = setTimeout(() => {
+          if (rawInput.value.trim()) format();
+        }, 350);
+      });
     </script>
   </body>
 </html>
