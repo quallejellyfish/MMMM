@@ -1379,6 +1379,7 @@ if (window._MMM_INITIALIZED) {
           syncHeartbeatInterval = null;
           return;
         }
+        if (window._mmmRejoining) return;
         try {
           const res = await fetch(`${API_BASE}/sync/heartbeat`, {
             method: "POST",
