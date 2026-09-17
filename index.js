@@ -1137,7 +1137,9 @@ app.post("/sync/join", express.json(), (req, res) => {
 
   room.emptySince = null;
   room.lastUpdate = Date.now();
-  broadcastSyncUpdate(roomCode);
+  if (!(isNewRoom && originalLeader)) {
+    broadcastSyncUpdate(roomCode);
+  }
 
   res.json({
     leader: room.leader,
