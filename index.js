@@ -1103,7 +1103,7 @@ app.get("/sync/events/:roomCode", (req, res) => {
 });
 
 app.post("/sync/join", express.json(), (req, res) => {
-  const { roomCode, name, originalLeader } = req.body;
+  const { roomCode, name, originalLeader, isRejoin } = req.body;
   if (!roomCode || !name)
     return res.status(400).json({ error: "Missing roomCode or name" });
 
