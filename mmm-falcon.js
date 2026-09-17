@@ -323,6 +323,25 @@ if (window._MMM_INITIALIZED) {
       if (idx !== -1) activeNotifications.splice(idx, 1);
     }
 
+    let lastSongNotification = null;
+
+    function showSongNotification(songName) {
+      if (lastSongNotification) {
+        hideNotification(lastSongNotification);
+        lastSongNotification = null;
+      }
+      showNotification(songName, "song");
+      lastSongNotification =
+        activeNotifications[activeNotifications.length - 1];
+    }
+
+    function clearSongNotification() {
+      if (lastSongNotification) {
+        hideNotification(lastSongNotification);
+        lastSongNotification = null;
+      }
+    }
+
     setupAutoplayEvents();
     updateAutoplayStatus();
 
@@ -745,7 +764,7 @@ if (window._MMM_INITIALIZED) {
       if (spamModeActive) {
         resetLyricsState();
         schedulingActive = false;
-        hideNotification();
+        clearSongNotification();
         spamModeActive = false;
         messageTimeouts.forEach(clearTimeout);
         messageTimeouts = [];
@@ -786,6 +805,7 @@ if (window._MMM_INITIALIZED) {
         musicStatus.innerHTML = `Music Status: ON`;
         updateSelectButton(selectedSongName);
         highlightCurrentSong();
+        showSongNotification(selectedSongName);
 
         if (onTimeUpdateHandler) {
           currentAudio.removeEventListener("timeupdate", onTimeUpdateHandler);
@@ -851,7 +871,6 @@ if (window._MMM_INITIALIZED) {
           throw err;
         }
 
-        showNotification(selectedSongName, "song");
         scheduleMessages(chatMessages, 0);
         document.getElementById("pauseAutoplayBtn").textContent = "Pause";
         isPaused = false;
@@ -877,6 +896,7 @@ if (window._MMM_INITIALIZED) {
       selectedSongAudio = song.url;
       updateSelectButton(selectedSongName);
       highlightCurrentSong();
+      showSongNotification(selectedSongName);
 
       if (spamModeActive) {
         currentAudio.pause();
@@ -1017,7 +1037,7 @@ if (window._MMM_INITIALIZED) {
       if (blockIfFollower("skip songs")) return false;
       schedulingActive = false;
       if (spamModeActive) {
-        hideNotification();
+        clearSongNotification();
         currentAudio.pause();
         currentAudio.currentTime = 0;
         currentAudio.removeEventListener("ended", onSongEnded);
@@ -1051,7 +1071,7 @@ if (window._MMM_INITIALIZED) {
 
       songHistoryIndex--;
       const prevSong = songHistory[songHistoryIndex];
-      if (!prevSong) return;
+      if (!prevSong) return false;
 
       if (autoplayMode === "category") {
         const idx = autoPlaySongs.findIndex((s) => s.id === prevSong.id);
@@ -1189,7 +1209,7 @@ if (window._MMM_INITIALIZED) {
       autoplayCategory = null;
       autoPlaySongs = [];
       autoplayIndex = 0;
-      hideNotification();
+      clearSongNotification();
       songHistory = [];
       songHistoryIndex = -1;
       isGoingBack = false;
@@ -1525,7 +1545,7 @@ if (window._MMM_INITIALIZED) {
             document.getElementById("pauseAutoplayBtn").textContent = "Pause";
             isPaused = false;
             schedulingActive = false;
-            hideNotification();
+            clearSongNotification();
           } else if (!intentionalStop) {
             console.log(
               "[Sync] Room reset (paused=false) — keeping local playback",
@@ -1564,7 +1584,7 @@ if (window._MMM_INITIALIZED) {
               document.getElementById("pauseAutoplayBtn").textContent = "Play";
               musicStatus.innerHTML = "Music Status: Paused (synced)";
               schedulingActive = false;
-              hideNotification();
+              clearSongNotification();
             }
           } else {
             if (spamModeActive && currentAudio.paused) {
@@ -1880,6 +1900,7 @@ if (window._MMM_INITIALIZED) {
       selectedSongAudio = song.url;
       updateSelectButton(selectedSongName);
       highlightCurrentSong();
+      showSongNotification(selectedSongName);
 
       if (spamModeActive) {
         currentAudio.pause();
@@ -2333,7 +2354,7 @@ if (window._MMM_INITIALIZED) {
         document.getElementById("pauseAutoplayBtn").textContent = "Pause";
         isPaused = false;
         schedulingActive = false;
-        hideNotification();
+        clearSongNotification();
       }
     }
 
