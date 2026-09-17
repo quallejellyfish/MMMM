@@ -9,7 +9,8 @@
     "id": 235,
     "name": "K'naan - Bang Bang",
     "url": "https://audio.jukehost.co.uk/01a095da-f939-72e8-89d8-1c1be5bd0e5b",
-    "public": true
+    "public": true,
+    "lyricsCount": 129
   },
   {
     "id": 232,
@@ -381,10 +382,34 @@
     "public": false
   },
   {
+    "id": 116,
+    "name": "UdSSR",
+    "url": "https://audio.jukehost.co.uk/OKpZURhTKBD1emjNMSfsxA0QEjCxqk0w",
+    "lyricsCount": 62
+  },
+  {
+    "id": 114,
+    "name": "FCK AFD",
+    "url": "https://audio.jukehost.co.uk/IvMro2CgrnIuSTe2xRGMAK07PuPD12Ck",
+    "lyricsCount": 97
+  },
+  {
     "id": 173,
     "name": "GUTᐸBESSERᐸICH",
     "url": "https://audio.jukehost.co.uk/019f1e85-a1bc-7014-a083-45da0ac469e9",
     "lyricsCount": 103
+  },
+  {
+    "id": 115,
+    "name": "antifachsita",
+    "url": "https://audio.jukehost.co.uk/0P3hybeNbrk6FmP4m1cInUELV4kSmfIZ",
+    "lyricsCount": 76
+  },
+  {
+    "id": 113,
+    "name": "Anticapilsta",
+    "url": "https://audio.jukehost.co.uk/BbRRrYG2MTPUSCB3OhYlOII1MkYEsluM",
+    "lyricsCount": 92
   },
   {
     "id": 171,
@@ -400,11 +425,23 @@
     "public": true
   },
   {
+    "id": 122,
+    "name": "Kampfansage",
+    "url": "https://audio.jukehost.co.uk/Js8CZftRtATUqGGFsnSi0UAVBRw1LHr8",
+    "lyricsCount": 137
+  },
+  {
     "id": 168,
     "name": "ABC - PTK",
     "url": "https://audio.jukehost.co.uk/019edbed-d73c-709b-a047-f8b05bf5c7d7",
     "lyricsCount": 97,
     "public": true
+  },
+  {
+    "id": 123,
+    "name": "187 Allstars 2024",
+    "url": "https://audio.jukehost.co.uk/ch8ngPUCeqDEkGw4hSO5L0wgGAIjQ7U6",
+    "lyricsCount": 153
   },
   {
     "id": 5,
@@ -581,42 +618,6 @@
     "lyricsCount": 170
   },
   {
-    "id": 113,
-    "name": "Anticapilsta",
-    "url": "https://audio.jukehost.co.uk/BbRRrYG2MTPUSCB3OhYlOII1MkYEsluM",
-    "lyricsCount": 92
-  },
-  {
-    "id": 114,
-    "name": "FCK AFD",
-    "url": "https://audio.jukehost.co.uk/IvMro2CgrnIuSTe2xRGMAK07PuPD12Ck",
-    "lyricsCount": 97
-  },
-  {
-    "id": 115,
-    "name": "antifachsita",
-    "url": "https://audio.jukehost.co.uk/0P3hybeNbrk6FmP4m1cInUELV4kSmfIZ",
-    "lyricsCount": 76
-  },
-  {
-    "id": 116,
-    "name": "UdSSR",
-    "url": "https://audio.jukehost.co.uk/OKpZURhTKBD1emjNMSfsxA0QEjCxqk0w",
-    "lyricsCount": 62
-  },
-  {
-    "id": 122,
-    "name": "Kampfansage",
-    "url": "https://audio.jukehost.co.uk/Js8CZftRtATUqGGFsnSi0UAVBRw1LHr8",
-    "lyricsCount": 137
-  },
-  {
-    "id": 123,
-    "name": "187 Allstars 2024",
-    "url": "https://audio.jukehost.co.uk/ch8ngPUCeqDEkGw4hSO5L0wgGAIjQ7U6",
-    "lyricsCount": 153
-  },
-  {
     "id": 999,
     "name": "🇨🇳-----Chinese Songs-----",
     "url": "https://audio.jukehost.co.uk/019ecff6-7abc-7334-9aff-02a9ba674644",
@@ -729,7 +730,8 @@
     "id": 258,
     "name": "WAR",
     "url": "https://audio.jukehost.co.uk/01a0a0b4-b958-72ef-8851-9712f87a2f56",
-    "public": false
+    "public": false,
+    "lyricsCount": 236
   },
   {
     "id": 205,
@@ -832,7 +834,7 @@
     "id": 70,
     "name": "cause im perfect",
     "url": "https://audio.jukehost.co.uk/kWWROMyl9ipgcWFfsrq9c6TsXH3xFFCx",
-    "lyricsCount": 48
+    "lyricsCount": 59
   },
   {
     "id": 71,
@@ -875,7 +877,7 @@
     "id": 84,
     "name": "Q&A",
     "url": "https://audio.jukehost.co.uk/tJWdQNHYQtA2nGK94GY7wlbt90heQWF3",
-    "lyricsCount": 82
+    "lyricsCount": 117
   },
   {
     "id": 183,
@@ -1112,7 +1114,7 @@
     "id": 78,
     "name": "Plug de Bandido - LuckHaos",
     "url": "https://audio.jukehost.co.uk/01a09b1b-7c73-7013-bace-dbd303c611a7",
-    "lyricsCount": 43
+    "lyricsCount": 65
   },
   {
     "id": 192,
@@ -1331,19 +1333,22 @@
     "id": 257,
     "name": "Rival - Be Gone",
     "url": "https://audio.jukehost.co.uk/01a09fd3-be04-712f-abcf-1f5eb2188d30",
-    "public": true
+    "public": true,
+    "lyricsCount": 39
   },
   {
     "id": 256,
     "name": "Rival - Walls",
     "url": "https://audio.jukehost.co.uk/01a09fd1-73c9-71bb-8fdc-fbcb49b3e8d6",
-    "public": true
+    "public": true,
+    "lyricsCount": 42
   },
   {
     "id": 255,
     "name": "Facading - Freefalling",
     "url": "https://audio.jukehost.co.uk/01a09b46-a237-7211-8f16-6f0f8c2b9690",
-    "public": true
+    "public": true,
+    "lyricsCount": 68
   },
   {
     "id": 24,
@@ -1482,85 +1487,99 @@
     "id": 236,
     "name": "Living Life In The Night",
     "url": "https://audio.jukehost.co.uk/01a08622-eeee-72b5-8e3a-d3f75562057d",
-    "public": true
+    "public": true,
+    "lyricsCount": 93
   },
   {
     "id": 237,
     "name": "xxxmanera - Dead Idol",
     "url": "https://audio.jukehost.co.uk/01a099fc-19cd-7191-94cc-eaafe5f1329e",
-    "public": true
+    "public": true,
+    "lyricsCount": 29
   },
   {
     "id": 238,
     "name": "xxxmanera - Sosa! Baby",
     "url": "https://audio.jukehost.co.uk/01a099fd-36f9-73ac-b858-59033bd16887",
-    "public": true
+    "public": true,
+    "lyricsCount": 76
   },
   {
     "id": 239,
     "name": "xxxmanera - Loyalty Before Royalty",
     "url": "https://audio.jukehost.co.uk/01a099fd-da24-71fc-956a-9951ffd0b256",
-    "public": true
+    "public": true,
+    "lyricsCount": 46
   },
   {
     "id": 240,
     "name": "Rico Story 1",
     "url": "https://audio.jukehost.co.uk/01a09a0d-52fd-7059-8cfb-daf4ede9a362",
-    "public": true
+    "public": true,
+    "lyricsCount": 79
   },
   {
     "id": 241,
     "name": "Confetti - Ghost",
     "url": "https://audio.jukehost.co.uk/01a09a0e-d26e-72fd-992c-d360468baeac",
-    "public": true
+    "public": true,
+    "lyricsCount": 89
   },
   {
     "id": 242,
     "name": "rarin - GTA",
     "url": "https://audio.jukehost.co.uk/01a09a0f-c819-7364-9e67-769a63a0276c",
-    "public": true
+    "public": true,
+    "lyricsCount": 76
   },
   {
     "id": 243,
     "name": "Aero Chord - Take_Me_Home",
     "url": "https://audio.jukehost.co.uk/01a09a11-3dce-72de-be23-32e51b817411",
-    "public": true
+    "public": true,
+    "lyricsCount": 79
   },
   {
     "id": 244,
     "name": "Freddie Dredd - Limbo",
     "url": "https://audio.jukehost.co.uk/01a09a12-6d51-700c-9658-80dc6758e098",
-    "public": true
+    "public": true,
+    "lyricsCount": 84
   },
   {
     "id": 245,
     "name": "Neoni - Champion",
     "url": "https://audio.jukehost.co.uk/01a09a14-188d-716e-b82b-638c968f4703",
-    "public": true
+    "public": true,
+    "lyricsCount": 86
   },
   {
     "id": 246,
     "name": "UNSECRET & Noeni - Fallout",
     "url": "https://audio.jukehost.co.uk/01a09a15-f144-73a1-a8d3-5becee64236d",
-    "public": true
+    "public": true,
+    "lyricsCount": 62
   },
   {
     "id": 247,
     "name": "No One Sleep In Tokyo",
     "url": "https://audio.jukehost.co.uk/01a09a16-9fce-734c-a42e-19f32ff428df",
-    "public": true
+    "public": true,
+    "lyricsCount": 71
   },
   {
     "id": 248,
     "name": "Running In The 90's",
     "url": "https://audio.jukehost.co.uk/01a09a18-0ddc-71c5-a7df-6fc5806a9a0d",
-    "public": true
+    "public": true,
+    "lyricsCount": 68
   },
   {
     "id": 249,
     "name": "Initial D - Gas Gas Gas",
     "url": "https://audio.jukehost.co.uk/01a09a19-0cfe-7223-bfd9-f192ff88c592",
-    "public": true
+    "public": true,
+    "lyricsCount": 106
   },
   {
     "id": 230,
@@ -1573,30 +1592,35 @@
     "id": 250,
     "name": "Heartless - Domastic",
     "url": "https://audio.jukehost.co.uk/01a09a30-7b25-70b2-a0f7-23a423d27589",
-    "public": true
+    "public": true,
+    "lyricsCount": 24
   },
   {
     "id": 251,
     "name": "Initial D - Deja Vu",
     "url": "https://audio.jukehost.co.uk/01a09a7b-eefe-7123-8e05-867d9a447774",
-    "public": true
+    "public": true,
+    "lyricsCount": 98
   },
   {
     "id": 252,
     "name": "Beat of The Rising Sun",
     "url": "https://audio.jukehost.co.uk/01a09a84-1690-72f7-9204-81bd438b0c5a",
-    "public": true
+    "public": true,
+    "lyricsCount": 58
   },
   {
     "id": 253,
     "name": "if found nøll - die 4 u",
     "url": "https://audio.jukehost.co.uk/01a09b25-c1b1-7398-965b-030052237d2d",
-    "public": true
+    "public": true,
+    "lyricsCount": 61
   },
   {
     "id": 254,
     "name": "Fire to the Fuse - LoL",
     "url": "https://audio.jukehost.co.uk/01a09b2a-3fcb-7282-bac5-d8122e09a4b2",
-    "public": true
+    "public": true,
+    "lyricsCount": 67
   }
 ]
