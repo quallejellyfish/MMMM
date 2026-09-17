@@ -1980,12 +1980,25 @@ if (window._MMM_INITIALIZED) {
               currentAudio.removeEventListener("ended", onSongEnded);
               currentAudio.addEventListener("ended", onSongEnded);
 
-              const actualTime = currentAudio.currentTime;
-              if (Math.abs(actualTime - adjustedStart) > 0.5) {
-                console.warn(
-                  `Position discrepancy: actual ${actualTime}s, intended ${adjustedStart}s, correcting...`,
-                );
-                currentAudio.currentTime = adjustedStart;
+              const isLateJoin = serverTimestamp <= now;
+              if (isLateJoin) {
+                let corrections = 0;
+                const correctDrift = () => {
+                  if (corrections++ >= 15) return;
+                  if (!currentAudio || currentAudio.paused) return;
+                  const expected =
+                    startTime + (Date.now() - serverTimestamp) / 1000;
+                  const actual = currentAudio.currentTime;
+                  const drift = actual - expected;
+                  if (Math.abs(drift) > 0.05) {
+                    console.log(
+                      `[Sync] Drift ${(drift * 1000).toFixed(0)}ms — correcting`,
+                    );
+                    currentAudio.currentTime = expected;
+                  }
+                  setTimeout(correctDrift, 100);
+                };
+                correctDrift();
               }
             })
             .catch((err) => {
