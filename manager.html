@@ -714,13 +714,10 @@
             document
               .querySelectorAll("tr")
               .forEach((tr) => (tr.style.opacity = "1"));
-            if (draggedRow) draggedRow.style.opacity = "1";
+            rowToMove.style.opacity = "1";
 
-            draggedRow = null;
-            dragInsertLine = null;
-
-            if (targetRow && targetRow !== draggedRow) {
-              const fromIndex = parseInt(draggedRow.dataset.index);
+            if (targetRow && targetRow !== rowToMove) {
+              const fromIndex = parseInt(rowToMove.dataset.index);
               const toIndex = parseInt(targetRow.dataset.index);
               if (fromIndex !== toIndex) {
                 const insertAbove = targetRow.dataset.insertAbove === "true";
@@ -730,13 +727,13 @@
                 if (fromIndex < newIndex) newIndex = targetIndex - 1;
 
                 if (newIndex < fromIndex) {
-                  targetRow.parentNode.insertBefore(draggedRow, targetRow);
+                  targetRow.parentNode.insertBefore(rowToMove, targetRow);
                 } else {
                   const nextRow = targetRow.nextSibling;
                   if (nextRow) {
-                    targetRow.parentNode.insertBefore(draggedRow, nextRow);
+                    targetRow.parentNode.insertBefore(rowToMove, nextRow);
                   } else {
-                    targetRow.parentNode.appendChild(draggedRow);
+                    targetRow.parentNode.appendChild(rowToMove);
                   }
                 }
 
@@ -761,6 +758,7 @@
                 }
               }
             }
+
             draggedRow = null;
             dragInsertLine = null;
           }
