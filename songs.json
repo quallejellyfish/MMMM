@@ -727,13 +727,6 @@
     "lyricsCount": 1
   },
   {
-    "id": 258,
-    "name": "WAR",
-    "url": "https://audio.jukehost.co.uk/01a0a0b4-b958-72ef-8851-9712f87a2f56",
-    "public": false,
-    "lyricsCount": 236
-  },
-  {
     "id": 205,
     "name": "ULTRASONIC FAITH",
     "url": "https://audio.jukehost.co.uk/019f8e4c-94be-72ae-b297-5d32035218cf",
@@ -923,6 +916,20 @@
     "url": "https://audio.jukehost.co.uk/01a062fc-4675-70da-bc8c-fbbeb8bea5b4",
     "public": false,
     "lyricsCount": 122
+  },
+  {
+    "id": 259,
+    "name": "Tenebre Rossu Sangue",
+    "url": "https://audio.jukehost.co.uk/01a0b4b1-b531-72da-b175-3415656b0e56",
+    "public": false,
+    "lyricsCount": 138
+  },
+  {
+    "id": 258,
+    "name": "WAR",
+    "url": "https://audio.jukehost.co.uk/01a0a0b4-b958-72ef-8851-9712f87a2f56",
+    "public": false,
+    "lyricsCount": 236
   },
   {
     "id": 102,
