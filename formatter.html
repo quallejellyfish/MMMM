@@ -266,6 +266,7 @@
         <div class="status" id="statusMsg">Ready.</div>
       </div>
     </div>
+    <script src="https://cdn.jsdelivr.net/npm/pinyin-pro@3/dist/index.min.js"></script>
     <script>
       const MAX_LEN = 30;
       const PUNCT_RE = /[.!?:;"()\[\]{},]/g;
@@ -295,7 +296,7 @@
           console.warn("Received non-string, defaulting to ''", input);
           return "";
         }
-        return input
+        let s = input
           .replace(/ä/g, "ae")
           .replace(/Ä/g, "Ae")
           .replace(/ö/g, "oe")
@@ -305,7 +306,22 @@
           .replace(/ß/g, "ss")
           .replace(/[\u2018\u2019\u201A\u201B\u2032]/g, "'")
           .replace(/[\u201C\u201D\u201E\u201F\u2033]/g, '"')
-          .replace(/[\u2013\u2014]/g, "-")
+          .replace(/[\u2013\u2014]/g, "-");
+
+        // Chinese/Japanese/Korean characters
+        if (window.pinyinPro && /[\u3400-\u9FFF\uF900-\uFAFF]/.test(s)) {
+          try {
+            s = window.pinyinPro.pinyin(s, {
+              toneType: "none",   // no tones
+              type: "string",
+              separator: " ",
+            });
+          } catch (e) {
+            console.warn("Pinyin conversion failed:", e);
+          }
+        }
+
+        return s
           .normalize("NFKD")
           .replace(/[\u0300-\u036f]/g, "")
           .replace(/[^\x00-\x7F]/g, "");
