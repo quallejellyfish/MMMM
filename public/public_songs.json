@@ -154,11 +154,18 @@
     "public": true
   },
   {
-    "id": 269,
-    "name": "Egzod - Royalty",
-    "url": "https://audio.jukehost.co.uk/01a0d333-c4cb-7336-bca8-df5355cbf6f7",
+    "id": 271,
+    "name": "Shootin Stars - Aero Chord",
+    "url": "https://audio.jukehost.co.uk/01a0d406-8d9d-711c-a920-529123ea468b",
     "public": true,
-    "lyricsCount": 57
+    "lyricsCount": 61
+  },
+  {
+    "id": 270,
+    "name": "Legends Never Die",
+    "url": "https://audio.jukehost.co.uk/01a0d404-8333-71e3-9682-171da87f2ea2",
+    "public": true,
+    "lyricsCount": 47
   },
   {
     "id": 268,
@@ -392,6 +399,13 @@
     "lyricsCount": 71
   },
   {
+    "id": 269,
+    "name": "Egzod - Royalty",
+    "url": "https://audio.jukehost.co.uk/01a0d333-c4cb-7336-bca8-df5355cbf6f7",
+    "public": true,
+    "lyricsCount": 57
+  },
+  {
     "id": 252,
     "name": "Beat of The Rising Sun",
     "url": "https://audio.jukehost.co.uk/01a09a84-1690-72f7-9204-81bd438b0c5a",
@@ -420,11 +434,25 @@
     "lyricsCount": 61
   },
   {
+    "id": 254,
+    "name": "Fire to the Fuse - LoL",
+    "url": "https://audio.jukehost.co.uk/01a09b2a-3fcb-7282-bac5-d8122e09a4b2",
+    "public": true,
+    "lyricsCount": 67
+  },
+  {
     "id": 246,
     "name": "UNSECRET & Noeni - Fallout",
     "url": "https://audio.jukehost.co.uk/01a09a15-f144-73a1-a8d3-5becee64236d",
     "public": true,
     "lyricsCount": 62
+  },
+  {
+    "id": 243,
+    "name": "Aero Chord - Take Me Home",
+    "url": "https://audio.jukehost.co.uk/01a09a11-3dce-72de-be23-32e51b817411",
+    "public": true,
+    "lyricsCount": 50
   },
   {
     "id": 237,
@@ -469,25 +497,11 @@
     "lyricsCount": 76
   },
   {
-    "id": 243,
-    "name": "Aero Chord - Take Me Home",
-    "url": "https://audio.jukehost.co.uk/01a09a11-3dce-72de-be23-32e51b817411",
-    "public": true,
-    "lyricsCount": 50
-  },
-  {
     "id": 244,
     "name": "Freddie Dredd - Limbo",
     "url": "https://audio.jukehost.co.uk/01a09a12-6d51-700c-9658-80dc6758e098",
     "public": true,
     "lyricsCount": 84
-  },
-  {
-    "id": 254,
-    "name": "Fire to the Fuse - LoL",
-    "url": "https://audio.jukehost.co.uk/01a09b2a-3fcb-7282-bac5-d8122e09a4b2",
-    "public": true,
-    "lyricsCount": 67
   },
   {
     "id": 262,
