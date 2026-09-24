@@ -1666,6 +1666,23 @@ app.post("/sync-github", requireApiKey, async (req, res) => {
     const latestCommit = await commitRes.json();
     const baseTreeSha = latestCommit.tree.sha;
 
+    try {
+      const treeLookUpRes = await fetch(
+        `${apiBase}/git/trees/${baseTreeSha}?recursive=1`,
+        { headers },
+      );
+      if (treeLookUpRes.ok) {
+        const treeData = await treeLookUpRes.json();
+        const existing = treeData.tree.find((e) => e.path === path);
+        if (existing && existing.sha === blob.sha) {
+          console.log(`Github ${path} unchanged, skipping commit`);
+          return { skipped: true };
+        }
+      }
+    } catch (e) {
+      console.warn(`Tree lookup failed for ${path}:`, e.message);
+    }
+
     const pathParts = path.split("/");
     let treePayload;
     if (pathParts.length === 1) {
