@@ -295,8 +295,6 @@
         return kuroshiroReady;
       }
 
-      let keepPunctuation = false;
-
       function removeHtml(s) {
         if (typeof s !== "string") return "";
         return s
@@ -479,6 +477,7 @@
       const statOver = document.getElementById("statOver");
       const punctToggle = document.getElementById("punctToggle");
 
+      let keepPunctuation = punctToggle.checked;
       let lastFragments = [];
 
       function setStatus(msg, kind) {
