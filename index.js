@@ -1,20 +1,16 @@
 const express = require("express");
 const fs = require("fs");
 const cors = require("cors");
-const { timeStamp } = require("console");
 const jwt = require("jsonwebtoken");
 const http = require("http");
-const { WebSocketServer } = require("ws");
 const cookieParser = require("cookie-parser");
 const crypto = require("crypto");
-const { resolveSoa } = require("dns");
 const guestKeys = {};
 const guestSSEClients = {};
 const GUEST_KEY_EXPIRY = 5 * 60 * 1000; // 5 minutes
 
 const app = express();
 const server = http.createServer(app);
-const wss = new WebSocketServer({ server });
 
 const PORT = process.env.PORT || 3000;
 const GITHUB_TOKEN = process.env.GITHUB_TOKEN;
@@ -1411,7 +1407,7 @@ app.put("/songs/:id", requireApiKey, async (req, res) => {
       changes.url = true;
     }
 
-    const newPublic = isPublic !== undefined ? isPublic : false;
+    const newPublic = isPublic !== undefined ? isPublic : oldSong.public;
     const oldPublic = oldSong.public !== undefined ? oldSong.public : false;
     if (newPublic !== oldPublic) {
       songs[index].public = newPublic;
@@ -1848,15 +1844,6 @@ app.get("/guest-keys", requireApiKey, (req, res) => {
     expiresAt: guestKeys[key].expiresAt,
   }));
   res.json(list);
-});
-
-app.post("/revoke-guest", requireApiKey, (req, res) => {
-  const { token } = req.body;
-  if (!token || !guestKeys[token]) {
-    return res.status(404).json({ error: "Key not found" });
-  }
-  delete guestKeys[token];
-  res.json({ message: "Key revoked" });
 });
 
 app.get("/health", (req, res) => res.send("OK"));
