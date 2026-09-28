@@ -444,14 +444,16 @@ if (window._MMM_INITIALIZED) {
 
     // changed it to use fetch instead since
     // tampermonkey was ggez'ing unpatcher's websocket proxy
-    async function fetchSongs() {
-      const cached = getCached("songs");
-      if (cached) {
-        songsList = cached;
-        console.log(
-          `Songs loaded from sessionStorage (${songsList.length} songs)`,
-        );
-        return songsList;
+    async function fetchSongs(force = fasle) {
+      if (!force) {
+        const cached = getCached("songs");
+        if (cached) {
+          songsList = cached;
+          console.log(
+            `Songs loaded from sessionStorage (${songsList.length} songs)`,
+          );
+          return songsList;
+        }
       }
       try {
         const response = await fetch(`${API_BASE}/songs`, {
@@ -2376,7 +2378,7 @@ if (window._MMM_INITIALIZED) {
     let songsHash = "";
     async function refreshSongs() {
       try {
-        const newList = await fetchSongs();
+        const newList = await fetchSongs(true);
         const newHash = JSON.stringify(newList);
         if (newHash === songsHash) return;
         songsList = newList;
