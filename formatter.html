@@ -390,7 +390,7 @@
 
         if (words.length === 1) {
           const parts = [];
-          for (let i = 0; i < lines.length; i += MAX_LEN) {
+          for (let i = 0; i < line.length; i += MAX_LEN) {
             parts.push(line.slice(i, i + MAX_LEN));
           }
           return parts;
