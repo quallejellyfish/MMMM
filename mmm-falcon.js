@@ -444,7 +444,7 @@ if (window._MMM_INITIALIZED) {
 
     // changed it to use fetch instead since
     // tampermonkey was ggez'ing unpatcher's websocket proxy
-    async function fetchSongs(force = fasle) {
+    async function fetchSongs(force = false) {
       if (!force) {
         const cached = getCached("songs");
         if (cached) {
