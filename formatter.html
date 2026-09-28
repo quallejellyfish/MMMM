@@ -221,55 +221,57 @@
         <a href="/stats.html">Go to Stats Leaderboard</a>
       </span>
 
-      <div class="card">
-        <div class="stats">
-          <div class="stat">Input lines: <strong id="statIn">0</strong></div>
-          <div class="stat">
-            Output fragments: <strong id="statOut">0</strong>
+      <main>
+        <div class="card">
+          <div class="stats">
+            <div class="stat">Input lines: <strong id="statIn">0</strong></div>
+            <div class="stat">
+              Output fragments: <strong id="statOut">0</strong>
+            </div>
+            <div class="stat">
+              Longest fragment: <strong id="statMax">0</strong>
+            </div>
+            <div class="stat danger">
+              Over 30 chars: <strong id="statOver">0</strong>
+            </div>
           </div>
-          <div class="stat">
-            Longest fragment: <strong id="statMax">0</strong>
-          </div>
-          <div class="stat danger">
-            Over 30 chars: <strong id="statOver">0</strong>
-          </div>
-        </div>
 
-        <div class="flex-1-2">
-          <div class="pane input">
-            <label for="rawInput">Raw Lyrics</label>
+          <div class="flex-1-2">
+            <div class="pane input">
+              <label for="rawInput">Raw Lyrics</label>
+              <textarea
+                id="rawInput"
+                spellcheck="false"
+                placeholder="Paste raw lyrics here, one line per lyric...&#10;&#10;Example:&#10;Booby boob boob bob boby&#10;Yeah, bob bob!&#10;I'm gettin' bobbed boobed&#10;[Verse 1]&#10;boobies bob boob bob bobby"
+              ></textarea>
+            </div>
+          </div>
+
+          <div class="pane output">
+            <label for="output">Formatted Output</label>
             <textarea
-              id="rawInput"
+              id="output"
               spellcheck="false"
-              placeholder="Paste raw lyrics here, one line per lyric...&#10;&#10;Example:&#10;Booby boob boob bob boby&#10;Yeah, bob bob!&#10;I'm gettin' bobbed boobed&#10;[Verse 1]&#10;boobies bob boob bob bobby"
+              readonly
+              placeholder="Your formatted output will appear here..."
             ></textarea>
           </div>
-        </div>
+          <label
+            for="punctToggle"
+            style="display: inline; color: #fff; font-size: 1rem"
+            >Keep Punctuation?</label
+          >
+          <input type="checkbox" id="punctToggle" checked />
+          <div class="toolbar">
+            <button id="formatBtn" class="success">Format Lyrics</button>
+            <button id="copyJsBtn">Copy JS</button>
+            <button id="copyJsonBtn" class="secondary">Copy JSON</button>
+            <button id="clearBtn" class="secondary">Clear</button>
+          </div>
 
-        <div class="pane output">
-          <label for="output">Formatted Output</label>
-          <textarea
-            id="output"
-            spellcheck="false"
-            readonly
-            placeholder="Your formatted output will appear here..."
-          ></textarea>
+          <div class="status" id="statusMsg">Ready.</div>
         </div>
-        <label
-          for="punctToggle"
-          style="display: inline; color: #fff; font-size: 1rem"
-          >Keep Punctuation?</label
-        >
-        <input type="checkbox" id="punctToggle" checked />
-        <div class="toolbar">
-          <button id="formatBtn" class="success">Format Lyrics</button>
-          <button id="copyJsBtn">Copy JS</button>
-          <button id="copyJsonBtn" class="secondary">Copy JSON</button>
-          <button id="clearBtn" class="secondary">Clear</button>
-        </div>
-
-        <div class="status" id="statusMsg">Ready.</div>
-      </div>
+      </main>
     </div>
     <script src="https://cdn.jsdelivr.net/npm/pinyin-pro@3/dist/index.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/kuroshiro@1.1.2/dist/kuroshiro.min.js"></script>
