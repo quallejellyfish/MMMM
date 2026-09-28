@@ -267,9 +267,33 @@
       </div>
     </div>
     <script src="https://cdn.jsdelivr.net/npm/pinyin-pro@3/dist/index.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/kuroshiro@1.1.2/dist/kuroshiro.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/kuroshiro-analyzer-kuromoji@1.1.0/dist/kuroshiro-analyzer-kuromoji.min.js"></script>
     <script>
       const MAX_LEN = 30;
       const PUNCT_RE = /[.!?:;"()\[\]{},]/g;
+      let kuroshiroReady = null;
+
+      function initKuroshiro() {
+        if (kuroshiroReady) return kuroshiroReady;
+        if (!window.Kuroshiro || !window.KuromojiAnalyzer) {
+          kuroshiroReady = Promise.resolve(null);
+          return kuroshiroReady;
+        }
+        const ks = new window.Kuroshiro();
+        kuroshiroReady = ks
+          .init(
+            new window.KuromojiAnalyzer({
+              dictPath: "https://cdn.jsdelivr.net/npm/kuromoji@0.1.2/dict",
+            }),
+          )
+          .then(() => ks)
+          .catch((e) => {
+            console.warn("Kuroshiro init failed:", e);
+            return null;
+          });
+        return kuroshiroReady;
+      }
 
       let keepPunctuation = false;
 
@@ -291,7 +315,7 @@
         return s.replace(/\[[^\]]*\]/g, "");
       }
 
-      function asciiNormalize(input) {
+      async function asciiNormalize(input) {
         if (typeof input !== "string") {
           console.warn("Received non-string, defaulting to ''", input);
           return "";
@@ -308,14 +332,29 @@
           .replace(/[\u201C\u201D\u201E\u201F\u2033]/g, '"')
           .replace(/[\u2013\u2014]/g, "-");
 
-        // Chinese/Japanese/Korean characters
+        // Japanese characters
+        if (window.Kuroshiro && /[\u3040-\u309F\u30A0-\u30FF]/.test(s)) {
+          try {
+            const ks = await initKuroshiro();
+            if (ks) {
+              s = await ks.convert(s, {
+                to: "romaji",
+                mode: "spaced",
+                romajiSystem: "hepburn",
+              });
+            }
+          } catch (e) {
+            console.warn("Japanese conversion failed:", e);
+          }
+        }
+
+        // Chinese characters
         if (window.pinyinPro && /[\u3400-\u9FFF\uF900-\uFAFF]/.test(s)) {
           try {
             s = window.pinyinPro.pinyin(s, {
-              toneType: "none",   // no tones
+              toneType: "none",
               type: "string",
               separator: " ",
-              nonZh: "consecutive",
             });
           } catch (e) {
             console.warn("Pinyin conversion failed:", e);
@@ -332,12 +371,12 @@
         return s.replace(PUNCT_RE, " ");
       }
 
-      function cleanLine(line, keepPunct) {
+      async function cleanLine(line, keepPunct) {
         if (typeof line !== "string") return "";
         let s = line;
         s = removeHtml(s);
         s = removeMetadata(s);
-        s = asciiNormalize(s);
+        s = await asciiNormalize(s);
         if (!keepPunct) s = removePunctuation(s);
         s = s.replace(/\s+/g, " ").trim();
         return s;
@@ -397,12 +436,12 @@
         return fragments;
       }
 
-      function processLyrics(input, keepPunct) {
+      async function processLyrics(input, keepPunct) {
         if (typeof input !== "string") return [];
         const lines = input.split(/\r?\n/);
         const out = [];
         for (const raw of lines) {
-          const cleaned = cleanLine(raw, keepPunct);
+          const cleaned = await cleanLine(raw, keepPunct);
           if (!cleaned) continue;
           for (const f of splitLine(cleaned)) {
             if (f) out.push(f);
@@ -458,7 +497,7 @@
         const over = frags.filter((f) => f.length > MAX_LEN).length;
         statOver.textContent = over;
       }
-      function format() {
+      async function format() {
         const text = rawInput.value;
         if (!text.trim()) {
           lastFragments = [];
@@ -467,7 +506,8 @@
           setStatus("Nothing to format.", "err");
           return;
         }
-        const frags = processLyrics(text, keepPunctuation);
+        setStatus("Formatting…");
+        const frags = await processLyrics(text, keepPunctuation);
         lastFragments = frags;
         output.value = toJsOutput(frags);
         updateStats(text, frags);
@@ -544,6 +584,8 @@
           if (rawInput.value.trim()) format();
         }, 350);
       });
+
+      initKuroshiro();
     </script>
   </body>
 </html>
