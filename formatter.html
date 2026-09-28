@@ -290,6 +290,7 @@
           .then(() => ks)
           .catch((e) => {
             console.warn("Kuroshiro init failed:", e);
+            kuroshiroReady = null;
             return null;
           });
         return kuroshiroReady;
@@ -333,6 +334,9 @@
         // Japanese characters
         if (window.Kuroshiro && /[\u3040-\u309F\u30A0-\u30FF]/.test(s)) {
           try {
+            if (!kuroshiroReady) {
+              setStatus("One-time download of a Japanese dictionary");
+            }
             const ks = await initKuroshiro();
             if (ks) {
               s = await ks.convert(s, {
@@ -583,8 +587,6 @@
           if (rawInput.value.trim()) format();
         }, 350);
       });
-
-      initKuroshiro();
     </script>
   </body>
 </html>
