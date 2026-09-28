@@ -6,11 +6,9 @@
     "start": "node index.js"
   },
   "dependencies": {
+    "cookie-parser": "^1.4.7",
     "cors": "^2.8.6",
-    "crypto": "^1.0.1",
     "express": "^4.22.2",
-    "jsonwebtoken": "^9.0.0",
-    "ws": "^8.21.1",
-    "cookie-parser": "^1.4.7"
+    "jsonwebtoken": "^9.0.3"
   }
 }
