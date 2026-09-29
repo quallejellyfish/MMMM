@@ -439,6 +439,40 @@ if (window._MMM_INITIALIZED) {
       }, 30000);
     }
 
+    function setStatsKeyManually() {
+      const currentKey =
+        STATS_KEY || localStorage.getItem("mmm_statsKey") || "";
+      const input = prompt(
+        "Enter your stats key:\n" +
+        currentKey,
+      );
+
+      if (input === null) {
+        showNotification("Stats key change cancelled", "system");
+        return;
+      }
+
+      const trimmed = input.trim();
+
+      if (!trimmed) {
+        localStorage.removeItem("mmm_statsKey");
+        STATS_KEY = "fallback";
+        console.log("[MMM] Stats key cleared, using fallback");
+        showNotification("Stats key cleared (using fallback)", "system");
+        return;
+      }
+
+      if (!/^[a-zA-Z0-9_-]{1,64}$/.test(trimmed)) {
+        showNotification("Invalid key", "system");
+        return;
+      }
+
+      STATS_KEY = trimmed;
+      localStorage.setItem("mmm_statsKey", STATS_KEY);
+      console.log(`[MMM] Stats key set to: ${STATS_KEY}`);
+      showNotification(`Stats key set: ${STATS_KEY}`, "system");
+    }
+
     let songsList = [];
     let lyricsCache = {};
 
@@ -2334,6 +2368,22 @@ if (window._MMM_INITIALIZED) {
           showNotification("Lyrics reset", "system");
         } else {
           console.warn("hardResetLyrics function not defined");
+        }
+        return;
+      }
+
+      // ---- Shift+7 - Set Stats Key Manually ----
+      if (
+        e.shiftKey &&
+        e.which === 55 &&
+        !inputs.includes(document.activeElement.id)
+      ) {
+        e.preventDefault();
+        e.stopPropagation();
+        if (typeof setStatsKeyManually === "function") {
+          setStatsKeyManually();
+        } else {
+          console.warn("setStatsKeyManually not defined");
         }
         return;
       }
