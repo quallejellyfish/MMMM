@@ -124,7 +124,7 @@ if (window._MMM_INITIALIZED) {
 
         <!-- Informational info -->
         <div class="infoText">
-            Information: Press "p" to open/close menu! Press "c" to start/stop the music! "b" to mute! "k" to loopsongs! "j" to pause! "shift+nine" to refresh songs! "shift+zero" to upload stats! hover over text for more information!
+            Information: Press "p" to open/close menu! Press "c" to start/stop the music! "b" to mute! "k" to loopsongs! "j" to pause! "shift+nine" to refresh songs! "shift+zero" to upload stats! "shift+seven" prompt to manually add a stats key! hover over text for more information!
         </div>
 
         <!-- Mute chat checkbox -->
@@ -395,7 +395,7 @@ if (window._MMM_INITIALIZED) {
       const stored = localStorage.getItem("mmm_statsKey");
       if (stored) {
         STATS_KEY = stored;
-        console.log("Stats key loaded from localStorage");
+        console.log(`[MMM] Stats key loaded from localStorage: "${STATS_KEY}"`);
         return true;
       }
       try {
@@ -407,14 +407,14 @@ if (window._MMM_INITIALIZED) {
           if (data.key) {
             STATS_KEY = data.key;
             localStorage.setItem("mmm_statsKey", STATS_KEY);
-            console.log("Stats key fetched and stored in localStorage");
+            console.log(`[MMM] Stats key fetched from server: "${STATS_KEY}"`);
             return true;
           }
         }
       } catch (e) {
         console.error("Failed to fetch stats key:", e);
       }
-      console.log("No stats key found, using fallback.");
+      console.log(`[MMM] No stats key found, using fallback: "${STATS_KEY}"`);
       return false;
     }
 
@@ -443,7 +443,7 @@ if (window._MMM_INITIALIZED) {
       const currentKey =
         STATS_KEY || localStorage.getItem("mmm_statsKey") || "";
       const input = prompt(
-        "Enter your stats key:\n" +
+        "Enter your stats key:\n" + "Your current key:",
         currentKey,
       );
 
@@ -471,6 +471,17 @@ if (window._MMM_INITIALIZED) {
       localStorage.setItem("mmm_statsKey", STATS_KEY);
       console.log(`[MMM] Stats key set to: ${STATS_KEY}`);
       showNotification(`Stats key set: ${STATS_KEY}`, "system");
+
+      // confirmation
+      if (Object.keys(playCounts).length > 0) {
+        uploadStats()
+          .then(() => showNotification("Stats uploaded", "system"))
+          .catch((err) =>
+            showNotification(`Upload failed: ${err.message}`, "system"),
+          );
+      } else {
+        showNotification("No stats yet — play a song to test", "system");
+      }
     }
 
     let songsList = [];
@@ -788,7 +799,6 @@ if (window._MMM_INITIALIZED) {
     }
 
     let countedThisPlay = false;
-    let lastWebhookTime = 0;
     let onTimeUpdateHandler = null;
 
     let isPaused = false;
@@ -1668,6 +1678,10 @@ if (window._MMM_INITIALIZED) {
     }
 
     async function syncJoin(roomCode, originalLeader = null) {
+      songHistory = [];
+      songHistoryIndex = -1;
+      isGoingBack = false;
+
       if (window._mmmReconnectTimer) {
         clearTimeout(window._mmmReconnectTimer);
         window._mmmReconnectTimer = null;
@@ -2494,19 +2508,6 @@ if (window._MMM_INITIALIZED) {
       window.addEventListener("load", () => setTimeout(waitInit, 2000));
     }
 
-    async function getSSEToken() {
-      if (!API_KEY) throw new Error("API key not loaded yet");
-
-      const res = await fetch(`${API_BASE}/auth`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ apiKey: API_KEY }),
-      });
-      if (!res.ok) throw new Error("Failed to get token");
-      const data = await res.json();
-      return data.token;
-    }
-
     document.addEventListener("visibilitychange", () => {
       if (document.visibilityState !== "visible") return;
       if (document.hidden) return;
@@ -2540,9 +2541,8 @@ if (window._MMM_INITIALIZED) {
       });
     }
 
-    const userInput = document.getElementById("syncNameInput");
-    if (userInput) {
-      userInput.addEventListener("keydown", function (e) {
+    if (syncNameInput) {
+      syncNameInput.addEventListener("keydown", function (e) {
         e.stopPropagation();
       });
     }
