@@ -191,10 +191,23 @@ if (window._MMM_INITIALIZED) {
                   <label for="syncNameInput" style="font-size: 14px !important;">Your Name</label>
                   <input type="text" id="syncNameInput" placeholder="a-z, 0-9 only" maxlength="20" style="flex: 1; max-width: 120px; padding: 4px 8px; background: #3a3a4a; border: 1px solid #555; border-radius: 6px; color: #fff; outline: none; font-size: 13px;">
                 </div>
-                <input type="text" id="roomCodeInput" placeholder="Room Code" class="sync-btn" style="flex: 1; max-width: 160px; padding: 4px 8px; background: #3a3a4a; border: 1px solid #555; border-radius: 6px; color: #fff; outline: none;">
-                <button id="joinSyncBtn" class="sync-btn" style="background: #2ecc71; border: none; color: #1e1e2f; padding: 4px 12px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 12px;">Join / Create</button>
-                <button id="leaveSyncBtn" class="sync-btn" style="background: #e74c3c; border: none; color: white; padding: 4px 12px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 12px;">Leave</button>
-                <button id="makeLeaderBtn" class="sync-btn" style="background: #f1c40f; border: none; color: #1e1e2f; padding: 4px 12px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 12px; margin-left: 55%;">Make Leader</button>
+               <div style="display:flex; align-items:center; gap:6px; margin: 6px 0; width: 100%;">
+                <input type="text" id="roomCodeInput" placeholder="Room Code" class="sync-btn" style="flex: 1; max-width: 130px; padding: 4px 8px; background: #3a3a4a; border: 1px solid #555; border-radius: 6px; color: #fff; outline: none;">
+                <button id="browseRoomsBtn" class="sync-btn" style="background: #8e44ad; border: none; color: white; padding: 4px 10px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 12px;">Browse</button>
+              </div>
+
+              <div id="roomListContainer" style="display: none; max-height: 180px; overflow-y: auto; background: rgba(0,0,0,0.35); border: 1px solid #555; border-radius: 8px; padding: 6px; margin: 6px 0;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; padding: 0 4px;">
+                  <span style="font-size: 11px; color: #aaa; text-transform: uppercase; letter-spacing: 1px;">Active Rooms</span>
+                  <span id="refreshRoomsBtn" style="cursor: pointer; color: #ff79c6; font-size: 13px; user-select: none;" title="Refresh"><svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e3e3e3"><path d="M480-160q-134 0-227-93t-93-227q0-134 93-227t227-93q69 0 132 28.5T720-690v-110h80v280H520v-80h168q-32-56-87.5-88T480-720q-100 0-170 70t-70 170q0 100 70 170t170 70q77 0 139-44t87-116h84q-28 106-114 173t-196 67Z"/></svg></span>
+                </div>
+                <ul id="roomList" style="list-style: none; margin: 0; padding: 0;"></ul>
+                <div id="roomListEmpty" style="display: none; color: #888; font-size: 12px; text-align: center; padding: 8px;">No active rooms right now</div>
+              </div>
+
+              <button id="joinSyncBtn" class="sync-btn" style="">Join / Create</button>
+              <button id="leaveSyncBtn" class="sync-btn" style="">Leave</button>
+              <button id="makeLeaderBtn" class="sync-btn" style="">Make Leader</button>
             </div>
             <div id="syncMembers" style="font-size: 13px !important; color: #aaa; margin-top: 4px;">Members: none</div>
         </div>
@@ -2145,12 +2158,102 @@ if (window._MMM_INITIALIZED) {
       syncMakeLeader(target);
     });
 
-    document.getElementById("autoplayToggle").addEventListener("click", () => {
-      document.querySelector(".autoplay-section").classList.toggle("open");
-    });
-
     document.getElementById("syncToggle").addEventListener("click", () => {
       document.querySelector(".syncsongs-section").classList.toggle("open");
+    });
+
+    const browseRoomsBtn = document.getElementById("browseRoomsBtn");
+    const roomListContainer = document.getElementById("roomListContainer");
+    const roomListEl = document.getElementById("roomList");
+    const roomListEmpty = document.getElementById("roomListEmpty");
+    const refreshRoomsBtn = document.getElementById("refreshRoomsBtn");
+
+    async function loadRoomList() {
+      roomListEl.innerHTML =
+        '<li style="color:#888; font-size:12px; text-align:center; padding:8px;">Loading…</li>';
+      roomListEmpty.style.display = "none";
+      try {
+        const res = await fetch(`${API_BASE}/sync/rooms`);
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        const rooms = await res.json();
+
+        roomListEl.innerHTML = "";
+        if (!rooms.length) {
+          roomListEmpty.style.display = "block";
+          return;
+        }
+
+        rooms.forEach((room) => {
+          const isCurrent = room.roomCode === syncRoom;
+          const li = document.createElement("li");
+          li.style.cssText =
+            "display: flex; justify-content: space-between; align-items: center; " +
+            "padding: 6px 10px; border-radius: 6px; cursor: pointer; " +
+            "transition: background 0.15s; font-size: 13px; " +
+            (isCurrent ? "background: rgba(46,204,113,0.15);" : "");
+
+          const name = document.createElement("span");
+          name.textContent = room.roomCode + (isCurrent ? " (current)" : "");
+          name.style.cssText = "color: #fff; font-weight: bold;";
+
+          const meta = document.createElement("span");
+          meta.textContent =
+            `${room.members} member${room.members === 1 ? "" : "s"}` +
+            (room.hasSong ? (room.paused ? " · paused" : " · playing") : "");
+          meta.style.cssText = "color: #aaa; font-size: 11px;";
+
+          li.appendChild(name);
+          li.appendChild(meta);
+
+          if (!isCurrent) {
+            li.addEventListener("mouseenter", () => {
+              li.style.background = "rgba(255,121,198,0.18)";
+            });
+            li.addEventListener("mouseleave", () => {
+              li.style.background = "transparent";
+            });
+          }
+
+          li.addEventListener("click", async () => {
+            if (isCurrent) {
+              showNotification("Already in this room", "system");
+              return;
+            }
+            document.getElementById("roomCodeInput").value = room.roomCode;
+            roomListContainer.style.display = "none";
+            if (syncRoom) {
+              await syncLeave();
+            }
+            syncJoin(room.roomCode);
+          });
+
+          roomListEl.appendChild(li);
+        });
+      } catch (err) {
+        roomListEl.innerHTML = "";
+        roomListEmpty.textContent = `Failed to load: ${err.message}`;
+        roomListEmpty.style.display = "block";
+      }
+    }
+
+    browseRoomsBtn.addEventListener("click", async (e) => {
+      e.stopPropagation();
+      const isHidden = roomListContainer.style.display === "none";
+      if (isHidden) {
+        roomListContainer.style.display = "block";
+        await loadRoomList();
+      } else {
+        roomListContainer.style.display = "none";
+      }
+    });
+
+    refreshRoomsBtn.addEventListener("click", (e) => {
+      e.stopPropagation();
+      loadRoomList();
+    });
+
+    document.getElementById("autoplayToggle").addEventListener("click", () => {
+      document.querySelector(".autoplay-section").classList.toggle("open");
     });
 
     document
