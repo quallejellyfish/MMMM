@@ -981,8 +981,9 @@ app.post("/sync/heartbeat", express.json(), (req, res) => {
   res.json({ ok: true });
 });
 
-const ROOM_GRACE_PERIOD = 120 * 1000;
-const MEMBER_STALE_MS = 2 * 60 * 1000;
+const ROOM_GRACE_PERIOD = 45 * 1000;
+const MEMBER_STALE_MS = 25 * 1000;
+const SYNC_CLEANUP_INTERVAL = 10 * 1000;
 
 setInterval(() => {
   const now = Date.now();
@@ -1028,7 +1029,7 @@ setInterval(() => {
       );
     }
   }
-}, 30000);
+}, SYNC_CLEANUP_INTERVAL);
 
 function broadcastSyncUpdate(roomCode) {
   const room = syncRooms.get(roomCode);
