@@ -1272,6 +1272,23 @@ app.post("/sync/make_leader", express.json(), (req, res) => {
   res.json({ message: `Leader changed to ${target}` });
 });
 
+app.get("/sync/rooms", (req, res) => {
+  const list = [];
+  for (const [roomCode, room] of syncRooms) {
+    if (!room.members || room.members.length === 0) continue;
+    list.push({
+      roomCode,
+      members: room.members.length,
+      hasSong: room.currentSong !== null && room.currentSong !== undefined,
+      paused: room.paused || false,
+    });
+  }
+  list.sort(
+    (a, b) => b.members - a.members || a.roomCode.localeCompare(b.roomCode),
+  );
+  res.json(list)
+});
+
 // PROTECTED
 app.get("/songs", verifyGuestToken, (req, res) => {
   const isAdmin = req.signedCookies.auth === "true";
