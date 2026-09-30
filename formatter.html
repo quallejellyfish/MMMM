@@ -380,17 +380,49 @@
         return s.replace(PUNCT_RE, " ");
       }
 
-      async function cleanLine(line, keepPunct) {
+      function splitBracketedContent(line) {
+        if (typeof line !== "string") return [];
+        const trimmed = line.trim();
+        if (!trimmed) return [];
+
+        const parts = [];
+        let lastIndex = 0;
+        const re = /\(([^()]*)\)/g;
+        let match;
+
+        while ((match = re.exec(trimmed)) !== null) {
+          const before = trimmed.slice(lastIndex, match.index).trim();
+          if (before) parts.push({ text: before, bracketed: false });
+
+          const inner = match[1].trim();
+          if (inner) parts.push({ text: `(${inner})`, bracketed: true });
+
+          lastIndex = re.lastIndex;
+        }
+
+        const after = trimmed.slice(lastIndex).trim();
+        if (after) parts.push({ text: after, bracketed: false });
+
+        return parts.length ? parts : [{ text: trimmed, bracketed: false }];
+      }
+
+      async function cleanLine(line, keepPunct, preserveParens = false) {
         if (typeof line !== "string") return "";
         let s = line;
         s = removeHtml(s);
         s = removeMetadata(s);
         s = await asciiNormalize(s);
-        if (!keepPunct) s = removePunctuation(s);
+        if (!keepPunct) {
+          if (preserveParens && s.startsWith("(") && s.endsWith(")")) {
+            const inner = s.slice(1, -1);
+            s = "(" + removePunctuation(inner) + ")";
+          } else {
+            s = removePunctuation(s);
+          }
+        }
         s = s.replace(/\s+/g, " ").trim();
         return s;
       }
-
       function splitLine(line) {
         if (line.length <= MAX_LEN) return [line];
 
@@ -450,10 +482,13 @@
         const lines = input.split(/\r?\n/);
         const out = [];
         for (const raw of lines) {
-          const cleaned = await cleanLine(raw, keepPunct);
-          if (!cleaned) continue;
-          for (const f of splitLine(cleaned)) {
-            if (f) out.push(f);
+          const parts = splitBracketedContent(raw);
+          for (const { text, bracketed } of parts) {
+            const cleaned = await cleanLine(text, keepPunct, bracketed);
+            if (!cleaned) continue;
+            for (const f of splitLine(cleaned)) {
+              if (f) out.push(f);
+            }
           }
         }
         return out;
