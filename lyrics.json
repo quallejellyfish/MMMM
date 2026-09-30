@@ -99055,6 +99055,228 @@
       "delay": 113832
     }
   ],
+  "278": [
+    {
+      "chat": "Hey, it's me",
+      "delay": 1967
+    },
+    {
+      "chat": "Hey, it's me, it's Verity",
+      "delay": 3584
+    },
+    {
+      "chat": "Ask me anything",
+      "delay": 5733
+    },
+    {
+      "chat": "(I got a question)",
+      "delay": 8365
+    },
+    {
+      "chat": "I know about a million things",
+      "delay": 9417
+    },
+    {
+      "chat": "(Well, that's great)",
+      "delay": 12523
+    },
+    {
+      "chat": "I'll do everything (Alright)",
+      "delay": 13492
+    },
+    {
+      "chat": "What's the capital of France?",
+      "delay": 17480
+    },
+    {
+      "chat": "Oh, oui, oui, oui,",
+      "delay": 20278
+    },
+    {
+      "chat": "it is Paris (Merci)",
+      "delay": 22375
+    },
+    {
+      "chat": "Okay, what does the cow say?",
+      "delay": 25655
+    },
+    {
+      "chat": "Oh, moo, moo, moo,",
+      "delay": 27864
+    },
+    {
+      "chat": "I speak that too",
+      "delay": 29822
+    },
+    {
+      "chat": "All day (Alright, thanks)",
+      "delay": 31947
+    },
+    {
+      "chat": "Do you live alone?",
+      "delay": 34309
+    },
+    {
+      "chat": "Is anybody home?",
+      "delay": 36022
+    },
+    {
+      "chat": "One, two, three and so, where",
+      "delay": 37991
+    },
+    {
+      "chat": "did everybody go?",
+      "delay": 39990
+    },
+    {
+      "chat": "Hey, it's me, it's",
+      "delay": 41922
+    },
+    {
+      "chat": "Verity (La-la-la-la)",
+      "delay": 43866
+    },
+    {
+      "chat": "Ask me anything",
+      "delay": 46090
+    },
+    {
+      "chat": "(Just so you know)",
+      "delay": 48465
+    },
+    {
+      "chat": "I know about a million",
+      "delay": 49333
+    },
+    {
+      "chat": "things (La-la-la-la)",
+      "delay": 51946
+    },
+    {
+      "chat": "I'll do everything",
+      "delay": 53625
+    },
+    {
+      "chat": "(Okay, but, but why?)",
+      "delay": 56008
+    },
+    {
+      "chat": "Why's the door locked up",
+      "delay": 57531
+    },
+    {
+      "chat": "so tight?",
+      "delay": 58682
+    },
+    {
+      "chat": "Oh, tee, hee, hee,",
+      "delay": 60338
+    },
+    {
+      "chat": "no need to leave",
+      "delay": 62168
+    },
+    {
+      "chat": "Stay here (But why?)",
+      "delay": 64219
+    },
+    {
+      "chat": "Why do you know where I sleep?",
+      "delay": 66023
+    },
+    {
+      "chat": "Oh, I just know,",
+      "delay": 67952
+    },
+    {
+      "chat": "I always know",
+      "delay": 69874
+    },
+    {
+      "chat": "I'm close",
+      "delay": 71960
+    },
+    {
+      "chat": "Do you live alone?",
+      "delay": 74304
+    },
+    {
+      "chat": "Is anybody home?",
+      "delay": 76051
+    },
+    {
+      "chat": "One, two, three and so,",
+      "delay": 78048
+    },
+    {
+      "chat": "where did everybody go?",
+      "delay": 79620
+    },
+    {
+      "chat": "Hey, it's me,",
+      "delay": 82154
+    },
+    {
+      "chat": "Hey, it's me, it's Verity",
+      "delay": 83660
+    },
+    {
+      "chat": "(Come closer)",
+      "delay": 84624
+    },
+    {
+      "chat": "Ask me anything",
+      "delay": 85799
+    },
+    {
+      "chat": "(Uh, I'd-I'd rather not)",
+      "delay": 88074
+    },
+    {
+      "chat": "I know about a million things",
+      "delay": 89258
+    },
+    {
+      "chat": "I'll do everything",
+      "delay": 93598
+    },
+    {
+      "chat": "Come, come closer",
+      "delay": 97106
+    },
+    {
+      "chat": "Come be my friend, don't be so",
+      "delay": 100457
+    },
+    {
+      "chat": "scared (Love me)",
+      "delay": 103122
+    },
+    {
+      "chat": "Hey, it's me, it's",
+      "delay": 105403
+    },
+    {
+      "chat": "Verity (La-la-la-la)",
+      "delay": 106722
+    },
+    {
+      "chat": "Ask me anything (La-la-la-la)",
+      "delay": 108909
+    },
+    {
+      "chat": "I know about a million",
+      "delay": 112181
+    },
+    {
+      "chat": "things (La-la-la-la)",
+      "delay": 114780
+    },
+    {
+      "chat": "I'll do everything",
+      "delay": 116290
+    }
+  ],
   "999": [
     {
       "chat": "",
