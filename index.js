@@ -973,6 +973,11 @@ app.post("/sync/heartbeat", express.json(), (req, res) => {
     room.memberLastSeen[name] = Date.now();
     console.log(`[Heartbeat] ${name} in ${roomCode} updated`);
   } else {
+    if (!room.knownMembers) room.knownMembers = [];
+    if (room.locked && !room.knownMembers.includes(name)) {
+      return res.status(403).json({ error: "Room is locked" });
+    }
+    if (!room.knownMembers.includes(name)) room.knownMembers.push(name);
     room.members.push(name);
     room.memberLastSeen[name] = Date.now();
     broadcastSyncUpdate(roomCode);
@@ -1045,6 +1050,7 @@ function broadcastSyncUpdate(roomCode) {
     currentTime: room.currentTime || 0,
     timestamp: room.playTimestamp || Date.now(),
     loop: room.loop || false,
+    locked: !!room.locked,
   });
   for (const client of clients) {
     try {
@@ -1083,6 +1089,7 @@ app.get("/sync/events/:roomCode", (req, res) => {
     currentTime: room.currentTime || 0,
     timestamp: room.playTimestamp || Date.now(),
     loop: room.loop || false,
+    locked: !!room.locked,
   });
 
   res.write(`data: ${payload}\n\n`);
