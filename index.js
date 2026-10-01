@@ -1204,8 +1204,7 @@ app.post("/sync/leave", express.json(), (req, res) => {
 });
 
 app.post("/sync/play", express.json(), (req, res) => {
-  const { roomCode, name, songId, currentTime, timestamp, partnerSongId } =
-    req.body;
+  const { roomCode, name, songId, currentTime, partnerSongId, delayMs } = req.body;
   if (!roomCode || !name || songId === undefined) {
     return res.status(400).json({ error: "Missing roomCode, name, or songId" });
   }
@@ -1214,14 +1213,15 @@ app.post("/sync/play", express.json(), (req, res) => {
   if (room.leader !== name) {
     return res.status(403).json({ error: "Only the leader can play a song" });
   }
+  const delay = typeof delayMs === "number" ? delayMs : 2000;
   room.currentSong = songId;
   room.partnerSongId = partnerSongId || null;
   room.paused = false;
   room.currentTime = currentTime || 0;
-  room.playTimestamp = timestamp || Date.now();
+  room.playTimestamp = Date.now() + delay;
   room.lastUpdate = Date.now();
   broadcastSyncUpdate(roomCode);
-  res.json({ message: "Song set" });
+  res.json({ message: "Song set", playTimestamp: room.playTimestamp });
 });
 
 app.post("/sync/pause", express.json(), (req, res) => {
