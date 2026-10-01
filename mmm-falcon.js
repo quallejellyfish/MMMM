@@ -1168,17 +1168,16 @@ if (window._MMM_INITIALIZED) {
     }
 
     function onSongEnded() {
+      if (loopSong && !autoplayMode) {
+        currentAudio.currentTime = 0;
+        currentAudio
+          .play()
+          .then(() => scheduleMessages(chatMessages))
+          .catch((err) => console.warn("Loop restart failed:", err));
+        return;
+      }
+
       setTimeout(() => {
-        if (loopSong && !autoplayMode) {
-          currentAudio.currentTime = 0;
-          currentAudio
-            .play()
-            .then(() => {
-              scheduleMessages(chatMessages);
-            })
-            .catch((err) => console.warn("Loop restart failed:", err));
-          return;
-        }
         resetLyricsState();
         if (autoplayMode) {
           playNextAuto();
@@ -1713,7 +1712,6 @@ if (window._MMM_INITIALIZED) {
         if (loopCheckbox) {
           loopCheckbox.checked = syncLoop;
           loopSong = syncLoop;
-          if (currentAudio) currentAudio.loop = syncLoop;
         }
         needUIUpdate = true;
       }
@@ -1792,7 +1790,6 @@ if (window._MMM_INITIALIZED) {
         if (loopCheckbox) {
           loopCheckbox.checked = syncLoop;
           loopSong = syncLoop;
-          if (currentAudio) currentAudio.loop = syncLoop;
         }
         updateSyncUI();
 
@@ -2460,7 +2457,6 @@ if (window._MMM_INITIALIZED) {
         return;
       }
       loopSong = this.checked;
-      if (currentAudio) currentAudio.loop = loopSong;
       if (syncRoom && syncIsLeader) {
         syncSetLoop(loopSong);
       }
