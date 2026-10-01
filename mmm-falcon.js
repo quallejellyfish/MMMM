@@ -1494,7 +1494,7 @@ if (window._MMM_INITIALIZED) {
         })
         .catch((err) => {
           console.error("Hard reset lyrics fetch error:", err);
-          showNotification("Lyrics reset failed – fetch error", "system");
+          showNotification("Lyrics reset failed - fetch error", "system");
         });
     }
 
@@ -1511,7 +1511,11 @@ if (window._MMM_INITIALIZED) {
           const res = await fetch(`${API_BASE}/sync/heartbeat`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ roomCode: syncRoom, name: myRoomName() }),
+            body: JSON.stringify({
+              roomCode: syncRoom,
+              name: myRoomName(),
+              clientId: CLIENT_ID,
+            }),
           });
           if (res.status === 404) {
             console.warn("[MMM] Room vanished, rejoining...");
@@ -1525,8 +1529,16 @@ if (window._MMM_INITIALIZED) {
               clearInterval(syncHeartbeatInterval);
               syncHeartbeatInterval = null;
             }
-            showNotification("Room expired — rejoining…", "system");
+            showNotification("Room expired — rejoining...", "system");
             syncJoin(currentRoom, leader);
+          } else if (res.status === 403) {
+            console.warn(
+              "[MMM] Heartbeat rejected (403) — you may have been pruned from a locked room",
+            );
+          } else if (res.status === 400) {
+            console.warn(
+              "[MMM] Heartbeat malformed (400) — check request body",
+            );
           }
         } catch (err) {
           console.warn("Heartbeat failed:", err);
