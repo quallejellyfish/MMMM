@@ -992,9 +992,9 @@ app.post("/sync/heartbeat", express.json(), (req, res) => {
   res.json({ ok: true });
 });
 
-const ROOM_GRACE_PERIOD = 45 * 1000;
-const MEMBER_STALE_MS = 25 * 1000;
-const SYNC_CLEANUP_INTERVAL = 10 * 1000;
+const ROOM_GRACE_PERIOD = 5* 60 * 1000;
+const MEMBER_STALE_MS = 60 * 1000; 
+const SYNC_CLEANUP_INTERVAL = 15 * 1000;
 
 setInterval(() => {
   const now = Date.now();
