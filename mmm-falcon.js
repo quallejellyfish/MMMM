@@ -205,7 +205,7 @@ if (window._MMM_INITIALIZED) {
                 <div id="roomListEmpty" style="display: none; color: #888; font-size: 12px; text-align: center; padding: 8px;">No active rooms right now</div>
               </div>
               <button id="joinSyncBtn" class="sync-btn">Join / Create</button>
-              <button id="leaveSyncBtn" class="sync-btn"">Leave</button>
+              <button id="leaveSyncBtn" class="sync-btn">Leave</button>
               <button id="lockRoomBtn" class="sync-btn">Lock</button>
               <button id="makeLeaderBtn" class="sync-btn">Make Leader</button>
             </div>
@@ -1952,11 +1952,11 @@ if (window._MMM_INITIALIZED) {
       if (!btn) return;
       btn.textContent = syncLocked ? "Unlock" : "Lock";
       btn.style.background = syncLocked ? "#c0392b" : "#e67e22";
-      btn.style.opacity = syncRoom && syncLeader ? "1" : "0.5";
+      btn.style.opacity = syncIsLeader ? "1" : "0.5";
     }
 
     async function syncLockRoom(locked) {
-      if (!syncRoom || syncLeader) return;
+      if (!syncRoom || !syncLeader) return;
 
       try {
         const res = await fetch(`${API_BASE}/sync/lock`, {
