@@ -401,6 +401,26 @@ if (window._MMM_INITIALIZED) {
     }
     const CLIENT_ID = getClientId();
 
+    let clockOffset = 0;
+
+    async function syncClock() {
+      const t0 = Date.now();
+      try {
+        const res = await fetch(`${API_BASE}/sync/time`);
+        const t1 = Date.now();
+        const data = await res.json();
+        const rtt = t1 - t0;
+        clockOffset = data.t - (t0 + rtt / 2);
+        console.log(`[Sync] Clock offset: ${clockOffset}ms (RTT ${rtt}ms)`);
+      } catch (e) {
+        console.warn("[Sync] Clock sync failed:", e);
+      }
+    }
+
+    function serverNow() {
+      return Date.now() + clockOffset;
+    }
+
     async function fetchApiKey() {
       const cached = getCached("apiKey");
       if (cached) {
@@ -923,13 +943,11 @@ if (window._MMM_INITIALIZED) {
 
         let announcedStart = null;
         if (syncRoom && syncIsLeader) {
-          announcedStart = Date.now() + SYNC_START_DELAY_MS;
-          syncPlay(selectedSongId, 0, announcedStart);
-
-          currentAudio.currentTime = 0;
-          const waitMs = announcedStart - Date.now();
-          if (waitMs > 0) {
-            await new Promise((r) => setTimeout(r, waitMs));
+          const playTimestamp = await syncPlay(selectedSongId, 0, SYNC_START_DELAY_MS);
+          if (playTimestamp) {
+            announcedStart = playTimestamp;
+            const waitMs = playTimestamp - serverNow();
+            if (waitMs > 0) await new Promise((r) => setTimeout(r, waitMs));
           }
           currentAudio.currentTime = 0;
         }
@@ -1032,13 +1050,14 @@ if (window._MMM_INITIALIZED) {
 
         let announcedStart = null;
         if (syncRoom && syncIsLeader) {
-          announcedStart = Date.now() + SYNC_START_DELAY_MS;
-          syncPlay(selectedSongId, 0, announcedStart);
-
-          currentAudio.currentTime = 0;
-          const waitMs = announcedStart - Date.now();
-          if (waitMs > 0) await new Promise((r) => setTimeout(r, waitMs));
+          const playTimestamp = await syncPlay(selectedSongId, 0, SYNC_START_DELAY_MS);
           if (!isCurrentGen(gen)) return;
+          if (playTimestamp) {
+            announcedStart = playTimestamp;
+            const waitMs = playTimestamp - serverNow();
+            if (waitMs > 0) await new Promise((r) => setTimeout(r, waitMs));
+            if (!isCurrentGen(gen)) return;
+          }
           currentAudio.currentTime = 0;
         }
 
@@ -1173,7 +1192,7 @@ if (window._MMM_INITIALIZED) {
           .catch((err) => console.warn("Loop restart failed:", err));
 
         if (syncRoom && syncIsLeader && selectedSongId != null) {
-          syncPlay(selectedSongId, 0, Date.now());
+          syncPlay(selectedSongId, 0, 300);
         }
         return;
       }
@@ -1518,7 +1537,6 @@ if (window._MMM_INITIALIZED) {
               clearInterval(syncHeartbeatInterval);
               syncHeartbeatInterval = null;
             }
-            showNotification("Room expired — rejoining...", "system");
             syncJoin(currentRoom, leader);
           } else if (res.status === 403) {
             console.warn(
@@ -1657,15 +1675,12 @@ if (window._MMM_INITIALIZED) {
           syncCurrentTime = 0;
           needUIUpdate = true;
         } else if (!syncIsLeader && syncCurrentSongId !== null) {
-          const timestamp = msg.timestamp || Date.now();
+          const playTimestamp = msg.timestamp || serverNow();
           let targetSongId = syncCurrentSongId;
           if (duetMode && msg.partnerSongId) {
             targetSongId = msg.partnerSongId;
-            console.log(
-              `Duet mode: playing partner song ${targetSongId} instead of ${syncCurrentSongId}`,
-            );
           }
-          playSyncSong(targetSongId, msg.currentTime || 0, timestamp);
+          playSyncSong(targetSongId, msg.currentTime || 0, playTimestamp);
         }
         needUIUpdate = true;
       }
@@ -1772,6 +1787,11 @@ if (window._MMM_INITIALIZED) {
       isLeaving = false;
       window._mmmRejoining = true;
 
+      const wasPlayingSong = spamModeActive;
+      const previousSongId = syncCurrentSongId;
+      const previousWasPaused = currentAudio && currentAudio.paused;
+      const previousAudioTime = currentAudio ? currentAudio.currentTime : 0;
+
       const wasLeaderBefore = syncIsLeader;
       let effectiveLeader = originalLeader;
       if (!effectiveLeader && wasLeaderBefore) effectiveLeader = myRoomName();
@@ -1836,8 +1856,8 @@ if (window._MMM_INITIALIZED) {
         const roomHadNoSong = !data.currentSong;
         const weWerePlaying = spamModeActive || syncCurrentSongId !== null;
 
-        if (weWerePlaying && roomHadNoSong) {
-          console.log("[Sync] Joined/rejoined empty room — stopping local playback");
+        if (data.isNewRoom && wasPlayingSong) {
+          console.log("[Sync] Server created a fresh room — stopping orphaned local playback");
           hardStopAudio();
           currentlyPlaying.innerHTML = "Currently Playing: none";
           musicStatus.innerHTML = `Music Status: OFF`;
@@ -1856,9 +1876,25 @@ if (window._MMM_INITIALIZED) {
         connectSyncSSE(roomCode);
         updateSyncUI();
         syncStatus.textContent = `Connected (Leader: ${syncLeader})`;
-        if (syncCurrentSongId !== null && !syncPaused && !syncIsLeader) {
-          const timestamp = data.timestamp || Date.now();
-          playSyncSong(syncCurrentSongId, syncCurrentTime, timestamp);
+        const incomingSong = data.currentSong;
+        const alreadyPlayingTheIncomingSong =
+          incomingSong !== null &&
+          previousSongId === incomingSong &&
+          wasPlayingSong &&
+          !previousWasPaused;
+
+        if (
+          incomingSong !== null &&
+          !syncPaused &&
+          !syncIsLeader &&
+          !alreadyPlayingTheIncomingSong
+        ) {
+          const playTimestamp = data.timestamp || serverNow();
+          playSyncSong(incomingSong, syncCurrentTime, playTimestamp);
+        } else if (alreadyPlayingTheIncomingSong) {
+          console.log(
+            `[Sync] Graceful rejoin — already playing song ${incomingSong}, continuing without restart`,
+          );
         }
         republishIfLeaderPlaying();
       } catch (err) {
@@ -1897,12 +1933,11 @@ if (window._MMM_INITIALIZED) {
       if (!currentAudio || currentAudio.paused) return;
       if (syncCurrentSongId === selectedSongId) return;
 
-      const now = Date.now();
       const curTime = currentAudio.currentTime || 0;
       console.log(
         `[Sync] Republishing leader state: song=${selectedSongId} time=${curTime.toFixed(2)}s`,
       );
-      syncPlay(selectedSongId, curTime, now);
+      syncPlay(selectedSongId, curTime, 200);
     }
 
     async function syncLeave() {
@@ -1962,34 +1997,26 @@ if (window._MMM_INITIALIZED) {
     }
     window._mmmSyncLeave = syncLeave;
 
-    async function syncPlay(songId, currentTime = 0, timestamp = Date.now()) {
-      if (!syncRoom || !syncIsLeader) return;
+    async function syncPlay(songId, currentTime = 0, delayMs) {
+      if (!syncRoom || !syncIsLeader) return null;
       let partnerSongId = null;
       if (duetMode) {
         partnerSongId = getPartnerSongId(songId);
         if (partnerSongId) {
-          console.log(
-            `Duet mode: sending partner song ID ${partnerSongId} for ${songId}`,
-          );
+          console.log(`Duet mode: sending partner song ID ${partnerSongId} for ${songId}`);
         }
       }
-      const result = await syncRequest(
-        "/sync/play",
-        {
-          roomCode: syncRoom,
-          name: myRoomName(),
-          songId,
-          currentTime,
-          timestamp,
-          partnerSongId,
-        },
-        "Play",
-      );
+      const body = { roomCode: syncRoom, name: myRoomName(), songId, currentTime, partnerSongId };
+      if (typeof delayMs === "number") body.delayMs = delayMs;
+
+      const result = await syncRequest("/sync/play", body, "Play");
       if (result.ok) {
         syncCurrentSongId = songId;
         syncPaused = false;
+        return result.data.playTimestamp;
       } else {
         syncJoin(syncRoom, syncLeader);
+        return null;
       }
     }
 
@@ -2142,20 +2169,25 @@ if (window._MMM_INITIALIZED) {
       updateSyncButtons();
     }
 
-    function playSyncSong(songId, startTime = 0, serverTimestamp = Date.now()) {
+    function playSyncSong(songId, startTime = 0, playTimestamp) {
       resetLyricsState();
       const song = songsList.find((s) => s.id === songId);
-      if (!song) {
-        console.warn("Sync song not found:", songId);
-        return;
+      if (!song) { console.warn("Sync song not found:", songId); return; }
+
+      const elapsedMs = serverNow() - playTimestamp;
+      let delayMs = 0;
+      let adjustedStart = startTime;
+
+      if (elapsedMs < 0) {
+        delayMs = -elapsedMs;
+        adjustedStart = startTime;
+      } else {
+        adjustedStart = startTime + elapsedMs / 1000;
       }
 
-      const now = Date.now();
-      const elapsed = (now - serverTimestamp) / 1000;
-      let adjustedStart = Math.max(0, startTime + elapsed);
-
       console.log(
-        `Sync playing: ${song.name}, target start ${adjustedStart}s (offset ${elapsed}s)`,
+        `Sync playing: ${song.name} — timestamp delta ${elapsedMs}ms, ` +
+        `delay ${delayMs}ms, start at ${adjustedStart.toFixed(2)}s`
       );
 
       selectedSongId = song.id;
@@ -2166,16 +2198,14 @@ if (window._MMM_INITIALIZED) {
 
       hardStopAudio();
       const gen = bumpPlaybackGen();
-
       showSongNotification(selectedSongName);
 
       currentAudio.src = selectedSongAudio;
       currentAudio.preload = "auto";
 
       const loadPromise = new Promise((resolve) => {
-        if (currentAudio.readyState >= 2) {
-          resolve();
-        } else {
+        if (currentAudio.readyState >= 2) resolve();
+        else {
           const onLoad = () => {
             currentAudio.removeEventListener("loadedmetadata", onLoad);
             resolve();
@@ -2188,145 +2218,108 @@ if (window._MMM_INITIALIZED) {
       loadPromise.then(() => {
         if (!isCurrentGen(gen)) return;
 
-        const nowMs = Date.now();
-        const isScheduledFuture = serverTimestamp > nowMs;
-
-        let delayMs = 0;
-        if (isScheduledFuture) {
-          delayMs = serverTimestamp - nowMs;
-          adjustedStart = Math.max(0, startTime);
-          console.log(
-            `[Sync] Scheduled start in ${delayMs}ms at position ${adjustedStart}s`,
-          );
+        const nowElapsedMs = serverNow() - playTimestamp;
+        if (nowElapsedMs < 0) {
+          delayMs = -nowElapsedMs;
+          adjustedStart = startTime;
         } else {
-          const elapsed = (nowMs - serverTimestamp) / 1000;
-          adjustedStart = Math.max(0, startTime + elapsed);
-          console.log(
-            `[Sync] Late join: elapsed ${elapsed.toFixed(2)}s → start ${adjustedStart.toFixed(2)}s`,
-          );
+          delayMs = 0;
+          adjustedStart = startTime + nowElapsedMs / 1000;
         }
 
         const doPlay = () => {
           if (!isCurrentGen(gen)) return;
-
           if (syncCurrentSongId !== songId) {
-            console.log(
-              `[Sync] Stale playSyncSong aborted (wanted ${songId}, room is on ${syncCurrentSongId})`,
-            );
             currentAudio.pause();
             currentAudio.currentTime = 0;
             return;
           }
           currentAudio.currentTime = adjustedStart;
           currentAudio.loop = false;
+          currentAudio.playbackRate = 1;
           syncStartTime = adjustedStart;
           syncCurrentTime = adjustedStart;
 
           initAudioContext();
 
-          currentAudio
-            .play()
-            .then(() => {
-              if (syncCurrentSongId !== songId) {
-                currentAudio.pause();
-                currentAudio.currentTime = 0;
-                spamModeActive = false;
+          currentAudio.play().then(() => {
+            if (syncCurrentSongId !== songId) {
+              currentAudio.pause();
+              currentAudio.currentTime = 0;
+              spamModeActive = false;
+              return;
+            }
+            spamModeActive = true;
+            currentlyPlaying.innerHTML = `Currently Playing: ${selectedSongName}`;
+            musicStatus.innerHTML = `Music Status: ON (Sync)`;
+            document.getElementById("pauseAutoplayBtn").textContent = "Pause";
+            isPaused = false;
+
+            const scheduleLyrics = (lyrics) => {
+              chatMessages = lyrics;
+              const intendedMs = adjustedStart * 1000;
+              let startIndex = chatMessages.length;
+              for (let j = 0; j < chatMessages.length; j++) {
+                if (chatMessages[j].delay > intendedMs) {
+                  startIndex = j;
+                  break;
+                }
+              }
+              scheduleMessages(chatMessages, startIndex);
+            };
+
+            if (lyricsCache[selectedSongId]) {
+              scheduleLyrics(lyricsCache[selectedSongId]);
+            } else {
+              fetchLyrics(selectedSongId)
+                .then(scheduleLyrics)
+                .catch((err) => {
+                  console.error("[Sync] Failed to fetch lyrics:", err);
+                  chatMessages = [];
+                  showNotification("Sync lyrics unavailable", "system");
+                });
+            }
+
+            currentAudio.removeEventListener("ended", onSongEnded);
+            currentAudio.addEventListener("ended", onSongEnded);
+
+            let corrections = 0;
+            const correctDrift = () => {
+              if (!isCurrentGen(gen)) return;
+              if (corrections++ >= 60) return;
+              if (!currentAudio) return;
+              if (currentAudio.paused) {
+                setTimeout(correctDrift, 500);
                 return;
               }
-              spamModeActive = true;
-              currentlyPlaying.innerHTML = `Currently Playing: ${selectedSongName}`;
-              musicStatus.innerHTML = `Music Status: ON (Sync)`;
-              document.getElementById("pauseAutoplayBtn").textContent = "Pause";
-              isPaused = false;
 
-              const scheduleLyrics = (lyrics) => {
-                chatMessages = lyrics;
-                const intendedMs = adjustedStart * 1000;
-                let startIndex = chatMessages.length;
-                for (let j = 0; j < chatMessages.length; j++) {
-                  if (chatMessages[j].delay > intendedMs) {
-                    startIndex = j;
-                    break;
-                  }
-                }
-                console.log(
-                  `[Sync] Scheduling lyrics from index ${startIndex}/${chatMessages.length} at ${intendedMs}ms`,
-                );
-                scheduleMessages(chatMessages, startIndex);
-              };
+              const expected = startTime + (serverNow() - playTimestamp) / 1000;
+              const actual = currentAudio.currentTime;
+              const drift = actual - expected;
 
-              if (lyricsCache[selectedSongId]) {
-                console.log(`[Sync] Using cached lyrics for ${selectedSongId}`);
-                scheduleLyrics(lyricsCache[selectedSongId]);
-              } else {
-                console.log(`[Sync] Fetching lyrics for ${selectedSongId}`);
-                fetchLyrics(selectedSongId)
-                  .then((lyrics) => {
-                    console.log(
-                      `[Sync] Got ${lyrics.length} lyrics lines for ${selectedSongId}`,
-                    );
-                    scheduleLyrics(lyrics);
-                  })
-                  .catch((err) => {
-                    console.error("[Sync] Failed to fetch lyrics:", err);
-                    chatMessages = [];
-                    showNotification("Sync lyrics unavailable", "system");
-                  });
-              }
-
-              currentAudio.removeEventListener("ended", onSongEnded);
-              currentAudio.addEventListener("ended", onSongEnded);
-
-              const isLateJoin = serverTimestamp <= Date.now();
-              if (isLateJoin) {
-                let corrections = 0;
-                const correctDrift = () => {
-                  if (!isCurrentGen(gen)) return;
-                  if (corrections++ >= 60) return;
-                  if (!currentAudio) return;
-                  if (currentAudio.paused) {
-                    setTimeout(correctDrift, 500);
-                    return;
-                  }
-                  if (currentAudio.seeking || currentAudio.readyState < 3) {
-                    currentAudio.playbackRate = 1;
-                    setTimeout(correctDrift, 500);
-                    return;
-                  }
-
-                  const expected = startTime + (Date.now() - serverTimestamp) / 1000;
-                  const actual = currentAudio.currentTime;
-                  const drift = actual - expected;
-
-                  if (Math.abs(drift) > 2) {
-                    console.log(`[Sync] Large drift ${(drift * 1000).toFixed(0)}ms — hard seek`);
-                    currentAudio.currentTime = expected;
-                    currentAudio.playbackRate = 1;
-                  } else if (Math.abs(drift) > 0.15) {
-                    const nudge = Math.max(-0.05, Math.min(0.05, -drift * 0.02));
-                    currentAudio.playbackRate = 1 + nudge;
-                  } else {
-                    currentAudio.playbackRate = 1;
-                  }
-
-                  setTimeout(correctDrift, 500);
-                };
-                correctDrift();
+              if (Math.abs(drift) > 1.5) {
+                console.log(`[Sync] Large drift ${(drift * 1000).toFixed(0)}ms — seek`);
+                currentAudio.currentTime = expected;
+                currentAudio.playbackRate = 1;
+              } else if (Math.abs(drift) > 0.15) {
+                const nudge = Math.max(-0.1, Math.min(0.1, -drift * 0.3));
+                currentAudio.playbackRate = 1 + nudge;
               } else {
                 currentAudio.playbackRate = 1;
               }
-            })
+              setTimeout(correctDrift, 500);
+            };
+            correctDrift();
+          })
             .catch((err) => {
               console.warn("Sync play error:", err);
               spamModeActive = false;
               showNotification("Sync playback failed", "system");
             });
         };
-        if (delayMs > 0) {
-          setTimeout(doPlay, delayMs);
-        } else {
-          doPlay();
-        }
+
+        if (delayMs > 0) setTimeout(doPlay, delayMs);
+        else doPlay();
       });
     }
 
@@ -2862,6 +2855,8 @@ if (window._MMM_INITIALIZED) {
       (async function init() {
         try {
           await fetchApiKey();
+          await syncClock();
+          setInterval(syncClock, 5 * 60 * 1000);
           if (!API_KEY) {
             console.error("No API key available...");
             return;
