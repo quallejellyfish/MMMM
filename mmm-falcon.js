@@ -371,6 +371,18 @@ if (window._MMM_INITIALIZED) {
     const API_BASE = "https://mmmm-oa5i.onrender.com";
     let API_KEY = null;
 
+    function getClientId() {
+      let id = localStorage.getItem("mmm_clientId");
+      if (!id) {
+        id =
+          (window.crypto?.randomUUID && window.crypto.randomUUID()) ||
+          "c_" + Math.random().toString(36).slice(2) + Date.now().toString(36);
+        localStorage.setItem("mmm_clientId", id);
+      }
+      return id;
+    }
+    const CLIENT_ID = getClientId();
+
     async function fetchApiKey() {
       const cached = getCached("apiKey");
       if (cached) {
@@ -1387,6 +1399,7 @@ if (window._MMM_INITIALIZED) {
     }
 
     let syncRoom = null;
+    let assignedName = null;
     let syncLeader = null;
     let syncMembers = [];
     let syncPaused = false;
@@ -1401,6 +1414,12 @@ if (window._MMM_INITIALIZED) {
     let syncCurrentTime = 0;
     let duetMode = false;
     let syncLocked = false;
+
+    const syncStatus = document.getElementById("syncStatus");
+
+    function myRoomName() {
+      return assignedName || syncName;
+    }
 
     function isSyncFollower() {
       if (syncIsLeader) return false;
@@ -1492,7 +1511,7 @@ if (window._MMM_INITIALIZED) {
           const res = await fetch(`${API_BASE}/sync/heartbeat`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ roomCode: syncRoom, name: syncName }),
+            body: JSON.stringify({ roomCode: syncRoom, name: myRoomName() }),
           });
           if (res.status === 404) {
             console.warn("[MMM] Room vanished, rejoining...");
@@ -1563,15 +1582,14 @@ if (window._MMM_INITIALIZED) {
       if (msg.leader !== syncLeader) {
         const wasLeader = syncIsLeader;
         syncLeader = msg.leader;
-        syncIsLeader = syncLeader === syncName;
+        syncIsLeader = syncLeader === myRoomName();
         if (wasLeader && !syncIsLeader && autoplayMode) {
           console.log("[Sync] Lost leadership — stopping local autoplay");
           stopAutoplay();
         }
 
         showNotification(`Leader changed to "${syncLeader}"`, "system");
-        document.getElementById("syncStatus").textContent =
-          `Connected (Leader: ${syncLeader})`;
+        syncStatus.textContent = `Connected (Leader: ${syncLeader})`;
         needUIUpdate = true;
       }
 
@@ -1722,7 +1740,7 @@ if (window._MMM_INITIALIZED) {
       isLeaving = false;
       window._mmmRejoining = true;
       try {
-        const body = { roomCode, name: syncName };
+        const body = { roomCode, name: myRoomName(), clientId: CLIENT_ID };
         if (originalLeader) body.originalLeader = originalLeader;
         if (window._mmmRejoining || wasAlreadyInRoom) body.isRejoin = true;
         const res = await fetch(`${API_BASE}/sync/join`, {
@@ -1736,13 +1754,19 @@ if (window._MMM_INITIALIZED) {
           return;
         }
         const data = await res.json();
+        assignedName = data.assignedName || syncName;
+
+        if (assignedName !== syncName) {
+          showNotification(`Name taken — you are "${assignedName}"`, "system");
+        }
+
         syncRoom = roomCode;
         syncLeader = data.leader;
         syncMembers = data.members || [];
         syncCurrentSongId = data.currentSong || null;
         syncCurrentTime = data.currentTime || 0;
         syncPaused = data.paused || false;
-        syncIsLeader = syncLeader === syncName;
+        syncIsLeader = syncLeader === myRoomName();
         if (!syncLeader) {
           syncLeader = syncName;
           syncIsLeader = true;
@@ -1767,8 +1791,7 @@ if (window._MMM_INITIALIZED) {
         startHeartbeat(roomCode);
         connectSyncSSE(roomCode);
         updateSyncUI();
-        document.getElementById("syncStatus").textContent =
-          `Connected (Leader: ${syncLeader})`;
+        syncStatus.textContent = `Connected (Leader: ${syncLeader})`;
         if (syncCurrentSongId !== null && !syncPaused && !syncIsLeader) {
           const timestamp = data.timestamp || Date.now();
           playSyncSong(syncCurrentSongId, syncCurrentTime, timestamp);
@@ -1809,7 +1832,7 @@ if (window._MMM_INITIALIZED) {
           await fetch(`${API_BASE}/sync/leave`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ roomCode: syncRoom, name: syncName }),
+            body: JSON.stringify({ roomCode: syncRoom, name: myRoomName() }),
           });
         } catch (e) {
           /* ignore */
@@ -1833,9 +1856,10 @@ if (window._MMM_INITIALIZED) {
       syncLoop = false;
       syncLocked = false;
       syncStartTime = null;
+      assignedName = null;
       updateSyncUI();
       updateLockButton();
-      document.getElementById("syncStatus").textContent = "Off";
+      if (syncStatus) syncStatus.textContent = "Off";
       setTimeout(() => {
         isLeaving = false;
       }, 1000);
@@ -1859,7 +1883,7 @@ if (window._MMM_INITIALIZED) {
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             roomCode: syncRoom,
-            name: syncName,
+            name: myRoomName(),
             songId,
             currentTime,
             timestamp,
@@ -1881,7 +1905,7 @@ if (window._MMM_INITIALIZED) {
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             roomCode: syncRoom,
-            name: syncName,
+            name: myRoomName(),
             paused,
             currentTime,
           }),
@@ -1898,7 +1922,11 @@ if (window._MMM_INITIALIZED) {
         await fetch(`${API_BASE}/sync/set_loop`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ roomCode: syncRoom, name: syncName, loop }),
+          body: JSON.stringify({
+            roomCode: syncRoom,
+            name: myRoomName(),
+            loop,
+          }),
         });
         syncLoop = loop;
       } catch (err) {
@@ -1912,7 +1940,7 @@ if (window._MMM_INITIALIZED) {
         await fetch(`${API_BASE}/sync/stop`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ roomCode: syncRoom, name: syncName }),
+          body: JSON.stringify({ roomCode: syncRoom, name: myRoomName() }),
         });
         syncCurrentSongId = null;
         syncPaused = true;
@@ -1929,7 +1957,7 @@ if (window._MMM_INITIALIZED) {
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             roomCode: syncRoom,
-            name: syncName,
+            name: myRoomName(),
             targetName: targetName.trim(),
           }),
         });
@@ -1962,7 +1990,11 @@ if (window._MMM_INITIALIZED) {
         const res = await fetch(`${API_BASE}/sync/lock`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ roomCode: syncRoom, name: syncName, locked }),
+          body: JSON.stringify({
+            roomCode: syncRoom,
+            name: myRoomName(),
+            locked,
+          }),
         });
         if (!res.ok) {
           const err = await res.json().catch(() => ({}));
@@ -2167,8 +2199,7 @@ if (window._MMM_INITIALIZED) {
             cleaned || "fallback usr" + Math.floor(Math.random() * 9999);
           localStorage.setItem("mmm_syncName", syncName);
           if (syncRoom) {
-            document.getElementById("syncStatus").textContent =
-              `Connected (Leader: ${syncLeader})`;
+            syncStatus.textContent = `Connected (Leader: ${syncLeader})`;
             updateSyncUI();
           }
         }
@@ -2200,12 +2231,14 @@ if (window._MMM_INITIALIZED) {
         showNotification("No other members to make leader", "system");
         return;
       }
-      const memberList = syncMembers.filter((m) => m !== syncName).join(", ");
+      const memberList = syncMembers
+        .filter((m) => m !== myRoomName())
+        .join(", ");
       const target = prompt(
         `Enter the name of the new leader:\nAvailable: ${memberList}`,
       );
       if (!target) return;
-      if (!syncMembers.includes(target) || target === syncName) {
+      if (!syncMembers.includes(target) || target === myRoomName()) {
         showNotification("Invalid member name", "system");
         return;
       }
@@ -2693,7 +2726,11 @@ if (window._MMM_INITIALIZED) {
       fetch(`${API_BASE}/sync/heartbeat`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ roomCode: syncRoom, name: syncName }),
+        body: JSON.stringify({
+          roomCode: syncRoom,
+          name: myRoomName(),
+          clientId: CLIENT_ID,
+        }),
       }).catch(() => {});
     });
 
