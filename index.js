@@ -1112,6 +1112,8 @@ app.post("/sync/join", express.json(), (req, res) => {
       leader: originalLeader || (isRejoin ? name : name),
       members: [],
       memberLastSeen: {},
+      knownMembers: [],
+      locked: false,
       currentSong: null,
       paused: false,
       currentTime: 0,
@@ -1124,6 +1126,12 @@ app.post("/sync/join", express.json(), (req, res) => {
     isNewRoom = true;
   }
 
+  if (!room.knownMembers) room.knownMembers = [];
+  const isKnown = room.knownMembers.includes(name);
+  if (room.locked && !isKnown) {
+    return res.status(403).json({ error: "Room is locked" });
+  }
+  if (!isKnown) room.knownMembers.push(name);
   if (!room.memberLastSeen) room.memberLastSeen = {};
   if (!room.members.includes(name)) room.members.push(name);
   room.memberLastSeen[name] = Date.now();
@@ -1147,6 +1155,7 @@ app.post("/sync/join", express.json(), (req, res) => {
     timestamp: room.playTimestamp || Date.now(),
     loop: room.loop || false,
     isNewRoom,
+    locked: room.locked || false,
   });
 });
 
@@ -1228,6 +1237,22 @@ app.post("/sync/set_loop", express.json(), (req, res) => {
   res.json({ message: "Loop state updated" });
 });
 
+app.post("/sync/lock", express.json(), (req, res) => {
+  const { roomCode, name, locked } = req.body;
+  if (!roomCode || !name) {
+    return res.status(400).json({ error: "Missing roomCode or name" });
+  }
+  const room = syncRooms.get(roomCode);
+  if (!room) return res.status(404).json({ error: "Room not found" });
+  if (room.leader !== name) {
+    return res.status(403).json({ error: "Only the leader can lock the room" });
+  }
+  room.locked = !!locked;
+  room.lastUpdate = Date.now();
+  broadcastSyncUpdate(roomCode);
+  res.json({ locked: room.locked });
+});
+
 app.post("/sync/stop", express.json(), (req, res) => {
   const { roomCode, name } = req.body;
   if (!roomCode || !name) {
@@ -1282,12 +1307,13 @@ app.get("/sync/rooms", (req, res) => {
       members: room.members.length,
       hasSong: room.currentSong !== null && room.currentSong !== undefined,
       paused: room.paused || false,
+      locked: !!room.locked,
     });
   }
   list.sort(
     (a, b) => b.members - a.members || a.roomCode.localeCompare(b.roomCode),
   );
-  res.json(list)
+  res.json(list);
 });
 
 // PROTECTED
