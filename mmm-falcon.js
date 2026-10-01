@@ -43,6 +43,13 @@ if (window._MMM_INITIALIZED) {
       window.currentAudio.load();
       delete window.currentAudio;
     }
+    try {
+      if (window._mmmAudioCtx) {
+        window._mmmAudioCtx.close();
+        window._mmmAudioCtx = null;
+      }
+    } catch (e) { }
+
     const menu = document.querySelector(".modmenu");
     if (menu) menu.remove();
     const notif = document.getElementById("mmm-notification-container");
@@ -56,6 +63,17 @@ if (window._MMM_INITIALIZED) {
     delete window._MMM_INITIALIZED;
   };
   (() => {
+    let playbackGeneration = 0;
+
+    function bumpPlaybackGen() {
+      playbackGeneration++;
+      return playbackGeneration;
+    }
+
+    function isCurrentGen(gen) {
+      return gen === playbackGeneration;
+    }
+
     if (window._mmmKeydownHandler) {
       window.removeEventListener("keydown", window._mmmKeydownHandler, true);
       delete window._mmmKeydownHandler;
@@ -787,6 +805,7 @@ if (window._MMM_INITIALIZED) {
     function initAudioContext() {
       if (!audioCtx) {
         audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        window._mmmAudioCtx = audioCtx;
         gainNode = audioCtx.createGain();
         const source = audioCtx.createMediaElementSource(currentAudio);
         source.connect(gainNode);
@@ -833,27 +852,12 @@ if (window._MMM_INITIALIZED) {
       if (blockIfFollower("play songs")) return;
 
       if (spamModeActive) {
-        resetLyricsState();
-        schedulingActive = false;
-        clearSongNotification();
-        spamModeActive = false;
-        messageTimeouts.forEach(clearTimeout);
-        messageTimeouts = [];
+        hardStopAudio();
         currentlyPlaying.innerHTML = "Currently Playing: none";
         musicStatus.innerHTML = `Music Status: OFF`;
         document.getElementById("pauseAutoplayBtn").textContent = "Pause";
         isPaused = false;
-        if (onTimeUpdateHandler) {
-          currentAudio.removeEventListener("timeupdate", onTimeUpdateHandler);
-          onTimeUpdateHandler = null;
-        }
-        currentAudio.pause();
-        currentAudio.currentTime = 0;
-        currentAudio.loop = false;
-        currentAudio.removeEventListener("ended", onSongEnded);
-        if (syncRoom && syncIsLeader) {
-          syncStop();
-        }
+        if (syncRoom && syncIsLeader) syncStop();
         updateSelectButton("Select Song");
         highlightCurrentSong();
         return;
@@ -869,8 +873,10 @@ if (window._MMM_INITIALIZED) {
         return;
       }
 
+      const gen = bumpPlaybackGen();
       try {
         chatMessages = await fetchLyrics(selectedSongId);
+        if (!isCurrentGen(gen)) return;
         spamModeActive = true;
         currentlyPlaying.innerHTML = `Currently Playing: ${selectedSongName}`;
         musicStatus.innerHTML = `Music Status: ON`;
@@ -962,6 +968,8 @@ if (window._MMM_INITIALIZED) {
       if (!song) return;
       if (blockIfFollower("play songs")) return;
 
+      const gen = bumpPlaybackGen();
+
       selectedSongId = song.id;
       selectedSongName = song.name;
       selectedSongAudio = song.url;
@@ -970,7 +978,9 @@ if (window._MMM_INITIALIZED) {
       showSongNotification(selectedSongName);
 
       if (spamModeActive) {
-        currentAudio.pause();
+        try {
+          currentAudio.pause();
+        } catch (e) { }
         currentAudio.currentTime = 0;
         spamModeActive = false;
         currentAudio.removeEventListener("ended", onSongEnded);
@@ -980,6 +990,8 @@ if (window._MMM_INITIALIZED) {
 
       try {
         chatMessages = await fetchLyrics(selectedSongId);
+        if (!isCurrentGen(gen)) return;
+
         spamModeActive = true;
         currentlyPlaying.innerHTML = `Currently Playing: ${selectedSongName}`;
         musicStatus.innerHTML = `Music Status: ON (Autoplay: ${autoplayMode})`;
@@ -994,7 +1006,6 @@ if (window._MMM_INITIALIZED) {
         currentAudio.currentTime = 0;
         currentAudio.src = selectedSongAudio;
         currentAudio.loop = false;
-
         countedThisPlay = false;
 
         onTimeUpdateHandler = function () {
@@ -1026,42 +1037,41 @@ if (window._MMM_INITIALIZED) {
 
           currentAudio.currentTime = 0;
           const waitMs = announcedStart - Date.now();
-          if (waitMs > 0) {
-            await new Promise((r) => setTimeout(r, waitMs));
-          }
+          if (waitMs > 0) await new Promise((r) => setTimeout(r, waitMs));
+          if (!isCurrentGen(gen)) return;
           currentAudio.currentTime = 0;
         }
 
         try {
           await currentAudio.play();
         } catch (err) {
-          if (syncRoom && syncIsLeader && announcedStart !== null) {
-            console.warn(
-              "[Sync] Leader play() failed — retracting phantom room state:",
-              err.name,
-              err.message,
-            );
-            syncStop();
+          if (err.name === "AbortError" || err.name === "NotAllowedError")
+            return;
+          console.warn(
+            `play() rejected for "${selectedSongName}":`,
+            err.name,
+            err.message,
+          );
+          if (isCurrentGen(gen)) {
+            setTimeout(() => {
+              if (isCurrentGen(gen)) playSong(song);
+            }, 1000);
           }
-          throw err;
+          return;
+        }
+
+        if (!isCurrentGen(gen)) {
+          try {
+            currentAudio.pause();
+          } catch (e) { }
+          return;
         }
 
         scheduleMessages(chatMessages, 0);
         document.getElementById("pauseAutoplayBtn").textContent = "Pause";
         isPaused = false;
       } catch (err) {
-        if (err.name === "AbortError" || err.name === "NotAllowedError") {
-          console.debug("Playback interrupted gracefully:", err.message);
-          return;
-        }
-        console.warn(
-          `play() rejected for "${selectedSongName}":`,
-          err.name,
-          err.message,
-        );
-        setTimeout(() => {
-          playSong(song);
-        }, 1000);
+        console.warn(`playSong failed for "${selectedSongName}":`, err);
       }
     }
 
@@ -1108,17 +1118,7 @@ if (window._MMM_INITIALIZED) {
       if (blockIfFollower("skip songs")) return false;
       const wasSyncedLeader = syncRoom && syncIsLeader && spamModeActive;
       schedulingActive = false;
-      if (spamModeActive) {
-        clearSongNotification();
-        currentAudio.pause();
-        currentAudio.currentTime = 0;
-        currentAudio.removeEventListener("ended", onSongEnded);
-        messageTimeouts.forEach(clearTimeout);
-        messageTimeouts = [];
-        spamModeActive = false;
-        document.getElementById("pauseAutoplayBtn").textContent = "Pause";
-        isPaused = false;
-      }
+      hardStopAudio();
       if (autoplayMode) {
         playNextAuto();
       } else {
@@ -1292,17 +1292,7 @@ if (window._MMM_INITIALIZED) {
       document.getElementById("pauseAutoplayBtn").textContent = "Pause";
       isPaused = false;
 
-      if (spamModeActive) {
-        currentAudio.pause();
-        currentAudio.currentTime = 0;
-        spamModeActive = false;
-        currentAudio.removeEventListener("ended", onSongEnded);
-        messageTimeouts.forEach(clearTimeout);
-        messageTimeouts = [];
-        currentlyPlaying.innerHTML = "Currently Playing: none";
-        musicStatus.innerHTML = `Music Status: OFF`;
-        isPaused = false;
-      }
+      hardStopAudio();
 
       if (wasSyncedLeader && opts.sync !== false) {
         syncStop();
@@ -1593,6 +1583,30 @@ if (window._MMM_INITIALIZED) {
       };
     }
 
+    async function syncRequest(endpoint, body, label) {
+      if (!syncRoom) return { ok: false, error: "not in room" };
+      try {
+        const res = await fetch(`${API_BASE}${endpoint}`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(body),
+        });
+        if (!res.ok) {
+          const err = await res.json().catch(() => ({}));
+          const msg = err.error || `HTTP ${res.status}`;
+          console.warn(`[Sync] ${label} rejected: ${msg}`);
+          if (res.status === 403) {
+            showNotification(`${label} rejected: ${msg}`, "system");
+          }
+          return { ok: false, error: msg, status: res.status };
+        }
+        return { ok: true, data: await res.json().catch(() => ({})) };
+      } catch (err) {
+        console.warn(`[Sync] ${label} network error:`, err);
+        return { ok: false, error: "network" };
+      }
+    }
+
     function handleSyncMessage(msg) {
       if (msg.type !== "room_state") return;
       let needUIUpdate = false;
@@ -1636,14 +1650,7 @@ if (window._MMM_INITIALIZED) {
         if (syncCurrentSongId === null) {
           const intentionalStop = msg.paused === true;
           if (intentionalStop && spamModeActive) {
-            currentAudio.pause();
-            currentAudio.currentTime = 0;
-            spamModeActive = false;
-            currentAudio.removeEventListener("ended", onSongEnded);
-            messageTimeouts.forEach(clearTimeout);
-            messageTimeouts = [];
-            currentlyPlaying.innerHTML = "Currently Playing: none";
-            musicStatus.innerHTML = `Music Status: OFF (synced)`;
+            hardStopAudio();
             document.getElementById("pauseAutoplayBtn").textContent = "Pause";
             isPaused = false;
             schedulingActive = false;
@@ -1736,6 +1743,14 @@ if (window._MMM_INITIALIZED) {
           syncLocked ? "Room locked by leader" : "Room unlocked",
           "system",
         );
+      }
+
+      if (syncIsLeader && msg.leader !== myRoomName()) {
+        console.warn(
+          `[Sync] Local leader=${myRoomName()} but server says ${msg.leader} — resyncing`,
+        );
+        syncIsLeader = false;
+        syncLeader = msg.leader;
       }
 
       if (needUIUpdate) updateSyncUI();
@@ -1887,18 +1902,28 @@ if (window._MMM_INITIALIZED) {
     }
 
     async function syncLeave() {
+      if (isLeaving) return;
       isLeaving = true;
       resetLyricsState();
       isRejoining = false;
+
       if (syncRoom) {
         try {
-          await fetch(`${API_BASE}/sync/leave`, {
+          const controller = new AbortController();
+          const timeoutId = setTimeout(() => controller.abort(), 8000);
+          const res = await fetch(`${API_BASE}/sync/leave`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ roomCode: syncRoom, name: myRoomName() }),
+            signal: controller.signal,
           });
-        } catch (e) {
-          /* ignore */
+          clearTimeout(timeoutId);
+          if (!res.ok && res.status !== 404) {
+            const err = await res.json().catch(() => ({}));
+            console.warn("[Sync] Leave failed:", err.error || res.status);
+          }
+        } catch (err) {
+          console.warn("[Sync] Leave network error:", err.message);
         }
       }
       if (syncEventSource) {
@@ -1944,101 +1969,77 @@ if (window._MMM_INITIALIZED) {
           );
         }
       }
-      try {
-        await fetch(`${API_BASE}/sync/play`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            roomCode: syncRoom,
-            name: myRoomName(),
-            songId,
-            currentTime,
-            timestamp,
-            partnerSongId,
-          }),
-        });
+      const result = await syncRequest(
+        "/sync/play",
+        {
+          roomCode: syncRoom,
+          name: myRoomName(),
+          songId,
+          currentTime,
+          timestamp,
+          partnerSongId,
+        },
+        "Play",
+      );
+      if (result.ok) {
         syncCurrentSongId = songId;
         syncPaused = false;
-      } catch (err) {
-        console.error("Sync play error:", err);
+      } else {
+        syncJoin(syncRoom, syncLeader);
       }
     }
 
     async function syncPause(paused, currentTime = 0) {
       if (!syncRoom || !syncIsLeader) return;
-      try {
-        await fetch(`${API_BASE}/sync/pause`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            roomCode: syncRoom,
-            name: myRoomName(),
-            paused,
-            currentTime,
-          }),
-        });
+      const result = await syncRequest(
+        "/sync/pause",
+        { roomCode: syncRoom, name: myRoomName(), paused, currentTime },
+        "Pause",
+      );
+      if (result.ok) {
         syncPaused = paused;
-      } catch (err) {
-        console.error("Sync pause error:", err);
+      } else {
+        syncJoin(syncRoom, syncLeader);
       }
     }
 
     async function syncSetLoop(loop) {
       if (!syncRoom || !syncIsLeader) return;
-      try {
-        await fetch(`${API_BASE}/sync/set_loop`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            roomCode: syncRoom,
-            name: myRoomName(),
-            loop,
-          }),
-        });
-        syncLoop = loop;
-      } catch (err) {
-        console.error("Sync set loop error:", err);
-      }
+      const result = await syncRequest(
+        "/sync/set_loop",
+        { roomCode: syncRoom, name: myRoomName(), loop },
+        "Loop",
+      );
+      if (result.ok) syncLoop = loop;
+      else syncJoin(syncRoom, syncLeader);
     }
 
     async function syncStop() {
       if (!syncRoom || !syncIsLeader) return;
-      try {
-        await fetch(`${API_BASE}/sync/stop`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ roomCode: syncRoom, name: myRoomName() }),
-        });
+      const result = await syncRequest(
+        "/sync/stop",
+        { roomCode: syncRoom, name: myRoomName() },
+        "Stop",
+      );
+      if (result.ok) {
         syncCurrentSongId = null;
         syncPaused = true;
-      } catch (err) {
-        console.error("Sync stop error:", err);
+      } else {
+        syncJoin(syncRoom, syncLeader);
       }
     }
 
     async function syncMakeLeader(targetName) {
       if (!syncRoom || !syncIsLeader) return;
-      try {
-        const res = await fetch(`${API_BASE}/sync/make_leader`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            roomCode: syncRoom,
-            name: myRoomName(),
-            targetName: targetName.trim(),
-          }),
-        });
-        if (!res.ok) {
-          const err = await res.json();
-          showNotification(
-            `${err.error || "Failed to change leader"}`,
-            "system",
-          );
-          return;
+      const result = await syncRequest(
+        "/sync/make_leader",
+        { roomCode: syncRoom, name: myRoomName(), targetName: targetName.trim() },
+        "Make Leader",
+      );
+      if (!result.ok) {
+        if (result.status !== 403) {
+          showNotification(result.error || "Failed to change leader", "system");
         }
-      } catch (err) {
-        console.error("Make leader error:", err);
-        showNotification("ould not change leader", "system");
       }
     }
 
@@ -2051,32 +2052,20 @@ if (window._MMM_INITIALIZED) {
 
     async function syncLockRoom(locked) {
       if (!syncRoom || !syncIsLeader) return;
-
-      try {
-        const res = await fetch(`${API_BASE}/sync/lock`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            roomCode: syncRoom,
-            name: myRoomName(),
-            locked,
-          }),
-        });
-        if (!res.ok) {
-          const err = await res.json().catch(() => ({}));
-          showNotification(err.error || "Failed to lock room", "system");
-          return;
-        }
-        const data = await res.json();
-        syncLocked = data.locked;
+      const result = await syncRequest(
+        "/sync/lock",
+        { roomCode: syncRoom, name: myRoomName(), locked },
+        "Lock",
+      );
+      if (result.ok) {
+        syncLocked = result.data.locked;
         updateLockButton();
         showNotification(
           syncLocked ? "Room locked" : "Room unlocked",
           "system",
         );
-      } catch (err) {
-        console.error("Sync lock error", err);
-        showNotification("Failed to lock room", "system");
+      } else {
+        syncJoin(syncRoom, syncLeader);
       }
     }
 
@@ -2157,6 +2146,8 @@ if (window._MMM_INITIALIZED) {
         return;
       }
 
+      const gen = bumpPlaybackGen();
+
       const now = Date.now();
       const elapsed = (now - serverTimestamp) / 1000;
       let adjustedStart = Math.max(0, startTime + elapsed);
@@ -2172,14 +2163,7 @@ if (window._MMM_INITIALIZED) {
       highlightCurrentSong();
       showSongNotification(selectedSongName);
 
-      if (spamModeActive) {
-        currentAudio.pause();
-        currentAudio.currentTime = 0;
-        spamModeActive = false;
-        currentAudio.removeEventListener("ended", onSongEnded);
-        messageTimeouts.forEach(clearTimeout);
-        messageTimeouts = [];
-      }
+      hardStopAudio();
 
       currentAudio.src = selectedSongAudio;
       currentAudio.preload = "auto";
@@ -2198,6 +2182,8 @@ if (window._MMM_INITIALIZED) {
       });
 
       loadPromise.then(() => {
+        if (!isCurrentGen(gen)) return;
+
         const nowMs = Date.now();
         const isScheduledFuture = serverTimestamp > nowMs;
 
@@ -2217,6 +2203,16 @@ if (window._MMM_INITIALIZED) {
         }
 
         const doPlay = () => {
+          if (!isCurrentGen(gen)) return;
+
+          if (syncCurrentSongId !== songId) {
+            console.log(
+              `[Sync] Stale playSyncSong aborted (wanted ${songId}, room is on ${syncCurrentSongId})`,
+            );
+            currentAudio.pause();
+            currentAudio.currentTime = 0;
+            return;
+          }
           currentAudio.currentTime = adjustedStart;
           currentAudio.loop = false;
           syncStartTime = adjustedStart;
@@ -2227,6 +2223,12 @@ if (window._MMM_INITIALIZED) {
           currentAudio
             .play()
             .then(() => {
+              if (syncCurrentSongId !== songId) {
+                currentAudio.pause();
+                currentAudio.currentTime = 0;
+                spamModeActive = false;
+                return;
+              }
               spamModeActive = true;
               currentlyPlaying.innerHTML = `Currently Playing: ${selectedSongName}`;
               musicStatus.innerHTML = `Music Status: ON (Sync)`;
@@ -2275,6 +2277,7 @@ if (window._MMM_INITIALIZED) {
               if (isLateJoin) {
                 let corrections = 0;
                 const correctDrift = () => {
+                  if (!isCurrentGen(gen)) return;
                   if (corrections++ >= 15) return;
                   if (!currentAudio || currentAudio.paused) return;
                   const expected =
@@ -2343,7 +2346,9 @@ if (window._MMM_INITIALIZED) {
       });
 
     document.getElementById("leaveSyncBtn").addEventListener("click", () => {
-      if (!syncRoom) {
+      const likelyInRoom =
+        syncRoom || assignedName || syncMembers.length > 0 || syncEventSource;
+      if (!likelyInRoom) {
         showNotification("You're not in a room", "system");
         return;
       }
@@ -2740,6 +2745,31 @@ if (window._MMM_INITIALIZED) {
     window._mmmKeydownHandler = keydownHandler;
     window.addEventListener("keydown", keydownHandler, true);
 
+    function hardStopAudio() {
+      bumpPlaybackGen();
+      if (
+        typeof window._lyricsInterval !== "undefined" &&
+        window._lyricsInterval
+      ) {
+        clearInterval(window._lyricsInterval);
+        window._lyricsInterval = null;
+      }
+      schedulingActive = false;
+      messageTimeouts.forEach(clearTimeout);
+      messageTimeouts = [];
+      try {
+        currentAudio.pause();
+        currentAudio.currentTime = 0;
+        currentAudio.removeEventListener("ended", onSongEnded);
+        if (onTimeUpdateHandler) {
+          currentAudio.removeEventListener("timeupdate", onTimeUpdateHandler);
+          onTimeUpdateHandler = null;
+        }
+      } catch (e) { }
+      spamModeActive = false;
+      clearSongNotification();
+    }
+
     function stopMusic() {
       syncStartTime = null;
       if (spamModeActive) {
@@ -2862,7 +2892,7 @@ if (window._MMM_INITIALIZED) {
           name: myRoomName(),
           clientId: CLIENT_ID,
         }),
-      }).catch(() => {});
+      }).catch(() => { });
     });
 
     const roomInput = document.getElementById("roomCodeInput");
