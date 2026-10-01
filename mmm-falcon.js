@@ -372,12 +372,12 @@ if (window._MMM_INITIALIZED) {
     let API_KEY = null;
 
     function getClientId() {
-      let id = localStorage.getItem("mmm_clientId");
+      let id = sessionStorage.getItem("mmm_clientId");
       if (!id) {
         id =
           (window.crypto?.randomUUID && window.crypto.randomUUID()) ||
           "c_" + Math.random().toString(36).slice(2) + Date.now().toString(36);
-        localStorage.setItem("mmm_clientId", id);
+        sessionStorage.setItem("mmm_clientId", id);
       }
       return id;
     }
@@ -1740,7 +1740,8 @@ if (window._MMM_INITIALIZED) {
       isLeaving = false;
       window._mmmRejoining = true;
       try {
-        const body = { roomCode, name: myRoomName(), clientId: CLIENT_ID };
+        const requestedName = myRoomName();
+        const body = { roomCode, name: requestedName, clientId: CLIENT_ID };
         if (originalLeader) body.originalLeader = originalLeader;
         if (window._mmmRejoining || wasAlreadyInRoom) body.isRejoin = true;
         const res = await fetch(`${API_BASE}/sync/join`, {
@@ -1754,11 +1755,12 @@ if (window._MMM_INITIALIZED) {
           return;
         }
         const data = await res.json();
-        assignedName = data.assignedName || syncName;
+        assignedName = data.assignedName || requestedName;
 
-        if (assignedName !== syncName) {
+        if (assignedName !== requestedName) {
           showNotification(`Name taken — you are "${assignedName}"`, "system");
         }
+        if (syncNameInput) syncNameInput.value = assignedName;
 
         syncRoom = roomCode;
         syncLeader = data.leader;
@@ -1984,7 +1986,7 @@ if (window._MMM_INITIALIZED) {
     }
 
     async function syncLockRoom(locked) {
-      if (!syncRoom || !syncLeader) return;
+      if (!syncRoom || !syncIsLeader) return;
 
       try {
         const res = await fetch(`${API_BASE}/sync/lock`, {
