@@ -1553,14 +1553,19 @@ if (window._MMM_INITIALIZED) {
 
       syncEventSource.onerror = (err) => {
         console.warn("SSE error, attempting to rejoin...", err);
-        if (isRejoining || isLeaving) return;
+
+        if (isRejoining || isLeaving || window._mmmReconnectTimer) {
+          console.log("[Sync] Ignoring extra SSE error — reconnect already pending");
+          return;
+        }
 
         if (syncEventSource) {
           syncEventSource.close();
           syncEventSource = null;
         }
 
-        if (window._mmmReconnectTimer) clearTimeout(window._mmmReconnectTimer);
+        // so two tabs dont reconnect in lockstep
+        const jitter = 1000 + Math.random() * 1500;
         window._mmmReconnectTimer = setTimeout(() => {
           window._mmmReconnectTimer = null;
           if (syncRoom && !isRejoining) {
@@ -1568,7 +1573,7 @@ if (window._MMM_INITIALIZED) {
             const leader = syncLeader;
             syncJoin(room, leader || null);
           }
-        }, 1500);
+        }, jitter);
       };
     }
 
@@ -1823,16 +1828,19 @@ if (window._MMM_INITIALIZED) {
           loopCheckbox.checked = syncLoop;
           loopSong = syncLoop;
         }
-        updateSyncUI();
+        
+        const roomHadNoSong = !data.currentSong;
+        const weWerePlaying = spamModeActive || syncCurrentSongId !== null;
 
-        if (data.isNewRoom && wasAlreadyInRoom) {
-          console.log("[Sync] Rejoined a recreated room — stopping local playback");
+        if (weWerePlaying && roomHadNoSong) {
+          console.log("[Sync] Joined/rejoined empty room — stopping local playback");
           hardStopAudio();
           currentlyPlaying.innerHTML = "Currently Playing: none";
           musicStatus.innerHTML = `Music Status: OFF`;
           document.getElementById("pauseAutoplayBtn").textContent = "Pause";
           isPaused = false;
         }
+        updateSyncUI();
 
         if (data.isNewRoom) {
           showNotification(`Created new room: ${roomCode}`, "system");
@@ -2265,21 +2273,22 @@ if (window._MMM_INITIALIZED) {
               currentAudio.removeEventListener("ended", onSongEnded);
               currentAudio.addEventListener("ended", onSongEnded);
 
-              const isLateJoin = serverTimestamp <= now;
+              const isLateJoin = serverTimestamp <= Date.now();
               if (isLateJoin) {
                 let corrections = 0;
                 const correctDrift = () => {
                   if (!isCurrentGen(gen)) return;
-                  if (corrections++ >= 15) return;
-                  if (!currentAudio || currentAudio.paused) return;
-                  const expected =
-                    startTime + (Date.now() - serverTimestamp) / 1000;
+                  if (corrections++ >= 100) return;
+                  if (!currentAudio) return;
+                  if (currentAudio.paused) {
+                    setTimeout(correctDrift, 100);
+                    return;
+                  }
+                  const expected = startTime + (Date.now() - serverTimestamp) / 1000;
                   const actual = currentAudio.currentTime;
                   const drift = actual - expected;
-                  if (Math.abs(drift) > 0.05) {
-                    console.log(
-                      `[Sync] Drift ${(drift * 1000).toFixed(0)}ms — correcting`,
-                    );
+                  if (Math.abs(drift) > 0.1) {
+                    console.log(`[Sync] Drift ${(drift * 1000).toFixed(0)}ms — correcting`);
                     currentAudio.currentTime = expected;
                   }
                   setTimeout(correctDrift, 100);
