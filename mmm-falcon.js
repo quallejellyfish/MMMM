@@ -1503,6 +1503,10 @@ if (window._MMM_INITIALIZED) {
             }),
           });
           if (res.status === 404) {
+            if (isRejoining || isLeaving || window._mmmReconnectTimer) {
+              console.log("[Sync] Ignoring heartbeat 404 — rejoin already pending");
+              return;
+            }
             console.warn("[MMM] Room vanished, rejoining...");
             const currentRoom = syncRoom;
             const leader = syncLeader;
@@ -2275,25 +2279,41 @@ if (window._MMM_INITIALIZED) {
 
               const isLateJoin = serverTimestamp <= Date.now();
               if (isLateJoin) {
-                const driftDeadline = Date.now() + 10000;
+                let corrections = 0;
                 const correctDrift = () => {
                   if (!isCurrentGen(gen)) return;
-                  if (Date.now() > driftDeadline) return;
+                  if (corrections++ >= 60) return;
                   if (!currentAudio) return;
                   if (currentAudio.paused) {
-                    setTimeout(correctDrift, 100);
+                    setTimeout(correctDrift, 500);
                     return;
                   }
+                  if (currentAudio.seeking || currentAudio.readyState < 3) {
+                    currentAudio.playbackRate = 1;
+                    setTimeout(correctDrift, 500);
+                    return;
+                  }
+
                   const expected = startTime + (Date.now() - serverTimestamp) / 1000;
                   const actual = currentAudio.currentTime;
                   const drift = actual - expected;
-                  if (Math.abs(drift) > 0.1) {
-                    console.log(`[Sync] Drift ${(drift * 1000).toFixed(0)}ms — correcting`);
+
+                  if (Math.abs(drift) > 2) {
+                    console.log(`[Sync] Large drift ${(drift * 1000).toFixed(0)}ms — hard seek`);
                     currentAudio.currentTime = expected;
+                    currentAudio.playbackRate = 1;
+                  } else if (Math.abs(drift) > 0.15) {
+                    const nudge = Math.max(-0.05, Math.min(0.05, -drift * 0.02));
+                    currentAudio.playbackRate = 1 + nudge;
+                  } else {
+                    currentAudio.playbackRate = 1;
                   }
-                  setTimeout(correctDrift, 100);
+
+                  setTimeout(correctDrift, 500);
                 };
                 correctDrift();
+              } else {
+                currentAudio.playbackRate = 1;
               }
             })
             .catch((err) => {
@@ -2748,10 +2768,7 @@ if (window._MMM_INITIALIZED) {
 
     function hardStopAudio() {
       bumpPlaybackGen();
-      if (
-        typeof window._lyricsInterval !== "undefined" &&
-        window._lyricsInterval
-      ) {
+      if (window._lyricsInterval) {
         clearInterval(window._lyricsInterval);
         window._lyricsInterval = null;
       }
@@ -2761,10 +2778,15 @@ if (window._MMM_INITIALIZED) {
       try {
         currentAudio.pause();
         currentAudio.currentTime = 0;
+        currentAudio.playbackRate = 1;
         currentAudio.removeEventListener("ended", onSongEnded);
         if (onTimeUpdateHandler) {
           currentAudio.removeEventListener("timeupdate", onTimeUpdateHandler);
           onTimeUpdateHandler = null;
+        }
+        if (currentAudio.src) {
+          currentAudio.src = "";
+          currentAudio.load();
         }
       } catch (e) { }
       spamModeActive = false;
