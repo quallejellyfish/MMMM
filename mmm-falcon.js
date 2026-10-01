@@ -162,16 +162,16 @@ if (window._MMM_INITIALIZED) {
                 <span id="autoplayStatus" style="font-size: 13px !important; color: #aaa; font-weight: normal;">Off</span>
             </div>
            <div class="autoplay-buttons" id="autoplayButtonsContainer">
-                <button class="autoplay-btn" data-category="🇺🇸-----English Songs-----" style="background: #ff79c6; border: none; color: #1e1e2f; padding: 4px 12px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 12px;">🇺🇸 English</button>
-                <button class="autoplay-btn" data-category="🇩🇪-----German Songs-----" style="background: #ff79c6; border: none; color: #1e1e2f; padding: 4px 12px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 12px;">🇩🇪 German</button>
-                <button class="autoplay-btn" data-category="🇨🇳-----Chinese Songs-----" style="background: #ff79c6; border: none; color: #1e1e2f; padding: 4px 12px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 12px;">🇨🇳 Chinese</button>
-                <button class="autoplay-btn" data-category="💥-----Pulary Songs-----" style="background: #ff79c6; border: none; color: #1e1e2f; padding: 4px 12px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 12px;">💥 Pulary</button>
-                <button class="autoplay-btn" data-category="🌍-----other language Songs-----" style="background: #ff79c6; border: none; color: #1e1e2f; padding: 4px 12px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 12px;">🌍 Other</button>
-                <button class="autoplay-btn" data-category="🦊----- Krimsonthefox Music-----" style="background: #ff79c6; border: none; color: #1e1e2f; padding: 4px 12px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 12px;">🦊 Krimson</button>
-                <button class="autoplay-btn" data-category="❓-----Not My Songs-----" style="background: #ff79c6; border: none; color: #1e1e2f; padding: 4px 12px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 12px;">❓ Not Mine</button>
-                <button class="autoplay-btn" id="randomAutoplayBtn" style="background: #ffb347; border: none; color: #1e1e2f; padding: 4px 12px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 12px;">Random</button>
-                <button class="autoplay-btn" id="stopAutoplayBtn" style="background: #ff5555; border: none; color: white; padding: 4px 12px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 12px;">Stop</button>
-                <button class="autoplay-btn" id="pauseAutoplayBtn" style="background: #3498db; border: none; color: white; padding: 4px 12px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 12px;">Pause</button>
+                <button class="autoplay-btn style" data-category="🇺🇸-----English Songs-----">🇺🇸 English</button>
+                <button class="autoplay-btn style" data-category="🇩🇪-----German Songs-----">🇩🇪 German</button>
+                <button class="autoplay-btn style" data-category="🇨🇳-----Chinese Songs-----">🇨🇳 Chinese</button>
+                <button class="autoplay-btn style" data-category="💥-----Pulary Songs-----">💥 Pulary</button>
+                <button class="autoplay-btn style" data-category="🌍-----other language Songs-----">🌍 Other</button>
+                <button class="autoplay-btn style" data-category="🦊----- Krimsonthefox Music-----">🦊 Krimson</button>
+                <button class="autoplay-btn style" data-category="❓-----Not My Songs-----">❓ Not Mine</button>
+                <button class="autoplay-btn" id="randomAutoplayBtn">Random</button>
+                <button class="autoplay-btn" id="stopAutoplayBtn">Stop</button>
+                <button class="autoplay-btn" id="pauseAutoplayBtn">Pause</button>
             </div>
         </div>
 
@@ -1994,7 +1994,6 @@ if (window._MMM_INITIALIZED) {
       if (!btn) return;
       btn.textContent = syncLocked ? "Unlock" : "Lock";
       btn.style.background = syncLocked ? "#c0392b" : "#e67e22";
-      btn.style.opacity = syncIsLeader ? "1" : "0.5";
     }
 
     async function syncLockRoom(locked) {
@@ -2028,18 +2027,73 @@ if (window._MMM_INITIALIZED) {
       }
     }
 
+    function setBtnState(btn, enabled, reason) {
+      if (!btn) return;
+      btn.style.opacity = enabled ? "1" : "0.4";
+      btn.style.cursor = enabled ? "pointer" : "not-allowed";
+      btn.style.filter = enabled ? "none" : "grayscale(0.6)";
+      btn.title = enabled ? "" : reason || "";
+      btn.dataset.enabled = enabled ? "true" : "false";
+    }
+
+    function updateSyncButtons() {
+      const joinBtn = document.getElementById("joinSyncBtn");
+      const leaveBtn = document.getElementById("leaveSyncBtn");
+      const lockBtn = document.getElementById("lockRoomBtn");
+      const leaderBtn = document.getElementById("makeLeaderBtn");
+      const browseBtn = document.getElementById("browseRoomsBtn");
+      const roomInput = document.getElementById("roomCodeInput");
+      const nameInput = document.getElementById("syncNameInput");
+
+      const inRoom = !!syncRoom;
+      const isLeader = syncIsLeader;
+      const hasOthers = syncMembers.length > 1;
+
+      setBtnState(joinBtn, !inRoom, "You're already in a room — leave first");
+      setBtnState(leaveBtn, inRoom, "You're not in a room");
+      setBtnState(
+        lockBtn,
+        inRoom && isLeader,
+        !inRoom ? "Join a room first" : "Only the leader can lock the room",
+      );
+      setBtnState(
+        leaderBtn,
+        inRoom && isLeader && hasOthers,
+        !inRoom
+          ? "Join a room first"
+          : !isLeader
+            ? "Only the leader can change the leader"
+            : "No other members to promote",
+      );
+      setBtnState(browseBtn, true, "");
+
+      if (roomInput) {
+        roomInput.disabled = inRoom;
+        roomInput.style.opacity = inRoom ? "0.5" : "1";
+        roomInput.style.cursor = inRoom ? "not-allowed" : "text";
+      }
+      if (nameInput) {
+        nameInput.disabled = inRoom;
+        nameInput.style.opacity = inRoom ? "0.5" : "1";
+        nameInput.style.cursor = inRoom ? "not-allowed" : "text";
+      }
+    }
+
     function updateSyncUI() {
       const membersEl = document.getElementById("syncMembers");
-      if (!membersEl) return;
-      const count = syncMembers.length;
-      if (count === 0) {
-        membersEl.textContent = "Members: none";
-        return;
+      if (membersEl) {
+        const count = syncMembers.length;
+        if (count === 0) {
+          membersEl.textContent = "Members: none";
+        } else {
+          const list = syncMembers
+            .map((m) => `${m}${m === syncLeader ? " 👑" : ""}`)
+            .join(", ");
+          membersEl.textContent = `Members (${count}): ${list}`;
+        }
       }
-      const list = syncMembers
-        .map((m) => `${m}${m === syncLeader ? " 👑" : ""}`)
-        .join(", ");
-      membersEl.textContent = `Members (${count}): ${list}`;
+      updateLockButton();
+      updateSyncButtons();
     }
 
     function playSyncSong(songId, startTime = 0, serverTimestamp = Date.now()) {
@@ -2223,16 +2277,23 @@ if (window._MMM_INITIALIZED) {
     document
       .getElementById("joinSyncBtn")
       .addEventListener("click", async () => {
+        if (syncRoom) {
+          showNotification("Leave your current room first", "system");
+          return;
+        }
         const room = document.getElementById("roomCodeInput").value.trim();
         if (!room) {
           alert("Please enter a room code.");
           return;
         }
-        if (syncRoom) await syncLeave();
         syncJoin(room);
       });
 
     document.getElementById("leaveSyncBtn").addEventListener("click", () => {
+      if (!syncRoom) {
+        showNotification("You're not in a room", "system");
+        return;
+      }
       syncLeave();
     });
 
@@ -2280,6 +2341,8 @@ if (window._MMM_INITIALIZED) {
     const roomListEl = document.getElementById("roomList");
     const roomListEmpty = document.getElementById("roomListEmpty");
     const refreshRoomsBtn = document.getElementById("refreshRoomsBtn");
+
+    updateSyncUI();
 
     async function loadRoomList() {
       roomListEl.innerHTML =
