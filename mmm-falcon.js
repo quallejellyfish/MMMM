@@ -1828,7 +1828,7 @@ if (window._MMM_INITIALIZED) {
           loopCheckbox.checked = syncLoop;
           loopSong = syncLoop;
         }
-        
+
         const roomHadNoSong = !data.currentSong;
         const weWerePlaying = spamModeActive || syncCurrentSongId !== null;
 
@@ -2275,10 +2275,10 @@ if (window._MMM_INITIALIZED) {
 
               const isLateJoin = serverTimestamp <= Date.now();
               if (isLateJoin) {
-                let corrections = 0;
+                const driftDeadline = Date.now() + 10000;
                 const correctDrift = () => {
                   if (!isCurrentGen(gen)) return;
-                  if (corrections++ >= 100) return;
+                  if (Date.now() > driftDeadline) return;
                   if (!currentAudio) return;
                   if (currentAudio.paused) {
                     setTimeout(correctDrift, 100);
