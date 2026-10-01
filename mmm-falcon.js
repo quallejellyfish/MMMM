@@ -1106,6 +1106,7 @@ if (window._MMM_INITIALIZED) {
 
     function skipSong() {
       if (blockIfFollower("skip songs")) return false;
+      const wasSyncedLeader = syncRoom && syncIsLeader && spamModeActive;
       schedulingActive = false;
       if (spamModeActive) {
         clearSongNotification();
@@ -1121,6 +1122,7 @@ if (window._MMM_INITIALIZED) {
       if (autoplayMode) {
         playNextAuto();
       } else {
+        if (wasSyncedLeader) syncStop();
         currentlyPlaying.innerHTML = "Currently Playing: none";
         musicStatus.innerHTML = `Music Status: OFF`;
         updateAutoplayStatus();
@@ -1273,7 +1275,9 @@ if (window._MMM_INITIALIZED) {
       playNextAuto();
     }
 
-    function stopAutoplay() {
+    function stopAutoplay(opts = {}) {
+      const wasSyncedLeader = syncRoom && syncIsLeader && spamModeActive;
+
       schedulingActive = false;
       autoplayMode = null;
       autoplayCategory = null;
@@ -1297,14 +1301,16 @@ if (window._MMM_INITIALIZED) {
         messageTimeouts = [];
         currentlyPlaying.innerHTML = "Currently Playing: none";
         musicStatus.innerHTML = `Music Status: OFF`;
-        document.getElementById("pauseAutoplayBtn").textContent = "Pause";
         isPaused = false;
+      }
+
+      if (wasSyncedLeader && opts.sync !== false) {
+        syncStop();
       }
 
       updateAutoplayStatus();
       showNotification("Autoplay stopped", "system");
       updateSelectButton("Select Song");
-      console.log("Autoplay stopped");
     }
 
     function updateAutoplayStatus() {
@@ -1592,17 +1598,23 @@ if (window._MMM_INITIALIZED) {
       let needUIUpdate = false;
 
       if (msg.leader !== syncLeader) {
-        const wasLeader = syncIsLeader;
-        syncLeader = msg.leader;
-        syncIsLeader = syncLeader === myRoomName();
-        if (wasLeader && !syncIsLeader && autoplayMode) {
-          console.log("[Sync] Lost leadership — stopping local autoplay");
-          stopAutoplay();
+        if (msg.leader === null && syncLeader !== null) {
+          console.log(
+            "[Sync] Received null leader — keeping last known:",
+            syncLeader,
+          );
+        } else {
+          const wasLeader = syncIsLeader;
+          syncLeader = msg.leader;
+          syncIsLeader = syncLeader === myRoomName();
+          if (wasLeader && !syncIsLeader && autoplayMode) {
+            console.log("[Sync] Lost leadership — stopping local autoplay");
+            stopAutoplay({ sync: false });
+          }
+          showNotification(`Leader changed to "${syncLeader}"`, "system");
+          syncStatus.textContent = `Connected (Leader: ${syncLeader})`;
+          needUIUpdate = true;
         }
-
-        showNotification(`Leader changed to "${syncLeader}"`, "system");
-        syncStatus.textContent = `Connected (Leader: ${syncLeader})`;
-        needUIUpdate = true;
       }
 
       if (JSON.stringify(msg.members) !== JSON.stringify(syncMembers)) {
@@ -1729,7 +1741,9 @@ if (window._MMM_INITIALIZED) {
       if (needUIUpdate) updateSyncUI();
     }
 
-    async function syncJoin(roomCode, originalLeader = null) {
+    let joinGeneration = 0;
+    async function syncJoin(roomCode, originalLeader = null, attempt = 0) {
+      const myGen = ++joinGeneration;
       songHistory = [];
       songHistoryIndex = -1;
       isGoingBack = false;
@@ -1750,16 +1764,31 @@ if (window._MMM_INITIALIZED) {
       isRejoining = true;
       isLeaving = false;
       window._mmmRejoining = true;
+
+      const wasLeaderBefore = syncIsLeader;
+      let effectiveLeader = originalLeader;
+      if (!effectiveLeader && wasLeaderBefore) effectiveLeader = myRoomName();
+
       try {
         const requestedName = myRoomName();
         const body = { roomCode, name: requestedName, clientId: CLIENT_ID };
-        if (originalLeader) body.originalLeader = originalLeader;
+        if (effectiveLeader) body.originalLeader = effectiveLeader;
         if (window._mmmRejoining || wasAlreadyInRoom) body.isRejoin = true;
-        const res = await fetch(`${API_BASE}/sync/join`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(body),
-        });
+
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 15000);
+
+        let res;
+        try {
+          res = await fetch(`${API_BASE}/sync/join`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(body),
+            signal: controller.signal,
+          });
+        } finally {
+          clearTimeout(timeoutId);
+        }
         if (!res.ok) {
           const errData = await res.json().catch(() => ({}));
           showNotification(errData.error || "Failed to join room", "system");
@@ -1814,9 +1843,27 @@ if (window._MMM_INITIALIZED) {
         }
         republishIfLeaderPlaying();
       } catch (err) {
-        console.error("Sync join error:", err);
-        showNotification("Failed to join sync room", "system");
-        alert("Failed to join sync room");
+        if (err.name === "AbortError") {
+          console.warn(`[Sync] Join timed out (attempt ${attempt + 1})`);
+          if (attempt >= 2) {
+            showNotification(
+              "Server did not respond. Try again later.",
+              "system",
+            );
+          } else {
+            showNotification("Server waking up — retrying...", "system");
+            window._mmmReconnectTimer = setTimeout(() => {
+              window._mmmReconnectTimer = null;
+              if (myGen !== joinGeneration) return;
+              if (!effectiveLeader && syncIsLeader)
+                effectiveLeader = myRoomName();
+              syncJoin(roomCode, effectiveLeader || null, attempt + 1);
+            }, 3000);
+          }
+        } else {
+          console.error("Sync join error:", err);
+          showNotification("Failed to join sync room", "system");
+        }
       } finally {
         isRejoining = false;
         isLeaving = false;
