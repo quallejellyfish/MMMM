@@ -959,30 +959,36 @@ let syncSSEClients = {};
 const syncRooms = new Map();
 
 app.post("/sync/heartbeat", express.json(), (req, res) => {
-  const { roomCode, name } = req.body;
-  if (!roomCode || !name) {
-    return res.status(400).json({ error: "Missing roomCode or name" });
+  const { roomCode, name, clientId } = req.body;
+  if (!roomCode || !name || !clientId) {
+    return res
+      .status(400)
+      .json({ error: "Missing roomCode, name, or clientId" });
   }
   const room = syncRooms.get(roomCode);
-  if (!room) {
-    console.log(`[Heartbeat] Room ${roomCode} not found for ${name}`);
-    return res.status(404).json({ error: "Room not found" });
-  }
+  if (!room) return res.status(404).json({ error: "Room not found" });
+
   if (!room.memberLastSeen) room.memberLastSeen = {};
-  if (room.members.includes(name)) {
+  if (!room.memberClientIds) room.memberClientIds = {};
+  if (!room.knownClients) room.knownClients = [];
+
+  const isCurrentMember =
+    room.members.includes(name) && room.memberClientIds[name] === clientId;
+
+  if (isCurrentMember) {
     room.memberLastSeen[name] = Date.now();
-    console.log(`[Heartbeat] ${name} in ${roomCode} updated`);
-  } else {
-    if (!room.knownMembers) room.knownMembers = [];
-    if (room.locked && !room.knownMembers.includes(name)) {
-      return res.status(403).json({ error: "Room is locked" });
-    }
-    if (!room.knownMembers.includes(name)) room.knownMembers.push(name);
-    room.members.push(name);
-    room.memberLastSeen[name] = Date.now();
-    broadcastSyncUpdate(roomCode);
-    console.log(`[Heartbeat] ${name} re-joined ${roomCode}`);
+    return res.json({ ok: true });
   }
+
+  if (room.locked && !room.knownClients.includes(clientId)) {
+    return res.status(403).json({ error: "Room is locked" });
+  }
+  if (!room.knownClients.includes(clientId)) room.knownClients.push(clientId);
+  if (!room.members.includes(name)) room.members.push(name);
+  room.memberClientIds[name] = clientId;
+  room.memberLastSeen[name] = Date.now();
+  broadcastSyncUpdate(roomCode);
+  console.log(`[Heartbeat] ${name} re-joined ${roomCode}`);
   res.json({ ok: true });
 });
 
@@ -1002,7 +1008,10 @@ setInterval(() => {
     if (stale.length) {
       console.log(`[Cleanup] Removing stale members from ${roomCode}:`, stale);
       room.members = room.members.filter((name) => !stale.includes(name));
-      stale.forEach((name) => delete room.memberLastSeen[name]);
+      stale.forEach((name) => {
+        delete room.memberLastSeen[name];
+        if (room.memberClientIds) delete room.memberClientIds[name];
+      });
 
       if (room.leader && stale.includes(room.leader)) {
         room.leader = room.members[0] || null;
@@ -1107,8 +1116,8 @@ app.get("/sync/events/:roomCode", (req, res) => {
 });
 
 app.post("/sync/join", express.json(), (req, res) => {
-  const { roomCode, name, originalLeader, isRejoin } = req.body;
-  if (!roomCode || !name)
+  const { roomCode, name, clientId, originalLeader, isRejoin } = req.body;
+  if (!roomCode || !name || !clientId)
     return res.status(400).json({ error: "Missing roomCode or name" });
 
   let room = syncRooms.get(roomCode);
@@ -1116,10 +1125,11 @@ app.post("/sync/join", express.json(), (req, res) => {
 
   if (!room) {
     room = {
-      leader: originalLeader || (isRejoin ? name : name),
+      leader: originalLeader || name,
       members: [],
       memberLastSeen: {},
-      knownMembers: [],
+      memberClientIds: {},
+      knownClients: [],
       locked: false,
       currentSong: null,
       paused: false,
@@ -1133,27 +1143,41 @@ app.post("/sync/join", express.json(), (req, res) => {
     isNewRoom = true;
   }
 
-  if (!room.knownMembers) room.knownMembers = [];
-  const isKnown = room.knownMembers.includes(name);
+  if (!room.knownClients) room.knownClients = [];
+  if (!room.memberClientIds) room.memberClientIds = {};
+
+  const isKnown = room.knownClients.includes(clientId);
   if (room.locked && !isKnown) {
     return res.status(403).json({ error: "Room is locked" });
   }
-  if (!isKnown) room.knownMembers.push(name);
-  if (!room.memberLastSeen) room.memberLastSeen = {};
-  if (!room.members.includes(name)) room.members.push(name);
-  room.memberLastSeen[name] = Date.now();
 
-  if (!room.leader) {
-    room.leader = originalLeader || name;
+  let assignedName = Object.keys(room.memberClientIds).find(
+    (n) => room.memberClientIds[n] === clientId && room.members.includes(n),
+  );
+  if (!assignedName) {
+    assignedName = name;
+    let suffix = 1;
+    while (
+      room.members.includes(assignedName) &&
+      room.memberClientIds[assignedName] !== clientId
+    ) {
+      assignedName = `${name}${suffix++}`;
+    }
   }
+
+  if (!isKnown) room.knownClients.push(clientId);
+  if (!room.members.includes(assignedName)) room.members.push(assignedName);
+  room.memberClientIds[assignedName] = clientId;
+  room.memberLastSeen[assignedName] = Date.now();
+
+  if (!room.leader) room.leader = originalLeader || assignedName;
 
   room.emptySince = null;
   room.lastUpdate = Date.now();
-  if (!(isNewRoom && originalLeader)) {
-    broadcastSyncUpdate(roomCode);
-  }
+  if (!(isNewRoom && originalLeader)) broadcastSyncUpdate(roomCode);
 
   res.json({
+    assignedName,
     leader: room.leader,
     members: room.members,
     currentSong: room.currentSong,
@@ -1176,6 +1200,7 @@ app.post("/sync/leave", express.json(), (req, res) => {
 
   room.members = room.members.filter((m) => m !== name);
   if (room.memberLastSeen) delete room.memberLastSeen[name];
+  if (room.memberClientIds) delete room.memberClientIds[name];
   room.lastUpdate = Date.now();
 
   if (room.members.length === 0) {
