@@ -1410,6 +1410,7 @@ if (window._MMM_INITIALIZED) {
     let isRejoining = false;
     let isLeaving = false;
     let syncLoop = false;
+    let preferredLoop = localStorage.getItem("mmm_preferredLoop") === "true";
     let syncCurrentTime = 0;
     let duetMode = false;
     let syncLocked = false;
@@ -1780,10 +1781,14 @@ if (window._MMM_INITIALIZED) {
         syncPaused = data.paused || false;
         syncIsLeader = syncLeader === myRoomName();
         if (!syncLeader) {
-          syncLeader = syncName;
+          syncLeader = assignedName || syncName;
           syncIsLeader = true;
         }
         syncLoop = data.loop || false;
+        if (data.isNewRoom && syncIsLeader && preferredLoop) {
+          syncLoop = true;
+          syncSetLoop(true);
+        }
         syncLocked = data.locked || false;
         updateLockButton();
         const loopCheckbox = document.getElementById("loopsong");
@@ -1865,9 +1870,13 @@ if (window._MMM_INITIALIZED) {
       syncPaused = false;
       syncIsLeader = false;
       syncLoop = false;
+      loopSong = preferredLoop;
       syncLocked = false;
       syncStartTime = null;
       assignedName = null;
+      const loopCheckbox = document.getElementById("loopsong");
+      if (loopCheckbox) loopCheckbox.checked = preferredLoop;
+      if (syncNameInput) syncNameInput.value = syncName;
       updateSyncUI();
       updateLockButton();
       if (syncStatus) syncStatus.textContent = "Off";
@@ -2457,6 +2466,8 @@ if (window._MMM_INITIALIZED) {
         return;
       }
       loopSong = this.checked;
+      preferredLoop = this.checked;
+      localStorage.setItem("mmm_preferredLoop", preferredLoop);
       if (syncRoom && syncIsLeader) {
         syncSetLoop(loopSong);
       }
