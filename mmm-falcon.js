@@ -1155,12 +1155,7 @@ if (window._MMM_INITIALIZED) {
       }
 
       if (spamModeActive) {
-        currentAudio.pause();
-        currentAudio.currentTime = 0;
-        currentAudio.removeEventListener("ended", onSongEnded);
-        messageTimeouts.forEach(clearTimeout);
-        messageTimeouts = [];
-        spamModeActive = false;
+        hardStopAudio();
       }
 
       isGoingBack = true;
@@ -1176,6 +1171,10 @@ if (window._MMM_INITIALIZED) {
           .play()
           .then(() => scheduleMessages(chatMessages))
           .catch((err) => console.warn("Loop restart failed:", err));
+
+        if (syncRoom && syncIsLeader && selectedSongId != null) {
+          syncPlay(selectedSongId, 0, Date.now());
+        }
         return;
       }
 
@@ -1198,12 +1197,7 @@ if (window._MMM_INITIALIZED) {
       if (blockIfFollower("start autoplay")) return;
 
       if (spamModeActive) {
-        currentAudio.pause();
-        currentAudio.currentTime = 0;
-        spamModeActive = false;
-        currentAudio.removeEventListener("ended", onSongEnded);
-        messageTimeouts.forEach(clearTimeout);
-        messageTimeouts = [];
+        hardStopAudio();
       }
 
       autoplayMode = "category";
@@ -1251,12 +1245,7 @@ if (window._MMM_INITIALIZED) {
       }
 
       if (spamModeActive) {
-        currentAudio.pause();
-        currentAudio.currentTime = 0;
-        spamModeActive = false;
-        currentAudio.removeEventListener("ended", onSongEnded);
-        messageTimeouts.forEach(clearTimeout);
-        messageTimeouts = [];
+        hardStopAudio();
       }
 
       autoplayMode = "random";
@@ -1648,18 +1637,12 @@ if (window._MMM_INITIALIZED) {
         syncCurrentSongId = msg.currentSong;
 
         if (syncCurrentSongId === null) {
-          const intentionalStop = msg.paused === true;
-          if (intentionalStop && spamModeActive) {
+          if (spamModeActive) {
             hardStopAudio();
+            currentlyPlaying.innerHTML = "Currently Playing: none";
+            musicStatus.innerHTML = `Music Status: OFF (synced)`;
             document.getElementById("pauseAutoplayBtn").textContent = "Pause";
             isPaused = false;
-            schedulingActive = false;
-            clearSongNotification();
-          } else if (!intentionalStop) {
-            console.log(
-              "[Sync] Room reset (paused=false) — keeping local playback",
-            );
-            republishIfLeaderPlaying();
           }
           syncPaused = msg.paused || false;
           syncCurrentTime = 0;
@@ -1841,6 +1824,15 @@ if (window._MMM_INITIALIZED) {
           loopSong = syncLoop;
         }
         updateSyncUI();
+
+        if (data.isNewRoom && wasAlreadyInRoom) {
+          console.log("[Sync] Rejoined a recreated room — stopping local playback");
+          hardStopAudio();
+          currentlyPlaying.innerHTML = "Currently Playing: none";
+          musicStatus.innerHTML = `Music Status: OFF`;
+          document.getElementById("pauseAutoplayBtn").textContent = "Pause";
+          isPaused = false;
+        }
 
         if (data.isNewRoom) {
           showNotification(`Created new room: ${roomCode}`, "system");
@@ -2146,8 +2138,6 @@ if (window._MMM_INITIALIZED) {
         return;
       }
 
-      const gen = bumpPlaybackGen();
-
       const now = Date.now();
       const elapsed = (now - serverTimestamp) / 1000;
       let adjustedStart = Math.max(0, startTime + elapsed);
@@ -2161,9 +2151,11 @@ if (window._MMM_INITIALIZED) {
       selectedSongAudio = song.url;
       updateSelectButton(selectedSongName);
       highlightCurrentSong();
-      showSongNotification(selectedSongName);
 
       hardStopAudio();
+      const gen = bumpPlaybackGen();
+
+      showSongNotification(selectedSongName);
 
       currentAudio.src = selectedSongAudio;
       currentAudio.preload = "auto";
@@ -2772,20 +2764,11 @@ if (window._MMM_INITIALIZED) {
 
     function stopMusic() {
       syncStartTime = null;
-      if (spamModeActive) {
-        currentAudio.pause();
-        currentAudio.currentTime = 0;
-        spamModeActive = false;
-        currentAudio.removeEventListener("ended", onSongEnded);
-        messageTimeouts.forEach(clearTimeout);
-        messageTimeouts = [];
-        currentlyPlaying.innerHTML = "Currently Playing: none";
-        musicStatus.innerHTML = `Music Status: OFF`;
-        document.getElementById("pauseAutoplayBtn").textContent = "Pause";
-        isPaused = false;
-        schedulingActive = false;
-        clearSongNotification();
-      }
+      hardStopAudio();
+      currentlyPlaying.innerHTML = "Currently Playing: none";
+      musicStatus.innerHTML = `Music Status: OFF`;
+      document.getElementById("pauseAutoplayBtn").textContent = "Pause";
+      isPaused = false;
     }
 
     window.stopMusic = function () {
