@@ -189,11 +189,11 @@ if (window._MMM_INITIALIZED) {
                 </div>
                 <div style="display: flex; align-items: center; gap: 8px; margin: 6px 0; width: 100%;">
                   <label for="syncNameInput" style="font-size: 14px !important;">Your Name</label>
-                  <input type="text" id="syncNameInput" placeholder="a-z, 0-9 only" maxlength="20" style="flex: 1; max-width: 120px; padding: 4px 8px; background: #3a3a4a; border: 1px solid #555; border-radius: 6px; color: #fff; outline: none; font-size: 13px;">
+                  <input type="text" id="syncNameInput" placeholder="a-z, 0-9 only" maxlength="15" style="flex: 1; max-width: 120px; padding: 4px 8px; background: #3a3a4a; border: 1px solid #555; border-radius: 6px; color: #fff; outline: none; font-size: 13px;">
                 </div>
                <div style="display:flex; align-items:center; gap:6px; margin: 6px 0; width: 100%;">
                 <input type="text" id="roomCodeInput" placeholder="Room Code" class="sync-btn" style="flex: 1; max-width: 130px; padding: 4px 8px; background: #3a3a4a; border: 1px solid #555; border-radius: 6px; color: #fff; outline: none;">
-                <button id="browseRoomsBtn" class="sync-btn" style="background: #8e44ad; border: none; color: white; padding: 4px 10px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 12px;">Browse</button>
+                <button id="browseRoomsBtn" class="sync-btn">Browse</button>
               </div>
 
               <div id="roomListContainer" style="display: none; max-height: 180px; overflow-y: auto; background: rgba(0,0,0,0.35); border: 1px solid #555; border-radius: 8px; padding: 6px; margin: 6px 0;">
@@ -204,10 +204,10 @@ if (window._MMM_INITIALIZED) {
                 <ul id="roomList" style="list-style: none; margin: 0; padding: 0;"></ul>
                 <div id="roomListEmpty" style="display: none; color: #888; font-size: 12px; text-align: center; padding: 8px;">No active rooms right now</div>
               </div>
-
-              <button id="joinSyncBtn" class="sync-btn" style="">Join / Create</button>
-              <button id="leaveSyncBtn" class="sync-btn" style="">Leave</button>
-              <button id="makeLeaderBtn" class="sync-btn" style="">Make Leader</button>
+              <button id="joinSyncBtn" class="sync-btn">Join / Create</button>
+              <button id="leaveSyncBtn" class="sync-btn"">Leave</button>
+              <button id="lockRoomBtn" class="sync-btn">Lock</button>
+              <button id="makeLeaderBtn" class="sync-btn">Make Leader</button>
             </div>
             <div id="syncMembers" style="font-size: 13px !important; color: #aaa; margin-top: 4px;">Members: none</div>
         </div>
@@ -1400,6 +1400,7 @@ if (window._MMM_INITIALIZED) {
     let syncLoop = false;
     let syncCurrentTime = 0;
     let duetMode = false;
+    let syncLocked = false;
 
     function isSyncFollower() {
       if (syncIsLeader) return false;
@@ -1687,6 +1688,15 @@ if (window._MMM_INITIALIZED) {
         needUIUpdate = true;
       }
 
+      if (msg.locked !== undefined && msg.locked !== syncLocked) {
+        syncLocked = msg.locked;
+        updateLockButton();
+        showNotification(
+          syncLocked ? "Room locked by leader" : "Room unlocked",
+          "system",
+        );
+      }
+
       if (needUIUpdate) updateSyncUI();
     }
 
@@ -1720,6 +1730,11 @@ if (window._MMM_INITIALIZED) {
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(body),
         });
+        if (!res.ok) {
+          const errData = await res.json().catch(() => ({}));
+          showNotification(errData.error || "Failed to join room", "system");
+          return;
+        }
         const data = await res.json();
         syncRoom = roomCode;
         syncLeader = data.leader;
@@ -1733,6 +1748,8 @@ if (window._MMM_INITIALIZED) {
           syncIsLeader = true;
         }
         syncLoop = data.loop || false;
+        syncLocked = data.locked || false;
+        updateLockButton();
         const loopCheckbox = document.getElementById("loopsong");
         if (loopCheckbox) {
           loopCheckbox.checked = syncLoop;
@@ -1814,8 +1831,10 @@ if (window._MMM_INITIALIZED) {
       syncPaused = false;
       syncIsLeader = false;
       syncLoop = false;
+      syncLocked = false;
       syncStartTime = null;
       updateSyncUI();
+      updateLockButton();
       document.getElementById("syncStatus").textContent = "Off";
       setTimeout(() => {
         isLeaving = false;
@@ -1925,6 +1944,41 @@ if (window._MMM_INITIALIZED) {
       } catch (err) {
         console.error("Make leader error:", err);
         showNotification("ould not change leader", "system");
+      }
+    }
+
+    function updateLockButton() {
+      const btn = document.getElementById("lockRoomBtn");
+      if (!btn) return;
+      btn.textContent = syncLocked ? "Unlock" : "Lock";
+      btn.style.background = syncLocked ? "#c0392b" : "#e67e22";
+      btn.style.opacity = syncRoom && syncLeader ? "1" : "0.5";
+    }
+
+    async function syncLockRoom(locked) {
+      if (!syncRoom || syncLeader) return;
+
+      try {
+        const res = await fetch(`${API_BASE}/sync/lock`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ roomCode: syncRoom, name: syncName, locked }),
+        });
+        if (!res.ok) {
+          const err = await res.json().catch(() => ({}));
+          showNotification(err.error || "Failed to lock room", "system");
+          return;
+        }
+        const data = await res.json();
+        syncLocked = data.locked;
+        updateLockButton();
+        showNotification(
+          syncLocked ? "Room locked" : "Room unlocked",
+          "system",
+        );
+      } catch (err) {
+        console.error("Sync lock error", err);
+        showNotification("Failed to lock room", "system");
       }
     }
 
@@ -2158,6 +2212,18 @@ if (window._MMM_INITIALIZED) {
       syncMakeLeader(target);
     });
 
+    document.getElementById("lockRoomBtn").addEventListener("click", () => {
+      if (!syncRoom) {
+        showNotification("Join a room first", "system");
+        return;
+      }
+      if (!syncIsLeader) {
+        showNotification("Only the leader can lock the room", "system");
+        return;
+      }
+      syncLockRoom(!syncLocked);
+    });
+
     document.getElementById("syncToggle").addEventListener("click", () => {
       document.querySelector(".syncsongs-section").classList.toggle("open");
     });
@@ -2193,7 +2259,10 @@ if (window._MMM_INITIALIZED) {
             (isCurrent ? "background: rgba(46,204,113,0.15);" : "");
 
           const name = document.createElement("span");
-          name.textContent = room.roomCode + (isCurrent ? " (current)" : "");
+          name.textContent =
+            (room.locked ? "🔒 " : "") +
+            room.roomCode +
+            (isCurrent ? " (current)" : "");
           name.style.cssText = "color: #fff; font-weight: bold;";
 
           const meta = document.createElement("span");
@@ -2221,9 +2290,7 @@ if (window._MMM_INITIALIZED) {
             }
             document.getElementById("roomCodeInput").value = room.roomCode;
             roomListContainer.style.display = "none";
-            if (syncRoom) {
-              await syncLeave();
-            }
+            if (syncRoom) await syncLeave();
             syncJoin(room.roomCode);
           });
 
