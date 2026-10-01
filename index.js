@@ -635,41 +635,44 @@ app.get("/", (req, res) => {
             ${isAuthenticated ? "You are authenticated." : "Enter your API key to access private manager."}
           </div>
 
-          ${!isAuthenticated
-      ? `
+          ${
+            !isAuthenticated
+              ? `
             <input type="password" id="apiKeyInput" placeholder="API Key" aria-label="API Key">
             <button id="saveKeyBtn">Save Key &amp; Unlock Private</button>
           `
-      : `
+              : `
             <div style="margin: 12px 0;">
               <span style="color: #8be9fd;">Private manager is unlocked.</span>
             </div>
             <a href="/logout" class="logout-btn">Logout</a>
           `
-    }
+          }
 
           <div class="links">
             <a href="/public.html" class="link-btn public">Public Songs</a>
 
-            ${!isAuthenticated
-      ? `
+            ${
+              !isAuthenticated
+                ? `
               <div class="guest-row">
                 <input type="text" id="guestTokenInput" placeholder="Paste guest token" aria-label="Guest token">
                 <button id="guestAccessBtn">Guest Access</button>
               </div>
             `
-      : `
+                : `
               <a href="/generate" class="link-btn generate">Generate Guest Keys</a>
             `
-    }
+            }
 
             ${isAuthenticated ? `<a href="/manager.html" class="link-btn private">Private Manager</a>` : ""}
           </div>
         </div>
 
         <script>
-          ${!isAuthenticated
-      ? `
+          ${
+            !isAuthenticated
+              ? `
             document.getElementById('saveKeyBtn').addEventListener('click', async () => {
               const key = document.getElementById('apiKeyInput').value.trim();
               const statusMsg = document.getElementById('statusMsg');
@@ -704,8 +707,8 @@ app.get("/", (req, res) => {
               window.location.href = "/manager.html?guest_token=" + encodeURIComponent(token);
             });
           `
-      : ""
-    }
+              : ""
+          }
         </script>
       </body>
       </html>
@@ -760,7 +763,7 @@ async function processWriteQueue() {
   } catch (err) {
     try {
       await fsPromises.unlink(tempPath);
-    } catch (_) { }
+    } catch (_) {}
     reject(err);
   } finally {
     isWriting = false;
@@ -865,7 +868,7 @@ async function writeStatsFile(key, stats) {
       const data = await getRes.json();
       sha = data.sha;
     }
-  } catch (e) { }
+  } catch (e) {}
 
   const body = {
     message: `Update stats for ${key}`,
@@ -989,8 +992,8 @@ app.post("/sync/heartbeat", express.json(), (req, res) => {
   res.json({ ok: true });
 });
 
-const ROOM_GRACE_PERIOD = 5 * 60 * 1000;
-const MEMBER_STALE_MS = 60 * 1000;
+const ROOM_GRACE_PERIOD = 5* 60 * 1000;
+const MEMBER_STALE_MS = 60 * 1000; 
 const SYNC_CLEANUP_INTERVAL = 15 * 1000;
 
 setInterval(() => {
@@ -1023,12 +1026,21 @@ setInterval(() => {
 
     if (
       room.members.length === 0 &&
-      (!syncSSEClients[roomCode] || syncSSEClients[roomCode].length === 0) &&
       room.emptySince &&
       now - room.emptySince > ROOM_GRACE_PERIOD
     ) {
+      if (syncSSEClients[roomCode]) {
+        for (const client of syncSSEClients[roomCode]) {
+          try {
+            client.end();
+          } catch (e) {}
+        }
+        delete syncSSEClients[roomCode];
+      }
       syncRooms.delete(roomCode);
-      console.log(`[Cleanup] Deleted empty room ${roomCode}`);
+      console.log(
+        `[Cleanup] Deleted empty room ${roomCode} after grace period`,
+      );
     }
   }
 }, SYNC_CLEANUP_INTERVAL);
@@ -1052,7 +1064,7 @@ function broadcastSyncUpdate(roomCode) {
   for (const client of clients) {
     try {
       client.write(`data: ${payload}\n\n`);
-    } catch (e) { }
+    } catch (e) {}
   }
 }
 
@@ -1204,7 +1216,8 @@ app.post("/sync/leave", express.json(), (req, res) => {
 });
 
 app.post("/sync/play", express.json(), (req, res) => {
-  const { roomCode, name, songId, currentTime, partnerSongId, delayMs } = req.body;
+  const { roomCode, name, songId, currentTime, timestamp, partnerSongId } =
+    req.body;
   if (!roomCode || !name || songId === undefined) {
     return res.status(400).json({ error: "Missing roomCode, name, or songId" });
   }
@@ -1213,15 +1226,14 @@ app.post("/sync/play", express.json(), (req, res) => {
   if (room.leader !== name) {
     return res.status(403).json({ error: "Only the leader can play a song" });
   }
-  const delay = typeof delayMs === "number" ? delayMs : 2000;
   room.currentSong = songId;
   room.partnerSongId = partnerSongId || null;
   room.paused = false;
   room.currentTime = currentTime || 0;
-  room.playTimestamp = Date.now() + delay;
+  room.playTimestamp = timestamp || Date.now();
   room.lastUpdate = Date.now();
   broadcastSyncUpdate(roomCode);
-  res.json({ message: "Song set", playTimestamp: room.playTimestamp });
+  res.json({ message: "Song set" });
 });
 
 app.post("/sync/pause", express.json(), (req, res) => {
@@ -1878,7 +1890,7 @@ function broadcastEvent(event, data) {
   sseClients.forEach((client) => {
     try {
       client.write(payload);
-    } catch (e) { }
+    } catch (e) {}
   });
 }
 
