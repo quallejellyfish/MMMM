@@ -790,6 +790,7 @@ if (window._MMM_INITIALIZED) {
     function initAudioContext() {
       if (!audioCtx) {
         audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        window._mmmAudioCtx = audioCtx;
         gainNode = audioCtx.createGain();
         const source = audioCtx.createMediaElementSource(currentAudio);
         source.connect(gainNode);
@@ -1062,8 +1063,9 @@ if (window._MMM_INITIALIZED) {
           err.name,
           err.message,
         );
+        const retryId = song.id;
         setTimeout(() => {
-          playSong(song);
+          if (selectedSongId === retryId) playSong(song);
         }, 1000);
       }
     }
@@ -2857,12 +2859,17 @@ if (window._MMM_INITIALIZED) {
     };
 
     window.addEventListener("beforeunload", () => {
-      /*currentAudio.pause();
-      currentAudio.currentTime = 0;
-      currentAudio.loop = false;
-      messageTimeouts.forEach(clearTimeout);
-      messageTimeouts = [];*/
-      if (typeof syncLeave === "function") {
+      let beaconSent = false;
+      if (syncRoom && typeof navigator.sendBeacon === "function") {
+        try {
+          const body = JSON.stringify({ roomCode: syncRoom, name: myRoomName() });
+          beaconSent = navigator.sendBeacon(
+            `${API_BASE}/sync/leave`,
+            new Blob([body], { type: "application/json" }),
+          );
+        } catch (e) { }
+      }
+      if (!beaconSent && typeof syncLeave === "function") {
         syncLeave();
       }
     });
