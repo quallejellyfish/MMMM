@@ -1184,6 +1184,10 @@ if (window._MMM_INITIALIZED) {
         return;
       }
 
+      if (syncRoom && syncIsLeader) {
+        syncStop();
+      }
+
       setTimeout(() => {
         resetLyricsState();
         if (autoplayMode) {
@@ -1425,6 +1429,8 @@ if (window._MMM_INITIALIZED) {
     let syncCurrentTime = 0;
     let duetMode = false;
     let syncLocked = false;
+    let syncRoomStartTime = 0;
+    let syncRoomPlayTimestamp = 0;
 
     const syncStatus = document.getElementById("syncStatus");
 
@@ -2192,7 +2198,6 @@ if (window._MMM_INITIALIZED) {
       selectedSongAudio = song.url;
       updateSelectButton(selectedSongName);
       highlightCurrentSong();
-      showSongNotification(selectedSongName);
 
       if (spamModeActive) {
         currentAudio.pause();
@@ -2237,7 +2242,6 @@ if (window._MMM_INITIALIZED) {
             `[Sync] Late join: elapsed ${elapsed.toFixed(2)}s → start ${adjustedStart.toFixed(2)}s`,
           );
         }
-
         const dur = currentAudio.duration || 0;
         if (dur > 0 && adjustedStart >= dur) {
           if (loopSong) {
@@ -2246,13 +2250,21 @@ if (window._MMM_INITIALIZED) {
               `[Sync] Looping — wrapped position to ${adjustedStart.toFixed(2)}s (dur ${dur.toFixed(2)}s)`,
             );
           } else {
-            adjustedStart = Math.max(0, dur - 0.5);
             console.log(
-              `[Sync] Track past duration — clamping to end (${adjustedStart.toFixed(2)}s)`,
+              `[Sync] Song already ended (${adjustedStart.toFixed(2)}s >= ${dur.toFixed(2)}s) — skipping playback`,
             );
+            spamModeActive = false;
+            currentlyPlaying.innerHTML = "Currently Playing: none";
+            musicStatus.innerHTML = `Music Status: OFF (song ended)`;
+            const pauseBtn = document.getElementById("pauseAutoplayBtn");
+            if (pauseBtn) pauseBtn.textContent = "Pause";
+            isPaused = false;
+            return;
           }
         }
 
+        showSongNotification(selectedSongName);
+        selectedSongName
         const doPlay = () => {
           const currentPos = currentAudio.currentTime || 0;
           const needsSeek = Math.abs(currentPos - adjustedStart) > 0.5;
@@ -2268,6 +2280,8 @@ if (window._MMM_INITIALIZED) {
             currentAudio.loop = false;
             syncStartTime = adjustedStart;
             syncCurrentTime = adjustedStart;
+            syncRoomStartTime = startTime;
+            syncRoomPlayTimestamp = serverTimestamp;
 
             initAudioContext();
 
@@ -2320,30 +2334,28 @@ if (window._MMM_INITIALIZED) {
 
                 const isLateJoin = serverTimestamp <= now;
                 if (isLateJoin) {
-                  let corrections = 0;
+                  const driftDeadline = Date.now() + 5 * 60 * 1000;
                   const correctDrift = () => {
-                    if (corrections++ >= 15) return;
-                    if (!currentAudio || currentAudio.paused) return;
-
+                    if (Date.now() > driftDeadline) return;
+                    if (syncCurrentSongId !== songId) return;
+                    if (!currentAudio) return;
+                    if (currentAudio.paused) {
+                      setTimeout(correctDrift, 500);
+                      return;
+                    }
                     let expected = startTime + (Date.now() - serverTimestamp) / 1000;
                     const d = currentAudio.duration || 0;
                     if (d > 0 && expected >= d) {
-                      if (loopSong) {
-                        expected = expected % d;
-                      } else {
-                        return;
-                      }
+                      if (loopSong) { expected = expected % d; }
+                      else { return; }
                     }
-
                     const actual = currentAudio.currentTime;
                     const drift = actual - expected;
-                    if (Math.abs(drift) > 0.05) {
-                      console.log(
-                        `[Sync] Drift ${(drift * 1000).toFixed(0)}ms — correcting`,
-                      );
+                    if (Math.abs(drift) > 0.15) {
+                      console.log(`[Sync] Drift ${(drift * 1000).toFixed(0)}ms — correcting`);
                       currentAudio.currentTime = expected;
                     }
-                    setTimeout(correctDrift, 100);
+                    setTimeout(correctDrift, 500);
                   };
                   correctDrift();
                 }
@@ -2947,6 +2959,26 @@ if (window._MMM_INITIALIZED) {
       if (document.visibilityState !== "visible") return;
       if (document.hidden) return;
       if (!syncRoom) return;
+
+      if (
+        !syncIsLeader &&
+        spamModeActive &&
+        currentAudio &&
+        !currentAudio.paused &&
+        syncRoomPlayTimestamp > 0
+      ) {
+        const expected =
+          syncRoomStartTime + (Date.now() - syncRoomPlayTimestamp) / 1000;
+        const actual = currentAudio.currentTime;
+        const drift = actual - expected;
+        console.log(
+          `[Sync] Tab visible — drift ${(drift * 1000).toFixed(0)}ms (expected ${expected.toFixed(2)}s, actual ${actual.toFixed(2)}s)`,
+        );
+        if (Math.abs(drift) > 0.3) {
+          currentAudio.currentTime = expected;
+          console.log(`[Sync] Resynced to ${expected.toFixed(2)}s`);
+        }
+      }
 
       const now = Date.now();
       for (const entry of activeNotifications) {
