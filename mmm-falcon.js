@@ -28,7 +28,9 @@ if (window._MMM_INITIALIZED) {
   window._MMM_INITIALIZED = true;
   window._mmmCleanup = function () {
     if (typeof window._mmmSyncLeave === "function") {
-      try { window._mmmSyncLeave(); } catch (e) { }
+      try {
+        window._mmmSyncLeave();
+      } catch (e) { }
     }
     if (window._mmmKeydownHandler) {
       window.removeEventListener("keydown", window._mmmKeydownHandler, true);
@@ -837,27 +839,8 @@ if (window._MMM_INITIALIZED) {
       if (blockIfFollower("play songs")) return;
 
       if (spamModeActive) {
-        resetLyricsState();
-        schedulingActive = false;
-        clearSongNotification();
-        spamModeActive = false;
-        messageTimeouts.forEach(clearTimeout);
-        messageTimeouts = [];
-        currentlyPlaying.innerHTML = "Currently Playing: none";
-        musicStatus.innerHTML = `Music Status: OFF`;
-        document.getElementById("pauseAutoplayBtn").textContent = "Pause";
-        isPaused = false;
-        if (onTimeUpdateHandler) {
-          currentAudio.removeEventListener("timeupdate", onTimeUpdateHandler);
-          onTimeUpdateHandler = null;
-        }
-        currentAudio.pause();
-        currentAudio.currentTime = 0;
-        currentAudio.loop = false;
-        currentAudio.removeEventListener("ended", onSongEnded);
-        if (syncRoom && syncIsLeader) {
-          syncStop();
-        }
+        hardStopAudio();
+        if (syncRoom && syncIsLeader) syncStop();
         updateSelectButton("Select Song");
         highlightCurrentSong();
         return;
@@ -894,7 +877,6 @@ if (window._MMM_INITIALIZED) {
         currentAudio.load();
         currentAudio.currentTime = startAt;
         currentAudio.loop = false;
-        syncStartTime = null;
         countedThisPlay = false;
 
         onTimeUpdateHandler = function () {
@@ -974,12 +956,7 @@ if (window._MMM_INITIALIZED) {
       showSongNotification(selectedSongName);
 
       if (spamModeActive) {
-        currentAudio.pause();
-        currentAudio.currentTime = 0;
-        spamModeActive = false;
-        currentAudio.removeEventListener("ended", onSongEnded);
-        messageTimeouts.forEach(clearTimeout);
-        messageTimeouts = [];
+        hardStopAudio();
       }
 
       try {
@@ -1113,17 +1090,7 @@ if (window._MMM_INITIALIZED) {
       if (blockIfFollower("skip songs")) return false;
       const wasSyncedLeader = syncRoom && syncIsLeader && spamModeActive;
       schedulingActive = false;
-      if (spamModeActive) {
-        clearSongNotification();
-        currentAudio.pause();
-        currentAudio.currentTime = 0;
-        currentAudio.removeEventListener("ended", onSongEnded);
-        messageTimeouts.forEach(clearTimeout);
-        messageTimeouts = [];
-        spamModeActive = false;
-        document.getElementById("pauseAutoplayBtn").textContent = "Pause";
-        isPaused = false;
-      }
+      hardStopAudio();
       if (autoplayMode) {
         playNextAuto();
       } else {
@@ -1158,16 +1125,7 @@ if (window._MMM_INITIALIZED) {
           console.log(`Adjusted autoplayIndex to ${autoplayIndex}`);
         }
       }
-
-      if (spamModeActive) {
-        currentAudio.pause();
-        currentAudio.currentTime = 0;
-        currentAudio.removeEventListener("ended", onSongEnded);
-        messageTimeouts.forEach(clearTimeout);
-        messageTimeouts = [];
-        spamModeActive = false;
-      }
-
+      hardStopAudio();
       isGoingBack = true;
 
       playSong(prevSong);
@@ -1206,14 +1164,7 @@ if (window._MMM_INITIALIZED) {
     function startCategoryAutoplay(categoryName) {
       if (blockIfFollower("start autoplay")) return;
 
-      if (spamModeActive) {
-        currentAudio.pause();
-        currentAudio.currentTime = 0;
-        spamModeActive = false;
-        currentAudio.removeEventListener("ended", onSongEnded);
-        messageTimeouts.forEach(clearTimeout);
-        messageTimeouts = [];
-      }
+      hardStopAudio();
 
       autoplayMode = "category";
       autoplayCategory = categoryName;
@@ -1259,14 +1210,7 @@ if (window._MMM_INITIALIZED) {
         return;
       }
 
-      if (spamModeActive) {
-        currentAudio.pause();
-        currentAudio.currentTime = 0;
-        spamModeActive = false;
-        currentAudio.removeEventListener("ended", onSongEnded);
-        messageTimeouts.forEach(clearTimeout);
-        messageTimeouts = [];
-      }
+      hardStopAudio();
 
       autoplayMode = "random";
       autoplayCategory = null;
@@ -1301,17 +1245,7 @@ if (window._MMM_INITIALIZED) {
       document.getElementById("pauseAutoplayBtn").textContent = "Pause";
       isPaused = false;
 
-      if (spamModeActive) {
-        currentAudio.pause();
-        currentAudio.currentTime = 0;
-        spamModeActive = false;
-        currentAudio.removeEventListener("ended", onSongEnded);
-        messageTimeouts.forEach(clearTimeout);
-        messageTimeouts = [];
-        currentlyPlaying.innerHTML = "Currently Playing: none";
-        musicStatus.innerHTML = `Music Status: OFF`;
-        isPaused = false;
-      }
+      hardStopAudio();
 
       if (wasSyncedLeader && opts.sync !== false) {
         syncStop();
@@ -1535,6 +1469,10 @@ if (window._MMM_INITIALIZED) {
             }),
           });
           if (res.status === 404) {
+            if (isRejoining || isLeaving || window._mmmReconnectTimer) {
+              console.log("[Sync] Ignoring heartbeat 404 — rejoin already pending");
+              return;
+            }
             console.warn("[MMM] Room vanished, rejoining...");
             const currentRoom = syncRoom;
             const leader = syncLeader;
@@ -1647,18 +1585,7 @@ if (window._MMM_INITIALIZED) {
         if (syncCurrentSongId === null) {
           const intentionalStop = msg.paused === true;
           if (intentionalStop && spamModeActive) {
-            currentAudio.pause();
-            currentAudio.currentTime = 0;
-            spamModeActive = false;
-            currentAudio.removeEventListener("ended", onSongEnded);
-            messageTimeouts.forEach(clearTimeout);
-            messageTimeouts = [];
-            currentlyPlaying.innerHTML = "Currently Playing: none";
-            musicStatus.innerHTML = `Music Status: OFF (synced)`;
-            document.getElementById("pauseAutoplayBtn").textContent = "Pause";
-            isPaused = false;
-            schedulingActive = false;
-            clearSongNotification();
+            hardStopAudio();
           } else if (!intentionalStop) {
             console.log(
               "[Sync] Room reset (paused=false) — keeping local playback",
@@ -1848,9 +1775,44 @@ if (window._MMM_INITIALIZED) {
         connectSyncSSE(roomCode);
         updateSyncUI();
         syncStatus.textContent = `Connected (Leader: ${syncLeader})`;
+
         if (syncCurrentSongId !== null && !syncPaused && !syncIsLeader) {
-          const timestamp = data.timestamp || Date.now();
-          playSyncSong(syncCurrentSongId, syncCurrentTime, timestamp);
+          const alreadyPlaying =
+            spamModeActive &&
+            selectedSongId === syncCurrentSongId &&
+            currentAudio &&
+            !currentAudio.paused;
+
+          if (alreadyPlaying) {
+            const timestamp = data.timestamp || Date.now();
+            const expected = syncCurrentTime + (Date.now() - timestamp) / 1000;
+            const actual = currentAudio.currentTime;
+            const drift = actual - expected;
+            console.log(
+              `[Sync] Rejoin — same song already playing. Drift ${(drift * 1000).toFixed(0)}ms`,
+            );
+            if (Math.abs(drift) > 1.0) {
+              currentAudio.currentTime = expected;
+              console.log(`[Sync] Rejoin drift corrected to ${expected.toFixed(2)}s`);
+            }
+            if (chatMessages.length === 0 && selectedSongId) {
+              fetchLyrics(selectedSongId).then((lyrics) => {
+                chatMessages = lyrics;
+                const currentMs = currentAudio.currentTime * 1000;
+                let startIndex = lyrics.length;
+                for (let j = 0; j < lyrics.length; j++) {
+                  if (lyrics[j].delay > currentMs) {
+                    startIndex = j;
+                    break;
+                  }
+                }
+                scheduleMessages(chatMessages, startIndex);
+              }).catch(() => { });
+            }
+          } else {
+            const timestamp = data.timestamp || Date.now();
+            playSyncSong(syncCurrentSongId, syncCurrentTime, timestamp);
+          }
         }
         republishIfLeaderPlaying();
       } catch (err) {
@@ -1910,10 +1872,18 @@ if (window._MMM_INITIALIZED) {
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ roomCode: syncRoom, name: myRoomName() }),
           });
-        } catch (e) { /* ignore */ }
+        } catch (e) {
+          /* ignore */
+        }
       }
-      if (syncEventSource) { syncEventSource.close(); syncEventSource = null; }
-      if (syncHeartbeatInterval) { clearInterval(syncHeartbeatInterval); syncHeartbeatInterval = null; }
+      if (syncEventSource) {
+        syncEventSource.close();
+        syncEventSource = null;
+      }
+      if (syncHeartbeatInterval) {
+        clearInterval(syncHeartbeatInterval);
+        syncHeartbeatInterval = null;
+      }
 
       syncRoom = null;
       syncLeader = null;
@@ -1928,26 +1898,7 @@ if (window._MMM_INITIALIZED) {
       syncStartTime = null;
       assignedName = null;
 
-      if (onTimeUpdateHandler) {
-        currentAudio.removeEventListener("timeupdate", onTimeUpdateHandler);
-        onTimeUpdateHandler = null;
-      }
-      messageTimeouts.forEach(clearTimeout);
-      messageTimeouts = [];
-      try {
-        currentAudio.pause();
-        currentAudio.currentTime = 0;
-        currentAudio.src = "";
-        currentAudio.load();
-      } catch (e) { }
-      spamModeActive = false;
-      clearSongNotification();
-
-      currentlyPlaying.innerHTML = "Currently Playing: none";
-      musicStatus.innerHTML = `Music Status: OFF`;
-      const pauseBtn = document.getElementById("pauseAutoplayBtn");
-      if (pauseBtn) pauseBtn.textContent = "Pause";
-      isPaused = false;
+      hardStopAudio();
 
       const loopCheckbox = document.getElementById("loopsong");
       if (loopCheckbox) loopCheckbox.checked = preferredLoop;
@@ -1957,7 +1908,9 @@ if (window._MMM_INITIALIZED) {
       updateLockButton();
       if (syncStatus) syncStatus.textContent = "Off";
 
-      setTimeout(() => { isLeaving = false; }, 1000);
+      setTimeout(() => {
+        isLeaving = false;
+      }, 1000);
     }
     window._mmmSyncLeave = syncLeave;
 
@@ -2264,7 +2217,6 @@ if (window._MMM_INITIALIZED) {
         }
 
         showSongNotification(selectedSongName);
-        selectedSongName
         const doPlay = () => {
           const currentPos = currentAudio.currentTime || 0;
           const needsSeek = Math.abs(currentPos - adjustedStart) > 0.5;
@@ -2291,7 +2243,8 @@ if (window._MMM_INITIALIZED) {
                 spamModeActive = true;
                 currentlyPlaying.innerHTML = `Currently Playing: ${selectedSongName}`;
                 musicStatus.innerHTML = `Music Status: ON (Sync)`;
-                document.getElementById("pauseAutoplayBtn").textContent = "Pause";
+                document.getElementById("pauseAutoplayBtn").textContent =
+                  "Pause";
                 isPaused = false;
 
                 const scheduleLyrics = (lyrics) => {
@@ -2311,7 +2264,9 @@ if (window._MMM_INITIALIZED) {
                 };
 
                 if (lyricsCache[selectedSongId]) {
-                  console.log(`[Sync] Using cached lyrics for ${selectedSongId}`);
+                  console.log(
+                    `[Sync] Using cached lyrics for ${selectedSongId}`,
+                  );
                   scheduleLyrics(lyricsCache[selectedSongId]);
                 } else {
                   console.log(`[Sync] Fetching lyrics for ${selectedSongId}`);
@@ -2343,16 +2298,22 @@ if (window._MMM_INITIALIZED) {
                       setTimeout(correctDrift, 500);
                       return;
                     }
-                    let expected = startTime + (Date.now() - serverTimestamp) / 1000;
+                    let expected =
+                      startTime + (Date.now() - serverTimestamp) / 1000;
                     const d = currentAudio.duration || 0;
                     if (d > 0 && expected >= d) {
-                      if (loopSong) { expected = expected % d; }
-                      else { return; }
+                      if (loopSong) {
+                        expected = expected % d;
+                      } else {
+                        return;
+                      }
                     }
                     const actual = currentAudio.currentTime;
                     const drift = actual - expected;
                     if (Math.abs(drift) > 0.15) {
-                      console.log(`[Sync] Drift ${(drift * 1000).toFixed(0)}ms — correcting`);
+                      console.log(
+                        `[Sync] Drift ${(drift * 1000).toFixed(0)}ms — correcting`,
+                      );
                       currentAudio.currentTime = expected;
                     }
                     setTimeout(correctDrift, 500);
@@ -2848,22 +2809,46 @@ if (window._MMM_INITIALIZED) {
     window._mmmKeydownHandler = keydownHandler;
     window.addEventListener("keydown", keydownHandler, true);
 
-    function stopMusic() {
-      syncStartTime = null;
-      if (spamModeActive) {
+    function hardStopAudio() {
+      // Audio element
+      try {
         currentAudio.pause();
         currentAudio.currentTime = 0;
-        spamModeActive = false;
+        currentAudio.loop = false;
+        currentAudio.playbackRate = 1;
         currentAudio.removeEventListener("ended", onSongEnded);
-        messageTimeouts.forEach(clearTimeout);
-        messageTimeouts = [];
-        currentlyPlaying.innerHTML = "Currently Playing: none";
-        musicStatus.innerHTML = `Music Status: OFF`;
-        document.getElementById("pauseAutoplayBtn").textContent = "Pause";
-        isPaused = false;
-        schedulingActive = false;
-        clearSongNotification();
-      }
+        if (onTimeUpdateHandler) {
+          currentAudio.removeEventListener("timeupdate", onTimeUpdateHandler);
+          onTimeUpdateHandler = null;
+        }
+        if (currentAudio.src) {
+          currentAudio.src = "";
+          currentAudio.load();
+        }
+      } catch (e) { }
+
+      // Lyrics scheduling + timers
+      resetLyricsState(); // clears _lyricsInterval, schedulingActive, chatMessages, syncStartTime
+      messageTimeouts.forEach(clearTimeout);
+      messageTimeouts = [];
+
+      // Playback flags
+      spamModeActive = false;
+      countedThisPlay = false;
+      isPaused = false;
+      syncRoomStartTime = 0;
+      syncRoomPlayTimestamp = 0;
+
+      // UI
+      currentlyPlaying.innerHTML = "Currently Playing: none";
+      musicStatus.innerHTML = `Music Status: OFF`;
+      const pauseBtn = document.getElementById("pauseAutoplayBtn");
+      if (pauseBtn) pauseBtn.textContent = "Pause";
+      clearSongNotification();
+    }
+
+    function stopMusic() {
+      hardStopAudio();
     }
 
     window.stopMusic = function () {
@@ -2874,7 +2859,10 @@ if (window._MMM_INITIALIZED) {
       let beaconSent = false;
       if (syncRoom && typeof navigator.sendBeacon === "function") {
         try {
-          const body = JSON.stringify({ roomCode: syncRoom, name: myRoomName() });
+          const body = JSON.stringify({
+            roomCode: syncRoom,
+            name: myRoomName(),
+          });
           beaconSent = navigator.sendBeacon(
             `${API_BASE}/sync/leave`,
             new Blob([body], { type: "application/json" }),
