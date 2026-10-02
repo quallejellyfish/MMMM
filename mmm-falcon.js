@@ -2289,9 +2289,7 @@ if (window._MMM_INITIALIZED) {
 
                 const isLateJoin = serverTimestamp <= now;
                 if (isLateJoin) {
-                  const driftDeadline = Date.now() + 5 * 60 * 1000;
                   const correctDrift = () => {
-                    if (Date.now() > driftDeadline) return;
                     if (syncCurrentSongId !== songId) return;
                     if (!currentAudio) return;
                     if (currentAudio.paused) {
@@ -2952,19 +2950,47 @@ if (window._MMM_INITIALIZED) {
         !syncIsLeader &&
         spamModeActive &&
         currentAudio &&
-        !currentAudio.paused &&
         syncRoomPlayTimestamp > 0
       ) {
         const expected =
           syncRoomStartTime + (Date.now() - syncRoomPlayTimestamp) / 1000;
         const actual = currentAudio.currentTime;
         const drift = actual - expected;
+
         console.log(
-          `[Sync] Tab visible — drift ${(drift * 1000).toFixed(0)}ms (expected ${expected.toFixed(2)}s, actual ${actual.toFixed(2)}s)`,
+          `[Sync] Tab visible — paused=${currentAudio.paused}, ` +
+          `drift ${(drift * 1000).toFixed(0)}ms ` +
+          `(expected ${expected.toFixed(2)}s, actual ${actual.toFixed(2)}s)`
         );
-        if (Math.abs(drift) > 0.3) {
-          currentAudio.currentTime = expected;
-          console.log(`[Sync] Resynced to ${expected.toFixed(2)}s`);
+
+        if (currentAudio.paused) {
+          const resumeAt = Math.max(0, expected);
+          currentAudio.currentTime = resumeAt;
+          currentAudio
+            .play()
+            .then(() => {
+              isPaused = false;
+              const pauseBtn = document.getElementById("pauseAutoplayBtn");
+              if (pauseBtn) pauseBtn.textContent = "Pause";
+              musicStatus.innerHTML = `Music Status: ON (Sync)`;
+              console.log(`[Sync] Resumed from ${resumeAt.toFixed(2)}s`);
+
+              if (chatMessages.length > 0) {
+                const currentMs = currentAudio.currentTime * 1000;
+                let startIndex = chatMessages.length;
+                for (let j = 0; j < chatMessages.length; j++) {
+                  if (chatMessages[j].delay > currentMs) {
+                    startIndex = j;
+                    break;
+                  }
+                }
+                scheduleMessages(chatMessages, startIndex);
+              }
+            })
+            .catch((err) => console.warn("Resume on visible failed:", err));
+        } else if (Math.abs(drift) > 0.3) {
+          currentAudio.currentTime = Math.max(0, expected);
+          console.log(`[Sync] Drift corrected to ${expected.toFixed(2)}s`);
         }
       }
 
