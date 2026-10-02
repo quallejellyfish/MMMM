@@ -1245,7 +1245,6 @@ app.post("/sync/pause", express.json(), (req, res) => {
   }
   room.paused = paused;
   if (currentTime !== undefined) room.currentTime = currentTime;
-  if (!paused) room.playTimestamp = Date.now();
   room.lastUpdate = Date.now();
   broadcastSyncUpdate(roomCode);
   res.json({ message: "Pause state updated" });
