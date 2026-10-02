@@ -100441,7 +100441,7 @@
       "delay": 69973
     },
     {
-      "chat": "I will not ever let you go away",
+      "chat": "I'll not ever let you go away",
       "delay": 71988
     },
     {
@@ -100726,11 +100726,11 @@
     },
     {
       "chat": "I said Lord, ah, Verity",
-      "delay": 193751
+      "delay": 193351
     },
     {
       "chat": "(Ask me..)",
-      "delay": 193751
+      "delay": 193951
     },
     {
       "chat": "..anything)",
@@ -100753,12 +100753,12 @@
       "delay": 198599
     },
     {
-      "chat": "Master of Humanity",
-      "delay": 200658
-    },
-    {
       "chat": "(a million things)",
       "delay": 199716
+    },
+    {
+      "chat": "Master of Humanity",
+      "delay": 200658
     },
     {
       "chat": "(I'll do)",
