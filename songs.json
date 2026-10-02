@@ -9,13 +9,15 @@
     "id": 281,
     "name": "I Miss The Quiet",
     "url": "https://audio.jukehost.co.uk/01a0f7ed-b629-71d3-b217-30324b2892bd",
-    "public": true
+    "public": true,
+    "lyricsCount": 93
   },
   {
     "id": 279,
     "name": "shy and dangerous",
     "url": "https://audio.jukehost.co.uk/01a0f2ae-2a49-73f3-82c7-23e4a80605c7",
-    "public": true
+    "public": true,
+    "lyricsCount": 100
   },
   {
     "id": 235,
@@ -23,6 +25,13 @@
     "url": "https://audio.jukehost.co.uk/01a095da-f939-72e8-89d8-1c1be5bd0e5b",
     "public": true,
     "lyricsCount": 129
+  },
+  {
+    "id": 282,
+    "name": "Lord Verity - Encore",
+    "url": "https://audio.jukehost.co.uk/01a0fe44-bbfd-7107-b44b-b3b262b8b584",
+    "public": false,
+    "lyricsCount": 132
   },
   {
     "id": 278,
@@ -1387,7 +1396,8 @@
     "id": 280,
     "name": "Hate you - Poylow",
     "url": "https://audio.jukehost.co.uk/01a0f743-e10e-71ac-889e-1be3261bd94c",
-    "public": true
+    "public": true,
+    "lyricsCount": 62
   },
   {
     "id": 271,
