@@ -1138,19 +1138,20 @@ if (window._MMM_INITIALIZED) {
         return;
       }
 
-
       if (loopSong && !autoplayMode) {
-        const now = Date.now();
+        const loopSongId = selectedSongId;
+        const wasSyncedLeader = syncRoom && syncIsLeader && loopSongId !== null;
 
-        if (syncRoom && syncIsLeader && selectedSongId !== null) {
-          syncPlay(selectedSongId, 0, now);
-        }
         syncRoomStartTime = 0;
-        syncRoomPlayTimestamp = now;
         currentAudio.currentTime = 0;
         currentAudio
           .play()
-          .then(() => scheduleMessages(chatMessages))
+          .then(() => {
+            const now = Date.now();
+            syncRoomPlayTimestamp = now;
+            if (wasSyncedLeader) syncPlay(loopSongId, 0, now);
+            if (chatMessages.length > 0) scheduleMessages(chatMessages, 0);
+          })
           .catch((err) => console.warn("Loop restart failed:", err));
         return;
       }
@@ -1617,6 +1618,8 @@ if (window._MMM_INITIALIZED) {
               `Duet mode: playing partner song ${targetSongId} instead of ${syncCurrentSongId}`,
             );
           }
+          syncRoomPlayTimestamp = timestamp;
+          syncRoomStartTime = msg.currentTime || 0;
           playSyncSong(targetSongId, msg.currentTime || 0, timestamp);
         }
         needUIUpdate = true;
@@ -2195,6 +2198,10 @@ if (window._MMM_INITIALIZED) {
 
     function playSyncSong(songId, startTime = 0, serverTimestamp = Date.now()) {
       resetLyricsState();
+      if (driftCorrectorRef) {
+        currentAudio.removeEventListener("timeupdate", driftCorrectorRef);
+        driftCorrectorRef = null;
+      }
       const song = songsList.find((s) => s.id === songId);
       if (!song) {
         console.warn("Sync song not found:", songId);
@@ -2352,10 +2359,6 @@ if (window._MMM_INITIALIZED) {
 
                 const isLateJoin = serverTimestamp <= now;
                 if (isLateJoin) {
-                  if (driftCorrectorRef) {
-                    currentAudio.removeEventListener("timeupdate", driftCorrectorRef);
-                    driftCorrectorRef = null;
-                  }
                   driftCorrectorRef = () => {
                     if (syncCurrentSongId !== songId) {
                       currentAudio.removeEventListener("timeupdate", driftCorrectorRef);
