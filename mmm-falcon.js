@@ -1623,42 +1623,13 @@ if (window._MMM_INITIALIZED) {
 
           if (syncPaused) {
             if (spamModeActive && !currentAudio.paused) {
-              if (syncCurrentTime !== undefined) {
-                currentAudio.currentTime = syncCurrentTime;
-              }
               currentAudio.pause();
-              isPaused = true;
-              document.getElementById("pauseAutoplayBtn").textContent = "Play";
-              musicStatus.innerHTML = "Music Status: Paused (synced)";
-              schedulingActive = false;
-              clearSongNotification();
             }
-          } else {
-            if (spamModeActive && currentAudio.paused) {
-              if (syncCurrentTime !== undefined) {
-                currentAudio.currentTime = syncCurrentTime;
-                console.log(`Resume: aligned to ${syncCurrentTime}s`);
-              }
-              currentAudio
-                .play()
-                .then(() => {
-                  isPaused = false;
-                  document.getElementById("pauseAutoplayBtn").textContent =
-                    "Pause";
-                  musicStatus.innerHTML = `Music Status: ON (Sync)`;
-                  schedulingActive = true;
-                  let startIndex = 0;
-                  const currentMs = currentAudio.currentTime * 1000;
-                  for (let j = 0; j < chatMessages.length; j++) {
-                    if (chatMessages[j].delay > currentMs) {
-                      startIndex = j;
-                      break;
-                    }
-                  }
-                  scheduleMessages(chatMessages, startIndex);
-                })
-                .catch((err) => console.warn("Resume failed:", err));
-            }
+            isPaused = true;
+            document.getElementById("pauseAutoplayBtn").textContent = "Play";
+            musicStatus.innerHTML = "Music Status: Paused (synced)";
+            schedulingActive = false;
+            clearSongNotification();
           }
           needUIUpdate = true;
         }
@@ -1671,31 +1642,40 @@ if (window._MMM_INITIALIZED) {
         !syncIsLeader &&
         !msg.paused &&
         msg.timestamp !== undefined &&
-        msg.timestamp > syncRoomPlayTimestamp + 500
+        msg.timestamp !== syncRoomPlayTimestamp
       ) {
         console.log(`[Sync] Re-anchor to ${msg.currentTime}s @ ${msg.timestamp}`);
         syncRoomPlayTimestamp = msg.timestamp;
         syncRoomStartTime = msg.currentTime || 0;
         syncCurrentTime = msg.currentTime || 0;
 
-        if (spamModeActive && currentAudio) {
+        if (!spamModeActive) {
+          const targetSongId =
+            duetMode && msg.partnerSongId ? msg.partnerSongId : syncCurrentSongId;
+          playSyncSong(targetSongId, msg.currentTime || 0, msg.timestamp);
+          needUIUpdate = true;
+        } else if (currentAudio) {
           const elapsed = (Date.now() - msg.timestamp) / 1000;
           let target = (msg.currentTime || 0) + elapsed;
           const dur = currentAudio.duration || 0;
-          if (dur > 0) {
-            while (target >= dur) target -= dur;
-          }
-          if (Math.abs(currentAudio.currentTime - target) > 0.25) {
+          if (dur > 0) while (target >= dur) target -= dur;
+
+          if (Math.abs(currentAudio.currentTime - target) > 0.15) {
             currentAudio.currentTime = Math.max(0, target);
           }
+
           if (currentAudio.paused) {
             currentAudio
               .play()
+              .then(() => {
+                isPaused = false;
+                document.getElementById("pauseAutoplayBtn").textContent = "Pause";
+                musicStatus.innerHTML = "Music Status: ON (Sync)";
+                schedulingActive = true;
+              })
               .catch((err) => console.warn("Re-anchor play failed:", err));
-            isPaused = false;
-            document.getElementById("pauseAutoplayBtn").textContent = "Pause";
-            musicStatus.innerHTML = "Music Status: ON (Sync)";
           }
+
           if (chatMessages.length > 0) {
             const currentMs = currentAudio.currentTime * 1000;
             let startIndex = chatMessages.length;
@@ -1707,8 +1687,8 @@ if (window._MMM_INITIALIZED) {
             }
             scheduleMessages(chatMessages, startIndex);
           }
+          needUIUpdate = true;
         }
-        needUIUpdate = true;
       }
 
       if (msg.loop !== undefined && msg.loop !== syncLoop) {
