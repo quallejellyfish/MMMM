@@ -635,44 +635,41 @@ app.get("/", (req, res) => {
             ${isAuthenticated ? "You are authenticated." : "Enter your API key to access private manager."}
           </div>
 
-          ${
-            !isAuthenticated
-              ? `
+          ${!isAuthenticated
+      ? `
             <input type="password" id="apiKeyInput" placeholder="API Key" aria-label="API Key">
             <button id="saveKeyBtn">Save Key &amp; Unlock Private</button>
           `
-              : `
+      : `
             <div style="margin: 12px 0;">
               <span style="color: #8be9fd;">Private manager is unlocked.</span>
             </div>
             <a href="/logout" class="logout-btn">Logout</a>
           `
-          }
+    }
 
           <div class="links">
             <a href="/public.html" class="link-btn public">Public Songs</a>
 
-            ${
-              !isAuthenticated
-                ? `
+            ${!isAuthenticated
+      ? `
               <div class="guest-row">
                 <input type="text" id="guestTokenInput" placeholder="Paste guest token" aria-label="Guest token">
                 <button id="guestAccessBtn">Guest Access</button>
               </div>
             `
-                : `
+      : `
               <a href="/generate" class="link-btn generate">Generate Guest Keys</a>
             `
-            }
+    }
 
             ${isAuthenticated ? `<a href="/manager.html" class="link-btn private">Private Manager</a>` : ""}
           </div>
         </div>
 
         <script>
-          ${
-            !isAuthenticated
-              ? `
+          ${!isAuthenticated
+      ? `
             document.getElementById('saveKeyBtn').addEventListener('click', async () => {
               const key = document.getElementById('apiKeyInput').value.trim();
               const statusMsg = document.getElementById('statusMsg');
@@ -707,8 +704,8 @@ app.get("/", (req, res) => {
               window.location.href = "/manager.html?guest_token=" + encodeURIComponent(token);
             });
           `
-              : ""
-          }
+      : ""
+    }
         </script>
       </body>
       </html>
@@ -763,7 +760,7 @@ async function processWriteQueue() {
   } catch (err) {
     try {
       await fsPromises.unlink(tempPath);
-    } catch (_) {}
+    } catch (_) { }
     reject(err);
   } finally {
     isWriting = false;
@@ -868,7 +865,7 @@ async function writeStatsFile(key, stats) {
       const data = await getRes.json();
       sha = data.sha;
     }
-  } catch (e) {}
+  } catch (e) { }
 
   const body = {
     message: `Update stats for ${key}`,
@@ -992,8 +989,8 @@ app.post("/sync/heartbeat", express.json(), (req, res) => {
   res.json({ ok: true });
 });
 
-const ROOM_GRACE_PERIOD = 5* 60 * 1000;
-const MEMBER_STALE_MS = 60 * 1000; 
+const ROOM_GRACE_PERIOD = 5 * 60 * 1000;
+const MEMBER_STALE_MS = 60 * 1000;
 const SYNC_CLEANUP_INTERVAL = 15 * 1000;
 
 setInterval(() => {
@@ -1033,7 +1030,7 @@ setInterval(() => {
         for (const client of syncSSEClients[roomCode]) {
           try {
             client.end();
-          } catch (e) {}
+          } catch (e) { }
         }
         delete syncSSEClients[roomCode];
       }
@@ -1064,7 +1061,7 @@ function broadcastSyncUpdate(roomCode) {
   for (const client of clients) {
     try {
       client.write(`data: ${payload}\n\n`);
-    } catch (e) {}
+    } catch (e) { }
   }
 }
 
@@ -1248,6 +1245,7 @@ app.post("/sync/pause", express.json(), (req, res) => {
   }
   room.paused = paused;
   if (currentTime !== undefined) room.currentTime = currentTime;
+  if (!paused) room.playTimestamp = Date.now();
   room.lastUpdate = Date.now();
   broadcastSyncUpdate(roomCode);
   res.json({ message: "Pause state updated" });
@@ -1890,7 +1888,7 @@ function broadcastEvent(event, data) {
   sseClients.forEach((client) => {
     try {
       client.write(payload);
-    } catch (e) {}
+    } catch (e) { }
   });
 }
 
