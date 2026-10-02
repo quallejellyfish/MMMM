@@ -831,7 +831,7 @@ if (window._MMM_INITIALIZED) {
 
     let countedThisPlay = false;
     let onTimeUpdateHandler = null;
-
+    let driftCorrectorRef = null;
     let isPaused = false;
     let syncStartTime = null;
 
@@ -1133,6 +1133,12 @@ if (window._MMM_INITIALIZED) {
     }
 
     function onSongEnded() {
+      if (syncRoom && !syncIsLeader) {
+        console.log("[Sync] Follower song ended — awaiting leader loop SSE");
+        return;
+      }
+
+
       if (loopSong && !autoplayMode) {
         const now = Date.now();
 
@@ -2346,13 +2352,17 @@ if (window._MMM_INITIALIZED) {
 
                 const isLateJoin = serverTimestamp <= now;
                 if (isLateJoin) {
-                  const correctDrift = () => {
-                    if (syncCurrentSongId !== songId) return;
-                    if (!currentAudio) return;
-                    if (currentAudio.paused) {
-                      setTimeout(correctDrift, 500);
+                  if (driftCorrectorRef) {
+                    currentAudio.removeEventListener("timeupdate", driftCorrectorRef);
+                    driftCorrectorRef = null;
+                  }
+                  driftCorrectorRef = () => {
+                    if (syncCurrentSongId !== songId) {
+                      currentAudio.removeEventListener("timeupdate", driftCorrectorRef);
+                      driftCorrectorRef = null;
                       return;
                     }
+                    if (!currentAudio || currentAudio.paused) return;
                     let expected =
                       syncRoomStartTime + (Date.now() - syncRoomPlayTimestamp) / 1000;
                     const d = currentAudio.duration || 0;
@@ -2367,13 +2377,13 @@ if (window._MMM_INITIALIZED) {
                     const drift = actual - expected;
                     if (Math.abs(drift) > 0.15) {
                       console.log(
-                        `[Sync] Drift ${(drift * 1000).toFixed(0)}ms — correcting`,
+                        `[Sync] Drift ${(drift * 1000).toFixed(0)}ms — correcting`
                       );
                       currentAudio.currentTime = expected;
                     }
-                    setTimeout(correctDrift, 500);
                   };
-                  correctDrift();
+                  currentAudio.addEventListener("timeupdate", driftCorrectorRef);
+                  driftCorrectorRef();
                 }
               })
               .catch((err) => {
@@ -2875,6 +2885,10 @@ if (window._MMM_INITIALIZED) {
         if (onTimeUpdateHandler) {
           currentAudio.removeEventListener("timeupdate", onTimeUpdateHandler);
           onTimeUpdateHandler = null;
+        }
+        if (driftCorrectorRef) {
+          currentAudio.removeEventListener("timeupdate", driftCorrectorRef);
+          driftCorrectorRef = null;
         }
         if (currentAudio.src) {
           currentAudio.src = "";
