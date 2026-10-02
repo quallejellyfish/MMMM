@@ -1642,8 +1642,6 @@ if (window._MMM_INITIALIZED) {
           } else {
             if (spamModeActive && currentAudio.paused && !syncIsLeader) {
               currentAudio.currentTime = syncCurrentTime;
-              syncRoomStartTime = syncCurrentTime;
-              syncRoomPlayTimestamp = Date.now();
               currentAudio
                 .play()
                 .then(() => {
@@ -3022,8 +3020,7 @@ if (window._MMM_INITIALIZED) {
       if (document.hidden) return;
       if (!syncRoom) return;
 
-      if (syncPaused) {
-      } else if (
+      if (
         !syncIsLeader &&
         spamModeActive &&
         currentAudio &&
@@ -3041,32 +3038,30 @@ if (window._MMM_INITIALIZED) {
         );
 
         if (currentAudio.paused) {
-          const resumeAt = currentAudio.currentTime;
+          const resumeAt = Math.max(0, expected);
+          currentAudio.currentTime = resumeAt;
           currentAudio
             .play()
             .then(() => {
               isPaused = false;
-              pauseBtn.textContent = "Pause";
-              musicStatus.innerHTML = `Music Status: ON (${autoplayMode || "Manual"})`;
-              schedulingActive = true;
+              const pauseBtnEl = document.getElementById("pauseAutoplayBtn");
+              if (pauseBtnEl) pauseBtnEl.textContent = "Pause";
+              musicStatus.innerHTML = `Music Status: ON (Sync)`;
+              console.log(`[Sync] Resumed from ${resumeAt.toFixed(2)}s`);
 
-              let startIndex = 0;
-              const currentMs = currentAudio.currentTime * 1000;
-              for (let j = 0; j < chatMessages.length; j++) {
-                if (chatMessages[j].delay > currentMs) {
-                  startIndex = j;
-                  break;
+              if (chatMessages.length > 0) {
+                const currentMs = currentAudio.currentTime * 1000;
+                let startIndex = chatMessages.length;
+                for (let j = 0; j < chatMessages.length; j++) {
+                  if (chatMessages[j].delay > currentMs) {
+                    startIndex = j;
+                    break;
+                  }
                 }
-              }
-              scheduleMessages(chatMessages, startIndex);
-
-              if (syncRoom && syncIsLeader) {
-                syncRoomStartTime = resumeAt;
-                syncRoomPlayTimestamp = Date.now();
-                syncPause(false, resumeAt);
+                scheduleMessages(chatMessages, startIndex);
               }
             })
-            .catch((err) => console.warn("Resume failed:", err));
+            .catch((err) => console.warn("Resume on visible failed:", err));
         } else if (Math.abs(drift) > 0.3) {
           currentAudio.currentTime = Math.max(0, expected);
           console.log(`[Sync] Drift corrected to ${expected.toFixed(2)}s`);
