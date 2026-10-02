@@ -1630,6 +1630,29 @@ if (window._MMM_INITIALIZED) {
             musicStatus.innerHTML = "Music Status: Paused (synced)";
             schedulingActive = false;
             clearSongNotification();
+          } else {
+            if (spamModeActive && currentAudio.paused && !syncIsLeader) {
+              currentAudio.currentTime = syncCurrentTime;
+              currentAudio
+                .play()
+                .then(() => {
+                  isPaused = false;
+                  document.getElementById("pauseAutoplayBtn").textContent = "Pause";
+                  musicStatus.innerHTML = "Music Status: ON (Sync)";
+                  schedulingActive = true;
+
+                  let startIndex = 0;
+                  const currentMs = currentAudio.currentTime * 1000;
+                  for (let j = 0; j < chatMessages.length; j++) {
+                    if (chatMessages[j].delay > currentMs) {
+                      startIndex = j;
+                      break;
+                    }
+                  }
+                  scheduleMessages(chatMessages, startIndex);
+                })
+                .catch((err) => console.warn("Resume failed:", err));
+            }
           }
           needUIUpdate = true;
         }
@@ -3004,8 +3027,8 @@ if (window._MMM_INITIALIZED) {
             .play()
             .then(() => {
               isPaused = false;
-              const pauseBtn = document.getElementById("pauseAutoplayBtn");
-              if (pauseBtn) pauseBtn.textContent = "Pause";
+              const pauseBtnEl = document.getElementById("pauseAutoplayBtn");
+              if (pauseBtnEl) pauseBtnEl.textContent = "Pause";
               musicStatus.innerHTML = `Music Status: ON (Sync)`;
               console.log(`[Sync] Resumed from ${resumeAt.toFixed(2)}s`);
 
