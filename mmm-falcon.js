@@ -1855,6 +1855,10 @@ if (window._MMM_INITIALIZED) {
         syncCurrentSongId = data.currentSong || null;
         syncCurrentTime = data.currentTime || 0;
         syncPaused = data.paused || false;
+        if (syncCurrentSongId === null && spamModeActive) {
+          console.log("[Sync] Room has no song after rejoin — stopping local audio");
+          hardStopAudio();
+        }
         syncIsLeader = syncLeader === myRoomName();
         if (!syncLeader) {
           syncLeader = assignedName || syncName;
@@ -1904,6 +1908,8 @@ if (window._MMM_INITIALIZED) {
               currentAudio.currentTime = expected;
               console.log(`[Sync] Rejoin drift corrected to ${expected.toFixed(2)}s`);
             }
+            syncRoomStartTime = syncCurrentTime;
+            syncRoomPlayTimestamp = data.timestamp || Date.now();
             if (chatMessages.length === 0 && selectedSongId) {
               fetchLyrics(selectedSongId).then((lyrics) => {
                 chatMessages = lyrics;
@@ -1920,6 +1926,8 @@ if (window._MMM_INITIALIZED) {
             }
           } else {
             const timestamp = data.timestamp || Date.now();
+            syncRoomStartTime = syncCurrentTime;
+            syncRoomPlayTimestamp = timestamp;
             playSyncSong(syncCurrentSongId, syncCurrentTime, timestamp);
           }
         }
@@ -2245,6 +2253,12 @@ if (window._MMM_INITIALIZED) {
         currentAudio.removeEventListener("timeupdate", driftCorrectorRef);
         driftCorrectorRef = null;
       }
+
+      syncRoomStartTime = startTime;
+      syncRoomPlayTimestamp = serverTimestamp;
+      syncStartTime = startTime;
+      syncCurrentTime = startTime;
+
       const song = songsList.find((s) => s.id === songId);
       if (!song) {
         console.warn("Sync song not found:", songId);
@@ -3064,7 +3078,17 @@ if (window._MMM_INITIALIZED) {
       if (document.hidden) return;
       if (!syncRoom) return;
 
+      if (syncEventSource) {
+        try { syncEventSource.close(); } catch (e) { }
+        syncEventSource = null;
+      }
+      connectSyncSSE(syncRoom);
+      console.log("[Sync] Reconnected SSE on tab-visible");
+
+      const roomHasSong = syncCurrentSongId !== null;
       if (
+        !syncPaused &&
+        roomHasSong &&
         !syncIsLeader &&
         spamModeActive &&
         currentAudio &&
