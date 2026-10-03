@@ -1620,7 +1620,11 @@ if (window._MMM_INITIALIZED) {
           }
           syncRoomPlayTimestamp = timestamp;
           syncRoomStartTime = msg.currentTime || 0;
-          playSyncSong(targetSongId, msg.currentTime || 0, timestamp);
+          if (msg.paused) {
+            syncPaused = true;
+          } else {
+            playSyncSong(targetSongId, msg.currentTime || 0, timestamp);
+          }
         }
         needUIUpdate = true;
       }
@@ -1631,36 +1635,47 @@ if (window._MMM_INITIALIZED) {
           syncPaused = newPaused;
 
           if (syncPaused) {
-            if (spamModeActive && !currentAudio.paused) {
+            if (!currentAudio.paused) {
               currentAudio.pause();
             }
+            syncRoomStartTime = currentAudio.currentTime || 0;
+            syncRoomPlayTimestamp = Date.now();
             isPaused = true;
             document.getElementById("pauseAutoplayBtn").textContent = "Play";
             musicStatus.innerHTML = "Music Status: Paused (synced)";
             schedulingActive = false;
             clearSongNotification();
           } else {
-            if (spamModeActive && currentAudio.paused && !syncIsLeader) {
-              currentAudio.currentTime = syncCurrentTime;
-              currentAudio
-                .play()
-                .then(() => {
-                  isPaused = false;
-                  document.getElementById("pauseAutoplayBtn").textContent = "Pause";
-                  musicStatus.innerHTML = "Music Status: ON (Sync)";
-                  schedulingActive = true;
+            if (!syncIsLeader && syncCurrentSongId !== null) {
+              if (!spamModeActive) {
+                const ts = Date.now();
+                syncRoomStartTime = syncCurrentTime;
+                syncRoomPlayTimestamp = ts;
+                playSyncSong(syncCurrentSongId, syncCurrentTime, ts);
+              } else if (currentAudio.paused) {
+                syncRoomStartTime = syncCurrentTime;
+                syncRoomPlayTimestamp = Date.now();
+                currentAudio.currentTime = syncCurrentTime;
+                currentAudio
+                  .play()
+                  .then(() => {
+                    isPaused = false;
+                    document.getElementById("pauseAutoplayBtn").textContent = "Pause";
+                    musicStatus.innerHTML = "Music Status: ON (Sync)";
+                    schedulingActive = true;
 
-                  let startIndex = 0;
-                  const currentMs = currentAudio.currentTime * 1000;
-                  for (let j = 0; j < chatMessages.length; j++) {
-                    if (chatMessages[j].delay >= currentMs) {
-                      startIndex = j;
-                      break;
+                    let startIndex = chatMessages.length;
+                    const currentMs = currentAudio.currentTime * 1000;
+                    for (let j = 0; j < chatMessages.length; j++) {
+                      if (chatMessages[j].delay >= currentMs) {
+                        startIndex = j;
+                        break;
+                      }
                     }
-                  }
-                  scheduleMessages(chatMessages, startIndex);
-                })
-                .catch((err) => console.warn("Resume failed:", err));
+                    scheduleMessages(chatMessages, startIndex);
+                  })
+                  .catch((err) => console.warn("Resume failed:", err));
+              }
             }
           }
           needUIUpdate = true;
@@ -1674,7 +1689,7 @@ if (window._MMM_INITIALIZED) {
         !syncIsLeader &&
         !msg.paused &&
         msg.timestamp !== undefined &&
-        msg.timestamp !== syncRoomPlayTimestamp
+        msg.timestamp > syncRoomPlayTimestamp
       ) {
         console.log(`[Sync] Re-anchor to ${msg.currentTime}s @ ${msg.timestamp}`);
         syncRoomPlayTimestamp = msg.timestamp;
@@ -2365,6 +2380,7 @@ if (window._MMM_INITIALIZED) {
                       driftCorrectorRef = null;
                       return;
                     }
+                    if (syncPaused) return;
                     if (!currentAudio || currentAudio.paused) return;
                     let expected =
                       syncRoomStartTime + (Date.now() - syncRoomPlayTimestamp) / 1000;
