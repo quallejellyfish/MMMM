@@ -1085,6 +1085,7 @@ function broadcastSyncUpdate(roomCode) {
   const payload = JSON.stringify({
     type: "room_state",
     bootId: BOOT_ID,
+    serverNow: Date.now(), 
     leader: room.leader,
     members: room.members,
     currentSong: room.currentSong,
@@ -1126,6 +1127,7 @@ app.get("/sync/events/:roomCode", (req, res) => {
   const payload = JSON.stringify({
     type: "room_state",
     bootId: BOOT_ID,
+    serverNow: Date.now(), 
     leader: room.leader,
     members: room.members,
     currentSong: room.currentSong,
@@ -1232,6 +1234,7 @@ app.post("/sync/join", express.json(), (req, res) => {
     isNewRoom,
     locked: room.locked || false,
     bootId: BOOT_ID,
+    serverNow: Date.now(), 
   });
 });
 
