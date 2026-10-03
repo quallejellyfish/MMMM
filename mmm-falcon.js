@@ -925,11 +925,11 @@ if (window._MMM_INITIALIZED) {
 
         let announcedStart = null;
         if (syncRoom && syncIsLeader) {
-          announcedStart = Date.now() + SYNC_START_DELAY_MS;
+          announcedStart = serverNow() + SYNC_START_DELAY_MS;
           syncPlay(selectedSongId, 0, announcedStart);
 
           currentAudio.currentTime = 0;
-          const waitMs = announcedStart - Date.now();
+          const waitMs = announcedStart - serverNow();
           if (waitMs > 0) {
             await new Promise((r) => setTimeout(r, waitMs));
           }
@@ -1218,7 +1218,7 @@ if (window._MMM_INITIALIZED) {
         currentAudio
           .play()
           .then(() => {
-            const now = Date.now();
+            const now = serverNow();
             syncRoomPlayTimestamp = now;
             if (wasSyncedLeader) syncPlay(loopSongId, 0, now);
             if (chatMessages.length > 0) scheduleMessages(chatMessages, 0);
@@ -1454,6 +1454,13 @@ if (window._MMM_INITIALIZED) {
 
     const syncStatus = document.getElementById("syncStatus");
 
+    let _mmmServerOffset = 0;
+    let _mmmServerOffsetSamples = 0;
+
+    function serverNow() {
+      return Date.now() + _mmmServerOffset;
+    }
+
     function myRoomName() {
       return assignedName || syncName;
     }
@@ -1635,6 +1642,16 @@ if (window._MMM_INITIALIZED) {
     function handleSyncMessage(msg) {
       if (msg.type !== "room_state") return;
       let needUIUpdate = false;
+
+      if (typeof msg.serverNow === "number") {
+        const sample = msg.serverNow - Date.now();
+        if (_mmmServerOffsetSamples === 0) {
+          _mmmServerOffset = sample;
+        } else {
+          _mmmServerOffset = _mmmServerOffset * 0.9 + sample * 0.1;
+        }
+        _mmmServerOffsetSamples++;
+      }
 
       if (msg.bootId && window._mmmLastBootId && msg.bootId !== window._mmmLastBootId) {
         console.log("[Sync] Server restarted — ignoring stale timestamp");
@@ -1824,7 +1841,7 @@ if (window._MMM_INITIALIZED) {
           playSyncSong(targetSongId, msg.currentTime || 0, msg.timestamp);
           needUIUpdate = true;
         } else if (currentAudio) {
-          const elapsed = (Date.now() - msg.timestamp) / 1000;
+          const elapsed = (serverNow() - msg.timestamp) / 1000;
           let target = (msg.currentTime || 0) + elapsed;
           const dur = currentAudio.duration || 0;
           if (dur > 0) while (target >= dur) target -= dur;
@@ -1937,6 +1954,13 @@ if (window._MMM_INITIALIZED) {
         }
         const data = await res.json();
 
+        if (typeof data.serverNow === "number") {
+          const sample = data.serverNow - Date.now();
+          if (_mmmServerOffsetSamples === 0) _mmmServerOffset = sample;
+          else _mmmServerOffset = _mmmServerOffset * 0.9 + sample * 0.1;
+          _mmmServerOffsetSamples++;
+        }
+
         const serverRestarted =
           data.bootId &&
           window._mmmLastBootId &&
@@ -2015,7 +2039,7 @@ if (window._MMM_INITIALIZED) {
               console.log(`[Sync] Rejoin drift corrected to ${expected.toFixed(2)}s`);
             }
             syncRoomStartTime = syncCurrentTime;
-            syncRoomPlayTimestamp = data.timestamp || Date.now();
+            syncRoomPlayTimestamp = serverNow();
             if (chatMessages.length === 0 && selectedSongId) {
               fetchLyrics(selectedSongId).then((lyrics) => {
                 chatMessages = lyrics;
@@ -2031,7 +2055,7 @@ if (window._MMM_INITIALIZED) {
               }).catch(() => { });
             }
           } else {
-            const timestamp = data.timestamp || Date.now();
+            const timestamp = serverNow();
             syncRoomStartTime = syncCurrentTime;
             syncRoomPlayTimestamp = timestamp;
             playSyncSong(syncCurrentSongId, syncCurrentTime, timestamp);
@@ -2148,7 +2172,7 @@ if (window._MMM_INITIALIZED) {
     }
     window._mmmSyncLeave = syncLeave;
 
-    async function syncPlay(songId, currentTime = 0, timestamp = Date.now()) {
+    async function syncPlay(songId, currentTime = 0, timestamp = serverNow()) {
       if (!syncRoom || !syncIsLeader) return;
       let partnerSongId = null;
       if (duetMode) {
@@ -2405,7 +2429,7 @@ if (window._MMM_INITIALIZED) {
         return;
       }
 
-      const now = Date.now();
+      const now = serverNow();
       const elapsed = (now - serverTimestamp) / 1000;
       let adjustedStart = Math.max(0, startTime + elapsed);
 
@@ -2449,7 +2473,7 @@ if (window._MMM_INITIALIZED) {
           console.log(`[Sync] Song changed during seek, aborting playback`);
           return;
         }
-        const nowMs = Date.now();
+        const nowMs = serverNow();
         const isScheduledFuture = serverTimestamp > nowMs;
 
         let delayMs = 0;
@@ -2594,8 +2618,7 @@ if (window._MMM_INITIALIZED) {
                         scheduleMessages(chatMessages, startIndex);
                       }
                     }
-                    let expected =
-                      syncRoomStartTime + (Date.now() - syncRoomPlayTimestamp) / 1000;
+                    let expected = syncRoomStartTime + (serverNow() - syncRoomPlayTimestamp) / 1000;
                     const d = currentAudio.duration || 0;
                     if (d > 0 && expected >= d) {
                       if (loopSong) {
@@ -3264,8 +3287,7 @@ if (window._MMM_INITIALIZED) {
         currentAudio &&
         syncRoomPlayTimestamp > 0
       ) {
-        const expected =
-          syncRoomStartTime + (Date.now() - syncRoomPlayTimestamp) / 1000;
+        const expected = syncRoomStartTime + (serverNow() - syncRoomPlayTimestamp) / 1000;
         const actual = currentAudio.currentTime;
         const drift = actual - expected;
 
