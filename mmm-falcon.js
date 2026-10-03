@@ -1726,7 +1726,6 @@ if (window._MMM_INITIALIZED) {
                     document.getElementById("pauseAutoplayBtn").textContent = "Pause";
                     musicStatus.innerHTML = "Music Status: ON (Sync)";
                     schedulingActive = true;
-
                     let startIndex = chatMessages.length;
                     const currentMs = currentAudio.currentTime * 1000;
                     for (let j = 0; j < chatMessages.length; j++) {
@@ -1738,6 +1737,19 @@ if (window._MMM_INITIALIZED) {
                     scheduleMessages(chatMessages, startIndex);
                   })
                   .catch((err) => console.warn("Resume failed:", err));
+              } else {
+                schedulingActive = true;
+                if (chatMessages.length > 0) {
+                  const currentMs = currentAudio.currentTime * 1000;
+                  let startIndex = chatMessages.length;
+                  for (let j = 0; j < chatMessages.length; j++) {
+                    if (chatMessages[j].delay >= currentMs) {
+                      startIndex = j;
+                      break;
+                    }
+                  }
+                  scheduleMessages(chatMessages, startIndex);
+                }
               }
             }
           }
@@ -1892,7 +1904,6 @@ if (window._MMM_INITIALIZED) {
         syncPaused = data.paused || false;
         if (syncCurrentSongId === null) {
           console.log("[Sync] Room has no song after rejoin — stopping local audio");
-          hardStopAudio();
         }
         syncIsLeader = syncLeader === myRoomName();
         if (!syncLeader) {
@@ -2470,6 +2481,32 @@ if (window._MMM_INITIALIZED) {
                     }
                     if (syncPaused) return;
                     if (!currentAudio || currentAudio.paused) return;
+                    if (
+                      spamModeActive &&
+                      chatMessages.length > 0 &&
+                      !window._lyricsInterval &&
+                      !_lyricsTimeout
+                    ) {
+                      const currentMs = currentAudio.currentTime * 1000;
+                      let hasRemaining = false;
+                      for (let j = 0; j < chatMessages.length; j++) {
+                        if (chatMessages[j].delay > currentMs) {
+                          hasRemaining = true;
+                          break;
+                        }
+                      }
+                      if (hasRemaining) {
+                        console.log("[Sync] Lyrics scheduler was idle — rearming");
+                        let startIndex = chatMessages.length;
+                        for (let j = 0; j < chatMessages.length; j++) {
+                          if (chatMessages[j].delay >= currentMs) {
+                            startIndex = j;
+                            break;
+                          }
+                        }
+                        scheduleMessages(chatMessages, startIndex);
+                      }
+                    }
                     let expected =
                       syncRoomStartTime + (Date.now() - syncRoomPlayTimestamp) / 1000;
                     const d = currentAudio.duration || 0;
