@@ -1094,6 +1094,7 @@ function broadcastSyncUpdate(roomCode) {
     timestamp: room.playTimestamp || Date.now(),
     loop: room.loop || false,
     locked: !!room.locked,
+    selectedSongId: room.selectedSongId ?? null,
   });
   for (const client of clients) {
     try {
@@ -1134,6 +1135,7 @@ app.get("/sync/events/:roomCode", (req, res) => {
     timestamp: room.playTimestamp || Date.now(),
     loop: room.loop || false,
     locked: !!room.locked,
+    selectedSongId: room.selectedSongId ?? null,
   });
 
   res.write(`data: ${payload}\n\n`);
@@ -1396,6 +1398,23 @@ app.get("/sync/rooms", (req, res) => {
     (a, b) => b.members - a.members || a.roomCode.localeCompare(b.roomCode),
   );
   res.json(list);
+});
+
+app.post("/sync/select", express.json(), (req, res) => {
+  const { roomCode, name, songId } = req.body;
+  if (!roomCode || !name) {
+    return res.status(400).json({ error: "Missing roomCode or name" });
+  }
+  const room = syncRooms.get(roomCode);
+  if (!room) return res.status(404).json({ error: "Room not found" });
+  if (room.leader !== name) {
+    return res.status(403).json({ error: "Only the leader can select" });
+  }
+  room.selectedSongId = songId ?? null;
+  room.lastUpdate = Date.now();
+  broadcastSyncUpdate(roomCode);
+  schedulePersistSyncRooms();
+  res.json({ ok: true });
 });
 
 // PROTECTED
