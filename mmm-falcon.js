@@ -1890,7 +1890,7 @@ if (window._MMM_INITIALIZED) {
         syncCurrentSongId = data.currentSong || null;
         syncCurrentTime = data.currentTime || 0;
         syncPaused = data.paused || false;
-        if (syncCurrentSongId === null && spamModeActive) {
+        if (syncCurrentSongId === null) {
           console.log("[Sync] Room has no song after rejoin — stopping local audio");
           hardStopAudio();
         }
