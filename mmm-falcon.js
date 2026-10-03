@@ -1316,7 +1316,7 @@ if (window._MMM_INITIALIZED) {
             let startIndex = 0;
             const currentMs = currentAudio.currentTime * 1000;
             for (let j = 0; j < chatMessages.length; j++) {
-              if (chatMessages[j].delay > currentMs) {
+              if (chatMessages[j].delay >= currentMs) {
                 startIndex = j;
                 break;
               }
@@ -1445,7 +1445,7 @@ if (window._MMM_INITIALIZED) {
           const currentMs = currentTime * 1000;
           let startIndex = lyrics.length;
           for (let j = 0; j < lyrics.length; j++) {
-            if (lyrics[j].delay > currentMs) {
+            if (lyrics[j].delay >= currentMs) {
               startIndex = j;
               break;
             }
@@ -1653,7 +1653,7 @@ if (window._MMM_INITIALIZED) {
                   let startIndex = 0;
                   const currentMs = currentAudio.currentTime * 1000;
                   for (let j = 0; j < chatMessages.length; j++) {
-                    if (chatMessages[j].delay > currentMs) {
+                    if (chatMessages[j].delay >= currentMs) {
                       startIndex = j;
                       break;
                     }
@@ -1712,7 +1712,7 @@ if (window._MMM_INITIALIZED) {
             const currentMs = currentAudio.currentTime * 1000;
             let startIndex = chatMessages.length;
             for (let j = 0; j < chatMessages.length; j++) {
-              if (chatMessages[j].delay > currentMs) {
+              if (chatMessages[j].delay >= currentMs) {
                 startIndex = j;
                 break;
               }
@@ -1867,7 +1867,7 @@ if (window._MMM_INITIALIZED) {
                 const currentMs = currentAudio.currentTime * 1000;
                 let startIndex = lyrics.length;
                 for (let j = 0; j < lyrics.length; j++) {
-                  if (lyrics[j].delay > currentMs) {
+                  if (lyrics[j].delay >= currentMs) {
                     startIndex = j;
                     break;
                   }
@@ -2322,7 +2322,7 @@ if (window._MMM_INITIALIZED) {
                   const intendedMs = adjustedStart * 1000;
                   let startIndex = chatMessages.length;
                   for (let j = 0; j < chatMessages.length; j++) {
-                    if (chatMessages[j].delay > intendedMs) {
+                    if (chatMessages[j].delay >= intendedMs) {
                       startIndex = j;
                       break;
                     }
@@ -3053,7 +3053,7 @@ if (window._MMM_INITIALIZED) {
                 const currentMs = currentAudio.currentTime * 1000;
                 let startIndex = chatMessages.length;
                 for (let j = 0; j < chatMessages.length; j++) {
-                  if (chatMessages[j].delay > currentMs) {
+                  if (chatMessages[j].delay >= currentMs) {
                     startIndex = j;
                     break;
                   }
