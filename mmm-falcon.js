@@ -954,7 +954,7 @@ if (window._MMM_INITIALIZED) {
         }
 
         if (syncRoom && syncIsLeader && announcedStart !== null) {
-          const elapsed = (Date.now() - announcedStart) / 1000;
+          const elapsed = (serverNow() - announcedStart) / 1000;
           const actual = currentAudio.currentTime;
           const drift = actual - elapsed;
           if (Math.abs(drift) > 0.1) {
@@ -1047,11 +1047,11 @@ if (window._MMM_INITIALIZED) {
 
         let announcedStart = null;
         if (syncRoom && syncIsLeader) {
-          announcedStart = Date.now() + SYNC_START_DELAY_MS;
+          announcedStart = serverNow() + SYNC_START_DELAY_MS;
           syncPlay(selectedSongId, 0, announcedStart);
 
           currentAudio.currentTime = 0;
-          const waitMs = announcedStart - Date.now();
+          const waitMs = announcedStart - serverNow();
           if (waitMs > 0) {
             await new Promise((r) => setTimeout(r, waitMs));
           }
@@ -1076,7 +1076,7 @@ if (window._MMM_INITIALIZED) {
         }
 
         if (syncRoom && syncIsLeader && announcedStart !== null) {
-          const elapsed = (Date.now() - announcedStart) / 1000;
+          const elapsed = (serverNow() - announcedStart) / 1000;
           const actual = currentAudio.currentTime;
           const drift = actual - elapsed;
           if (Math.abs(drift) > 0.1) {
@@ -1766,7 +1766,7 @@ if (window._MMM_INITIALIZED) {
               currentAudio.pause();
             }
             syncRoomStartTime = currentAudio.currentTime || 0;
-            syncRoomPlayTimestamp = Date.now();
+            syncRoomPlayTimestamp = serverNow();
             isPaused = true;
             document.getElementById("pauseAutoplayBtn").textContent = "Play";
             musicStatus.innerHTML = "Music Status: Paused (synced)";
@@ -1775,13 +1775,13 @@ if (window._MMM_INITIALIZED) {
           } else {
             if (!syncIsLeader && syncCurrentSongId !== null) {
               if (!spamModeActive) {
-                const ts = Date.now();
+                const ts = serverNow();
                 syncRoomStartTime = syncCurrentTime;
                 syncRoomPlayTimestamp = ts;
                 playSyncSong(syncCurrentSongId, syncCurrentTime, ts);
               } else if (currentAudio.paused) {
                 syncRoomStartTime = syncCurrentTime;
-                syncRoomPlayTimestamp = Date.now();
+                syncRoomPlayTimestamp = serverNow();
                 currentAudio.currentTime = syncCurrentTime;
                 currentAudio
                   .play()
@@ -2026,9 +2026,9 @@ if (window._MMM_INITIALIZED) {
 
           if (alreadyPlaying) {
             const timestamp = serverRestarted
-              ? Date.now()
-              : (data.timestamp || Date.now());
-            const expected = syncCurrentTime + (Date.now() - timestamp) / 1000;
+              ? serverNow()
+              : (data.timestamp || serverNow());
+            const expected = syncCurrentTime + (serverNow() - timestamp) / 1000;
             const actual = currentAudio.currentTime;
             const drift = actual - expected;
             console.log(
@@ -2109,7 +2109,7 @@ if (window._MMM_INITIALIZED) {
       if (!currentAudio || currentAudio.paused) return;
       if (syncCurrentSongId === selectedSongId) return;
 
-      const now = Date.now();
+      const now = serverNow();
       const curTime = currentAudio.currentTime || 0;
       console.log(
         `[Sync] Republishing leader state: song=${selectedSongId} time=${curTime.toFixed(2)}s`,
@@ -2405,7 +2405,7 @@ if (window._MMM_INITIALIZED) {
       updateSyncButtons();
     }
 
-    function playSyncSong(songId, startTime = 0, serverTimestamp = Date.now()) {
+    function playSyncSong(songId, startTime = 0, serverTimestamp = serverNow()) {
       const myGen = ++playSyncGeneration;
       resetLyricsState();
       if (driftCorrectorRef) {
