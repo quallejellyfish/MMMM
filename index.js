@@ -958,6 +958,36 @@ app.get("/public.html", (req, res) => res.sendFile(__dirname + "/public.html"));
 // SYNC
 let syncSSEClients = {};
 const syncRooms = new Map();
+const SYNC_ROOMS_FILE = "./sync_rooms.json";
+let persistTimer = null;
+
+function schedulePersistSyncRooms() {
+  if (persistTimer) return;
+  persistTimer = setTimeout(async () => {
+    persistTimer = null;
+    const obj = {};
+    for (const [code, room] of syncRooms) obj[code] = room;
+    try {
+      await fs.promises.writeFile(
+        SYNC_ROOMS_FILE,
+        JSON.stringify(obj),
+        "utf8"
+      );
+    } catch (e) {
+      console.error("[Sync] persist failed:", e);
+    }
+  }, 500);
+}
+
+if (fs.existsSync(SYNC_ROOMS_FILE)) {
+  try {
+    const data = JSON.parse(fs.readFileSync(SYNC_ROOMS_FILE, "utf8"));
+    for (const [code, room] of Object.entries(data)) syncRooms.set(code, room);
+    console.log(`[Sync] Loaded ${syncRooms.size} room(s) from disk`);
+  } catch (e) {
+    console.warn("[Sync] Failed to load persisted rooms:", e);
+  }
+}
 
 app.post("/sync/heartbeat", express.json(), (req, res) => {
   const { roomCode, name, clientId } = req.body;
@@ -1185,7 +1215,7 @@ app.post("/sync/join", express.json(), (req, res) => {
   room.emptySince = null;
   room.lastUpdate = Date.now();
   if (!(isNewRoom && originalLeader)) broadcastSyncUpdate(roomCode);
-
+  schedulePersistSyncRooms();
   res.json({
     assignedName,
     leader: room.leader,
@@ -1223,6 +1253,7 @@ app.post("/sync/leave", express.json(), (req, res) => {
   }
 
   broadcastSyncUpdate(roomCode);
+  schedulePersistSyncRooms();
   res.json({ message: "Left" });
 });
 
@@ -1244,6 +1275,7 @@ app.post("/sync/play", express.json(), (req, res) => {
   room.playTimestamp = timestamp || Date.now();
   room.lastUpdate = Date.now();
   broadcastSyncUpdate(roomCode);
+  schedulePersistSyncRooms();
   res.json({ message: "Song set" });
 });
 
@@ -1261,6 +1293,7 @@ app.post("/sync/pause", express.json(), (req, res) => {
   if (currentTime !== undefined) room.currentTime = currentTime;
   room.lastUpdate = Date.now();
   broadcastSyncUpdate(roomCode);
+  schedulePersistSyncRooms();
   res.json({ message: "Pause state updated" });
 });
 
@@ -1277,6 +1310,7 @@ app.post("/sync/set_loop", express.json(), (req, res) => {
   room.loop = loop;
   room.lastUpdate = Date.now();
   broadcastSyncUpdate(roomCode);
+  schedulePersistSyncRooms();
   res.json({ message: "Loop state updated" });
 });
 
@@ -1293,6 +1327,7 @@ app.post("/sync/lock", express.json(), (req, res) => {
   room.locked = !!locked;
   room.lastUpdate = Date.now();
   broadcastSyncUpdate(roomCode);
+  schedulePersistSyncRooms();
   res.json({ locked: room.locked });
 });
 
@@ -1312,6 +1347,7 @@ app.post("/sync/stop", express.json(), (req, res) => {
   room.currentTime = 0;
   room.lastUpdate = Date.now();
   broadcastSyncUpdate(roomCode);
+  schedulePersistSyncRooms();
   res.json({ message: "Stopped" });
 });
 
@@ -1338,6 +1374,7 @@ app.post("/sync/make_leader", express.json(), (req, res) => {
   room.leader = target;
   room.lastUpdate = Date.now();
   broadcastSyncUpdate(roomCode);
+  schedulePersistSyncRooms();
   res.json({ message: `Leader changed to ${target}` });
 });
 
