@@ -928,6 +928,20 @@ if (window._MMM_INITIALIZED) {
           throw err;
         }
 
+        if (syncRoom && syncIsLeader && announcedStart !== null) {
+          const elapsed = (Date.now() - announcedStart) / 1000;
+          const actual = currentAudio.currentTime;
+          const drift = actual - elapsed;
+          if (Math.abs(drift) > 0.1) {
+            console.log(
+              `[Sync] Leader start drift ${(drift * 1000).toFixed(0)}ms — snapping to ${elapsed.toFixed(2)}s`
+            );
+            currentAudio.currentTime = Math.max(0, elapsed);
+          }
+          syncRoomStartTime = 0;
+          syncRoomPlayTimestamp = announcedStart;
+        }
+
         scheduleMessages(chatMessages, 0);
         document.getElementById("pauseAutoplayBtn").textContent = "Pause";
         isPaused = false;
@@ -1025,6 +1039,20 @@ if (window._MMM_INITIALIZED) {
             syncStop();
           }
           throw err;
+        }
+
+        if (syncRoom && syncIsLeader && announcedStart !== null) {
+          const elapsed = (Date.now() - announcedStart) / 1000;
+          const actual = currentAudio.currentTime;
+          const drift = actual - elapsed;
+          if (Math.abs(drift) > 0.1) {
+            console.log(
+              `[Sync] Leader start drift ${(drift * 1000).toFixed(0)}ms — snapping to ${elapsed.toFixed(2)}s`
+            );
+            currentAudio.currentTime = Math.max(0, elapsed);
+          }
+          syncRoomStartTime = 0;
+          syncRoomPlayTimestamp = announcedStart;
         }
 
         scheduleMessages(chatMessages, 0);
