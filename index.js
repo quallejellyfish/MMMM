@@ -5,6 +5,10 @@ const jwt = require("jsonwebtoken");
 const http = require("http");
 const cookieParser = require("cookie-parser");
 const crypto = require("crypto");
+const BOOT_ID = crypto.randomBytes(6).toString("hex");
+console.log(
+  `[Boot] Server starting — bootId=${BOOT_ID} pid=${process.pid} at ${new Date().toISOString()}`
+);
 const guestKeys = {};
 const guestSSEClients = {};
 const GUEST_KEY_EXPIRY = 5 * 60 * 1000; // 5 minutes
@@ -1048,6 +1052,7 @@ function broadcastSyncUpdate(roomCode) {
   const clients = syncSSEClients[roomCode] || [];
   const payload = JSON.stringify({
     type: "room_state",
+    bootId: BOOT_ID,
     leader: room.leader,
     members: room.members,
     currentSong: room.currentSong,
@@ -1087,6 +1092,7 @@ app.get("/sync/events/:roomCode", (req, res) => {
 
   const payload = JSON.stringify({
     type: "room_state",
+    bootId: BOOT_ID,
     leader: room.leader,
     members: room.members,
     currentSong: room.currentSong,
@@ -1191,6 +1197,7 @@ app.post("/sync/join", express.json(), (req, res) => {
     loop: room.loop || false,
     isNewRoom,
     locked: room.locked || false,
+    bootId: BOOT_ID,
   });
 });
 
