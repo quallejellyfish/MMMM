@@ -745,6 +745,7 @@ if (window._MMM_INITIALIZED) {
     let loopSong = false;
 
     let schedulingActive = false;
+    let _lyricsTimeout = null;
 
     function scheduleMessages(messages, startIndex = 0) {
       schedulingActive = false;
