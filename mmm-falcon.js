@@ -121,7 +121,11 @@ if (window._MMM_INITIALIZED) {
     window.currentAudio = new Audio();
     const currentAudio = window.currentAudio;
     currentAudio.crossOrigin = "anonymous";
-    currentAudio.preload = "none";
+    currentAudio.preload = "auto";
+
+    window._mmmPreloader = new Audio();
+    _mmmPreloader.preload = "auto";
+    _mmmPreloader.crossOrigin = "anonymous";
 
     //menu code
     let MusicMenuMod = document.createElement("div");
@@ -1672,7 +1676,15 @@ if (window._MMM_INITIALIZED) {
         msg.currentSong !== syncCurrentSongId
       ) {
         syncCurrentSongId = msg.currentSong;
-
+        if (msg.currentSong === null) {
+          try { _mmmPreloader.src = ""; } catch (e) { }
+        } else {
+          const song = songsList.find((s) => s.id === msg.currentSong);
+          if (song && song.url && _mmmPreloader.src !== song.url) {
+            _mmmPreloader.src = song.url;
+            console.log(`[Sync] Preloading ${song.name}`);
+          }
+        }
         if (syncCurrentSongId === null) {
           const intentionalStop = msg.paused === true;
           if (intentionalStop && spamModeActive) {
@@ -2379,7 +2391,6 @@ if (window._MMM_INITIALIZED) {
       }
 
       currentAudio.src = selectedSongAudio;
-      currentAudio.preload = "auto";
 
       const loadPromise = new Promise((resolve) => {
         if (currentAudio.readyState >= 2) {
