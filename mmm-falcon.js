@@ -1595,13 +1595,6 @@ if (window._MMM_INITIALIZED) {
       syncEventSource.onmessage = (event) => {
         try {
           const msg = JSON.parse(event.data);
-          if (msg.bootId && msg.bootId !== window._mmmLastBootId) {
-            const previous = window._mmmLastBootId || "(none)";
-            console.log(
-              `[Sync] Server bootId changed: ${previous} → ${msg.bootId} — server restarted`
-            );
-            window._mmmLastBootId = msg.bootId;
-          }
           console.log("SSE update:", msg);
           handleSyncMessage(msg);
         } catch (e) {
@@ -1633,6 +1626,16 @@ if (window._MMM_INITIALIZED) {
     function handleSyncMessage(msg) {
       if (msg.type !== "room_state") return;
       let needUIUpdate = false;
+
+      if (msg.bootId && window._mmmLastBootId && msg.bootId !== window._mmmLastBootId) {
+        console.log("[Sync] Server restarted — ignoring stale timestamp");
+        window._mmmLastBootId = msg.bootId;
+        if (syncIsLeader && spamModeActive && currentAudio && !currentAudio.paused) {
+          syncPlay(selectedSongId, currentAudio.currentTime, Date.now());
+        }
+        return;
+      }
+      if (msg.bootId) window._mmmLastBootId = msg.bootId;
 
       if (msg.leader !== syncLeader) {
         if (msg.leader === null && syncLeader !== null) {
@@ -1901,12 +1904,15 @@ if (window._MMM_INITIALIZED) {
         }
         const data = await res.json();
 
-        if (data.bootId && data.bootId !== window._mmmLastBootId) {
-          const previous = window._mmmLastBootId || "(none)";
-          console.log(
-            `[Sync] Server bootId changed on join: ${previous} → ${data.bootId}`
-          );
-          window._mmmLastBootId = data.bootId;
+        const serverRestarted =
+          data.bootId &&
+          window._mmmLastBootId &&
+          data.bootId !== window._mmmLastBootId;
+
+        if (data.bootId) window._mmmLastBootId = data.bootId;
+
+        if (serverRestarted) {
+          console.log("[Sync] Server restarted during join");
         }
         assignedName = data.assignedName || requestedName;
 
@@ -1962,7 +1968,9 @@ if (window._MMM_INITIALIZED) {
             !currentAudio.paused;
 
           if (alreadyPlaying) {
-            const timestamp = data.timestamp || Date.now();
+            const timestamp = serverRestarted
+              ? Date.now()
+              : (data.timestamp || Date.now());
             const expected = syncCurrentTime + (Date.now() - timestamp) / 1000;
             const actual = currentAudio.currentTime;
             const drift = actual - expected;
@@ -1995,6 +2003,17 @@ if (window._MMM_INITIALIZED) {
             syncRoomPlayTimestamp = timestamp;
             playSyncSong(syncCurrentSongId, syncCurrentTime, timestamp);
           }
+        }
+        if (
+          serverRestarted &&
+          syncIsLeader &&
+          spamModeActive &&
+          currentAudio &&
+          !currentAudio.paused &&
+          selectedSongId !== null
+        ) {
+          console.log("[Sync] Server restarted — republishing leader position");
+          syncPlay(selectedSongId, currentAudio.currentTime, Date.now());
         }
         republishIfLeaderPlaying();
       } catch (err) {
