@@ -1595,6 +1595,13 @@ if (window._MMM_INITIALIZED) {
       syncEventSource.onmessage = (event) => {
         try {
           const msg = JSON.parse(event.data);
+          if (msg.bootId && msg.bootId !== window._mmmLastBootId) {
+            const previous = window._mmmLastBootId || "(none)";
+            console.log(
+              `[Sync] Server bootId changed: ${previous} → ${msg.bootId} — server restarted`
+            );
+            window._mmmLastBootId = msg.bootId;
+          }
           console.log("SSE update:", msg);
           handleSyncMessage(msg);
         } catch (e) {
@@ -1893,6 +1900,14 @@ if (window._MMM_INITIALIZED) {
           return;
         }
         const data = await res.json();
+
+        if (data.bootId && data.bootId !== window._mmmLastBootId) {
+          const previous = window._mmmLastBootId || "(none)";
+          console.log(
+            `[Sync] Server bootId changed on join: ${previous} → ${data.bootId}`
+          );
+          window._mmmLastBootId = data.bootId;
+        }
         assignedName = data.assignedName || requestedName;
 
         if (assignedName !== requestedName) {
