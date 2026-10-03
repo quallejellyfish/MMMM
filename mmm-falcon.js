@@ -841,6 +841,7 @@ if (window._MMM_INITIALIZED) {
     let countedThisPlay = false;
     let onTimeUpdateHandler = null;
     let driftCorrectorRef = null;
+    let playSyncGeneration = 0;
     let isPaused = false;
     let syncStartTime = null;
 
