@@ -958,9 +958,7 @@ const syncRooms = new Map();
 app.post("/sync/heartbeat", express.json(), (req, res) => {
   const { roomCode, name, clientId } = req.body;
   if (!roomCode || !name || !clientId) {
-    return res
-      .status(400)
-      .json({ error: "Missing roomCode, name, or clientId" });
+    return res.status(400).json({ error: "Missing roomCode, name, or clientId" });
   }
   const room = syncRooms.get(roomCode);
   if (!room) return res.status(404).json({ error: "Room not found" });
@@ -980,17 +978,19 @@ app.post("/sync/heartbeat", express.json(), (req, res) => {
   if (room.locked && !room.knownClients.includes(clientId)) {
     return res.status(403).json({ error: "Room is locked" });
   }
+
+  const memberSetChanged = !room.members.includes(name);
   if (!room.knownClients.includes(clientId)) room.knownClients.push(clientId);
-  if (!room.members.includes(name)) room.members.push(name);
+  if (memberSetChanged) room.members.push(name);
   room.memberClientIds[name] = clientId;
   room.memberLastSeen[name] = Date.now();
-  broadcastSyncUpdate(roomCode);
-  console.log(`[Heartbeat] ${name} re-joined ${roomCode}`);
+
+  if (memberSetChanged) broadcastSyncUpdate(roomCode);
   res.json({ ok: true });
 });
 
 const ROOM_GRACE_PERIOD = 5 * 60 * 1000;
-const MEMBER_STALE_MS = 60 * 1000;
+const MEMBER_STALE_MS = 2 * 60 * 1000;
 const SYNC_CLEANUP_INTERVAL = 15 * 1000;
 
 setInterval(() => {
@@ -1100,7 +1100,14 @@ app.get("/sync/events/:roomCode", (req, res) => {
 
   res.write(`data: ${payload}\n\n`);
 
+  const keepalive = setInterval(() => {
+    try {
+      res.write(`: keepalive\n\n`);
+    } catch (e) { /* lalala */ }
+  }, 25000);
+
   req.on("close", () => {
+    clearInterval(keepalive);
     if (syncSSEClients[roomCode]) {
       syncSSEClients[roomCode] = syncSSEClients[roomCode].filter(
         (c) => c !== res,
