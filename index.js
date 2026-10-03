@@ -24,6 +24,7 @@ const API_KEY = process.env.API_KEY;
 const DISCORD_WEBHOOK_URL = process.env.DISCORD_WEBHOOK_URL;
 const JWT_SECRET = process.env.JWT_SECRET;
 const COOKIE_SECRET = process.env.COOKIE_SECRET;
+const RENDER_DEPLOY_HOOK_URL = process.env.RENDER_DEPLOY_HOOK_URL;
 
 const COOKIE_SET = {
   httpOnly: true,
@@ -353,6 +354,7 @@ app.use((req, res, next) => {
 
   next();
 });
+
 
 app.get("/file-sizes", requireApiKey, (req, res) => {
   const sizes = {};
@@ -1896,6 +1898,11 @@ app.post("/sync-github", requireApiKey, async (req, res) => {
     const successMsg = `Updated songs.json (${songs.length} songs), lyrics.json (${Object.keys(lyrics).length} entries), and public files.`;
     await sendGitHubSyncNotification(true, successMsg);
     res.json({ message: "Successfully synced to GitHub." });
+    if (RENDER_DEPLOY_HOOK_URL) {
+      fetch(RENDER_DEPLOY_HOOK_URL, { method: "POST" })
+        .then((r) => console.log(`[Deploy] Hook returned ${r.status}`))
+        .catch((e) => console.error("[Deploy] Hook failed:", e));
+    }
   } catch (err) {
     console.error("GitHub sync error:", err);
     const errorMsg = err.message || "Unknown error";
