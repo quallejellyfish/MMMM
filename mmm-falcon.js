@@ -752,11 +752,16 @@ if (window._MMM_INITIALIZED) {
         clearInterval(window._lyricsInterval);
         window._lyricsInterval = null;
       }
+      if (_lyricsTimeout) {
+        clearTimeout(_lyricsTimeout);
+        _lyricsTimeout = null;
+      }
 
-      setTimeout(() => {
+      _lyricsTimeout = setTimeout(() => {
+        _lyricsTimeout = null;
         schedulingActive = true;
         let i = startIndex;
-        window._lyricsInterval = setInterval(() => {
+        const intervalId = setInterval(() => {
           if (!schedulingActive || !currentAudio || currentAudio.paused) {
             return;
           }
@@ -766,10 +771,13 @@ if (window._MMM_INITIALIZED) {
             i++;
           }
           if (i >= messages.length) {
-            clearInterval(window._lyricsInterval);
-            window._lyricsInterval = null;
+            clearInterval(intervalId);
+            if (window._lyricsInterval === intervalId) {
+              window._lyricsInterval = null;
+            }
           }
         }, 20);
+        window._lyricsInterval = intervalId;
       }, 20);
     }
 
@@ -917,6 +925,9 @@ if (window._MMM_INITIALIZED) {
         try {
           await currentAudio.play();
         } catch (err) {
+          if (err.name === "AbortError") {
+            throw err;
+          }
           if (syncRoom && syncIsLeader && announcedStart !== null) {
             console.warn(
               "[Sync] Leader play() failed — retracting phantom room state:",
@@ -948,6 +959,12 @@ if (window._MMM_INITIALIZED) {
       } catch (err) {
         if (err.name === "AbortError" || err.name === "NotAllowedError") {
           console.debug("Playback interrupted gracefully:", err.message);
+          return;
+        }
+        if (err.name === "NotSupportedError") {
+          console.warn(
+            `Song "${selectedSongName}" has no supported source — stopping`
+          );
           return;
         }
         console.warn(
@@ -1030,6 +1047,9 @@ if (window._MMM_INITIALIZED) {
         try {
           await currentAudio.play();
         } catch (err) {
+          if (err.name === "AbortError") {
+            throw err;
+          }
           if (syncRoom && syncIsLeader && announcedStart !== null) {
             console.warn(
               "[Sync] Leader play() failed — retracting phantom room state:",
@@ -1061,6 +1081,15 @@ if (window._MMM_INITIALIZED) {
       } catch (err) {
         if (err.name === "AbortError" || err.name === "NotAllowedError") {
           console.debug("Playback interrupted gracefully:", err.message);
+          return;
+        }
+        if (err.name === "NotSupportedError") {
+          console.warn(
+            `Song "${selectedSongName}" has no supported source — skipping`
+          );
+          if (autoplayMode) {
+            setTimeout(() => playNextAuto(), 200);
+          }
           return;
         }
         console.warn(
@@ -1432,6 +1461,10 @@ if (window._MMM_INITIALIZED) {
       if (window._lyricsInterval) {
         clearInterval(window._lyricsInterval);
         window._lyricsInterval = null;
+      }
+      if (_lyricsTimeout) {
+        clearTimeout(_lyricsTimeout);
+        _lyricsTimeout = null;
       }
       schedulingActive = false;
       chatMessages = [];
@@ -2248,6 +2281,7 @@ if (window._MMM_INITIALIZED) {
     }
 
     function playSyncSong(songId, startTime = 0, serverTimestamp = Date.now()) {
+      const myGen = ++playSyncGeneration;
       resetLyricsState();
       if (driftCorrectorRef) {
         currentAudio.removeEventListener("timeupdate", driftCorrectorRef);
@@ -2262,6 +2296,11 @@ if (window._MMM_INITIALIZED) {
       const song = songsList.find((s) => s.id === songId);
       if (!song) {
         console.warn("Sync song not found:", songId);
+        return;
+      }
+
+      if (!song.url || typeof song.url !== "string" || !song.url.trim()) {
+        console.warn("[Sync] Song has no URL, skipping:", songId, song.name);
         return;
       }
 
@@ -2305,6 +2344,11 @@ if (window._MMM_INITIALIZED) {
       });
 
       loadPromise.then(() => {
+        if (myGen !== playSyncGeneration) return;
+        if (syncCurrentSongId !== songId) {
+          console.log(`[Sync] Song changed during seek, aborting playback`);
+          return;
+        }
         const nowMs = Date.now();
         const isScheduledFuture = serverTimestamp > nowMs;
 
