@@ -655,6 +655,10 @@ if (window._MMM_INITIALIZED) {
       addSong(selectedLi.innerText);
       wrapper.classList.remove("active");
       selectBtn.firstElementChild.innerText = selectedLi.innerText;
+
+      if (syncRoom && syncIsLeader) {
+        syncSelect(songId);
+      }
     }
 
     window.updateName = updateName;
@@ -1434,6 +1438,7 @@ if (window._MMM_INITIALIZED) {
     let syncPaused = false;
     let syncName = localStorage.getItem("mmm_syncName") || "User";
     let syncCurrentSongId = null;
+    let _lastSelectedSongId = null;
     let syncIsLeader = false;
     let syncEventSource = null;
     let syncHeartbeatInterval = null;
@@ -1716,6 +1721,22 @@ if (window._MMM_INITIALIZED) {
           }
         }
         needUIUpdate = true;
+      }
+
+      if (
+        msg.selectedSongId !== undefined &&
+        msg.selectedSongId !== _lastSelectedSongId
+      ) {
+        _lastSelectedSongId = msg.selectedSongId;
+        if (!syncIsLeader && msg.selectedSongId !== null) {
+          const song = songsList.find((s) => s.id === msg.selectedSongId);
+          if (song && song.url) {
+            if (_mmmPreloader.src !== song.url) {
+              console.log(`[Sync] Preloading selected song: ${song.name}`);
+              _mmmPreloader.src = song.url;
+            }
+          }
+        }
       }
 
       if (msg.paused !== undefined && syncCurrentSongId !== null) {
@@ -2155,6 +2176,23 @@ if (window._MMM_INITIALIZED) {
         syncPaused = false;
       } catch (err) {
         console.error("Sync play error:", err);
+      }
+    }
+
+    async function syncSelect(songId) {
+      if (!syncRoom || !syncIsLeader) return;
+      try {
+        await fetch(`${API_BASE}/sync/select`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            roomCode: syncRoom,
+            name: myRoomName(),
+            songId,
+          }),
+        });
+      } catch (e) {
+        console.error("Sync select error:", e);
       }
     }
 
