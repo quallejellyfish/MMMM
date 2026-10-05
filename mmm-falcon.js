@@ -2915,8 +2915,9 @@ if (window._MMM_INITIALIZED) {
       const el = document.getElementById("ping-display");
       if (!el) return "0";
       const text = el.textContent || "";
-      const match = text.match(/(\d+)\s*ms/);
-      return match ? match[1] : "0";
+      const match = text.match(/(\d+(?:\.\d+)?)\s*ms/i);
+      if (!match) return "0";
+      return String(Math.trunc(parseFloat(match[1])));
     }
 
     function pingpong() {
