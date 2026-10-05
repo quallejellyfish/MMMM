@@ -9,7 +9,8 @@
     "id": 283,
     "name": "Woodkid - Run Boy Run",
     "url": "https://audio.jukehost.co.uk/01a1029a-51db-71cd-b081-6a1b921a350c",
-    "public": false
+    "public": false,
+    "lyricsCount": 62
   },
   {
     "id": 281,
@@ -1698,6 +1699,13 @@
     "url": "https://audio.jukehost.co.uk/01a09a84-1690-72f7-9204-81bd438b0c5a",
     "public": true,
     "lyricsCount": 58
+  },
+  {
+    "id": 284,
+    "name": "Gentrammel - Out Of My Mind",
+    "url": "https://audio.jukehost.co.uk/01a10c54-0790-73d0-b08a-f2c8ab553dff",
+    "public": true,
+    "lyricsCount": 85
   },
   {
     "id": 236,
