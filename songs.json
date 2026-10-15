@@ -363,25 +363,29 @@
     "id": 124,
     "name": "notice me - zius",
     "url": "https://audio.jukehost.co.uk/cpdBmwOtoJP6KMivthkSTgPWjG6vd8BM",
-    "lyricsCount": 181
+    "lyricsCount": 181,
+    "public": true
   },
   {
     "id": 125,
     "name": "appetite",
     "url": "https://audio.jukehost.co.uk/HSZz4N966LhRToFR6OM8DWXrz4BHeR7Z",
-    "lyricsCount": 109
+    "lyricsCount": 109,
+    "public": true
   },
   {
     "id": 135,
     "name": "Lullaby",
     "url": "https://audio.jukehost.co.uk/DqrJC9wpxoSEu0AqRWqpLbKB3OVOU5w0",
-    "lyricsCount": 81
+    "lyricsCount": 81,
+    "public": true
   },
   {
     "id": 138,
     "name": "Kirifto Rap",
     "url": "https://audio.jukehost.co.uk/pXiBPwQU6QXOX41qP7qb6LKJxTx5vJSm",
-    "lyricsCount": 48
+    "lyricsCount": 48,
+    "public": true
   },
   {
     "id": 999,
@@ -443,7 +447,8 @@
     "id": 171,
     "name": "55 Tage in Peking",
     "url": "https://audio.jukehost.co.uk/019f1e56-6a51-7382-b83f-a5d52694f964",
-    "lyricsCount": 44
+    "lyricsCount": 44,
+    "public": true
   },
   {
     "id": 169,
@@ -469,31 +474,36 @@
     "id": 123,
     "name": "187 Allstars 2024",
     "url": "https://audio.jukehost.co.uk/ch8ngPUCeqDEkGw4hSO5L0wgGAIjQ7U6",
-    "lyricsCount": 153
+    "lyricsCount": 153,
+    "public": true
   },
   {
     "id": 5,
     "name": "berlin",
     "url": "https://audio.jukehost.co.uk/91OrcPAHnk1CeFjqDdo9YUhrczrLO3mW",
-    "lyricsCount": 114
+    "lyricsCount": 114,
+    "public": true
   },
   {
     "id": 8,
     "name": "sonne",
     "url": "https://audio.jukehost.co.uk/nuX7JXzjbzqTe2zkS5T5NyDLQNugKjyI",
-    "lyricsCount": 78
+    "lyricsCount": 78,
+    "public": true
   },
   {
     "id": 11,
     "name": "reise reise reise reise",
     "url": "https://audio.jukehost.co.uk/iyIeT8wwXnWDnMMusxaMyS3m2muobwSa",
-    "lyricsCount": 55
+    "lyricsCount": 55,
+    "public": true
   },
   {
     "id": 14,
     "name": "dunne",
     "url": "https://audio.jukehost.co.uk/rOnLPwKmdmxuQlg4u2MFNjCJ2Q33Rbrd",
-    "lyricsCount": 95
+    "lyricsCount": 95,
+    "public": true
   },
   {
     "id": 15,
@@ -505,13 +515,15 @@
     "id": 18,
     "name": "baller los",
     "url": "https://audio.jukehost.co.uk/bSMO35VAGu1vr5dZZFWj7Il3Pe4dxV4g",
-    "lyricsCount": 205
+    "lyricsCount": 205,
+    "public": true
   },
   {
     "id": 21,
     "name": "noich",
     "url": "https://audio.jukehost.co.uk/HD2wjJPg6pKKZvfi75IbYbsZUWgknRbj",
-    "lyricsCount": 118
+    "lyricsCount": 118,
+    "public": true
   },
   {
     "id": 23,
@@ -565,7 +577,8 @@
     "id": 54,
     "name": "wieder Lila",
     "url": "https://audio.jukehost.co.uk/B1wTNgBApiTqCYx8jjg057x1ENRXJvg6",
-    "lyricsCount": 112
+    "lyricsCount": 112,
+    "public": true
   },
   {
     "id": 58,
@@ -595,13 +608,15 @@
     "id": 80,
     "name": "AK AusserKontrolle - A.S.S.N",
     "url": "https://audio.jukehost.co.uk/OiO9qq3HdFiVtUNHrndAkZM9fOg9ByKK",
-    "lyricsCount": 121
+    "lyricsCount": 121,
+    "public": true
   },
   {
     "id": 81,
     "name": "HaifischNikez Allstars",
     "url": "https://audio.jukehost.co.uk/BeIgmobPVActo2Z48ZzQY8PkiaS7u93I",
-    "lyricsCount": 119
+    "lyricsCount": 119,
+    "public": true
   },
   {
     "id": 93,
@@ -613,7 +628,8 @@
     "id": 94,
     "name": "FDJ",
     "url": "https://audio.jukehost.co.uk/ZtkQarkqrnExj7GZuSpwaNS2ThBPmTqi",
-    "lyricsCount": 115
+    "lyricsCount": 115,
+    "public": true
   },
   {
     "id": 95,
@@ -625,7 +641,8 @@
     "id": 98,
     "name": "nie wieder",
     "url": "https://audio.jukehost.co.uk/Oar7B8G4mgenpwFilzkEKY20MKohjRoj",
-    "lyricsCount": 139
+    "lyricsCount": 139,
+    "public": true
   },
   {
     "id": 100,
@@ -637,7 +654,8 @@
     "id": 103,
     "name": "Chamela",
     "url": "https://audio.jukehost.co.uk/PneGEQsujsQI7Qsj37mMGBlm9LwgesXw",
-    "lyricsCount": 131
+    "lyricsCount": 131,
+    "public": true
   },
   {
     "id": 105,
@@ -662,13 +680,15 @@
     "id": 126,
     "name": "scorleone 独蝎",
     "url": "https://audio.jukehost.co.uk/mKP61Iwgmds88OVnguN9Q7ulIHJg7tYS",
-    "lyricsCount": 107
+    "lyricsCount": 107,
+    "public": true
   },
   {
     "id": 182,
     "name": "阿嘛",
     "url": "https://audio.jukehost.co.uk/019f2f2c-ce89-704c-a1c0-6f74155c5e88",
-    "lyricsCount": 63
+    "lyricsCount": 63,
+    "public": true
   },
   {
     "id": 27,
@@ -680,19 +700,22 @@
     "id": 39,
     "name": "鹊 - 早安",
     "url": "https://audio.jukehost.co.uk/qBKKn2ikK4GE0Ku2N7RruNQroFNAmlAG",
-    "lyricsCount": 124
+    "lyricsCount": 124,
+    "public": true
   },
   {
     "id": 63,
     "name": "天花板之上",
     "url": "https://audio.jukehost.co.uk/MoKFGs5GWpGNHSWHlEYCkxqsW8PDZytV",
-    "lyricsCount": 120
+    "lyricsCount": 120,
+    "public": true
   },
   {
     "id": 64,
     "name": "八方来财 - DJ广西大师",
     "url": "https://audio.jukehost.co.uk/0rAMws6qqQE6alVz9TQL10sHAP0cdJGW",
-    "lyricsCount": 71
+    "lyricsCount": 71,
+    "public": true
   },
   {
     "id": 127,
@@ -711,7 +734,7 @@
     "name": "climbing to the top 登顶",
     "url": "https://audio.jukehost.co.uk/mPRe790RqTTw2RyvkpWhj9sPttwDVuxB",
     "lyricsCount": 102,
-    "public": false
+    "public": true
   },
   {
     "id": 134,
@@ -729,7 +752,8 @@
     "id": 139,
     "name": "rap jail",
     "url": "https://audio.jukehost.co.uk/jVFoLlwXB8yxpNzTPKjjXMi0FmaJmmyq",
-    "lyricsCount": 71
+    "lyricsCount": 71,
+    "public": true
   },
   {
     "id": 140,
@@ -741,19 +765,22 @@
     "id": 143,
     "name": "shenzhen 2050",
     "url": "https://audio.jukehost.co.uk/zcPQCX2U6WCNkcKmgg1pQT8vJt7II4ZD",
-    "lyricsCount": 138
+    "lyricsCount": 138,
+    "public": true
   },
   {
     "id": 146,
     "name": "walking dead (100mistakes)",
     "url": "https://audio.jukehost.co.uk/6NCLylExWRYR3VMjvrX2XnbY2rhoG4j2",
-    "lyricsCount": 271
+    "lyricsCount": 271,
+    "public": true
   },
   {
     "id": 155,
     "name": "tomato vampire",
     "url": "https://audio.jukehost.co.uk/019ecbd6-e3ad-735d-8960-0642c720f67f",
-    "lyricsCount": 38
+    "lyricsCount": 38,
+    "public": true
   },
   {
     "id": 999,
@@ -1177,7 +1204,8 @@
     "id": 78,
     "name": "Plug de Bandido - LuckHaos",
     "url": "https://audio.jukehost.co.uk/01a09b1b-7c73-7013-bace-dbd303c611a7",
-    "lyricsCount": 65
+    "lyricsCount": 65,
+    "public": true
   },
   {
     "id": 192,
@@ -1232,7 +1260,8 @@
     "id": 121,
     "name": "roulette cinese",
     "url": "https://audio.jukehost.co.uk/S08u7OQ5RRHOSqZeA4qee06ZsyfbiHnT",
-    "lyricsCount": 27
+    "lyricsCount": 27,
+    "public": true
   },
   {
     "id": 131,
