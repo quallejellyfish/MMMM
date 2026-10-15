@@ -191,7 +191,14 @@
         <h3 id="modalTitle">Lyrics</h3>
         <pre id="modalBody">Loading...</pre>
         <div class="modal-actions">
-          <button class="copy-btn" id="copyLyricsBtn">Copy to Clipboard</button>
+          <button class="copy-btn" id="copyLyricsBtn">Copy as JSON</button>
+          <button
+            class="copy-btn"
+            id="copyJsBtn"
+            style="background: #8be9fd; color: #1e1e2f"
+          >
+            Copy as JS
+          </button>
           <button class="modal-close" onclick="closeModal()">✕ Close</button>
         </div>
       </div>
@@ -209,7 +216,7 @@
 
       async function fetchPublicSongs() {
         try {
-          const res = await fetch("/public/songs");
+          const res = await fetch("https://mmmm-oa5i.onrender.com/public/songs");
           if (!res.ok) throw new Error(await res.text());
           songList = await res.json();
           renderTable();
@@ -224,7 +231,7 @@
       async function fetchPublicLyrics(songId) {
         if (lyricCache[songId]) return lyricCache[songId];
         try {
-          const res = await fetch(`/public/lyrics/${songId}`);
+          const res = await fetch(`https://mmmm-oa5i.onrender.com/public/lyrics/${songId}`);
           if (!res.ok) return [];
           const data = await res.json();
           lyricCache[songId] = data;
@@ -310,6 +317,37 @@
           .writeText(text)
           .then(() => {
             const btn = document.getElementById("copyLyricsBtn");
+            const orig = btn.textContent;
+            btn.textContent = "Copied!";
+            setTimeout(() => {
+              btn.textContent = orig;
+            }, 1500);
+          })
+          .catch(() => {
+            alert("Failed to copy. Select the text manually and press Ctrl+C.");
+          });
+      });
+
+      function toJsFormat(lyricsArray) {
+        const parts = lyricsArray.map((item) => {
+          const chat = String(item.chat)
+            .replace(/\\/g, "\\\\")
+            .replace(/"/g, '\\"');
+          return `{chat:"${chat}",delay:${item.delay}}`;
+        });
+        return `return [${parts.join(",")}];`;
+      }
+
+      document.getElementById("copyJsBtn").addEventListener("click", () => {
+        if (!currentLyrics || currentLyrics.length === 0) {
+          alert("Nothing to copy.");
+          return;
+        }
+        const text = toJsFormat(currentLyrics);
+        navigator.clipboard
+          .writeText(text)
+          .then(() => {
+            const btn = document.getElementById("copyJsBtn");
             const orig = btn.textContent;
             btn.textContent = "Copied!";
             setTimeout(() => {
