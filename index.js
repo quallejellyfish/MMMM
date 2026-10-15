@@ -7,7 +7,7 @@ const cookieParser = require("cookie-parser");
 const crypto = require("crypto");
 const BOOT_ID = crypto.randomBytes(6).toString("hex");
 console.log(
-  `[Boot] Server starting — bootId=${BOOT_ID} pid=${process.pid} at ${new Date().toISOString()}`
+  `[Boot] Server starting — bootId=${BOOT_ID} pid=${process.pid} at ${new Date().toISOString()}`,
 );
 const guestKeys = {};
 const guestSSEClients = {};
@@ -354,7 +354,6 @@ app.use((req, res, next) => {
 
   next();
 });
-
 
 app.get("/file-sizes", requireApiKey, (req, res) => {
   const sizes = {};
@@ -784,13 +783,42 @@ const STATS_FOLDER = "stats";
 async function syncPublicFiles() {
   const songs = readSongs();
   const lyrics = readLyrics();
-  const publicSongs = songs
-    .filter((s) => s.public === true && s.id !== 999)
-    .map((s) => ({ ...s, lyricsCount: (lyrics[s.id] || []).length }));
+  const publicSongs = [];
   const publicLyrics = {};
-  publicSongs.forEach((s) => {
-    publicLyrics[s.id] = lyrics[s.id] || [];
-  });
+  let currentCategory = null;
+  let pendingSongs = [];
+
+  const flushCategory = () => {
+    if (currentCategory && pendingSongs.length > 0) {
+      publicSongs.push({
+        id: 999,
+        name: currentCategory.name,
+        url: "",
+        public: false,
+        lyricsCount: 0
+      });
+      for (const s of pendingSongs) {
+        publicSongs.push({
+          ...s,
+          lyricsCount: (lyrics[s.id] || []).length
+        })
+        publicLyrics[s.id] = lyrics[s.id] || []
+      }
+    }
+    pendingSongs = []
+  };
+
+  for (const song of songs) {
+    if (song.id === 999) {
+      flushCategory()
+      currentCategory = { name: song.name }
+      continue
+    }
+    if (song.public === true) {
+      pendingSongs.push(song)
+    }
+  }
+  flushCategory();
 
   publicSongsCache = publicSongs;
   publicLyricsCache = publicLyrics;
@@ -970,11 +998,7 @@ function schedulePersistSyncRooms() {
     const obj = {};
     for (const [code, room] of syncRooms) obj[code] = room;
     try {
-      await fs.promises.writeFile(
-        SYNC_ROOMS_FILE,
-        JSON.stringify(obj),
-        "utf8"
-      );
+      await fs.promises.writeFile(SYNC_ROOMS_FILE, JSON.stringify(obj), "utf8");
     } catch (e) {
       console.error("[Sync] persist failed:", e);
     }
@@ -994,7 +1018,9 @@ if (fs.existsSync(SYNC_ROOMS_FILE)) {
 app.post("/sync/heartbeat", express.json(), (req, res) => {
   const { roomCode, name, clientId } = req.body;
   if (!roomCode || !name || !clientId) {
-    return res.status(400).json({ error: "Missing roomCode, name, or clientId" });
+    return res
+      .status(400)
+      .json({ error: "Missing roomCode, name, or clientId" });
   }
   const room = syncRooms.get(roomCode);
   if (!room) return res.status(404).json({ error: "Room not found" });
@@ -1085,7 +1111,7 @@ function broadcastSyncUpdate(roomCode) {
   const payload = JSON.stringify({
     type: "room_state",
     bootId: BOOT_ID,
-    serverNow: Date.now(), 
+    serverNow: Date.now(),
     leader: room.leader,
     members: room.members,
     currentSong: room.currentSong,
@@ -1127,7 +1153,7 @@ app.get("/sync/events/:roomCode", (req, res) => {
   const payload = JSON.stringify({
     type: "room_state",
     bootId: BOOT_ID,
-    serverNow: Date.now(), 
+    serverNow: Date.now(),
     leader: room.leader,
     members: room.members,
     currentSong: room.currentSong,
@@ -1145,7 +1171,9 @@ app.get("/sync/events/:roomCode", (req, res) => {
   const keepalive = setInterval(() => {
     try {
       res.write(`: keepalive\n\n`);
-    } catch (e) { /* lalala */ }
+    } catch (e) {
+      /* lalala */
+    }
   }, 25000);
 
   req.on("close", () => {
@@ -1234,7 +1262,7 @@ app.post("/sync/join", express.json(), (req, res) => {
     isNewRoom,
     locked: room.locked || false,
     bootId: BOOT_ID,
-    serverNow: Date.now(), 
+    serverNow: Date.now(),
   });
 });
 
