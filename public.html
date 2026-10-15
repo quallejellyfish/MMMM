@@ -52,6 +52,15 @@
       th {
         background: #3a3a4a;
       }
+      tr.category-row td {
+        background: #3a3a4a;
+        color: #ff79c6;
+        font-weight: bold;
+        font-size: 1.05rem;
+        padding: 12px 10px;
+        letter-spacing: 0.5px;
+        border-bottom: 2px solid #555;
+      }
       .status {
         background: #3a3a4a;
         padding: 8px 16px;
@@ -154,6 +163,7 @@
       <a href="/">Back to Home</a>
       <div class="card">
         <div class="status" id="statusMsg">Loading...</div>
+        <h2>Songs on Server - <span id="songCount">0</span></h2>
         <table id="songsTable">
           <thead>
             <tr>
@@ -190,6 +200,11 @@
       let lyricCache = {};
       let currentLyrics = [];
 
+      function updateSongCount() {
+        const count = songList.filter((s) => s.id !== 999).length;
+        document.getElementById("songCount").textContent = `- ${count} songs`;
+      }
+
       async function fetchPublicSongs() {
         try {
           const res = await fetch("/public/songs");
@@ -222,10 +237,20 @@
         if (!songList.length) {
           tbody.innerHTML =
             '<tr><td colspan="5">No public songs available.</td></tr>';
+          updateSongCount();
           return;
         }
         tbody.innerHTML = "";
         songList.forEach((song) => {
+          if (song.id === 999) {
+            const catRow = tbody.insertRow();
+            catRow.className = "category-row";
+            const cell = catRow.insertCell(0);
+            cell.colSpan = 5;
+            cell.textContent = song.name;
+            return;
+          }
+
           const row = tbody.insertRow();
           const idCell = row.insertCell(0);
           idCell.textContent = song.id;
@@ -240,7 +265,6 @@
           linkCell.appendChild(link);
           const count = song.lyricsCount || 0;
           row.insertCell(3).textContent = `${count} lines`;
-
           const actionsCell = row.insertCell(4);
           const viewBtn = document.createElement("button");
           viewBtn.textContent = "View";
@@ -249,6 +273,7 @@
           });
           actionsCell.appendChild(viewBtn);
         });
+        updateSongCount();
       }
 
       async function openLyricsModal(songId) {
