@@ -2891,7 +2891,6 @@ if (window._MMM_INITIALIZED) {
 
     document.getElementById("mutechat").addEventListener("change", function () {
       chatMuted = this.checked;
-      if (chatMuted) pendMessages("");
     });
 
     document.getElementById("loopsong").addEventListener("change", function () {
@@ -3366,5 +3365,19 @@ if (window._MMM_INITIALIZED) {
         e.stopPropagation();
       });
     }
+
+    document.addEventListener(
+      "keydown",
+      (e) => {
+        if (!e.target || e.target.id !== "chat-input") return;
+        if (e.key !== "Enter" && e.keyCode !== 13) return;
+        if (!e.target.value.trim()) {
+          e.preventDefault();
+          e.stopImmediatePropagation();
+          e.target.value = "";
+        }
+      },
+      true
+    );
   })();
 }
