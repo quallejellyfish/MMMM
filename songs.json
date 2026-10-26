@@ -41,6 +41,13 @@
     "lyricsCount": 132
   },
   {
+    "id": 286,
+    "name": "Aura Farmer",
+    "url": "https://audio.jukehost.co.uk/01a1784b-135c-718e-bbf8-6d0da3f6eaba",
+    "public": false,
+    "lyricsCount": 70
+  },
+  {
     "id": 278,
     "name": "It's me, It's Verity",
     "url": "https://audio.jukehost.co.uk/01a0f246-62a2-7203-8f97-a3ac1874c33f",
@@ -1432,7 +1439,8 @@
     "id": 285,
     "name": "Slippy & Blosso - Horizon",
     "url": "https://audio.jukehost.co.uk/01a154f1-794e-7389-82f5-e999a157c8e4",
-    "public": true
+    "public": true,
+    "lyricsCount": 28
   },
   {
     "id": 280,
