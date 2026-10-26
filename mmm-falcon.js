@@ -3365,29 +3365,5 @@ if (window._MMM_INITIALIZED) {
         e.stopPropagation();
       });
     }
-
-    const hateEmptySpaces = (e) => {
-      if (!e.target || e.target.id !== "chat-input") return;
-      if (e.key !== "Enter" && e.keyCode !== 13) return;
-
-      if (!e.target.value || !e.target.value.trim()) {
-        e.preventDefault();
-        e.stopImmediatePropagation();
-        e.target.value = "";
-        e.target.blur();
-        e.target.style.display = "none";
-
-        document.dispatchEvent(new KeyboardEvent("keydown", {
-          key: "Escape",
-          code: "Escape",
-          keyCode: 27,
-          which: 27,
-          bubbles: true
-        }));
-      }
-    };
-    document.addEventListener("keydown", hateEmptySpaces, true);
-    document.addEventListener("keyup", hateEmptySpaces, true);
-    document.addEventListener("keypress", hateEmptySpaces, true);
   })();
 }
