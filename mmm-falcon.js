@@ -69,12 +69,6 @@ if (window._MMM_INITIALIZED) {
       window.removeEventListener("keydown", window._mmmKeydownHandler, true);
       delete window._mmmKeydownHandler;
     }
-    const _origPendMessages = window.pendMessages;
-    window.pendMessages = function (msg) {
-      if (msg == null) return;
-      if (String(msg).replace(/[\s\u200B-\u200D\uFEFF]/g, "").length === 0) return;
-      return _origPendMessages(msg);
-    };
 
     const game_ui = document.getElementById("game-ui");
     if (game_ui) {
@@ -3372,15 +3366,18 @@ if (window._MMM_INITIALIZED) {
       });
     }
 
-    document.addEventListener("keydown", (e) => {
-      if (!e.target || e.target.id !== "chat-input") return;
-      if (e.key !== "Enter" && e.keyCode !== 13) return;
-      if (String(e.target.value).replace(/[\s\u200B-\u200D\uFEFF]/g, "").length === 0) {
-        e.preventDefault();
-        e.stopImmediatePropagation();
-        e.target.value = "";
-        e.target.blur(); 
-      }
-    }, true);
+    document.addEventListener(
+      "keydown",
+      (e) => {
+        if (!e.target || e.target.id !== "chat-input") return;
+        if (e.key !== "Enter" && e.keyCode !== 13) return;
+        if (!e.target.value.trim()) {
+          e.preventDefault();
+          e.stopImmediatePropagation();
+          e.target.value = "";
+        }
+      },
+      true
+    );
   })();
 }
