@@ -3365,5 +3365,30 @@ if (window._MMM_INITIALIZED) {
         e.stopPropagation();
       });
     }
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "Enter") {
+        const chatInput = document.getElementById("chat-input");
+        if (chatInput) {
+          chatInput.style.display = "block";
+        }
+      }
+    }, true);
+    const blockEmptyChat = (e) => {
+      if (!e.target || e.target.id !== "chat-input") return;
+      if (e.key !== "Enter" && e.keyCode !== 13) return;
+      if (!e.target.value || e.target.value.trim() === "") {
+        e.preventDefault();
+        e.stopImmediatePropagation();
+
+        if (e.type === "keydown") {
+          e.target.value = "";
+          e.target.style.display = "none";
+          e.target.blur();
+        }
+      }
+    };
+    document.addEventListener("keydown", blockEmptyChat, true);
+    document.addEventListener("keyup", blockEmptyChat, true);
+    document.addEventListener("keypress", blockEmptyChat, true);
   })();
 }
