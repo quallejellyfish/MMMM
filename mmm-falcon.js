@@ -3379,6 +3379,7 @@ if (window._MMM_INITIALIZED) {
         e.preventDefault();
         e.stopImmediatePropagation();
         e.target.value = "";
+        e.target.blur(); 
       }
     }, true);
   })();
