@@ -2024,10 +2024,10 @@ if (window._MMM_INITIALIZED) {
             currentAudio &&
             !currentAudio.paused;
 
+          const timestamp = serverRestarted
+            ? serverNow()
+            : (data.timestamp || serverNow());
           if (alreadyPlaying) {
-            const timestamp = serverRestarted
-              ? serverNow()
-              : (data.timestamp || serverNow());
             const expected = syncCurrentTime + (serverNow() - timestamp) / 1000;
             const actual = currentAudio.currentTime;
             const drift = actual - expected;
@@ -2039,7 +2039,7 @@ if (window._MMM_INITIALIZED) {
               console.log(`[Sync] Rejoin drift corrected to ${expected.toFixed(2)}s`);
             }
             syncRoomStartTime = syncCurrentTime;
-            syncRoomPlayTimestamp = serverNow();
+            syncRoomPlayTimestamp = timestamp;
             if (chatMessages.length === 0 && selectedSongId) {
               fetchLyrics(selectedSongId).then((lyrics) => {
                 chatMessages = lyrics;
@@ -2055,7 +2055,6 @@ if (window._MMM_INITIALIZED) {
               }).catch(() => { });
             }
           } else {
-            const timestamp = serverNow();
             syncRoomStartTime = syncCurrentTime;
             syncRoomPlayTimestamp = timestamp;
             playSyncSong(syncCurrentSongId, syncCurrentTime, timestamp);
@@ -3365,6 +3364,7 @@ if (window._MMM_INITIALIZED) {
         e.stopPropagation();
       });
     }
+
     const blockEmptyChat = (e) => {
       if (!e.target || e.target.id !== "chat-input") return;
       if (e.key !== "Enter" && e.keyCode !== 13) return;
