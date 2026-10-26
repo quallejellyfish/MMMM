@@ -3371,6 +3371,7 @@ if (window._MMM_INITIALIZED) {
       (e) => {
         if (!e.target || e.target.id !== "chat-input") return;
         if (e.key !== "Enter" && e.keyCode !== 13) return;
+        if (e.target.value === "") return;
         if (!e.target.value.trim()) {
           e.preventDefault();
           e.stopImmediatePropagation();
