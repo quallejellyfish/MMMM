@@ -3366,19 +3366,19 @@ if (window._MMM_INITIALIZED) {
       });
     }
 
-    document.addEventListener(
-      "keydown",
-      (e) => {
-        if (!e.target || e.target.id !== "chat-input") return;
-        if (e.key !== "Enter" && e.keyCode !== 13) return;
-        if (e.target.value === "") return;
-        if (!e.target.value.trim()) {
-          e.preventDefault();
-          e.stopImmediatePropagation();
-          e.target.value = "";
-        }
-      },
-      true
-    );
+    const hateEmptySpaces = (e) => {
+      if (!e.target || e.target.id !== "chat-input") return;
+      if (e.key !== "Enter" && e.keyCode !== 13) return;
+
+      if (!e.target.value.trim()) {
+        e.preventDefault();
+        e.stopImmediatePropagation();
+        e.target.value = "";
+        e.target.blur();
+      }
+    };
+    document.addEventListener("keydown", hateEmptySpaces, true);
+    document.addEventListener("keyup", hateEmptySpaces, true);
+
   })();
 }
