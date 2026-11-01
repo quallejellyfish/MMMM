@@ -76,66 +76,63 @@ function findCategoryHeaderIndex(songs, categoryName) {
 }
 
 // DISCORD EMBEDS
-async function sendDiscordAddition(song, categoryName, lyricCount) {
-  if (!DISCORD_WEBHOOK_URL) {
-    console.log("Discord webhook not configured, skipping notification.");
-    return;
-  }
-  try {
-    const embed = {
-      title: "🎵 New Song Added",
-      color: 0x00ff88,
-      fields: [
-        { name: "Name", value: song.name, inline: true },
-        { name: "ID", value: String(song.id), inline: true },
-        {
-          name: "Category",
-          value: categoryName || "Uncategorized",
-          inline: true,
-        },
-        { name: "Lyrics Lines", value: String(lyricCount), inline: true },
-        { name: "Audio URL", value: `[Link](${song.url})`, inline: false },
-      ],
-      timestamp: new Date().toISOString(),
-      footer: { text: "Song Manager API" },
-    };
-
-    const response = await fetch(DISCORD_WEBHOOK_URL, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ embeds: [embed] }),
-    });
-    if (!response.ok)
-      console.error("Discord delete webhook failed:", response.status);
-  } catch (err) {
-    console.error("Discord delete notification error:", err);
-  }
-}
-
-async function sendDiscordDeletion(song) {
+async function sendDiscordEmbed(embed, retries = 2) {
   if (!DISCORD_WEBHOOK_URL) return;
   try {
-    const embed = {
-      title: "🗑️ Song Deleted",
-      color: 0xff5555,
-      fields: [
-        { name: "Name", value: song.name, inline: true },
-        { name: "ID", value: String(song.id), inline: true },
-      ],
-      timestamp: new Date().toISOString(),
-      footer: { text: "Song Manager API" },
-    };
     const response = await fetch(DISCORD_WEBHOOK_URL, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ embeds: [embed] }),
     });
-    if (!response.ok)
-      console.error("Discord delete webhook failed:", response.status);
+
+    if (response.status === 429 && retries > 0) {
+      const data = await response.json().catch(() => ({}));
+      const retryAfter = (data.retry_after || 1.5) * 1000;
+      console.warn(`[Discord] Rate limited. Retrying in ${Math.round(retryAfter)}ms...`);
+      await new Promise((r) => setTimeout(r, retryAfter));
+      return sendDiscordEmbed(embed, retries - 1);
+    }
+
+    if (!response.ok) {
+      console.error("Discord webhook failed:", response.status);
+    }
   } catch (err) {
-    console.error("Discord delete notification error:", err);
+    console.error("Discord webhook error:", err);
   }
 }
+
+async function sendDiscordAddition(song, categoryName, lyricCount) {
+  const embed = {
+    title: "🎵 New Song Added",
+    color: 0x00ff88,
+    fields: [
+      { name: "Name", value: song.name, inline: true },
+      { name: "ID", value: String(song.id), inline: true },
+      { name: "Category", value: categoryName || "Uncategorized", inline: true },
+      { name: "Lyrics Lines", value: String(lyricCount), inline: true },
+      { name: "Audio URL", value: `[Link](${song.url})`, inline: false },
+    ],
+    timestamp: new Date().toISOString(),
+    footer: { text: "Song Manager API" },
+  };
+  await sendDiscordEmbed(embed);
+}
+
+
+async function sendDiscordDeletion(song) {
+  const embed = {
+    title: "🗑️ Song Deleted",
+    color: 0xff5555,
+    fields: [
+      { name: "Name", value: song.name, inline: true },
+      { name: "ID", value: String(song.id), inline: true },
+    ],
+    timestamp: new Date().toISOString(),
+    footer: { text: "Song Manager API" },
+  };
+  await sendDiscordEmbed(embed);
+}
+
 
 async function sendDiscordEditNotification(
   oldSong,
@@ -152,129 +149,108 @@ async function sendDiscordEditNotification(
     changes.public ||
     changes.lyrics;
   if (!hasChange) return;
-  try {
-    let fields = [];
+  let fields = [];
 
-    // Always show the song name
-    fields.push({ name: "Song", value: newSong.name, inline: true });
+  // Always show the song name
+  fields.push({ name: "Song", value: newSong.name, inline: true });
 
-    // name change
-    if (changes.name) {
-      fields.push({
-        name: "Name Change",
-        value: `~~${oldSong.name}~~ → ${newSong.name}`,
-        inline: true,
-      });
-    }
-
-    // URL change
-    if (changes.url) {
-      fields.push({
-        name: "URL",
-        value: `[old](${oldSong.url}) → [new](${newSong.url})`,
-        inline: false,
-      });
-    }
-
-    // Category change
-    if (changes.category) {
-      if (oldSong.category !== newSong.category) {
-        fields.push({
-          name: "Category",
-          value: `~~${oldSong.category}~~ → ${newSong.category}`,
-          inline: true,
-        });
-      }
-    }
-
-    // Public change
-    if (changes.public === true) {
-      const oldPublic = oldSong.public ? "Public" : "Private";
-      const newPublic = newSong.public ? "Public" : "Private";
-      fields.push({
-        name: "Visibility",
-        value: `${oldPublic} → ${newPublic}`,
-        inline: true,
-      });
-    }
-
-    // Lyrics count change
-    if (
-      lyricsOldCount !== undefined &&
-      lyricsNewCount !== undefined &&
-      lyricsOldCount !== lyricsNewCount
-    ) {
-      fields.push({
-        name: "Lyrics Lines",
-        value: `${lyricsOldCount} → ${lyricsNewCount}`,
-        inline: true,
-      });
-    }
-
-    // Lyrics content change
-    if (changes.lyrics) {
-      fields.push({
-        name: "Lyrics",
-        value: "Content updated",
-        inline: true,
-      });
-    }
-
-    if (fields.length === 0) return;
-
-    const embed = {
-      title: "📝 Song Updated",
-      color: 0xffaa00,
-      fields: fields,
-      timestamp: new Date().toISOString(),
-      footer: { text: `ID: ${oldSong.id}` },
-    };
-    const response = await fetch(DISCORD_WEBHOOK_URL, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ embeds: [embed] }),
+  // name change
+  if (changes.name) {
+    fields.push({
+      name: "Name Change",
+      value: `~~${oldSong.name}~~ → ${newSong.name}`,
+      inline: true,
     });
-    if (!response.ok)
-      console.error("Discord edit webhook failed:", response.status);
-  } catch (err) {
-    console.error("Discord edit notification error:", err);
   }
+
+  // URL change
+  if (changes.url) {
+    fields.push({
+      name: "URL",
+      value: `[old](${oldSong.url}) → [new](${newSong.url})`,
+      inline: false,
+    });
+  }
+
+  // Category change
+  if (changes.category) {
+    if (oldSong.category !== newSong.category) {
+      fields.push({
+        name: "Category",
+        value: `~~${oldSong.category}~~ → ${newSong.category}`,
+        inline: true,
+      });
+    }
+  }
+
+  // Public change
+  if (changes.public === true) {
+    const oldPublic = oldSong.public ? "Public" : "Private";
+    const newPublic = newSong.public ? "Public" : "Private";
+    fields.push({
+      name: "Visibility",
+      value: `${oldPublic} → ${newPublic}`,
+      inline: true,
+    });
+  }
+
+  // Lyrics count change
+  if (
+    lyricsOldCount !== undefined &&
+    lyricsNewCount !== undefined &&
+    lyricsOldCount !== lyricsNewCount
+  ) {
+    fields.push({
+      name: "Lyrics Lines",
+      value: `${lyricsOldCount} → ${lyricsNewCount}`,
+      inline: true,
+    });
+  }
+
+  // Lyrics content change
+  if (changes.lyrics) {
+    fields.push({
+      name: "Lyrics",
+      value: "Content updated",
+      inline: true,
+    });
+  }
+
+  if (fields.length === 0) return;
+
+  const embed = {
+    title: "📝 Song Updated",
+    color: 0xffaa00,
+    fields: fields,
+    timestamp: new Date().toISOString(),
+    footer: { text: `ID: ${oldSong.id}` },
+  };
+  await sendDiscordEmbed(embed);
 }
 
 async function sendGitHubSyncNotification(success, message, details = "") {
-  if (!DISCORD_WEBHOOK_URL) return;
-  try {
-    const embed = {
-      title: "🔗 GitHub Sync",
-      color: success ? 0x3498db : 0xe74c3c, // blue for success, red for failure
-      description: success
-        ? "✅ Sync completed successfully"
-        : "❌ Sync failed",
-      fields: [
-        {
-          name: "Repository",
-          value: GITHUB_REPO || "Not configured",
-          inline: true,
-        },
-        { name: "Branch", value: GITHUB_BRANCH || "main", inline: true },
-        { name: "Message", value: message, inline: false },
-      ],
-      timestamp: new Date().toISOString(),
-      footer: { text: "Song Manager API" },
-    };
-    if (details) {
-      embed.fields.push({ name: "Details", value: details, inline: false });
-    }
-    const response = await fetch(DISCORD_WEBHOOK_URL, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ embeds: [embed] }),
-    });
-    if (!response.ok)
-      console.error("GitHub sync Discord webhook failed:", response.status);
-  } catch (err) {
-    console.error("Error sending GitHub sync Discord notification:", err);
+  const embed = {
+    title: "🔗 GitHub Sync",
+    color: success ? 0x3498db : 0xe74c3c, // blue for success, red for failure
+    description: success
+      ? "✅ Sync completed successfully"
+      : "❌ Sync failed",
+    fields: [
+      {
+        name: "Repository",
+        value: GITHUB_REPO || "Not configured",
+        inline: true,
+      },
+      { name: "Branch", value: GITHUB_BRANCH || "main", inline: true },
+      { name: "Message", value: message, inline: false },
+    ],
+    timestamp: new Date().toISOString(),
+    footer: { text: "Song Manager API" },
+  };
+  if (details) {
+    embed.fields.push({ name: "Details", value: details, inline: false });
   }
+  await sendDiscordEmbed(embed);
 }
 
 function requireApiKey(req, res, next) {
@@ -1543,7 +1519,7 @@ app.post("/songs", requireApiKey, async (req, res) => {
     await writeLyrics(lyrics);
   }
 
-  sendDiscordAddition(newSong, categoryName, lyricCount);
+  await sendDiscordAddition(newSong, categoryName, lyricCount);
   broadcastEvent("song-changed", { action: "add", songId: newId });
   await syncPublicFiles();
 
@@ -1641,7 +1617,7 @@ app.put("/songs/:id", requireApiKey, async (req, res) => {
         newSong.category = oldCategoryName;
         oldSong.category = oldCategoryName;
       }
-      sendDiscordEditNotification(oldSong, newSong, changes);
+      await sendDiscordEditNotification(oldSong, newSong, changes);
     }
 
     res.json(songs.find((s) => s.id === id));
@@ -1665,7 +1641,7 @@ app.delete("/songs/:id", requireApiKey, async (req, res) => {
   delete lyrics[id];
   await writeLyrics(lyrics);
 
-  sendDiscordDeletion(songToDelete).catch((err) => {
+  await sendDiscordDeletion(songToDelete).catch((err) => {
     console.error(err);
   });
   broadcastEvent("song-changed", { action: "delete", songId: id });
