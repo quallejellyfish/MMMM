@@ -9,7 +9,8 @@
     "id": 288,
     "name": "No Mercy - TLT",
     "url": "https://audio.jukehost.co.uk/01a1785a-5243-73a8-b427-5b4b2dbf7490",
-    "public": false
+    "public": false,
+    "lyricsCount": 68
   },
   {
     "id": 283,
@@ -693,7 +694,8 @@
     "id": 289,
     "name": "天真的橡皮（DJ林泽版）",
     "url": "https://audio.jukehost.co.uk/01a17869-fb14-73ed-8016-555a955d6fc7",
-    "public": false
+    "public": false,
+    "lyricsCount": 105
   },
   {
     "id": 264,
@@ -1187,6 +1189,13 @@
     "name": "Yararara",
     "url": "https://audio.jukehost.co.uk/019ec691-20ac-73f8-889c-4834539aeba4",
     "lyricsCount": 87
+  },
+  {
+    "id": 290,
+    "name": "March of the Weak",
+    "url": "https://audio.jukehost.co.uk/01a196e0-ef2d-73c5-b6b6-4c4c26368c1c",
+    "public": false,
+    "lyricsCount": 90
   },
   {
     "id": 177,
