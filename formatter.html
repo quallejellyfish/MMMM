@@ -341,8 +341,12 @@
         // Japanese characters
         if (window.Kuroshiro && /[\u3040-\u309F\u30A0-\u30FF]/.test(s)) {
           try {
-            if (!kuroshiroReady) {
-              setStatus("One-time download of a Japanese dictionary");
+            if (!kuroshiroReady && !kuroshiroFailed) {
+              setStatus(
+                "One-time download of a Japanese dictionary (small freeze)...",
+              );
+              // Yield to the main thread so the status message renders before the heavy parsing blocks it
+              await new Promise((r) => setTimeout(r, 100));
             }
             const ks = await initKuroshiro();
             if (ks) {
@@ -618,9 +622,6 @@
         }
       });
 
-      rawInput.addEventListener("input", () => {
-        updateStats(rawInput.value, lastFragments);
-      });
       let formatDebounce = null;
       rawInput.addEventListener("input", () => {
         updateStats(rawInput.value, lastFragments);
@@ -628,6 +629,16 @@
         formatDebounce = setTimeout(() => {
           if (rawInput.value.trim()) format();
         }, 350);
+      });
+
+      window.addEventListener("load", () => {
+        setTimeout(() => {
+          if (window.Kuroshiro && window.KuromojiAnalyzer) {
+            initKuroshiro().then((ks) => {
+              if (ks) console.log("[Formatter] Japanese dictionary preloaded.");
+            });
+          }
+        }, 2000);
       });
     </script>
   </body>
