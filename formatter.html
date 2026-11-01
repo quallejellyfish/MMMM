@@ -274,33 +274,45 @@
       </main>
     </div>
     <script src="https://cdn.jsdelivr.net/npm/pinyin-pro@3/dist/index.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/kuroshiro@1.1.2/dist/kuroshiro.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/kuroshiro-analyzer-kuromoji@1.1.0/dist/kuroshiro-analyzer-kuromoji.min.js"></script>
     <script>
       const MAX_LEN = 30;
       const PUNCT_RE = /[.!?:;"()\[\]{},]/g;
-      let kuroshiroReady = null;
 
-      function initKuroshiro() {
-        if (kuroshiroReady) return kuroshiroReady;
-        if (!window.Kuroshiro || !window.KuromojiAnalyzer) {
-          kuroshiroReady = Promise.resolve(null);
-          return kuroshiroReady;
-        }
-        const ks = new window.Kuroshiro();
-        kuroshiroReady = ks
-          .init(
-            new window.KuromojiAnalyzer({
-              dictPath: "https://cdn.jsdelivr.net/npm/kuromoji@0.1.2/dict",
-            }),
-          )
-          .then(() => ks)
-          .catch((e) => {
-            console.warn("Kuroshiro init failed:", e);
-            kuroshiroReady = null;
-            return null;
+      const workerCode = `
+        importScripts('https://cdn.jsdelivr.net/npm/kuroshiro@1.1.2/dist/kuroshiro.min.js');
+        importScripts('https://cdn.jsdelivr.net/npm/kuroshiro-analyzer-kuromoji@1.1.0/dist/kuroshiro-analyzer-kuromoji.min.js');
+
+        let ks = new Kuroshiro();
+        let initPromise = ks.init(new KuromojiAnalyzer({
+          dictPath: "https://cdn.jsdelivr.net/npm/kuromoji@0.1.2/dict"
+        })).catch(e => console.error("Worker dictionary load failed", e));
+
+        self.onmessage = async (e) => {
+          const { id, text } = e.data;
+          try {
+            await initPromise;
+            const result = await ks.convert(text, {
+              to: "romaji",
+              mode: "spaced",
+              romajiSystem: "hepburn"
+            });
+            self.postMessage({ id, result, success: true });
+          } catch (err) {
+            self.postMessage({ id, error: err.message, success: false });
+          }
+        };
+      `;
+
+      let translationWorker = null;
+
+      function getTranslationWorker() {
+        if (!translationWorker) {
+          const blob = new Blob([workerCode], {
+            type: "application/javascript",
           });
-        return kuroshiroReady;
+          translationWorker = new Worker(URL.createObjectURL(blob));
+        }
+        return translationWorker;
       }
 
       function removeHtml(s) {
@@ -339,23 +351,22 @@
           .replace(/[\u2013\u2014]/g, "-");
 
         // Japanese characters
-        if (window.Kuroshiro && /[\u3040-\u309F\u30A0-\u30FF]/.test(s)) {
+        if (/[\u3040-\u309F\u30A0-\u30FF]/.test(s)) {
           try {
-            if (!kuroshiroReady && !kuroshiroFailed) {
-              setStatus(
-                "One-time download of a Japanese dictionary (small freeze)...",
-              );
-              // Yield to the main thread so the status message renders before the heavy parsing blocks it
-              await new Promise((r) => setTimeout(r, 100));
-            }
-            const ks = await initKuroshiro();
-            if (ks) {
-              s = await ks.convert(s, {
-                to: "romaji",
-                mode: "spaced",
-                romajiSystem: "hepburn",
-              });
-            }
+            setStatus("Converting Japanese characters in background...");
+            const worker = getTranslationWorker();
+            s = await new Promise((resolve, reject) => {
+              const id = Math.random().toString(36).substring(7);
+              const handler = (e) => {
+                if (e.data.id === id) {
+                  worker.removeEventListener("message", handler);
+                  if (e.data.success) resolve(e.data.result);
+                  else reject(new Error(e.data.error));
+                }
+              };
+              worker.addEventListener("message", handler);
+              worker.postMessage({ id, text: s });
+            });
           } catch (e) {
             console.warn("Japanese conversion failed:", e);
           }
@@ -633,11 +644,8 @@
 
       window.addEventListener("load", () => {
         setTimeout(() => {
-          if (window.Kuroshiro && window.KuromojiAnalyzer) {
-            initKuroshiro().then((ks) => {
-              if (ks) console.log("[Formatter] Japanese dictionary preloaded.");
-            });
-          }
+          getTranslationWorker();
+          console.log("[Formatter] Translation Worker preloading...");
         }, 2000);
       });
     </script>
