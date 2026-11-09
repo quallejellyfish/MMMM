@@ -9,7 +9,8 @@
     "id": 292,
     "name": "Cry For Me - Ironmouse",
     "url": "https://audio.jukehost.co.uk/01a1bb4d-9f60-7067-afd8-874ac62e3b30",
-    "public": true
+    "public": true,
+    "lyricsCount": 98
   },
   {
     "id": 288,
@@ -1128,6 +1129,13 @@
     "url": "https://audio.jukehost.co.uk/01a0683b-3278-73bb-b9a4-3fcdf2f8d0a5",
     "public": false,
     "lyricsCount": 85
+  },
+  {
+    "id": 293,
+    "name": "Playback",
+    "url": "https://audio.jukehost.co.uk/01a1c159-c4ab-72ba-bfb8-b230fd121d81",
+    "public": false,
+    "lyricsCount": 76
   },
   {
     "id": 141,
