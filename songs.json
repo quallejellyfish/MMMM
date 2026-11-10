@@ -1138,6 +1138,20 @@
     "lyricsCount": 76
   },
   {
+    "id": 294,
+    "name": "English Playback (Tomoe)",
+    "url": "https://audio.jukehost.co.uk/01a1c70f-56e6-7350-b38a-86c36ee633d8",
+    "public": false,
+    "lyricsCount": 113
+  },
+  {
+    "id": 295,
+    "name": "English Playback (Kijori)",
+    "url": "https://audio.jukehost.co.uk/01a1c721-e347-7048-8acf-5729f0290b54",
+    "public": false,
+    "lyricsCount": 107
+  },
+  {
     "id": 141,
     "name": "looping the rooms",
     "url": "https://audio.jukehost.co.uk/ieDNT33WOlAKcesBdCEg1tX1D6oLPws5",
