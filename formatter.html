@@ -262,6 +262,18 @@
             >Keep Punctuation?</label
           >
           <input type="checkbox" id="punctToggle" checked />
+          <div></div>
+          <label
+            for="langSelect"
+            style="display: inline; color: #fff; font-size: 1rem"
+            >Language:</label
+          >
+          <select id="langSelect">
+            <option value="normal">Normal</option>
+            <option value="japanese">Japanese</option>
+            <option value="chinese">Chinese</option>
+            <option value="none">Don't Romanize</option>
+          </select>
           <div class="toolbar">
             <button id="formatBtn" class="success">Format Lyrics</button>
             <button id="copyJsBtn">Copy JS</button>
@@ -334,10 +346,15 @@
       }
 
       async function asciiNormalize(input) {
-        if (typeof input !== "string") {
-          console.warn("Received non-string, defaulting to ''", input);
-          return "";
+        if (typeof input !== "string") return "";
+
+        const langSelect = document.getElementById("langSelect");
+        const lang = langSelect ? langSelect.value : "normal";
+
+        if (lang === "none") {
+          return input;
         }
+
         let s = input
           .replace(/ä/g, "ae")
           .replace(/Ä/g, "Ae")
@@ -351,7 +368,7 @@
           .replace(/[\u2013\u2014]/g, "-");
 
         // Japanese characters
-        if (/[\u3040-\u309F\u30A0-\u30FF]/.test(s)) {
+        if (lang === "japanese") {
           try {
             setStatus("Converting Japanese characters in background...");
             const worker = getTranslationWorker();
@@ -373,12 +390,13 @@
         }
 
         // Chinese characters
-        if (window.pinyinPro && /[\u3400-\u9FFF\uF900-\uFAFF]/.test(s)) {
+        if (lang === "chinese" && window.pinyinPro) {
           try {
             s = window.pinyinPro.pinyin(s, {
               toneType: "none",
               type: "string",
               separator: " ",
+              nonZh: "consecutive",
             });
           } catch (e) {
             console.warn("Pinyin conversion failed:", e);
@@ -630,6 +648,14 @@
               ? "Punctuation will be kept on next format."
               : "Punctuation will be removed on next format.",
           );
+        }
+      });
+
+      langSelect.addEventListener("change", () => {
+        if (rawInput.value.trim()) {
+          format();
+        } else {
+          setStatus(`Language set to ${langSelect.value}.`);
         }
       });
 
